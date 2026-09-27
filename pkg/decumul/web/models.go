@@ -27,7 +27,7 @@ const (
 // each model. SafeWR/SafeSpend are the withdrawal that meets the target ruin
 // under this model; Ruin/MedianWealth are evaluated at the user's planned spend.
 type ModelStat struct {
-	Name         string  `json:"name"`
+	Name         string  `json:"name"`         // the return model
 	Ruin         float64 `json:"ruin"`         // fraction, at the planned spend
 	SafeWR       float64 `json:"safeWR"`       // fraction, safe spend / capital
 	SafeSpend    float64 `json:"safeSpend"`    // euros/yr meeting the target ruin
@@ -39,8 +39,8 @@ type ModelStat struct {
 // ruin they were solved against, a single confidence badge about the data
 // backing the historical models, and the central-case verdict sentence.
 type ModelsResult struct {
-	Models     []ModelStat `json:"models"`
-	TargetRuin float64     `json:"targetRuin"`
+	Models     []ModelStat `json:"models"`     // one per return model, in strip order
+	TargetRuin float64     `json:"targetRuin"` // the ruin target solved against (fraction)
 	Confidence string      `json:"confidence"` // HIGH | MEDIUM | LOW
 	ConfNote   string      `json:"confNote"`   // one-line reason
 	Verdict    string      `json:"verdict"`    // central-case headline

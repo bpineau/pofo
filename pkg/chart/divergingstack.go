@@ -10,7 +10,7 @@ import (
 // x position its value stacks above zero when positive and below when
 // negative (e.g. an asset's contribution to a portfolio's return).
 type DivergingStackSeries struct {
-	Name   string
+	Name   string    // legend label
 	Color  string    // optional; the default palette applies in series order
 	Values []float64 // one signed value per x position
 }
@@ -19,17 +19,17 @@ type DivergingStackSeries struct {
 // above a DivergingStack plot (e.g. a macro-regime timeline). From and To are
 // x positions, inclusive.
 type StripBand struct {
-	From, To int
-	Label    string
-	Color    string
+	From, To int    // x positions, inclusive
+	Label    string // text drawn in the band
+	Color    string // CSS fill
 }
 
 // DivergingStackOptions styles a DivergingStack. The zero value renders a
 // bare 1200x470 chart; XLabels, Total and Strip are optional layers.
 type DivergingStackOptions struct {
-	Title  string
-	Width  int // default 1200
-	Height int // default 470
+	Title  string // chart title; "" = none
+	Width  int    // default 1200
+	Height int    // default 470
 
 	XLabels []string // per-position tick label; "" = no tick at that position
 	XTips   []string // per-position hover header (e.g. "2014-06"); optional

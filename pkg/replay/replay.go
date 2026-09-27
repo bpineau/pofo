@@ -26,15 +26,15 @@ import (
 // risk-based guardrail's raises as a multiple of Spend (0 leaves the protective
 // default of 1, which lets the rule cut but never share a good decade).
 type Setup struct {
-	Start      int
-	Capital    float64
-	Spend      float64
-	Years      int
-	Mu         float64
-	Sigma      float64
-	Df         float64
-	TargetRuin float64
-	RaiseCap   float64
+	Start      int     // calendar year the retirement starts
+	Capital    float64 // starting wealth, any currency unit
+	Spend      float64 // planned real spending per year, same unit
+	Years      int     // planned horizon in years
+	Mu         float64 // assumed real mean return per year, a FRACTION
+	Sigma      float64 // assumed real volatility per year, a FRACTION
+	Df         float64 // assumed Student-t degrees of freedom
+	TargetRuin float64 // ruin probability the horizon-aware rules aim at, a FRACTION
+	RaiseCap   float64 // raise ceiling as a multiple of Spend; 0 = 1
 }
 
 // Rule is one withdrawal rule's replayed retirement: not a score, a portrait.
@@ -42,28 +42,28 @@ type Setup struct {
 // and CV describe the standard of living delivered, Low and LeanYears the depth
 // and the duration of the lean spells, Final what was still on the table.
 type Rule struct {
-	Name, NameFR, Tag, Help, Color string
-	Spend                          []float64
-	Wealth                         []float64
-	Mean                           float64
-	CV                             float64 // coefficient of variation of the yearly income
-	Low, High                      float64
-	Total                          float64
-	Final                          float64
-	LeanYears                      int
-	Ruined                         bool
-	RuinYear                       int // calendar year the money ran out (only when Ruined)
+	Name, NameFR, Tag, Help, Color string    // the Policy's identity
+	Spend                          []float64 // real income delivered each covered year
+	Wealth                         []float64 // real wealth at each covered year's end
+	Mean                           float64   // mean of Spend
+	CV                             float64   // coefficient of variation of the yearly income
+	Low, High                      float64   // leanest and richest year of Spend
+	Total                          float64   // sum of Spend
+	Final                          float64   // the last Wealth
+	LeanYears                      int       // years spent below the planned Spend
+	Ruined                         bool      // the money ran out
+	RuinYear                       int       // calendar year the money ran out (only when Ruined)
 }
 
 // Result is one replayed retirement: the untouched portfolio it happened in,
 // and every rule's life inside it. Everything is REAL (inflation removed) and
 // gross of tax.
 type Result struct {
-	Setup   Setup
-	Start   int
-	End     int
-	Years   int  // calendar years the record actually covers
-	Partial bool // the record ran out before the plan did
+	Setup   Setup // what was asked
+	Start   int   // first calendar year replayed
+	End     int   // last calendar year replayed
+	Years   int   // calendar years the record actually covers
+	Partial bool  // the record ran out before the plan did
 
 	Dates  []time.Time // month ends of the untouched index, from the opening December
 	Index  []float64   // the untouched real portfolio, base 100
@@ -72,11 +72,11 @@ type Result struct {
 	CAGR        float64 // annualised real return of the untouched portfolio
 	Decade      float64 // annualised real return of its first ten years
 	Volatility  float64 // standard deviation of the calendar-year real returns
-	WorstYear   float64
-	WorstAt     int
+	WorstYear   float64 // the worst calendar-year real return
+	WorstAt     int     // the calendar year it happened in
 	MaxDrawdown float64 // deepest month-end peak-to-trough real loss
 
-	Rules []Rule
+	Rules []Rule // one per Policies rule, in its order
 }
 
 // Run replays every withdrawal rule of Policies through the real returns of the

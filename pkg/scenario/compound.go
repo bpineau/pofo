@@ -35,8 +35,8 @@ func Annualize(s Sequence, group int) Sequence {
 // inner Source verbatim; Inner is exported so callers can inspect it (e.g. to
 // detect a cohorts source with too little history).
 type Compounded struct {
-	Inner Source
-	Group int
+	Inner Source // the higher-frequency source
+	Group int    // inner periods per outer one (12: months to years)
 }
 
 // Len is the inner length divided by Group.

@@ -11,13 +11,13 @@ import (
 // prior peak. Ongoing marks an episode that had not recovered by the series
 // end (RecoverDate is then zero and RecoveryDays is 0).
 type Episode struct {
-	PeakDate     time.Time
-	TroughDate   time.Time
-	RecoverDate  time.Time
-	Depth        float64
-	DrawdownDays int
-	RecoveryDays int
-	Ongoing      bool
+	PeakDate     time.Time // last high before the fall
+	TroughDate   time.Time // lowest close of the episode
+	RecoverDate  time.Time // first close back at the peak; zero while Ongoing
+	Depth        float64   // deepest loss, a negative FRACTION (-0.25 = -25 %)
+	DrawdownDays int       // calendar days from PeakDate to TroughDate
+	RecoveryDays int       // calendar days from TroughDate to RecoverDate; 0 while Ongoing
+	Ongoing      bool      // not recovered by the end of the series
 }
 
 // MaxDrawdown returns the deepest drawdown episode of a value series, or

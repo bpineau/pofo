@@ -31,10 +31,8 @@ type RuinTiming struct {
 //
 // Shares are of the ruined paths, summing to ~1; Ruined counts them.
 type RuinShapes struct {
-	Crash     float64
-	Grind     float64
-	Longevity float64
-	Ruined    int
+	Crash, Grind, Longevity float64 // shares of the ruined paths
+	Ruined                  int     // how many paths were ruined
 }
 
 // RuinShapes classifies every ruined path by trajectory shape. Returns the

@@ -18,7 +18,7 @@ import (
 // percentiles are the honest picture.
 type MarketResult struct {
 	Fans []Fan  `json:"fans"` // one market fan per planning model, fanModels order
-	Note string `json:"note"`
+	Note string `json:"note"` // caveat; "" when none
 }
 
 // marketDraws is the number of paths behind the market bands and bear stats:

@@ -50,7 +50,7 @@ type DriftItem struct {
 	// planned one for "untranslated" (empty when the French article is in no
 	// plan), and always empty for "fr-only".
 	ENSlug string
-	FRSlug string
+	FRSlug string // the French source article
 	Reason string // "stale", "untranslated" or "fr-only"
 }
 

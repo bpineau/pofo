@@ -16,12 +16,12 @@ import (
 // overstated. Each marginal is standardised to its own Sigma. A drawn blended
 // return is clamped so that 1+r >= 0.
 type Glidepath struct {
-	EquityMu, EquitySigma  float64
-	BondMu, BondSigma      float64
+	EquityMu, EquitySigma  float64 // equity real return per period: mean and standard deviation, FRACTIONS
+	BondMu, BondSigma      float64 // the same for bonds
 	Df                     float64 // shared tail; <=2 falls back to Normal
 	Corr                   float64 // equity/bond correlation in [-1,1]
 	StartEquity, EndEquity float64 // equity weight at year 0 and the final year
-	Periods                int
+	Periods                int     // path length
 }
 
 // Len reports the path length.

@@ -15,6 +15,8 @@ import (
 // cancellation to gain, so the interface stays context-free: wrap a
 // *marketdata.Client with WithContext to satisfy it.
 type Fetcher interface {
+	// Fetch returns the daily history of id from the given date on (a zero
+	// from: all of it).
 	Fetch(id string, from time.Time) (*marketdata.Series, error)
 }
 
@@ -68,7 +70,7 @@ type Recipe struct {
 // Frame holds daily returns of several components aligned on the dates where
 // every component trades (forward-filled in between).
 type Frame struct {
-	Dates   []time.Time
+	Dates   []time.Time          // the aligned calendar, 00:00 UTC
 	Returns map[string][]float64 // same length as Dates; Returns[id][0] is always 0
 }
 
@@ -143,9 +145,9 @@ func isRate(id string) bool {
 
 // Leg is one exposure of a linear composite.
 type Leg struct {
-	ID     string
-	Weight float64
-	Excess bool // futures-like: earns Weight×(return − cash)
+	ID     string  // the component's identifier, as a Fetcher takes it
+	Weight float64 // FRACTION of the composite (1.5 = 150 % for a levered leg)
+	Excess bool    // futures-like: earns Weight×(return − cash)
 }
 
 // Composite builds an index (base 100) from constant daily-rebalanced legs.
@@ -190,16 +192,14 @@ func Composite(fr *Frame, legs []Leg, cashID string, annualFee float64) ([]float
 // their overlap: the dates both quote, a marketdata.Panel at Daily, so every
 // return of either side spans the same sessions.
 type Validation struct {
-	Overlap     int // number of common returns (daily for two daily series)
-	Start, End  time.Time
-	Corr        float64 // correlation of those returns
-	WeeklyCorr  float64 // correlation of five-session returns (kinder to stale quotes); zero under twelve of them
-	Beta        float64 // slope of sim on real
-	TrackingErr float64 // sample stdev of (sim - real) returns, annualized at the common calendar's cadence
-	VolSim      float64 // sample volatility of each side on that calendar, annualized
-	VolReal     float64
-	CAGRSim     float64 // over the common window, 365.25-day years
-	CAGRReal    float64
+	Overlap           int       // number of common returns (daily for two daily series)
+	Start, End        time.Time // the common window
+	Corr              float64   // correlation of those returns
+	WeeklyCorr        float64   // correlation of five-session returns (kinder to stale quotes); zero under twelve of them
+	Beta              float64   // slope of sim on real
+	TrackingErr       float64   // sample stdev of (sim - real) returns, annualized at the common calendar's cadence
+	VolSim, VolReal   float64   // sample volatility of each side on that calendar, annualized
+	CAGRSim, CAGRReal float64   // over the common window, 365.25-day years
 }
 
 // String renders the validation as a one-line summary (daily/weekly

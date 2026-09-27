@@ -59,7 +59,7 @@ func RollingCAGR(dates []time.Time, values []float64, years float64) (worst, med
 // pairs them, annualized at the cadence of those pairs (252 for two daily
 // series, as in Compute), risk-free rate 0 (consistent with Compute).
 type Relative struct {
-	Beta        float64
+	Beta        float64 // sensitivity to the benchmark's returns (1 = moves with it)
 	Alpha       float64 // Jensen's alpha, annualized (0.02 = +2 %/yr)
 	InfoRatio   float64 // mean active return / tracking error, annualized
 	UpCapture   float64 // geometric capture on benchmark up days (1.10 = 110 %)

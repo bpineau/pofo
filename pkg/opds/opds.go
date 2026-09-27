@@ -35,7 +35,7 @@ const atomNS = "http://www.w3.org/2005/Atom"
 // value adds the Atom link "length" attribute (octets), zero omits it. Type
 // defaults to EPUBType when empty.
 type Entry struct {
-	Title   string
+	Title   string    // the publication's title
 	Author  string    // optional; omitted when empty
 	Summary string    // optional plain-text description; omitted when empty
 	ID      string    // stable urn:uuid of the publication
@@ -51,11 +51,11 @@ type Entry struct {
 // from the output when empty. Output is deterministic for a fixed set of times,
 // so a server can hash it for an ETag.
 type Feed struct {
-	Title   string
+	Title   string    // the catalog's title
 	ID      string    // stable urn:uuid of the catalog
 	Updated time.Time // rendered in UTC as RFC 3339
 	Self    string    // href of the feed itself; may be relative
-	Entries []Entry
+	Entries []Entry   // the publications, in display order
 }
 
 // XML renders the feed as an OPDS 1.2 acquisition document: an Atom feed with

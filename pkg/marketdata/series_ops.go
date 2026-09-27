@@ -375,9 +375,9 @@ func CommonWindow(list ...*Series) (start, end time.Time, ok bool) {
 // it, forward-filled across the days it did not quote (in its own quote
 // currency: AlignSeries converts nothing).
 type Aligned struct {
-	Dates  []time.Time
-	IDs    []string
-	Levels [][]float64
+	Dates  []time.Time // sorted union of the quoting days, at 00:00 UTC
+	IDs    []string    // Symbol of each input series, in input order
+	Levels [][]float64 // Levels[i][t]: closes of IDs[i] on Dates[t], forward-filled
 }
 
 // AlignSeries is Align with its trap closed: it aligns list on the union of

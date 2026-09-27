@@ -8,10 +8,10 @@ import (
 // CatBar is one row of a CategoryBars chart: a label, a value (fraction of the
 // total width, 0..1), a right-hand value text, and a bar color.
 type CatBar struct {
-	Label string
-	Value float64
-	Text  string
-	Color string
+	Label string  // left-hand label
+	Value float64 // fraction of the full width, 0..1
+	Text  string  // right-hand value text
+	Color string  // CSS color of the bar
 }
 
 // CategoryBars renders labelled horizontal bars sharing a common 0..1 scale,

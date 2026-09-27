@@ -13,8 +13,8 @@ import (
 // and percentage-of-portfolio rules trade that risk for a wobbling standard of
 // living. No single ruin number can show this; the frontier is the point.
 type PolicyFrontierResult struct {
-	SVG  string `json:"policyFrontierSvg"`
-	Note string `json:"note"`
+	SVG  string `json:"policyFrontierSvg"` // the section's chart
+	Note string `json:"note"`              // caveat; "" when none
 }
 
 // PolicyFrontier evaluates the same plan under four withdrawal policies on the

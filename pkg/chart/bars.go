@@ -12,10 +12,10 @@ import (
 // qualitatively apart from its neighbours (a "ruined" bucket among wealth
 // bands); leave it empty for an ordinary series.
 type Bar struct {
-	Label string
-	Value float64
-	Text  string
-	Color string
+	Label string  // the category, under the bar
+	Value float64 // the bar's height, in the chart's unit
+	Text  string  // optional value label at the tip
+	Color string  // optional CSS color; "" = the default accent
 }
 
 // Bars renders a vertical bar chart in the same instrument dialect as Line

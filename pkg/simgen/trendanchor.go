@@ -14,8 +14,8 @@ import (
 // return), so its excess over cash is what gets rescaled to a volatility
 // target: leverage multiplies a trading book, never a cash yield.
 type TrendAnchor struct {
-	ID     string
-	Funded bool
+	ID     string // the bundled reference's identifier (refdata)
+	Funded bool   // the reference earns cash on its collateral (a total return)
 }
 
 // The three references, which answer different questions and are not

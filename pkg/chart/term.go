@@ -10,11 +10,11 @@ import (
 
 // TermOptions controls the terminal rendering of Term.
 type TermOptions struct {
-	Title   string
-	Width   int  // total width in columns, gutter included; default 100
-	Height  int  // plot height in rows; default 18
-	Color   bool // ANSI colors; without them each series gets its own marker
-	Braille bool // pack 2x4 braille dots per cell for a smoother curve
+	Title   string // first line; "" = none
+	Width   int    // total width in columns, gutter included; default 100
+	Height  int    // plot height in rows; default 18
+	Color   bool   // ANSI colors; without them each series gets its own marker
+	Braille bool   // pack 2x4 braille dots per cell for a smoother curve
 }
 
 // ansiPalette mirrors defaultPalette with ANSI-256 codes.

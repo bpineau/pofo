@@ -26,8 +26,11 @@ type UnknownIdentifierError struct {
 	Failures error  // what every source answered, for the log
 }
 
+// Error returns the per-source failure summary.
 func (e *UnknownIdentifierError) Error() string { return e.Failures.Error() }
 
+// Unwrap returns Failures, so errors.Is and errors.As reach what the sources
+// answered.
 func (e *UnknownIdentifierError) Unwrap() error { return e.Failures }
 
 // Is makes errors.Is(err, ErrUnknownIdentifier) true for this error, the

@@ -9,8 +9,8 @@ import (
 // value at From is the comparison base of the window, so a "ytd" window
 // starts on Dec 31 of the previous year.
 type Window struct {
-	Name     string
-	From, To time.Time
+	Name     string    // label, such as "ytd" or "1y"
+	From, To time.Time // the comparison base and the inclusive end
 }
 
 // StandardWindows returns the usual trailing report windows ending at to:
@@ -41,7 +41,7 @@ type ReportRow struct {
 	Window
 	TWR  float64 // time-weighted return over the window
 	Gain float64 // value change net of external flows, in series units
-	OK   bool
+	OK   bool    // the window holds at least two points; otherwise ignore the row
 }
 
 // ReportSummary describes the whole track record of the series passed to
@@ -54,10 +54,10 @@ type ReportSummary struct {
 	Since time.Time // first point of the series
 	Days  int       // calendar span of the series
 
-	CAGR, Vol, Sharpe, Sortino float64
-	HasCAGR, HasRisk           bool
+	CAGR, Vol, Sharpe, Sortino float64 // annualized FRACTIONS, as in Stats; read them only under their gate
+	HasCAGR, HasRisk           bool    // the span is long enough to annualize the return, the risk figures
 
-	MaxDrawdown Episode
+	MaxDrawdown Episode // deepest drawdown of the whole record
 }
 
 // ReportOptions parameterizes Report. The zero value keeps every default:

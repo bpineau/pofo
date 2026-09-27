@@ -9,9 +9,9 @@ import (
 // XYSeries is a numeric-x line for LineDual: paired Xs and Ys, an optional
 // display name and CSS color.
 type XYSeries struct {
-	Name   string
-	Xs, Ys []float64
-	Color  string
+	Name   string    // legend label; may be empty
+	Xs, Ys []float64 // paired coordinates, Xs ascending
+	Color  string    // optional CSS color
 }
 
 // LineDual renders two numeric-x line series that share the x-axis but each

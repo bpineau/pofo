@@ -29,20 +29,20 @@ const shapePaths = 1000
 // Params is the slider state posted by the browser. Weights is nil in
 // parametric mode and holds per-holding fractions in portfolio mode.
 type Params struct {
-	Capital       float64   `json:"capital"`
-	NeedAnnual    float64   `json:"needAnnual"`
-	BufferYears   float64   `json:"bufferYears"`
-	Mu            float64   `json:"mu"`
-	Sigma         float64   `json:"sigma"`
-	Df            float64   `json:"df"`
-	BufferReturn  float64   `json:"bufferReturn"`
-	Years         int       `json:"years"`
-	PensionYear   int       `json:"pensionYear"`
-	PensionAnnual float64   `json:"pensionAnnual"`
-	FlexCut       float64   `json:"flexCut"`
-	TaxRate       float64   `json:"taxRate"`
-	NPaths        int       `json:"nPaths"`
-	Weights       []float64 `json:"weights"`
+	Capital       float64   `json:"capital"`       // starting wealth
+	NeedAnnual    float64   `json:"needAnnual"`    // real net spending per year
+	BufferYears   float64   `json:"bufferYears"`   // buffer size, in years of NeedAnnual
+	Mu            float64   `json:"mu"`            // real mean return per year (fraction), parametric model
+	Sigma         float64   `json:"sigma"`         // real volatility per year (fraction), parametric model
+	Df            float64   `json:"df"`            // Student-t degrees of freedom, parametric model
+	BufferReturn  float64   `json:"bufferReturn"`  // the buffer's real return per year (fraction)
+	Years         int       `json:"years"`         // horizon in years
+	PensionYear   int       `json:"pensionYear"`   // plan year the pension starts
+	PensionAnnual float64   `json:"pensionAnnual"` // real pension per year
+	FlexCut       float64   `json:"flexCut"`       // spending cut in a deep drawdown (fraction); 0 = off
+	TaxRate       float64   `json:"taxRate"`       // flat tax on realised gains (fraction)
+	NPaths        int       `json:"nPaths"`        // Monte-Carlo paths
+	Weights       []float64 `json:"weights"`       // per-holding fractions in portfolio mode; nil = parametric
 
 	// tableMu/tableSigma/tableDf are the central assumptions the risk-based
 	// guardrail's safe-rate table is solved on: the blended, CAPE-anchored
@@ -85,9 +85,9 @@ type Params struct {
 	// Load is the insurer's margin as a share of the fair income, 0 meaning the
 	// honest default rather than a fair annuity. It is read by the mortality
 	// kernel alone, which is where an annuity has a price and a risk to insure.
-	AnnuityShare float64 `json:"annuityShare"`
-	AnnuityYear  int     `json:"annuityYear"`
-	AnnuityLoad  float64 `json:"annuityLoad"`
+	AnnuityShare float64 `json:"annuityShare"` // share of the growth sleeve annuitized
+	AnnuityYear  int     `json:"annuityYear"`  // plan year of the purchase
+	AnnuityLoad  float64 `json:"annuityLoad"`  // insurer's margin; 0 = the honest default
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).
@@ -101,9 +101,9 @@ func (pr Params) age() float64 {
 // Card is one labelled summary figure shown above the charts. Help, when
 // set, becomes the card's plain-language hover explanation.
 type Card struct {
-	Label string `json:"label"`
-	Value string `json:"value"`
-	Help  string `json:"help,omitempty"`
+	Label string `json:"label"`          // what the figure is
+	Value string `json:"value"`          // the formatted figure
+	Help  string `json:"help,omitempty"` // hover explanation; may be empty
 }
 
 // Result is the JSON returned for one parameter set. Note carries a
@@ -111,11 +111,11 @@ type Card struct {
 // the cohorts model), empty when the result is fully usable. Cards is an
 // ordered list so the UI shows the figures in a stable, readable order.
 type Result struct {
-	Note          string `json:"note"`
-	Cards         []Card `json:"cards"`
+	Note          string `json:"note"`          // caveat; "" when fully usable
+	Cards         []Card `json:"cards"`         // headline figures, in display order
 	ArbitrageSVG  string `json:"arbitrageSvg"`  // ruin % vs buffer years
 	Arbitrage2SVG string `json:"arbitrage2Svg"` // median terminal wealth vs buffer years
-	RecoverySVG   string `json:"recoverySvg"`
+	RecoverySVG   string `json:"recoverySvg"`   // years-to-recover histogram
 }
 
 // plan builds a decumul.Plan from the params, with a parametric source by
@@ -493,7 +493,7 @@ func fmtWealth(v float64) string {
 // needed to hit a target ruin, and the ruin-minimising buffer at the current
 // capital. Note carries a caveat when the model cannot answer (e.g. cohorts).
 type SolveResult struct {
-	Note            string  `json:"note"`
+	Note            string  `json:"note"`            // caveat when the model cannot answer
 	TargetRuin      float64 `json:"targetRuin"`      // requested ruin target (fraction)
 	RequiredCapital float64 `json:"requiredCapital"` // smallest capital meeting the target
 	BestBufferYears float64 `json:"bestBufferYears"` // ruin-minimising buffer at current capital

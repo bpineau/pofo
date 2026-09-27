@@ -24,9 +24,9 @@ type Holding struct {
 
 // Spec is a parsed portfolio description.
 type Spec struct {
-	Name     string
-	Holdings []Holding
-	Warnings []string
+	Name     string    // the name given to Parse (ParseFile: the file's base name) or NewSpec
+	Holdings []Holding // the lines, in file order
+	Warnings []string  // what parsing tolerated (unknown directives...), for display
 
 	// RebalanceDays is the per-portfolio rebalancing period set by a
 	// "#meta rebalance:N" directive; negative when the file does not
@@ -41,8 +41,7 @@ type Spec struct {
 
 	// Contribute and Withdraw are periodic external flows
 	// ("#meta contribute:500/month", "#meta withdraw:4%/year").
-	Contribute Flow
-	Withdraw   Flow
+	Contribute, Withdraw Flow
 
 	// Leverage, set by "#meta leverage:on", keeps the weights as written
 	// instead of normalizing them: a sum above 100 % is financed by a
@@ -324,8 +323,8 @@ func Single(id string) *Spec {
 // of the current value when Percent is true, applied once per Period.
 type Flow struct {
 	Amount  float64 // absolute amount, or percent of value when Percent
-	Percent bool
-	Period  Period
+	Percent bool    // Amount is a percentage of the current value (4 = 4 %)
+	Period  Period  // how often it applies
 }
 
 // Active reports whether the flow is set.
