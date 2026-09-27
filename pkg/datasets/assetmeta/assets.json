@@ -960,33 +960,33 @@
     "strategy": "active",
     "geography": {
       "Australia": 3,
-      "Canada": 3,
+      "Canada": 4,
       "Japan": 10,
       "Other developed": 11,
       "UK": 4,
-      "US": 69
+      "US": 68
     },
     "sectors": {
       "Communication Services": 3,
       "Consumer Discretionary": 17,
       "Consumer Staples": 5,
-      "Energy": 15,
-      "Financials": 25,
+      "Energy": 16,
+      "Financials": 24,
       "Health Care": 3,
       "Industrials": 15,
       "Information Technology": 5,
-      "Materials": 10,
-      "Real Estate": 1,
-      "Utilities": 1
+      "Materials": 11,
+      "Real Estate": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Actively managed global small-cap value (AVWS); ~69% US, so a US small-value sleeve with a developed-markets tail rather than a balanced global book; ~5% tech vs ~25% in broad world trackers, against ~25% financials and ~15% energy; high size+value factor loading. Geography and sectors from the issuer factsheet dated 31/07/2026, which publishes the top five countries only (US 69.2, Japan 10.2, UK 3.6, Canada 3.3, Australia 2.7); the undisclosed 11% residual is left in Other developed rather than split by guesswork. An earlier entry read 36% US, which the fund's own returns contradict: it regresses on US and international small-value sleeves at 0.70/0.30 (see simgen's avantisRecipe)",
+    "notes": "Actively managed global small-cap value (AVWS); ~68% US, so a US small-value sleeve with a developed-markets tail rather than a balanced global book; ~5% tech vs ~25% in broad world trackers, against ~24% financials and ~16% energy; high size+value factor loading. Geography and sectors from the issuer factsheet (see as_of), which publishes the top five countries only (US 67.85, Japan 10.59, Canada 3.77, UK 3.72, Australia 3.02); the undisclosed 11% residual is left in Other developed rather than split by guesswork; utilities (0.51) round to nothing. An earlier entry read 36% US, which the fund's own returns contradict: it regresses on US and international small-value sleeves at 0.70/0.30 (see simgen's avantisRecipe)",
     "confidence": "high",
     "sources": [
       "https://www.avantisinvestors.com/ucitsetf/avantis-global-small-cap-value-ucits-etf/",
       "https://res.avantisinvestors.com/docs/avantis-global-small-cap-value-ucits-etf-fact-sheet.pdf"
     ],
+    "as_of": "2026-08",
     "since": "2024-09-25",
     "factors": [
       "size",
@@ -1766,27 +1766,33 @@
     "benchmark_index": "FTSE EPRA/NAREIT Developed Dividend+ Index",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 6,
-      "Other Europe": 16,
-      "Other developed": 24,
-      "US": 54
+      "Australia": 4,
+      "Belgium": 1,
+      "Canada": 2,
+      "France": 2,
+      "Germany": 1,
+      "Hong Kong": 4,
+      "Japan": 7,
+      "Other developed": 2,
+      "Other eurozone": 1,
+      "Singapore": 3,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 67
     },
     "sectors": {
-      "Diversified REITs": 18,
-      "Industrial REITs": 17,
-      "Retail REITs": 15,
-      "Residential REITs": 14,
-      "Office REITs": 9,
-      "Other Real Estate": 27
+      "Real Estate": 100
     },
     "distribution": "distributing",
     "leverage": 1.0,
     "notes": "Flagship global REIT UCITS; real-asset income with inflation linkage",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS350"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS350",
+      "https://www.ishares.com/ch/professionals/en/products/251801/ishares-developed-markets-property-yield-ucits-etf"
     ],
-    "since": "2007-11-08"
+    "as_of": "2026-09",
+    "since": "2006-10-20"
   },
   {
     "id": "IE00B1FZS467",
@@ -3104,27 +3110,43 @@
     "benchmark_index": "MSCI World Minimum Volatility Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 62,
-      "Japan": 11,
-      "Switzerland": 5,
-      "Canada": 4,
-      "Other": 18
+      "Australia": 1,
+      "Canada": 3,
+      "France": 3,
+      "Germany": 1,
+      "Hong Kong": 1,
+      "Japan": 12,
+      "Other developed": 1,
+      "Other eurozone": 4,
+      "Singapore": 1,
+      "Spain": 1,
+      "Switzerland": 3,
+      "UK": 2,
+      "US": 67
     },
     "sectors": {
-      "Communication Services": 12,
-      "Financials": 13,
+      "Communication Services": 10,
+      "Consumer Discretionary": 5,
+      "Consumer Staples": 10,
+      "Energy": 5,
+      "Financials": 14,
       "Health Care": 14,
-      "Information Technology": 22,
-      "Other": 39
+      "Industrials": 8,
+      "Information Technology": 25,
+      "Materials": 1,
+      "Real Estate": 1,
+      "Utilities": 7
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "notes": "Minimum-volatility factor tilt on MSCI World; defensive equity, shallower drawdowns",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B8FHGS14"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B8FHGS14",
+      "https://www.ishares.com/ch/professionals/en/products/251382/ishares-msci-world-minimum-volatility-ucits-etf"
     ],
-    "since": "2012-04-11",
+    "as_of": "2026-09",
+    "since": "2012-11-30",
     "factors": [
       "low-vol"
     ]
@@ -3178,26 +3200,40 @@
     "benchmark_index": "FTSE All-World High Dividend Yield",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 4,
-      "Japan": 9,
-      "Other": 44,
-      "UK": 6,
-      "US": 37
+      "Australia": 3,
+      "Canada": 5,
+      "China": 3,
+      "France": 4,
+      "Germany": 3,
+      "Japan": 10,
+      "Other": 18,
+      "Switzerland": 4,
+      "Taiwan": 3,
+      "UK": 7,
+      "US": 40
     },
     "sectors": {
+      "Communication Services": 4,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 8,
       "Energy": 9,
-      "Financials": 27,
-      "Health Care": 10,
-      "Industrials": 11,
-      "Other": 43
+      "Financials": 30,
+      "Health Care": 11,
+      "Industrials": 12,
+      "Information Technology": 7,
+      "Materials": 5,
+      "Real Estate": 1,
+      "Utilities": 5
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Global high-dividend equity (VHYL); income-oriented value tilt; overweights financials, energy, health care vs cap-weighted indices",
+    "notes": "Global high-dividend equity (VHYL); income-oriented value tilt; overweights financials, energy, health care vs cap-weighted indices. Breakdowns from the issuer factsheet, which names ten countries (the 18% residual spans developed and emerging markets) and classifies by ICB, each industry sitting under its nearest GICS label",
     "confidence": "high",
     "sources": [
-      "https://www.nl.vanguard/professional/product/etf/equity/9506/ftse-all-world-high-dividend-yield-ucits-etf-usd-distributing"
+      "https://www.nl.vanguard/professional/product/etf/equity/9506/ftse-all-world-high-dividend-yield-ucits-etf-usd-distributing",
+      "https://fund-docs.vanguard.com/FTSE_All-World_High_Dividend_Yield_UCITS_ETF_USD_Distributing_9506_EU_INT_UK_EN.pdf"
     ],
+    "as_of": "2026-08",
     "since": "2013-05-21",
     "factors": [
       "value"
@@ -3257,7 +3293,7 @@
     "aliases": [
       "ZPRG"
     ],
-    "name": "SPDR S&P Global Dividend Aristocrats UCITS ETF (Dist)",
+    "name": "State Street SPDR S&P Global Dividend Aristocrats UCITS ETF (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -3269,27 +3305,49 @@
     "benchmark_index": "S&P Global Dividend Aristocrats Quality Income Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 53,
-      "Canada": 10,
-      "Hong Kong": 5,
-      "UK": 4,
-      "Other": 28
+      "US": 54,
+      "Canada": 8,
+      "UK": 6,
+      "China": 4,
+      "France": 3,
+      "Italy": 3,
+      "Japan": 3,
+      "South Korea": 3,
+      "Switzerland": 3,
+      "Australia": 2,
+      "Finland": 2,
+      "Hong Kong": 2,
+      "Norway": 1,
+      "Portugal": 1,
+      "Saudi Arabia": 1,
+      "Taiwan": 1,
+      "Other emerging": 2,
+      "Other eurozone": 1
     },
     "sectors": {
-      "Financials": 22,
+      "Financials": 26,
       "Utilities": 16,
-      "Real Estate": 13,
-      "Industrials": 10,
-      "Other": 39
+      "Real Estate": 12,
+      "Industrials": 11,
+      "Communication Services": 9,
+      "Consumer Staples": 8,
+      "Energy": 8,
+      "Health Care": 4,
+      "Materials": 4,
+      "Consumer Discretionary": 1,
+      "Information Technology": 1
     },
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Dividend-growth / high-dividend factor tilt; income with value/quality lean",
+    "notes": "Dividend-growth / high-dividend factor tilt; income with value/quality lean. Breakdowns aggregated from the issuer's daily holdings file by trade country",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B9CQXS71"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B9CQXS71",
+      "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-sp-global-dividend-aristocrats-ucits-etf-zprg-gy",
+      "https://www.ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-zprg-gy.xlsx"
     ],
-    "since": "2013-05-30",
+    "as_of": "2026-09",
+    "since": "2013-05-14",
     "factors": [
       "value",
       "quality"
@@ -3530,33 +3588,41 @@
     "benchmark_index": "MSCI World Small Cap Index",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 3,
-      "Japan": 12,
-      "Other": 29,
+      "Australia": 4,
+      "Canada": 4,
+      "France": 1,
+      "Germany": 1,
+      "Japan": 13,
+      "Other developed": 5,
+      "Other eurozone": 3,
+      "Sweden": 2,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 52
+      "US": 61
     },
     "sectors": {
-      "Communication Services": 5,
-      "Consumer Discretionary": 12,
-      "Consumer Staples": 6,
+      "Communication Services": 3,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 4,
       "Energy": 5,
       "Financials": 14,
-      "Health Care": 8,
-      "Industrials": 20,
-      "Information Technology": 11,
-      "Materials": 7,
+      "Health Care": 12,
+      "Industrials": 19,
+      "Information Technology": 13,
+      "Materials": 9,
       "Real Estate": 8,
-      "Utilities": 4
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Small-cap sleeve of developed markets (WSML); Industrials-heavy; complements MSCI World for full-market coverage",
     "confidence": "high",
     "sources": [
-      "https://www.blackrock.com/lu/individual/products/296576/ishares-msci-world-small-cap-ucits-etf"
+      "https://www.blackrock.com/lu/individual/products/296576/ishares-msci-world-small-cap-ucits-etf",
+      "https://www.ishares.com/ch/professionals/en/products/296576/ishares-msci-world-small-cap-ucits-etf"
     ],
-    "since": "2018-01-23",
+    "as_of": "2026-09",
+    "since": "2018-03-27",
     "factors": [
       "size"
     ]
@@ -4463,31 +4529,42 @@
     "benchmark_index": "MSCI World Sector Neutral Quality Index",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 5,
+      "Australia": 2,
+      "Canada": 2,
+      "France": 2,
+      "Germany": 1,
       "Japan": 3,
-      "Other": 10,
-      "Other Europe": 15,
+      "Netherlands": 3,
       "Other developed": 2,
-      "UK": 3,
-      "US": 62
+      "Other eurozone": 1,
+      "Spain": 2,
+      "Switzerland": 4,
+      "UK": 4,
+      "US": 74
     },
     "sectors": {
       "Communication Services": 9,
       "Consumer Discretionary": 9,
-      "Financials": 11,
-      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 15,
+      "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 32,
-      "Other": 20
+      "Information Technology": 31,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Quality factor tilt on MSCI World (IWQU); defensive-growth characteristics, tends to hold up in late-cycle and mild drawdowns",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/270054/ishares-msci-world-quality-factor-ucits-etf"
+      "https://www.ishares.com/uk/individual/en/products/270054/ishares-msci-world-quality-factor-ucits-etf",
+      "https://www.ishares.com/ch/professionals/en/products/270054/ishares-msci-world-quality-factor-ucits-etf"
     ],
-    "since": "2014-09-30",
+    "as_of": "2026-09",
+    "since": "2014-10-03",
     "factors": [
       "quality"
     ]
@@ -4508,31 +4585,43 @@
     "benchmark_index": "MSCI World Momentum Index",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 4,
-      "Japan": 12,
-      "Other": 5,
-      "Other Europe": 20,
-      "Other developed": 5,
-      "UK": 5,
-      "US": 49
+      "Australia": 1,
+      "Canada": 7,
+      "France": 2,
+      "Germany": 1,
+      "Japan": 11,
+      "Netherlands": 3,
+      "Other developed": 2,
+      "Other eurozone": 2,
+      "Singapore": 1,
+      "Spain": 2,
+      "Switzerland": 3,
+      "UK": 4,
+      "US": 61
     },
     "sectors": {
-      "Communication Services": 7,
-      "Energy": 6,
-      "Financials": 20,
-      "Health Care": 7,
-      "Industrials": 21,
-      "Information Technology": 30,
-      "Other": 9
+      "Communication Services": 5,
+      "Consumer Discretionary": 2,
+      "Consumer Staples": 2,
+      "Energy": 10,
+      "Financials": 16,
+      "Health Care": 8,
+      "Industrials": 11,
+      "Information Technology": 40,
+      "Materials": 3,
+      "Real Estate": 1,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Pure price-momentum factor tilt on MSCI World (IWMO); outperforms in trending bull markets, vulnerable to sharp reversals",
+    "notes": "Pure price-momentum factor tilt on MSCI World (IWMO); outperforms in trending bull markets, vulnerable to sharp reversals. Its breakdowns rotate at each semi-annual rebalance, so as_of matters more here than on a cap-weighted fund",
     "confidence": "high",
     "sources": [
-      "https://www.blackrock.com/lu/intermediaries/products/270051/ishares-msci-world-momentum-factor-ucits-etf"
+      "https://www.blackrock.com/lu/intermediaries/products/270051/ishares-msci-world-momentum-factor-ucits-etf",
+      "https://www.ishares.com/ch/professionals/en/products/270051/ishares-msci-world-momentum-factor-ucits-etf"
     ],
-    "since": "2014-09-30",
+    "as_of": "2026-09",
+    "since": "2014-10-03",
     "factors": [
       "momentum"
     ]
@@ -4553,33 +4642,42 @@
     "benchmark_index": "MSCI World Enhanced Value Index (Net TR)",
     "strategy": "physical-replication",
     "geography": {
+      "Canada": 1,
       "France": 6,
+      "Germany": 4,
+      "Hong Kong": 1,
+      "Italy": 2,
       "Japan": 20,
-      "Other developed": 22,
+      "Netherlands": 2,
+      "Other developed": 3,
+      "Other eurozone": 2,
+      "Spain": 2,
       "UK": 8,
-      "US": 44
+      "US": 49
     },
     "sectors": {
       "Communication Services": 8,
       "Consumer Discretionary": 8,
-      "Consumer Staples": 4,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
+      "Financials": 16,
       "Health Care": 8,
-      "Industrials": 11,
+      "Industrials": 10,
       "Information Technology": 34,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 3
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Value-factor tilt on global developed equities; overweights Japan and Europe vs standard MSCI World; tends to outperform in rising-rate and value-rotation regimes",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BP3QZB59"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BP3QZB59",
+      "https://www.ishares.com/ch/professionals/en/products/270048/ishares-msci-world-value-factor-ucits-etf"
     ],
-    "since": "2014-09-30",
+    "as_of": "2026-09",
+    "since": "2014-10-03",
     "factors": [
       "value"
     ]
@@ -4661,32 +4759,43 @@
     "benchmark_index": "MSCI Europe Small Cap Value Weighted",
     "strategy": "physical-replication",
     "geography": {
+      "Austria": 2,
+      "Belgium": 4,
+      "Denmark": 4,
+      "Finland": 2,
       "France": 11,
-      "Germany": 10,
-      "Other": 49,
-      "Sweden": 7,
-      "UK": 23
+      "Germany": 11,
+      "Italy": 6,
+      "Netherlands": 4,
+      "Norway": 5,
+      "Other eurozone": 1,
+      "Spain": 3,
+      "Sweden": 8,
+      "Switzerland": 8,
+      "UK": 31
     },
     "sectors": {
       "Communication Services": 6,
       "Consumer Discretionary": 15,
-      "Consumer Staples": 4,
+      "Consumer Staples": 3,
       "Energy": 5,
       "Financials": 15,
-      "Health Care": 4,
-      "Industrials": 25,
+      "Health Care": 5,
+      "Industrials": 26,
       "Information Technology": 4,
       "Materials": 11,
-      "Real Estate": 8,
+      "Real Estate": 7,
       "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "European small-cap value via fundamental weighting (ZPRX); industrials and materials heavy; captures European value premium",
+    "notes": "European small-cap value via fundamental weighting (ZPRX); industrials and materials heavy; captures European value premium. Breakdowns aggregated from the issuer's daily holdings file by trade country",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-europe-small-cap-value-weighted-ucits-etf-zprx-gy"
+      "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-europe-small-cap-value-weighted-ucits-etf-zprx-gy",
+      "https://www.ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-zprx-gy.xlsx"
     ],
+    "as_of": "2026-09",
     "since": "2015-02-18",
     "factors": [
       "size",
@@ -4708,29 +4817,30 @@
     "benchmark_index": "MSCI USA Small Cap Value Weighted",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 1,
-      "US": 99
+      "US": 100
     },
     "sectors": {
-      "Financials": 24,
+      "Financials": 23,
       "Industrials": 16,
       "Consumer Discretionary": 15,
-      "Health Care": 8,
+      "Health Care": 9,
       "Energy": 7,
-      "Information Technology": 7,
+      "Information Technology": 8,
       "Consumer Staples": 6,
       "Real Estate": 6,
       "Materials": 5,
-      "Communication Services": 3,
+      "Communication Services": 2,
       "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "US small-cap equities tilted toward value via fundamental weighting (USSC/ZPRV); enhances small-cap value premium. Sectors from the issuer's own holdings breakdown of 06/08/2026 over 1,646 lines: a quarter financials against 7% technology, the mirror image of a cap-weighted US index, which is what the tilt is bought for. The Xetra line ZPRV and the London line USSC are the same share class.",
+    "notes": "US small-cap equities tilted toward value via fundamental weighting (USSC/ZPRV); enhances small-cap value premium. Breakdowns aggregated from the issuer's daily holdings file (every line trades in the US): about a quarter financials against 8% technology, the mirror image of a cap-weighted US index, which is what the tilt is bought for. The Xetra line ZPRV and the London line USSC are the same share class.",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-msci-usa-small-cap-value-weighted-ucits-etf-zprv-gy"
+      "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-msci-usa-small-cap-value-weighted-ucits-etf-zprv-gy",
+      "https://www.ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-zprv-gy.xlsx"
     ],
+    "as_of": "2026-09",
     "since": "2015-02-18",
     "factors": [
       "size",
@@ -4794,7 +4904,7 @@
     "aliases": [
       "WQDV"
     ],
-    "name": "iShares MSCI World Quality Dividend ESG UCITS ETF USD (Dist)",
+    "name": "iShares MSCI World Quality Dividend Advanced UCITS ETF USD (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -4803,30 +4913,49 @@
     "fees": 0.38,
     "asset_class": "equity",
     "underlying": "Developed-market equities with high, persistent dividend yield and quality screen",
-    "benchmark_index": "MSCI World High Dividend Yield Index",
+    "benchmark_index": "MSCI World High Dividend Yield Advanced Select Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 49,
+      "US": 53,
       "Japan": 9,
-      "Germany": 5,
-      "Switzerland": 5,
-      "Other": 32
+      "Germany": 6,
+      "Switzerland": 6,
+      "UK": 5,
+      "France": 4,
+      "Spain": 3,
+      "Canada": 2,
+      "Italy": 2,
+      "Netherlands": 2,
+      "Australia": 1,
+      "Denmark": 1,
+      "Singapore": 1,
+      "Sweden": 1,
+      "Other developed": 2,
+      "Other eurozone": 2
     },
     "sectors": {
+      "Communication Services": 5,
+      "Consumer Discretionary": 5,
+      "Consumer Staples": 4,
+      "Energy": 3,
       "Financials": 17,
-      "Health Care": 12,
+      "Health Care": 14,
       "Industrials": 11,
-      "Information Technology": 34,
-      "Other": 26
+      "Information Technology": 36,
+      "Materials": 1,
+      "Real Estate": 1,
+      "Utilities": 3
     },
     "distribution": "distributing",
     "leverage": 1.0,
     "notes": "High-dividend / quality-income factor tilt on MSCI World",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BYYHSQ67"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BYYHSQ67",
+      "https://www.ishares.com/ch/professionals/en/products/288147/ishares-msci-world-quality-dividend-advanced-ucits-etf"
     ],
-    "since": "2009-04-23",
+    "as_of": "2026-09",
+    "since": "2017-06-12",
     "factors": [
       "quality",
       "value"
@@ -8007,26 +8136,28 @@
       "US": 100
     },
     "sectors": {
-      "Communication Services": 10,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 4,
-      "Energy": 3,
-      "Financials": 13,
+      "Communication Services": 2,
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 3,
+      "Energy": 4,
+      "Financials": 10,
       "Health Care": 10,
-      "Industrials": 9,
-      "Information Technology": 32,
+      "Industrials": 12,
+      "Information Technology": 41,
       "Materials": 2,
-      "Other": 2,
-      "Real Estate": 3,
+      "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Whole-US-market building block of the Bogleheads three-fund portfolio; behaves like the S&P 500 plus a small mid/small-cap completion tilt",
+    "notes": "Whole-US-market building block of the Bogleheads three-fund portfolio; behaves like the S&P 500 plus a small mid/small-cap completion tilt. Sectors are the fund's own as Vanguard publishes them, by ICB, each industry under its nearest GICS label (ICB Technology holds Alphabet and Meta, hence 41 against the S&P 500's GICS 39 and Communication Services 2)",
     "confidence": "high",
     "sources": [
-      "https://investor.vanguard.com/investment-products/etfs/profile/vti"
+      "https://investor.vanguard.com/investment-products/etfs/profile/vti",
+      "https://investor.vanguard.com/vmf/api/VTI/profile",
+      "https://investor.vanguard.com/vmf/api/VTI/diversification"
     ],
+    "as_of": "2026-08",
     "since": "2001-05-24"
   },
   {
