@@ -69,10 +69,11 @@ func Models(pr Params, panel *scenario.Panel) ModelsResult {
 	base := pr.plan()
 	base.Monthly = false // the strip compares annual kernels for speed and parity
 
-	res := ModelsResult{TargetRuin: target}
-	for _, ns := range modelSources(pr, panel) {
-		res.Models = append(res.Models, evalModel(base, ns, pr.Capital, target, pr.NPaths))
-	}
+	sources := modelSources(pr, panel)
+	res := ModelsResult{TargetRuin: target, Models: make([]ModelStat, len(sources))}
+	concurrently(len(sources), func(i int) {
+		res.Models[i] = evalModel(base, sources[i], pr.Capital, target, pr.NPaths)
+	})
 	res.Confidence, res.ConfNote = confidence(pr, panel)
 	res.Verdict = verdict(res.Models, pr, target)
 	return res

@@ -2,7 +2,9 @@ package decumul
 
 import (
 	"math/rand/v2"
+	"runtime"
 	"sync"
+	"sync/atomic"
 
 	"github.com/bpineau/pofo/pkg/scenario"
 )
@@ -98,10 +100,7 @@ func (p Plan) drawLives(nPaths, workers int, seed uint64) []Lives {
 // being run as if the household were immortal: reproducible, and never a
 // silent fixed horizon.
 func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
-	lives := d.Lives
-	if p.Lifetime != nil && len(lives) < len(d.Returns) {
-		lives = p.drawLives(len(d.Returns), workers, fallbackLifeSeed)
-	}
+	p, lives := p.forRun(d, workers)
 	paths := make([]PathResult, len(d.Returns))
 	// Every path's two series (Wealth and Spend) come out of ONE arena rather
 	// than an allocation per path: a render simulates thousands of paths, and
@@ -109,7 +108,7 @@ func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
 	// went. The windows are disjoint, so the workers stay independent.
 	stride := seriesLen(p.Years)
 	arena := make([]float64, len(d.Returns)*stride)
-	forEachWorker(len(d.Returns), workers, func(_ int, lo func(func(int))) {
+	forEachPath(len(d.Returns), workers, func(_ int, lo func(func(int))) {
 		lo(func(i int) {
 			var lv Lives
 			if lives != nil {
@@ -119,6 +118,126 @@ func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
 		})
 	})
 	return Ensemble{Paths: paths, Years: p.Years}
+}
+
+// forRun is what a driver runs d under: the plan with the per-year tables its
+// paths share (withTables), and the lifespans, d's own or, for a Draws without
+// them on a plan with a Lifetime, the fixed-seed fallback draw.
+func (p Plan) forRun(d Draws, workers int) (Plan, []Lives) {
+	lives := d.Lives
+	if p.Lifetime != nil && len(lives) < len(d.Returns) {
+		lives = p.drawLives(len(d.Returns), workers, fallbackLifeSeed)
+	}
+	return p.withTables(), lives
+}
+
+// RuinProb is Simulate(nPaths, workers, seed).RuinProb(), bit for bit, without
+// building the Ensemble (see RuinProbOn).
+func (p Plan) RuinProb(nPaths, workers int, seed uint64) float64 {
+	return p.RuinProbOn(p.Draw(nPaths, workers, seed), workers)
+}
+
+// RuinProbOn is SimulateOn(d, workers).RuinProb(), bit for bit, without
+// building the Ensemble. The bisections (Solve, CapitalForRuin) and the ruin
+// grids (Sweep2D, a frontier, a sensitivity table) read nothing else from a
+// run, yet each SimulateOn allocates every path's series, about a megabyte at
+// two thousand thirty-year paths: at eighteen runs a solve, the heap churn,
+// not the kernel, was the cost. Here each worker runs its paths through one
+// reused scratch window and keeps only a count.
+func (p Plan) RuinProbOn(d Draws, workers int) float64 {
+	n := len(d.Returns)
+	if n == 0 {
+		return 0
+	}
+	p, lives := p.forRun(d, workers)
+	counts := make([]int, max(workers, 1))
+	forEachPath(n, workers, func(w int, lo func(func(int))) {
+		// The monthly kernel accumulates into Spend, so the window is cleared
+		// before every path, as a fresh arena window would be.
+		buf := make([]float64, seriesLen(p.Years))
+		ruined := 0
+		lo(func(i int) {
+			clear(buf)
+			var lv Lives
+			if lives != nil {
+				lv = lives[i]
+			}
+			if p.runPath(d.Returns[i], lv, buf).Ruined {
+				ruined++
+			}
+		})
+		counts[w] = ruined
+	})
+	ruined := 0
+	for _, c := range counts {
+		ruined += c
+	}
+	return float64(ruined) / float64(n)
+}
+
+// ruinAbove reports RuinProbOn(d, workers) > target, the one bit a bisection
+// step reads, and stops running paths as soon as the count settles it: once
+// enough paths have failed to exceed the target whatever the rest do, or too
+// few remain to reach it. The count does not depend on which paths ran first,
+// so the answer is exactly RuinProbOn's, and a step far from the crossing
+// (where half a bisection's steps land) costs a fraction of a full run.
+func (p Plan) ruinAbove(d Draws, workers int, target float64) bool {
+	n := len(d.Returns)
+	above := func(ruined int64) bool { return float64(ruined)/float64(n) > target }
+	if n == 0 {
+		return 0 > target
+	}
+	p, lives := p.forRun(d, workers)
+	// The shared tallies are published every few paths rather than at each
+	// one, to keep the goroutines off one contended cache line. A batch's
+	// failures are published before the batch itself, and the test reads
+	// them the other way round, so the bounds it forms can only be wider than
+	// the truth (lower <= failures of the whole run <= upper): never a
+	// premature verdict.
+	const batch = 8
+	var ruined, done atomic.Int64
+	var settled atomic.Bool
+	publish := func(r, k int64) {
+		ruined.Add(r)
+		finished := done.Add(k)
+		lower := ruined.Load()
+		if above(lower) || !above(lower+int64(n)-finished) {
+			settled.Store(true)
+		}
+	}
+	forEachPath(n, workers, func(_ int, lo func(func(int))) {
+		buf := make([]float64, seriesLen(p.Years))
+		var r, k int64
+		lo(func(i int) {
+			if settled.Load() {
+				return
+			}
+			clear(buf)
+			var lv Lives
+			if lives != nil {
+				lv = lives[i]
+			}
+			if p.runPath(d.Returns[i], lv, buf).Ruined {
+				r++
+			}
+			if k++; k == batch {
+				publish(r, k)
+				r, k = 0, 0
+			}
+		})
+		if k > 0 {
+			publish(r, k)
+		}
+	})
+	return above(ruined.Load())
+}
+
+// aggregateWorkers is how many goroutines a statistic over n independent
+// units of work (paths, or path-years) spreads across: one per core, but none
+// beyond one per few hundred units, below which starting them costs more than
+// they save.
+func aggregateWorkers(n int) int {
+	return max(1, min(runtime.GOMAXPROCS(0), n/256))
 }
 
 // forEachWorker runs body on workers goroutines, each handed its worker index
@@ -154,7 +273,7 @@ func (p Plan) CapitalForRuin(target, lo, hi float64, nPaths, workers int, seed u
 		mid := (lo + hi) / 2
 		q := p
 		q.Capital = mid
-		if q.SimulateOn(shared, workers).RuinProb() > target {
+		if q.ruinAbove(shared, workers, target) {
 			lo = mid
 		} else {
 			hi = mid
@@ -180,4 +299,42 @@ func (e Ensemble) RuinProb() float64 {
 		}
 	}
 	return float64(n) / float64(len(e.Paths))
+}
+
+// forEachPath runs body on workers goroutines like forEachWorker, but the
+// paths are not dealt in a fixed stride: each goroutine claims the next chunk
+// of consecutive indices from a shared counter until none is left. It is for
+// the loops whose result does not depend on which goroutine ran a path (the
+// kernel is a pure function of its draw), never for Draw, whose values are
+// tied to a worker's RNG stream. A fixed stride makes every run wait for its
+// slowest goroutine, and on a machine that mixes fast and slow cores (or
+// shares them with other requests) that goroutine finished far behind the
+// others; claimed chunks keep every core busy to the end, and consecutive
+// indices keep two goroutines off the same cache lines of the results.
+func forEachPath(n, workers int, body func(w int, loop func(func(int)))) {
+	workers = max(workers, 1)
+	// A chunk small enough to balance the tail, large enough that the
+	// counter is touched a few hundred times a run rather than once a path.
+	chunk := int64(max(1, min(64, n/(workers*16))))
+	var next atomic.Int64
+	var wg sync.WaitGroup
+	for w := range workers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			body(w, func(f func(int)) {
+				for {
+					hi := next.Add(chunk)
+					lo := hi - chunk
+					if lo >= int64(n) {
+						return
+					}
+					for i := lo; i < min(hi, int64(n)); i++ {
+						f(int(i))
+					}
+				}
+			})
+		}()
+	}
+	wg.Wait()
 }

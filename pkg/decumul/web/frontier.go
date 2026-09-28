@@ -32,12 +32,13 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 	base.Monthly = false
 	paths := min(pr.NPaths, shapePaths)
 
-	var series []chart.XYSeries
 	models := modelSources(pr, panel)
+	series := make([]chart.XYSeries, len(models))
 	// One color per model, chosen as a set so the curves stay tellable apart
 	// (chart.PaletteFor), not as a running index into the palette.
 	pal := chart.PaletteFor(len(models))
-	for i, ns := range models {
+	concurrently(len(models), func(i int) {
+		ns := models[i]
 		// Only NeedAnnual (and the guardrails band) vary along a model's curve;
 		// the Source is fixed, so draw its paths once and replay them at every
 		// withdrawal rate instead of re-sampling eleven times.
@@ -57,10 +58,10 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 				p.Guard = decumul.Guardrails{Upper: wr * 1.2, Lower: wr * 0.8, Cut: 0.10, Raise: 0.10}
 			}
 			xs[j] = wr * 100
-			ys[j] = p.SimulateOn(draws, simWorkers).RuinProb() * 100
+			ys[j] = p.RuinProbOn(draws, simWorkers) * 100
 		}
-		series = append(series, chart.XYSeries{Name: ns.name, Xs: xs, Ys: ys, Color: pal[i]})
-	}
+		series[i] = chart.XYSeries{Name: ns.name, Xs: xs, Ys: ys, Color: pal[i]}
+	})
 
 	target := pr.TargetRuin
 	if target <= 0 {

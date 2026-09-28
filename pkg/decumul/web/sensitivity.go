@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 
 	"github.com/bpineau/pofo/pkg/chart"
@@ -35,7 +36,7 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	// common Monte-Carlo noise cancels out of the bars.
 	paths := min(pr.NPaths, shapePaths)
 	draws := base.Draw(paths, simWorkers, seed)
-	baseRuin := base.SimulateOn(draws, simWorkers).RuinProb()
+	baseRuin := base.RuinProbOn(draws, simWorkers)
 
 	// Each nudge is a single-lever change. The source's path length (Periods) is
 	// at least Years, so shortening the horizon needs no source rebuild.
@@ -56,11 +57,11 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 		{"Buffer +2 y", func(p decumul.Plan) decumul.Plan { p.Buffer.Years += 2; return p }},
 		{"Cut 20% in downturns", func(p decumul.Plan) decumul.Plan { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.20}; return p }},
 		{"Pension +500 €/m", func(p decumul.Plan) decumul.Plan {
-			p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: pr.PensionYear, Annual: 6000})
+			p.Cashflows = append(slices.Clip(p.Cashflows), decumul.Cashflow{FromYear: pr.PensionYear, Annual: 6000})
 			return p
 		}},
 		{"Side income 12 k€ ×8 y", func(p decumul.Plan) decumul.Plan {
-			p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, ToYear: 8, Annual: 12000})
+			p.Cashflows = append(slices.Clip(p.Cashflows), decumul.Cashflow{FromYear: 0, ToYear: 8, Annual: 12000})
 			return p
 		}},
 		{"Also cut above WR 3.6%", func(p decumul.Plan) decumul.Plan {
@@ -85,12 +86,12 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 		// as its own readout.
 	}
 
-	bars := make([]chart.Bar, 0, len(nudges))
-	for _, n := range nudges {
-		ruin := n.apply(base).SimulateOn(draws, simWorkers).RuinProb()
+	bars := make([]chart.Bar, len(nudges))
+	concurrently(len(nudges), func(i int) {
+		ruin := nudges[i].apply(base).RuinProbOn(draws, simWorkers)
 		d := (ruin - baseRuin) * 100
-		bars = append(bars, chart.Bar{Label: n.label, Value: d, Text: signedPP(d)})
-	}
+		bars[i] = chart.Bar{Label: nudges[i].label, Value: d, Text: signedPP(d)}
+	})
 	// Most ruin-reducing levers first (most negative at the top).
 	sort.SliceStable(bars, func(i, j int) bool { return bars[i].Value < bars[j].Value })
 

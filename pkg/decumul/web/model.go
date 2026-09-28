@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"runtime"
+	"sync"
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
@@ -16,6 +17,19 @@ import (
 // in production) a hardcoded 8-per-request would oversubscribe the cores and
 // add scheduling and cache-thrash overhead for no throughput gain.
 var simWorkers = runtime.GOMAXPROCS(0)
+
+// concurrently runs f(0), ..., f(n-1) at once and waits for all of them: for
+// the independent simulations behind one answer (the strip's models, a
+// curve's points). Each is deterministic whatever else runs, so the answer is
+// the same; what changes is that a short simulation no longer leaves most
+// cores idle at each of its barriers while the others queue behind it.
+func concurrently(n int, f func(i int)) {
+	var wg sync.WaitGroup
+	for i := range n {
+		wg.Go(func() { f(i) })
+	}
+	wg.Wait()
+}
 
 // shapePaths caps the path count of the multi-simulation "shape" endpoints
 // (frontier, policy frontier, sensitivity, solve curves). Those read the shape
@@ -401,13 +415,22 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	// applies to every Source, so this sweep cannot fail; surface any error
 	// rather than hide it.
 	bufVals := []float64{0, 1, 2, 3, 4, 5, 6, 8, 10}
-	sweep, err := p.Sweep1D(decumul.BufferYears, bufVals, pr.NPaths, simWorkers, seed)
+	// The sweep and the headline ensemble below are independent: run them at
+	// once.
+	var sweep []decumul.SweepPoint
+	var e decumul.Ensemble
+	var err error
+	concurrently(2, func(i int) {
+		if i == 0 {
+			sweep, err = p.Sweep1D(decumul.BufferYears, bufVals, pr.NPaths, simWorkers, seed)
+			return
+		}
+		// headline outcome and recovery distribution at the selected buffer.
+		e = p.Simulate(pr.NPaths, simWorkers, seed)
+	})
 	if err != nil {
 		return Result{Note: err.Error()}
 	}
-
-	// headline outcome and recovery distribution at the selected buffer.
-	e := p.Simulate(pr.NPaths, simWorkers, seed)
 	o := e.Outcome()
 	// The drawdown-shape detail stats are computed on the SURVIVING paths:
 	// with any ruin at all, the all-paths minima saturate at -100%/yr and a
@@ -519,16 +542,20 @@ func Solve(pr Params, panel *scenario.Panel) SolveResult {
 	p := pr.plan()
 	p.Source = pr.source(panel)
 	seed := uint64(7)
-	years, ruin, err := p.BestBuffer([]float64{0, 1, 2, 3, 4, 5, 6, 8, 10}, pr.NPaths, simWorkers, seed)
+	// The two answers are independent: solve them at once.
+	res := SolveResult{TargetRuin: target}
+	var err error
+	concurrently(2, func(i int) {
+		if i == 0 {
+			res.BestBufferYears, res.BestBufferRuin, err = p.BestBuffer([]float64{0, 1, 2, 3, 4, 5, 6, 8, 10}, pr.NPaths, simWorkers, seed)
+			return
+		}
+		res.RequiredCapital = p.CapitalForRuin(target, solveLo, solveHi, pr.NPaths, simWorkers, seed)
+	})
 	if err != nil {
 		return SolveResult{Note: err.Error()}
 	}
-	return SolveResult{
-		TargetRuin:      target,
-		RequiredCapital: p.CapitalForRuin(target, solveLo, solveHi, pr.NPaths, simWorkers, seed),
-		BestBufferYears: years,
-		BestBufferRuin:  ruin,
-	}
+	return res
 }
 
 // ruinSeries is the ruin-probability curve (%) against buffer years. The name
