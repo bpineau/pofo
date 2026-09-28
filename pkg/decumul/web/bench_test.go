@@ -59,3 +59,15 @@ func BenchmarkModelsStrip(b *testing.B) {
 		_ = Models(pr, panel)
 	}
 }
+
+// BenchmarkCurves is /api/curves, the page's slow lane: twenty-five
+// independent solves (the safe rate at eight horizons under two models, the
+// capital at nine spends), each eighteen bisection steps, the heaviest
+// endpoint by far and the one that shows whether the cores stay busy.
+func BenchmarkCurves(b *testing.B) {
+	panel := benchPanel()
+	pr := benchWebParams("parametric").withCentral(panel)
+	for i := 0; i < b.N; i++ {
+		_ = Curves(pr, panel)
+	}
+}

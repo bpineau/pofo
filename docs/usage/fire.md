@@ -92,7 +92,7 @@ Three packages share the work.
 | Package | Role |
 |---|---|
 | `pkg/scenario` | draws real-return paths: parametric (`ParametricSource`), regime-switching (`MarkovRegime`), resampled history (`BlockBootstrap`, `StationaryBootstrap`, `PooledBootstrap`), every start date (`HistoricalCohorts`); `Deflate` turns prices and a price index into real returns |
-| `pkg/decumul` | the withdrawal engine: a `Plan` over a `scenario.Source`, `Simulate` for ruin and outcomes, `Solve` for the spending or capital that meets a target, `Sweep1D`/`Sweep2D` for maps |
+| `pkg/decumul` | the withdrawal engine: a `Plan` over a `scenario.Source`, `Simulate` for ruin and outcomes, `Solve` for the spending or capital that meets a target, `Sweep1D`/`Sweep2D` for maps; `Draw` once and ask several questions `On` the same paths (`SimulateOn`, `RuinProbOn`, `SolveOn`), and `RuinProb` when the ruin is all you read |
 | `pkg/replay` | the seven canonical withdrawal rules run over history as it happened, without randomness |
 
 A plan, its ruin, and the spending that keeps ruin at 5 %:

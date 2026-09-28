@@ -19,6 +19,7 @@ package's design is its godoc (`go doc ./pkg/<name>`).
 | [`aqr-mf.txt`](specs/aqr-mf.txt) | the AQR Managed Futures share classes off the prospectus: fees and access per class, the RAEF fee waiver, the performance-fee mechanics the IAET backcast leans on |
 | [`black-litterman-design.md`](specs/black-litterman-design.md) | `optimize:black-litterman`: the file's weights as the prior, lambda from `prior-return`, the He-Litterman golden |
 | [`catbond-sleeve-design.md`](specs/catbond-sleeve-design.md) | the insurance-linked reference and fund backcasts, the euro hedge, what a cat bond sleeve does to a decumulation book |
+| [`decumul-performance.md`](specs/decumul-performance.md) | the FIRE Monte Carlo's performance record: the bit-for-bit invariant, how a change is proven harmless, what the profiler found, what was refused |
 | [`eres-fcpe-design.md`](specs/eres-fcpe-design.md) | the employee-savings funds: the airfund NAV feed, the donor-chain reconstruction, the NAV-timing finding behind the nowcast |
 | [`fire-book-design.md`](specs/fire-book-design.md) | the French FIRE book: architecture, writing and style conventions, table of contents, how to add an article |
 | [`fire-book-en-edition-design.md`](specs/fire-book-en-edition-design.md) | the English edition: Edition value, slugs, source stamps, drift report, how France-specific passages were adapted |

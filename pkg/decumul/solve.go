@@ -56,15 +56,23 @@ func FlexCutAxis(lo, hi float64) SolveAxis {
 // least needed to reach it (e.g. the required capital, or the downturn cut that
 // brings ruin down to target).
 func (p Plan) Solve(target float64, axis SolveAxis, nPaths, workers int, seed uint64) float64 {
-	shared := p.Draw(nPaths, workers, seed)
+	return p.SolveOn(target, axis, p.Draw(nPaths, workers, seed), workers)
+}
+
+// SolveOn is Solve on already-drawn paths (from Draw), for a caller that runs
+// several solves, or a solve and a simulation, over one return model: the
+// paths are drawn once instead of once per call, and every answer reads the
+// same futures. The axis must not change what the draws depend on (the
+// Source, the Lifetime), which none of the axes above does.
+func (p Plan) SolveOn(target float64, axis SolveAxis, shared Draws, workers int) float64 {
 	lo, hi := axis.Lo, axis.Hi
 	for range solveSteps {
 		mid := (lo + hi) / 2
-		ruin := axis.Apply(p, mid).SimulateOn(shared, workers).RuinProb()
+		above := axis.Apply(p, mid).ruinAbove(shared, workers, target)
 		// Move the bound that keeps the crossing bracketed: for an increasing
 		// axis an over-target ruin means mid is too high (pull hi down); the
 		// XOR-style equality folds both monotonicity directions into one test.
-		if axis.Increasing == (ruin > target) {
+		if axis.Increasing == above {
 			hi = mid
 		} else {
 			lo = mid

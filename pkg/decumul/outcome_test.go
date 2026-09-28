@@ -2,6 +2,7 @@ package decumul
 
 import (
 	"math"
+	"math/rand/v2"
 	"testing"
 )
 
@@ -82,5 +83,50 @@ func TestOutcomeBasics(t *testing.T) {
 	}
 	if o.CDaR < 0 || o.CDaR > 1 {
 		t.Errorf("CDaR out of range: %.3f", o.CDaR)
+	}
+}
+
+// TestPathPeakStatsMatchesNaive pins the one-division-per-episode walk to the
+// per-point definition it replaced, bit for bit, on random paths that ruin,
+// recover, sit at zero, start at zero and carry a NaN.
+func TestPathPeakStatsMatchesNaive(t *testing.T) {
+	naive := func(w []float64) (under int, maxDD float64) {
+		peak := w[0]
+		for _, v := range w {
+			if v >= peak {
+				peak = v
+				continue
+			}
+			under++
+			if peak > 0 {
+				if d := 1 - v/peak; d > maxDD {
+					maxDD = d
+				}
+			}
+		}
+		return under, maxDD
+	}
+	rng := rand.New(rand.NewPCG(3, 4))
+	for trial := range 5000 {
+		w := make([]float64, 1+rng.IntN(60))
+		w[0] = 1000 * rng.Float64()
+		for k := 1; k < len(w); k++ {
+			switch r := rng.Float64(); {
+			case r < 0.05:
+				w[k] = 0
+			case r < 0.06:
+				w[k] = math.NaN()
+			default:
+				w[k] = max(0, w[k-1]*(1+0.3*rng.NormFloat64()))
+			}
+		}
+		if trial%50 == 0 {
+			w[0] = 0
+		}
+		gu, gd := pathPeakStats(w)
+		wu, wd := naive(w)
+		if gu != wu || math.Float64bits(gd) != math.Float64bits(wd) {
+			t.Fatalf("path %v: got %d, %v, want %d, %v", w, gu, gd, wu, wd)
+		}
 	}
 }

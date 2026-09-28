@@ -50,20 +50,23 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 			return broadSampleSource(years)
 		}},
 	}
-	var series []chart.XYSeries
-	for _, m := range models {
-		xs := make([]float64, len(curveHorizons))
-		ys := make([]float64, len(curveHorizons))
-		for j, years := range curveHorizons {
-			p := fixedRule(pr.plan())
-			p.Monthly = false
-			p.Years = years
-			p.Source = m.source(years)
-			safe := p.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), paths, simWorkers, seed)
-			xs[j], ys[j] = float64(years), safe/pr.Capital*100
-		}
-		series = append(series, chart.XYSeries{Name: m.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(m.slot)})
+	// Every point of both curves is its own solve, independent of the others,
+	// so they all run at once (concurrently).
+	nh := len(curveHorizons)
+	series := make([]chart.XYSeries, len(models))
+	for i, m := range models {
+		series[i] = chart.XYSeries{Name: m.name, Xs: make([]float64, nh), Ys: make([]float64, nh), Color: chart.PaletteColor(m.slot)}
 	}
+	concurrently(len(models)*nh, func(k int) {
+		i, j := k/nh, k%nh
+		years := curveHorizons[j]
+		p := fixedRule(pr.plan())
+		p.Monthly = false
+		p.Years = years
+		p.Source = models[i].source(years)
+		safe := p.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), paths, simWorkers, seed)
+		series[i].Xs[j], series[i].Ys[j] = float64(years), safe/pr.Capital*100
+	})
 	horizonSVG := darkMultiLine(
 		chart.Options{Title: "Safe withdrawal rate vs horizon (at your target ruin)", Width: 720, Height: 360},
 		"Horizon (years)", "Safe WR %", series,
@@ -74,15 +77,15 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 	spends := []float64{36000, 42000, 48000, 54000, 60000, 66000, 72000, 78000, 84000}
 	xs := make([]float64, len(spends))
 	ys := make([]float64, len(spends))
-	for j, spend := range spends {
+	concurrently(len(spends), func(j int) {
 		p := fixedRule(pr.plan())
 		p.Monthly = false
-		p.NeedAnnual = spend
+		p.NeedAnnual = spends[j]
 		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 		// Ruin falls as capital rises: the smallest capital meeting the target.
 		cap := p.Solve(target, decumul.CapitalAxis(solveLo, solveHi), paths, simWorkers, seed)
-		xs[j], ys[j] = spend/1000, cap/1e6
-	}
+		xs[j], ys[j] = spends[j]/1000, cap/1e6
+	})
 	capitalSVG := darkMultiLine(
 		chart.Options{Title: "Capital required vs spending (central model, target ruin)", Width: 720, Height: 360},
 		"Net spending k€/yr", "Required capital M€",

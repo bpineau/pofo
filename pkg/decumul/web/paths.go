@@ -42,20 +42,26 @@ func Paths(pr Params, panel *scenario.Panel) PathsResult {
 	base := pr.plan()
 	base.Monthly = false
 
-	var res PathsResult
+	var picked []namedSource
 	for _, name := range fanModels {
-		ns, ok := pickModel(sources, name)
-		if !ok {
-			continue
+		if ns, ok := pickModel(sources, name); ok {
+			picked = append(picked, ns)
 		}
+	}
+	var res PathsResult
+	if len(picked) > 0 {
+		res.Fans = make([]Fan, len(picked))
+	}
+	concurrently(len(picked), func(i int) {
+		ns := picked[i]
 		p := base
 		p.Source = ns.source
 		fan := p.Simulate(pr.NPaths, simWorkers, 7).Fan(fanPercentiles, 8)
 		svg := darkFan(
 			chart.Options{Title: "Simulated wealth, real € (" + ns.name + ")", Width: 640, Height: 360},
 			"Year", fan.Bands, sampleLines(fan.Samples))
-		res.Fans = append(res.Fans, Fan{Name: ns.name, SVG: svg})
-	}
+		res.Fans[i] = Fan{Name: ns.name, SVG: svg}
+	})
 	if len(res.Fans) == 0 {
 		res.Note = "no return model available"
 	}

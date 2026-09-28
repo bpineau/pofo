@@ -50,8 +50,9 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		PVRate: pr.pvRate(), AmortReturn: pr.abwReturn(),
 	})
 
-	pts := make([]chart.LabeledPoint, 0, len(policies))
-	for _, pol := range policies {
+	pts := make([]chart.LabeledPoint, len(policies))
+	concurrently(len(policies), func(i int) {
+		pol := policies[i]
 		p := base
 		pol.Apply(&p)
 		e := p.SimulateOn(draws, simWorkers)
@@ -59,13 +60,13 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		// would inflate the fixed rule's CV with what is really ruin, the
 		// quantity the y axis already carries. The x axis then measures pure
 		// standard-of-living swing among the futures that work.
-		pts = append(pts, chart.LabeledPoint{
+		pts[i] = chart.LabeledPoint{
 			X:     survivors(e).SpendCV() * 100,
 			Y:     e.RuinProb() * 100,
 			Label: pol.Name,
 			Color: pol.Color,
-		})
-	}
+		}
+	})
 	svg := darkScatter(chart.Options{Width: 720, Height: 360},
 		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
 	return PolicyFrontierResult{

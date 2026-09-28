@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -72,30 +73,66 @@ func (p Plan) Sweep1D(param Param, values []float64, nPaths, workers int, seed u
 	out := make([]SweepPoint, len(values))
 	for i, v := range values {
 		q := p.set(param, v)
-		var o Outcome
-		if shared.Returns != nil {
-			o = q.SimulateOn(shared, workers).Outcome()
-		} else {
-			o = q.Simulate(nPaths, workers, seed).Outcome()
+		d := shared
+		if d.Returns == nil {
+			d = q.Draw(nPaths, workers, seed)
 		}
-		out[i] = SweepPoint{Value: v, RuinProb: o.RuinProb, TerminalP50: o.TerminalP50}
+		ruin, p50 := q.ruinAndMedianOn(d, workers)
+		out[i] = SweepPoint{Value: v, RuinProb: ruin, TerminalP50: p50}
 	}
 	return out, nil
+}
+
+// ruinAndMedianOn is the RuinProb and TerminalP50 of SimulateOn(d,
+// workers).Outcome(), bit for bit, which is all a sweep point reads: each
+// goroutine runs its paths through one scratch window, as RuinProbOn does,
+// and keeps a path's failure and its terminal wealth (the Estate, the very
+// point Outcome reads at the end of the lived window), never its series nor
+// the statistics a sweep throws away.
+func (p Plan) ruinAndMedianOn(d Draws, workers int) (ruin, terminalP50 float64) {
+	n := len(d.Returns)
+	if n == 0 {
+		return 0, 0
+	}
+	p, lives := p.forRun(d, workers)
+	terminals := make([]float64, n)
+	failed := make([]bool, n)
+	forEachPath(n, workers, func(_ int, lo func(func(int))) {
+		buf := make([]float64, seriesLen(p.Years))
+		lo(func(i int) {
+			clear(buf)
+			var lv Lives
+			if lives != nil {
+				lv = lives[i]
+			}
+			r := p.runPath(d.Returns[i], lv, buf)
+			terminals[i], failed[i] = r.Estate, r.Ruined
+		})
+	})
+	ruined := 0
+	for _, f := range failed {
+		if f {
+			ruined++
+		}
+	}
+	return float64(ruined) / float64(n), metrics.Quantiles(terminals, 0.05, 0.50)[1]
 }
 
 // BestBuffer evaluates ruin over the candidate buffer-years values and returns
 // the candidate with the lowest ruin, together with that ruin. It is the
 // "ruin-minimising buffer" solve: more buffer cuts sequence risk up to a point,
 // then drags on growth, so the optimum is interior.
+//
+// It reads nothing but the ruin, so each candidate is a RuinProbOn over one
+// set of draws (the buffer changes neither the returns nor the lifespans),
+// not a full Sweep1D point with its statistics. err is always nil: the buffer
+// applies to every Source.
 func (p Plan) BestBuffer(candidates []float64, nPaths, workers int, seed uint64) (years, ruin float64, err error) {
-	pts, err := p.Sweep1D(BufferYears, candidates, nPaths, workers, seed)
-	if err != nil {
-		return 0, 0, err
-	}
+	shared := p.Draw(nPaths, workers, seed)
 	years, ruin = 0, math.Inf(1)
-	for _, pt := range pts {
-		if pt.RuinProb < ruin {
-			years, ruin = pt.Value, pt.RuinProb
+	for _, v := range candidates {
+		if r := p.set(BufferYears, v).RuinProbOn(shared, workers); r < ruin {
+			years, ruin = v, r
 		}
 	}
 	return years, ruin, nil
@@ -121,7 +158,7 @@ func (p Plan) Sweep2D(x, y Param, xs, ys []float64, nPaths, workers int, seed ui
 	for j, yv := range ys {
 		s.Ruin[j] = make([]float64, len(xs))
 		for i, xv := range xs {
-			s.Ruin[j][i] = p.set(x, xv).set(y, yv).Simulate(nPaths, workers, seed).RuinProb()
+			s.Ruin[j][i] = p.set(x, xv).set(y, yv).RuinProb(nPaths, workers, seed)
 		}
 	}
 	return s, nil

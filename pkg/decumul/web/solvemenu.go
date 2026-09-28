@@ -53,14 +53,37 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 	base.Monthly = false
 	base.Source = pr.detailSource(panel, pr.Years)
 
+	// Every figure below varies a spending rule, the buffer or a cut, never the
+	// return model, so they all read one set of drawn paths.
+	draws := base.Draw(pr.NPaths, simWorkers, seed)
 	menu := SolverMenu{TargetRuin: target}
-	menu.CurrentRuin = base.Simulate(pr.NPaths, simWorkers, seed).RuinProb()
+	menu.CurrentRuin = base.RuinProbOn(draws, simWorkers)
 	menu.Met = menu.CurrentRuin <= target
 
 	// The safe spend at the target on the fixed rule (no flex/guardrails), the
 	// monotonic and conventional safe withdrawal. Above the plan when the target
-	// is already met (headroom), below it when the plan is too aggressive.
-	safe := fixedRule(base).Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), pr.NPaths, simWorkers, seed)
+	// is already met (headroom), below it when the plan is too aggressive. When
+	// the target is missed, the two other levers are solved alongside it.
+	var safe float64
+	var flex, buffer SolverOption
+	flexBase := base
+	flexBase.Flex.Threshold = 0.20
+	levers := []func(){
+		func() {
+			safe = fixedRule(base).SolveOn(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), draws, simWorkers)
+		},
+		// Temporary downturn cut (flex): keep the spend, accept a reversible cut.
+		func() {
+			cut := flexBase.SolveOn(target, decumul.FlexCutAxis(0, 0.60), draws, simWorkers)
+			flex = flexOption(flexBase, cut, target, draws)
+		},
+		// Buffer: keep the spend, hold N years of cash (scan; ruin is non-monotonic).
+		func() { buffer = bufferOption(base, target, draws) },
+	}
+	if menu.Met {
+		levers = levers[:1]
+	}
+	concurrently(len(levers), func(i int) { levers[i]() })
 
 	// Met: the reach-the-target levers would all read "no change" (a 0% cut, a
 	// 0-year buffer), so report the spending headroom instead of a nonsense menu.
@@ -80,24 +103,16 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 			safe/1000, safe/pr.Capital*100, pr.NeedAnnual/1000, pr.NeedAnnual/pr.Capital*100),
 	})
 
-	// Temporary downturn cut (flex): keep the spend, accept a reversible cut.
-	flexBase := base
-	flexBase.Flex.Threshold = 0.20
-	cut := flexBase.Solve(target, decumul.FlexCutAxis(0, 0.60), pr.NPaths, simWorkers, seed)
-	menu.Options = append(menu.Options, flexOption(flexBase, cut, target, pr.NPaths, seed))
-
-	// Buffer: keep the spend, hold N years of cash (scan; ruin is non-monotonic).
-	menu.Options = append(menu.Options, bufferOption(base, target, pr.NPaths, seed))
-
+	menu.Options = append(menu.Options, flex, buffer)
 	return menu
 }
 
 // flexOption describes the smallest downturn cut reaching the target, checking
 // reachability at the solved depth.
-func flexOption(p decumul.Plan, cut, target float64, nPaths int, seed uint64) SolverOption {
+func flexOption(p decumul.Plan, cut, target float64, draws decumul.Draws) SolverOption {
 	q := p
 	q.Flex.Cut = cut
-	if q.Simulate(nPaths, simWorkers, seed).RuinProb() > target+0.01 {
+	if q.RuinProbOn(draws, simWorkers) > target+0.01 {
 		return SolverOption{Lever: "Cut in downturns", OK: false,
 			Text: "Even a 60% downturn spending cut does not reach the target alone"}
 	}
@@ -107,11 +122,11 @@ func flexOption(p decumul.Plan, cut, target float64, nPaths int, seed uint64) So
 
 // bufferOption finds the smallest cash buffer (in years) that reaches the target
 // at the current spend, or reports it is not reachable by buffer alone.
-func bufferOption(p decumul.Plan, target float64, nPaths int, seed uint64) SolverOption {
+func bufferOption(p decumul.Plan, target float64, draws decumul.Draws) SolverOption {
 	for _, years := range bufferCandidates {
 		q := p
 		q.Buffer.Years = years
-		if q.Simulate(nPaths, simWorkers, seed).RuinProb() <= target {
+		if q.RuinProbOn(draws, simWorkers) <= target {
 			return SolverOption{Lever: "Cash buffer", OK: true,
 				Text: fmt.Sprintf("Keep the spend but hold a %.0f-year cash buffer", years)}
 		}

@@ -321,6 +321,54 @@ type Plan struct {
 	// the household still amortizes over the horizon it actually plans for.
 	// The drawn lifespan is never visible to a spending rule.
 	PlanHorizon int
+
+	// tables holds, per year, the figures that are the same on every path of
+	// a run; nil = compute them in the kernel. Only an ensemble driver sets
+	// it, on its own copy of the plan (see withTables), so a table can never
+	// outlive the fields it was computed from.
+	tables *yearTables
+}
+
+// yearTables are the per-year figures a plan without a Lifetime shares across
+// all its paths: every member is alive to the horizon and no annuity is ever
+// bought there, so the income and its present value depend on the year alone.
+// The kernels read them from here rather than rescanning the cashflows every
+// year of every path; each entry is the very call it replaces, so the numbers
+// are the same bits.
+type yearTables struct {
+	income []float64 // Plan.income by year
+	pvRate float64   // the discount rate pv was computed at
+	pv     []float64 // Plan.cashflowPV by year at pvRate; nil = none
+}
+
+// withTables returns the plan with its yearTables filled when its paths share
+// them (no Lifetime, some Cashflows), unchanged otherwise.
+func (p Plan) withTables() Plan {
+	p.tables = nil // recomputed from the fields as they are now
+	if p.Lifetime != nil || len(p.Cashflows) == 0 {
+		return p
+	}
+	lf := p.life(Lives{})
+	t := &yearTables{income: make([]float64, p.Years)}
+	for k := range t.income {
+		t.income[k] = p.income(k, lf)
+	}
+	// At most one rule discounts future income, at its own rate.
+	rate, discounts := 0.0, false
+	switch {
+	case p.Amortize:
+		rate, discounts = p.AmortReturn, true
+	case p.RiskGuard.active():
+		rate, discounts = p.RiskGuard.PVRate, true
+	}
+	if discounts {
+		t.pvRate, t.pv = rate, make([]float64, p.Years)
+		for k := range t.pv {
+			t.pv[k] = p.cashflowPV(k, rate, lf)
+		}
+	}
+	p.tables = t
+	return p
 }
 
 // planYears is the horizon the spending rules plan over.
@@ -508,6 +556,9 @@ func (p *Plan) schedAt(year int) float64 {
 // as bought, never the drawn deaths: a rule that discounted the mortality it
 // was dealt would be planning with knowledge no retiree has.
 func (p *Plan) cashflowPV(from int, r float64, l life) float64 {
+	if t := p.tables; t != nil && t.pv != nil && r == t.pvRate && from < len(t.pv) {
+		return t.pv[from]
+	}
 	if len(p.Cashflows) == 0 && l.annuity == 0 {
 		return 0 // no income to discount; skip the whole horizon scan
 	}
@@ -546,6 +597,9 @@ func netAfter(spend, income float64) float64 {
 // income is the year's income from outside the portfolio: the cashflows each
 // member still receives, after any reversion, plus the annuity.
 func (p *Plan) income(year int, l life) float64 {
+	if t := p.tables; t != nil && year < len(t.income) {
+		return t.income[year]
+	}
 	sum := l.annuityAt(year)
 	for _, c := range p.Cashflows {
 		sum += c.paidAt(year, l)

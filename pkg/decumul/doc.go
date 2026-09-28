@@ -20,6 +20,22 @@
 //     that meets a target ruin. [Plan.Sweep1D] and [Plan.Sweep2D] map ruin
 //     across parameters.
 //   - [Plan.RunPath] runs the kernel on one given return path.
+//   - Several questions about one plan: [Plan.Draw] the paths once, then ask
+//     each On them ([Plan.SimulateOn], [Plan.RuinProbOn], [Plan.SolveOn]).
+//     When only the ruin is read, [Plan.RuinProb] and [Plan.RuinProbOn] skip
+//     building the Ensemble altogether.
+//
+// # Performance and determinism
+//
+// Every result is a pure function of the plan, the path count, the worker
+// count and the seed, bit for bit: a shared FIRE URL reproduces, and the
+// solvers bisect on common random numbers. The worker count matters only to
+// [Plan.Draw], whose paths are dealt to the workers' RNG streams in a fixed
+// stride; everything run on drawn paths (the kernel, the ruin counts, the
+// solves, the statistics) is scheduled freely across the cores and answers
+// the same whatever ran where. [Ensemble.Outcome] and [Ensemble.Fan] spread
+// their per-path work over GOMAXPROCS. The measurements and what did not pay:
+// docs/specs/decumul-performance.md.
 //
 // A 1 M plan spending 32 000 a year for 35 years, on i.i.d. real returns:
 //
