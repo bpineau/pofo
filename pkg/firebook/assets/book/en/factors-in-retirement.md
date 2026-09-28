@@ -1,5 +1,5 @@
 # Factors (Fama-French, value, momentum) in the withdrawal phase
-<!-- source: facteurs-fama-french @ 2e47367d3251 -->
+<!-- source: facteurs-fama-french @ 3877feb0652a -->
 
 For thirty years, academic research has been cutting stock returns into "factors": systematic characteristics that have, historically, paid a premium above the market. The main ones are cheapness (value), small size (small cap), quality, and momentum. It is one of the most solid bodies of evidence in finance, and one of the most heavily marketed. Someone living off a portfolio has a narrower question to settle than a saver does. Do these factor tilts improve a **decumulation** plan, where the worst path is what counts and the average is not ([[sequence-of-returns]])?
 
@@ -37,7 +37,9 @@ One fact is well measured. Once a factor is described in an academic paper, inve
 
 ## The retiree's case file: three exhibits
 
-**Exhibit 1: Bengen and small caps.** In his later work, Bengen showed that adding US small caps to the reference portfolio raised the SAFEMAX, from 4.15% in 1994 to 4.3% in 1997 with 30% small caps in the equity sleeve, then to 4.5% in 2006 with a wider palette of assets ([[the-trinity-study]]). First clue: diversification **inside** the equity sleeve matters for the worst paths.
+**Exhibit 1: Bengen and small caps.** In his later work, Bengen showed that adding US small caps to the reference portfolio raised the SAFEMAX, from 4.15% in 1994 to 4.3% in 1997 with 30% small caps in the equity sleeve, then to 4.5% in 2006 with a wider palette of assets ([[the-trinity-study]]). His 2025 book goes to 4.7%. Stocks make up 55% of that portfolio, split evenly across five styles: US large, mid, small and micro caps, plus international stocks.
+
+For years this was read as a diversification effect. ERN's Part 65 (2026) reran the numbers and reached a different conclusion. On raw historical returns, the five-style portfolio holds 4.23% over 30 years, not 4.7%. More to the point, the gain comes from factor premia, the size premium first among them. It paid close to 3.6% a year from 1926 to 1981, and nothing since. Neutralize those premia and the safe rate falls back to 3.82%, the same as that portfolio without its four added styles. Diversification has nothing to do with it. Funds that are highly correlated with the S&P 500 and more volatile than it do not diversify, and from 2007 to 2026 the five-style portfolio was more volatile than its plain version, 8.8% against 7.9%. So this exhibit proves less than it seems to: small caps helped the retirees of the years before 1981, through their premium.
 
 **Exhibit 2: ERN, Part 62, and small-cap value.** Jeske devoted a whole part to this exact question, small-cap value (SCV) in decumulation. SCV is small caps that are cheap, the most studied crossing of two factors. What he found in the long data cools the enthusiasm, and you want to know it before you buy the thesis. With factor alpha neutralized, the average safe rate across vintages since 1926 goes from 3.39% to 3.27% when SCV goes into a 75/25. Grant SCV the forward premia the forecasters publish, 1.2 points for size and 0.8 for value, and it climbs back to 3.51%, 0.12 points better than the untilted portfolio. More to the point, the vintages with the worst sequence risk tend to do worse with SCV, and the 1930s start years give up 0.22 points.
 
@@ -76,7 +78,7 @@ The starting plan: $1.5M, $51,000 a year, 70% world stocks and 30% defensive. Th
 ## The essentials
 
 - The robust core is six premia: market, size, value, momentum, profitability and investment. They are real, but marked down once published (roughly 1 to 2% a year for a long-only index tilt), and they come from a mix of risk (paid in the bad moments) and behavior.
-- The retiree's file has three exhibits. Bengen's small caps raise the SAFEMAX from 4.15% to 4.3%, then to 4.5% with a wider palette. ERN's Part 62 cools SCV down: it comes through the broad market's bubble vintages (2000), suffers more in a pure recession (1929), and does not raise the average safe rate. The value-inflation affinity buys half a defensive building block, free, inside the equity sleeve.
+- The retiree's file has three exhibits. Bengen's small caps raise the SAFEMAX from 4.15% to 4.3%, then to 4.5% and 4.7% with a wider palette, but ERN's Part 65 credits that gain to the pre-1981 size premium, not to diversification. ERN's Part 62 cools SCV down: it comes through the broad market's bubble vintages (2000), suffers more in a pure recession (1929), and does not raise the average safe rate. The value-inflation affinity buys half a defensive building block, free, inside the equity sleeve.
 - The price of admission is the gap to the index over long stretches. Value lost 5% a year to growth from 2010 to 2020. Every real diversifier has its years of shame, hence the binary rule: a tilt written down and held, or no tilt at all.
 - Buying it: small value funds for SCV, enhanced value funds for broad value, with checks on capacity, turnover and real factor exposure. Size it between 10 and 30% of the equity sleeve.
 - Verdict: legitimate and **optional**. The tilt is second order, behind spending, the rate, the rule and the allocation. Judge it in a simulator on replayed vintages and on the tails of the distribution, never on the central case.
@@ -87,5 +89,5 @@ The starting plan: $1.5M, $51,000 a year, 70% world stocks and 30% defensive. Th
 
 - Fama & French, "The Cross-Section of Expected Stock Returns" (1992) and "A Five-Factor Asset Pricing Model" (2015): the sources.
 - Larry Swedroe, *Your Complete Guide to Factor-Based Investing*: the honest practitioner's synthesis (a credible factor is persistent, pervasive, robust, investable and intuitive).
-- Early Retirement Now, Part 62 (small-cap value in retirement) ([[the-ern-series]]); McLean & Pontiff (2016) on the decay of premia after publication.
+- Early Retirement Now, Parts 62 (small-cap value in retirement) and 65 (Bengen's five-style portfolio) ([[the-ern-series]]); McLean & Pontiff (2016) on the decay of premia after publication.
 - In this book: [[stock-bond-allocation]] (what goes inside the equity sleeve), [[market-regimes]] (the regime affinity), [[building-it-with-us-etfs]] (the vehicles), [[managed-futures]] (time-series momentum, its more powerful cousin), [[risk-premia]] (the general frame for premia and what becomes of them after publication).
