@@ -1,5 +1,5 @@
 # The 4% rule in ten minutes
-<!-- source: la-regle-des-4-pourcents @ 1095f9061b00 -->
+<!-- source: la-regle-des-4-pourcents @ 3cb31bf512e5 -->
 
 It is the most famous rule in personal finance: withdraw 4% of your capital in the first year of retirement, raise that amount with inflation every year after, and your portfolio will last thirty years. It is so famous that people call it "the rule" and leave it at that.
 
@@ -114,4 +114,4 @@ Back to Camille: $1M, a global 60/40, retiring at 45, $40,000 a year indexed. He
 - Cooley, Hubbard & Walz, "Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable", *AAII Journal*, 1998 (the Trinity study, [[the-trinity-study]]).
 - Early Retirement Now, SWR Series parts 1 and 26 ("Ten Things the Makers of the 4% Rule Don't Want You to Know"): the most complete modern critique ([[the-ern-series]]).
 - Morningstar, *The State of Retirement Income* (annual): the recommended rate, recomputed every year with forward-looking returns ([[morningstar-guardrails]]).
-- Bengen himself, in recent interviews. He now finds 4% too conservative for a more diversified portfolio, while reminding everyone that his rule only holds inside the US frame over 30 years. The two moves, his upward and the "whole world, long horizon" research downward, show how much the number depends on the frame.
+- Bengen himself, in *A Richer Retirement* (2025) and in recent interviews. He now finds 4% too conservative and puts forward 4.7% for a portfolio of five equity styles, while reminding everyone that his rule only holds inside the US frame over 30 years. ERN's Part 65 disputes that lift ([[factors-in-retirement]]). The two moves, his upward and the "whole world, long horizon" research downward, show how much the number depends on the frame.
