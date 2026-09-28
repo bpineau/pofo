@@ -1,5 +1,5 @@
 # Bengen, the Trinity study, and the birth of the safe withdrawal rate
-<!-- source: etude-trinity @ c2eb524d72c8 -->
+<!-- source: etude-trinity @ ede6aff6e29f -->
 
 Before 1994, one question got the same wrong answer with impressive consistency: how much can I take out of my portfolio every year? "The average return, obviously." Stocks returned 10% historically, so withdraw 8%, said professional advisers with a straight face.
 
@@ -29,7 +29,7 @@ The result fits in one famous chart: how long the portfolio lasted, vintage by v
 
 Bengen would later name **SAFEMAX** the highest rate that survives every vintage over the chosen horizon: about 4.15% over 30 years at 50/50. He also picked out the three worst moments to leave: 1929 (crash and deflation), 1937, and above all **1966**, which was not the worst crash but the worst **combination**, fifteen years of flat real markets while inflation kept inflating the withdrawals. The lesson matters more than the number: what kills a retiree is not the spectacular crash, it is long, grinding real erosion ([[inflation-and-withdrawal-rates]]).
 
-His later papers (1996 to 2006) filled in the frame. The best allocation holds 50 to 75% stocks, because going lower **lowers** the safe rate: bonds alone do not stand up to inflation. Adding small caps lifts SAFEMAX, to 4.3% in 1997 with 30% of the equity sleeve in small caps, then to 4.5% in 2006 with a wider set of assets. Horizon matters too: about 4.15% over 30 years, but only about 3.5% over a very long one.
+His later papers (1996 to 2006) filled in the frame. The best allocation holds 50 to 75% stocks, because going lower **lowers** the safe rate: bonds alone do not stand up to inflation. Adding small caps lifts SAFEMAX, to 4.3% in 1997 with 30% of the equity sleeve in small caps, then to 4.5% in 2006 with a wider set of assets. His 2025 book goes to 4.7% with five equity styles, a lift that ERN's Part 65 credits to the pre-1981 small-cap premium rather than to diversification ([[factors-in-retirement]]). Horizon matters too: about 4.15% over 30 years, but only about 3.5% over a very long one.
 
 ::: encart Why the method was brilliant, and what it is still worth
 Thirty years on, historical replay (the "historical windows") is still one of the three big families of models that withdrawal simulators run. Its strength: it keeps everything synthetic models struggle to reproduce, real sequences (a crash **then** inflation **then** a recovery), stock-bond correlations that shift, long memory. Its weakness: it holds only the American past, a single-country sample, and the luckiest country at that, with windows that overlap (since 1926 there are only three or four genuinely independent 30-year stretches). Hence the modern corrections: a world sample ([[anarkulova-cederburg]]; by convention that link also covers the broad-sample model of the simulators, replayed on 16 countries of the JST panel, the practical cousin of the 38-country paper), bootstrapping and parametric models ([[historical-vs-parametric]]).
@@ -97,7 +97,7 @@ The plan: $1M, a 60/40, 4% indexed. Replayed vintage by vintage, the January 200
 
 ## Going further
 
-- William Bengen, "Determining Withdrawal Rates Using Historical Data", *Journal of Financial Planning*, October 1994 (freely available on the FPA site); and *Conserving Client Portfolios During Retirement* (2006) for the synthesis.
+- William Bengen, "Determining Withdrawal Rates Using Historical Data", *Journal of Financial Planning*, October 1994 (freely available on the FPA site); *Conserving Client Portfolios During Retirement* (2006) for the synthesis; and *A Richer Retirement* (2025) for the move to 4.7%.
 - Cooley, Hubbard & Walz, "Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable", *AAII Journal*, February 1998, and its updates (2011).
 - Early Retirement Now, SWR Series parts 1 and 8 (the technical appendix to the method): [earlyretirementnow.com](https://earlyretirementnow.com) ([[the-ern-series]]).
 - Wade Pfau, "An International Perspective on Safe Withdrawal Rates" (2010): the first big step outside the American frame, a prelude to [[anarkulova-cederburg]].
