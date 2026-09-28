@@ -38,23 +38,33 @@ func (e Ensemble) Outcome() Outcome {
 	maxDDs := make([]float64, len(e.Paths))
 	taxes := make([]float64, len(e.Paths))
 	taxRates := make([]float64, len(e.Paths))
+	decade := make([]float64, len(e.Paths))
+	hasDecade := make([]bool, len(e.Paths))
+	// Every path's figures land at its own index, so the walk is spread over
+	// the cores with the same result as a serial one.
+	forEachPath(len(e.Paths), aggregateWorkers(len(e.Paths)), func(_ int, loop func(func(int))) {
+		loop(func(i int) {
+			p := &e.Paths[i]
+			lived := p.Wealth[:p.end()+1]
+			terminals[i] = lived[len(lived)-1]
+			under, dd := pathPeakStats(lived)
+			underwater[i] = float64(under)
+			maxDDs[i] = dd
+			taxes[i] = p.TaxPaid
+			if gross := p.Withdrawn + p.TaxPaid; gross > 0 {
+				taxRates[i] = p.TaxPaid / gross
+			}
+			decade[i], hasDecade[i] = worst10y(lived)
+		})
+	})
 	worsts := make([]float64, 0, len(e.Paths))
 	ruined := 0
-	for i, p := range e.Paths {
-		lived := p.Wealth[:p.end()+1]
-		terminals[i] = lived[len(lived)-1]
-		if p.Ruined {
+	for i := range e.Paths {
+		if e.Paths[i].Ruined {
 			ruined++
 		}
-		under, dd := pathPeakStats(lived)
-		underwater[i] = float64(under)
-		maxDDs[i] = dd
-		taxes[i] = p.TaxPaid
-		if gross := p.Withdrawn + p.TaxPaid; gross > 0 {
-			taxRates[i] = p.TaxPaid / gross
-		}
-		if c, ok := worst10y(lived); ok {
-			worsts = append(worsts, c)
+		if hasDecade[i] {
+			worsts = append(worsts, decade[i])
 		}
 	}
 	o.RuinProb = float64(ruined) / float64(len(e.Paths))
@@ -79,20 +89,33 @@ func (e Ensemble) Outcome() Outcome {
 // same running peak: under is the number of points strictly below the prior
 // real high, maxDD the deepest peak-to-trough loss (0.30 = 30%). A point at a
 // new high is neither, which is what lets the division be skipped there.
+//
+// Under one peak the deepest loss is the lowest trough (a division by a fixed
+// positive peak, and the subtraction from 1, are both monotone once rounded),
+// so the walk keeps the trough of each episode below a high and divides once
+// per episode rather than once per underwater point: the same maximum, bit for
+// bit, at a fraction of the divisions.
 func pathPeakStats(w []float64) (under int, maxDD float64) {
-	peak := w[0]
-	for _, v := range w {
-		if v >= peak {
-			peak = v
-			continue
-		}
-		under++
-		if peak > 0 {
-			if d := 1 - v/peak; d > maxDD {
+	peak, trough := w[0], w[0]
+	settle := func() {
+		if trough < peak && peak > 0 {
+			if d := 1 - trough/peak; d > maxDD {
 				maxDD = d
 			}
 		}
 	}
+	for _, v := range w {
+		if v >= peak {
+			settle()
+			peak, trough = v, v
+			continue
+		}
+		under++
+		if v < trough { // not min(): a NaN point is skipped, as it always was
+			trough = v
+		}
+	}
+	settle()
 	return under, maxDD
 }
 

@@ -153,6 +153,25 @@ func ExamplePlan_Solve() {
 	// 5% chance of ever being broke and alive at 24000 a year
 }
 
+// Several questions about one plan share one set of futures: Draw them once,
+// then ask each question On them. RuinProbOn reads nothing but the ruin (no
+// ensemble is built), and SolveOn bisects on those same paths, so the two
+// answers are consistent with each other and the paths are drawn only once.
+func ExamplePlan_RuinProbOn() {
+	p := decumul.Plan{
+		Capital: 1_000_000, NeedAnnual: 40_000, Years: 35,
+		Tax:    decumul.CTOFlatTax{Rate: 0.314},
+		Source: scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 35},
+	}
+	draws := p.Draw(20_000, 4, 7) // paths, workers, seed
+	fmt.Printf("ruin at 40000 a year: %.0f %%\n", p.RuinProbOn(draws, 4)*100)
+	spend := p.SolveOn(0.10, decumul.WithdrawalAxis(10_000, 100_000), draws, 4)
+	fmt.Printf("10 %% ruin at %.0f a year\n", math.Round(spend/500)*500)
+	// Output:
+	// ruin at 40000 a year: 53 %
+	// 10 % ruin at 25500 a year
+}
+
 // Sweep1D maps ruin across one parameter on one set of drawn paths, so the
 // curve is smooth: here the yearly spending of a 1 M plan over 35 years.
 func ExamplePlan_Sweep1D() {

@@ -40,16 +40,20 @@ func (e Ensemble) Fan(pcts []float64, nSamples int) WealthFan {
 	for p := range fan.Bands {
 		fan.Bands[p] = make([]float64, steps)
 	}
-	col := make([]float64, len(e.Paths))
-	for y := range steps {
-		for i, path := range e.Paths {
-			col[i] = path.Wealth[y]
-		}
-		q := metrics.Quantiles(col, pcts...)
-		for p := range pcts {
-			fan.Bands[p][y] = q[p]
-		}
-	}
+	// The years are independent columns, so they are spread over the cores,
+	// each goroutine gathering its columns into its own buffer.
+	forEachPath(steps, aggregateWorkers(steps*len(e.Paths)/32), func(_ int, loop func(func(int))) {
+		col := make([]float64, len(e.Paths))
+		loop(func(y int) {
+			for i := range e.Paths {
+				col[i] = e.Paths[i].Wealth[y]
+			}
+			q := metrics.Quantiles(col, pcts...)
+			for p := range pcts {
+				fan.Bands[p][y] = q[p]
+			}
+		})
+	})
 
 	fan.Samples = sampleByTerminal(e.Paths, nSamples)
 	return fan
