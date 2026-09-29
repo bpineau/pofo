@@ -11,6 +11,9 @@
 #   buffer held outside the weights (s. 14), the forward scenarios mapped
 #   onto existing levers (s. 15), the trend sleeve re-examined against the
 #   book's own worst months (s. 16).
+#   Revised 2026-09: gold cut from 15 to 12 points on the price of the
+#   insurance and on its risk share (s. 7), the three points moved to the
+#   linkers after a head-to-head on where they should go (s. 2).
 #
 # Idea: start from the liability (a stream of real euros over ~40 years),
 #   immunize the years where a bad sequence is unrecoverable, and spend the
@@ -34,7 +37,8 @@
 #   size sleeves against a portfolio, this one sizes them against a
 #   spending stream, and the two answers differ. Since then the book has
 #   been re-derived twice from scratch by blind designers (s. 0, s. 12)
-#   and reconverged each time; its weights have not moved.
+#   and reconverged each time. Its weights have moved once since, in
+#   2026-09: gold 15 -> 12, linkers 13 -> 16 (s. 7).
 #
 # ## 0. The wrappers: the shelter tranche is bounded by risk, never by tax
 #
@@ -127,14 +131,15 @@
 #   actually pay (~1%):
 #     years 1-3    covered by the cash buffer, held OUTSIDE the weights
 #                  (s. 14)
-#     years 4-10   ~12-13% of capital          <- the dose retained
-#     years 4-15   about double that
+#     years 4-10   ~12-13% of capital          <- the floor of the dose
+#     years 4-12   ~16%                        <- the dose retained
+#     years 4-15   ~21%
 #     years 4-40   ~57%: Bodie's answer, ruin impossible, growth
 #                  abandoned. Refused.
 #   A household that already owns indexed annuities (state pension,
 #   indexed rent, a residual salary) subtracts their present value from
 #   the floor first: owning them is what lets a floor worth ~45% of
-#   capital be covered by ~13% of linkers. Note that such an annuity
+#   capital be covered by 13 to 16% of linkers. Note that such an annuity
 #   starting years out does NOT shrink this dose, because it starts after
 #   the immunized window; the derivation is invariant to it, which is a
 #   good reason not to reopen this line at every pension scare.
@@ -156,9 +161,28 @@
 #   erased that edge once gold at 15 and small value at 14 stood opposite:
 #   the extra linkers then cost more geometric return than they bought
 #   floor years, the two other legs already covering the tail and being
-#   better paid. The 13 holds, the 10-20 range of s. 10 stays the reading,
+#   better paid. The 13 held, the 10-20 range of s. 10 stays the reading,
 #   and going above 13 takes a new head-to-head, never an isolated sweep.
 #   The tax leak of s. 1 penalizes every extra point on top.
+#
+#   THE HEAD-TO-HEAD THAT TOOK THE LINE TO 16 (2026-09). Gold was cut from
+#   15 to 12 (s. 7), three points needed a home, and the condition above
+#   applied. Candidates: the linkers, world equity, euro 25+, and mixes of
+#   them, on the 2005-2025 window and on a deep stand-in one (1987-2025),
+#   replayed and then resampled under prudent priors. The gaps are small
+#   (a few tenths of a floor year, 1 to 3% of the 5th-percentile terminal
+#   wealth) but ordered. EQUITY is the worst home in the tail and the best
+#   in the median: worst real drawdown -20.3% against -18.6% for the
+#   linkers on the short window, and it raises the risk share of a sleeve
+#   that already carries two thirds of the variance. EURO 25+ scores well
+#   on priors but deepens a 2022 (-10.5% real against -9.2%) in the very
+#   move that cuts a leg absorbing rate shocks (s. 6). THE LINKERS keep
+#   the defensive share of the book, its lowest volatility of the set,
+#   and the inflation leg like for like. What refused more linkers in
+#   2026-08 was a gold line covering the tail and better paid; at four
+#   times its median real price, that payment is precisely what is in
+#   doubt. The tax leak of s. 1 applies to the three added points and is
+#   accepted with open eyes.
 #
 # ## 3. The premia that actually exist
 #
@@ -193,18 +217,19 @@
 # ## 4. The risk budget, and the behavioral cap on trend
 #
 #   Capital shares are not risk shares, and this file is named after the
-#   difference. Capital 42/20/15/13/10 (equity / trend / gold / linkers /
-#   duration) sits, EX ANTE (standalone volatilities and assumed
-#   correlations), at roughly 61/23/9/3/4 of variance. That is the budget
-#   the design was written against.
+#   difference. Capital is 42/20/12/16/10 (equity / trend / gold / linkers
+#   / duration). At the 15/13 split of gold and linkers it was first
+#   written against, the design sat EX ANTE (standalone volatilities and
+#   assumed correlations) at roughly 61/23/9/3/4 of variance.
 #   MEASURED EX POST, the report's risk-budget block (Euler decomposition
 #   of variance on the simulation's monthly contributions, over this
-#   file's window) says something different and worth reading twice:
-#     equity 65% of variance for 42 of capital and 57% of realized return
-#     gold 15% for 15 and 22%
-#     trend 11% for 20 and 13%
-#     govt bonds 6% for 10 and 5%
-#     linkers 3% for 13 and 3%
+#   file's window, re-run 2026-09 at the current weights) says something
+#   different and worth reading twice:
+#     equity 68% of variance for 42 of capital and 57% of realized return
+#     gold 11% for 12 and 18%
+#     trend 11% for 20 and 15%
+#     govt bonds 8% for 10 and 5%
+#     linkers 4% for 16 and 4%
 #   Two lessons. First, a book balanced in CAPITAL across regimes is still
 #   an equity book in RISK: two thirds of the variance sits in one sleeve,
 #   which is exactly what the defensive lines exist to blunt, and the
@@ -216,6 +241,12 @@
 #   is therefore a behavioral limit, not a risk-budget constraint, and
 #   should be argued as one. Gold, meanwhile, is not free: it takes as
 #   much variance as it takes capital, and in this window it earned it.
+#   And a share measured over twenty years hides the present one: over
+#   the twelve months to 2026-09, gold's realized volatility stood near
+#   27%/yr against ~16% in the long run, and 15 points of it carried
+#   about 40% of the book's variance (32% at 12 points; twelve monthly
+#   observations, an order of magnitude). That is one of the reasons for
+#   the cut of s. 7.
 #   Re-run the block after any weight change (it is the "Risk budget" row
 #   of the HTML report) rather than trusting the ex-ante figures above.
 #
@@ -322,26 +353,84 @@
 #   multi-currency), not the leverage; and the long pair is defensible
 #   only BECAUSE gold and trend absorb the rate shock. Should either of
 #   those legs ever be cut, reopen the question of the duration's shape.
+#   REOPENED AS ASKED (2026-09), gold going from 15 to 12 (s. 7). The cut
+#   moves the book's 2022 by about -0.3 point real; sending the three
+#   freed points to euro 25+ would have moved it by -1.6. The long pair
+#   stands at 10 points, and this is why the freed points did not go to
+#   duration (s. 2).
 #
-# ## 7. Gold at 15, not 10
+# ## 7. Gold at 12: the dose follows the price of the insurance
 #
-#   Cutting gold to a token 10 ("no premium, minimum dose") while keeping
-#   long duration for its hedging demand applies the same logic
-#   selectively. Gold stays at 15 because the regime it covers (long
-#   stagflation, monetary debasement) is the worst-covered regime in the
-#   whole book (Neville, Draaisma, Funnell, Harvey & van Hemert, JPM
-#   2021): long duration LOSES there (2022), and trend is slow to turn and
-#   is exactly the sleeve capped for behavioral reasons above. Gold and
-#   trend are the only two legs of that regime; weakening both at once is
-#   incoherent. The dose is what the regime demands GIVEN that the other
-#   leg is capped.
-#   HEAD-TO-HEAD CHECK (2026-08): a leaner variant at 9 points of gold was
-#   dominated by this file across six decumulation return models,
-#   INCLUDING one where every sleeve is capped at prudent forward priors
-#   (gold at 1%/yr real). Gold is paid by its covariance with bad states,
-#   not by its 2005-2025 tailwind (~9%/yr real, not to be extrapolated).
-#   An isolated weight sweep cannot see this (8 vs 11 reads as noise);
-#   only the full head-to-head, in the tails, does.
+#   WHY NOT A TOKEN DOSE. Cutting gold to a minimum ("no premium, minimum
+#   dose") while keeping long duration for its hedging demand applies the
+#   same logic selectively. The regime gold covers (long stagflation,
+#   monetary debasement) is the worst-covered regime in the whole book
+#   (Neville, Draaisma, Funnell, Harvey & van Hemert, JPM 2021): long
+#   duration LOSES there (2022), and trend is slow to turn and is exactly
+#   the sleeve capped for behavioral reasons above. Gold and trend are the
+#   only two legs of that regime; weakening both at once is incoherent.
+#   The dose is what the regime demands GIVEN that the other leg is
+#   capped, and 10 is its floor (s. 10).
+#   HEAD-TO-HEAD CHECK (2026-08, gold then at 15): a leaner variant at 9
+#   points of gold was dominated by this file across six decumulation
+#   return models, INCLUDING one where every sleeve is capped at prudent
+#   forward priors (gold at 1%/yr real). Gold is paid by its covariance
+#   with bad states, not by its 2005-2025 tailwind (~9%/yr real, not to be
+#   extrapolated). An isolated weight sweep cannot see this (8 vs 11 reads
+#   as noise); only the full head-to-head, in the tails, does.
+#   WHY 12 AND NO LONGER 15 (2026-09). An insurance has a price, and the
+#   dose follows it. Four measurements, none of them a forecast:
+#   1. THE REAL PRICE. Gold deflated by US CPI stood in 2026-09 at 3.97
+#      times its 1968-2026 median (4.46 in euros on French CPI), against
+#      2.6 at the 1980 peak and 2.5 in 2011. The evidence that a high real
+#      price announces a low ten-year return (Erb & Harvey 2013; "Is There
+#      Still a Golden Dilemma?", 2024) is WEAK: two independent episodes,
+#      and a counter-example running since 2020 (+9%/yr real from a start
+#      at 2.35 times). A reason to stop adding, not a reason to sell.
+#   2. THE RISK SHARE. At 15 points gold carried about 40% of the book's
+#      variance over the twelve months to 2026-09 (s. 4).
+#   3. THE PAYOFF BY STARTING PRICE, real returns in EUR. In the stress
+#      episodes gold entered below 1.5 times its median, it paid: +71%
+#      over 1973-74, +33% from 2007-11 to 2009-02. In those it entered
+#      above 2, it mostly did not: -46% from 1980-02 to 1982-06, -31% in
+#      2013, -1% in 2022 (the inflation shock itself), -18% from 2026-02
+#      to 2026-06. Exceptions: the 2011 euro crisis (+15%) and the 2025
+#      tariff shock (+7%). A small sample, one sign.
+#   4. THE CARRY. Gold hedges NEGATIVE REAL RATES rather than inflation as
+#      such (1980-82, 2013 and 2022 are the three times real yields rose
+#      against it). With ten-year real yields near 2.8% in dollars in
+#      2026-09, holding a zero-yield asset had not cost as much in twenty
+#      years.
+#   WHAT THE SIMULATIONS CAN AND CANNOT SAY. A decumulation Monte-Carlo
+#   that lowers gold's mean and keeps its co-movements finds the low dose
+#   better by construction, so it proves little. Read as a break-even it
+#   is more useful: in the tail (5th-percentile terminal wealth), 15
+#   equals 10 when gold earns about +1%/yr real on the 2005-2025
+#   co-movements, 0% on 1972-2025, -1% on 1987-2025; above, 15 wins,
+#   below, 10. The stake is a few percent of terminal wealth either way,
+#   and history adds a nuance: when gold gave back its premium (-83% real
+#   over 1980-2001) the rest of the book was thriving, so a 1980 cohort
+#   replayed on a representative schedule never cut its spending, at any
+#   dose. With equity as dear as it was in
+#   2026 that comfort cannot be assumed twice, and the one scenario where
+#   the dose really bites is equity AND gold deflating together, against
+#   15. Hence a small move, inside the range, made by NOT BUYING the last
+#   points rather than by selling.
+#   THE ONE-OFF IN THE 1970s RECORD. Part of what gold did over 1972-1980
+#   was the release of a price administered at $35 since 1934, a spring
+#   that cannot be compressed again (s. 12). Taking it out (gold
+#   recentred to a zero real return inside the high-inflation regime, its
+#   co-movements kept) roughly halves the edge of 15 over 10 in that
+#   regime without cancelling it: ruin 1.9% against 2.6%, equal floor
+#   years. What remains is covariance; dose on it, not on the level gain.
+#   RULE. Target 12, band 9 to 15: sell back to 12 above 15 points, buy
+#   only below 9. Go back toward 15 if the real price returns under about
+#   three times its median with volatility back near its long-run level,
+#   or if real yields turn negative again. No dose indexed on the price
+#   itself: replayed in real time since 1972 (expanding median), such a
+#   rule moves neither the return nor the drawdown, and bands do the same
+#   work without a median to estimate.
+#   WHERE THE THREE POINTS WENT: the linkers, s. 2.
 #   WHAT GOLD DOES NOT COVER (1990, measured on the deep-history stand-in
 #   variant, s. 12): gold is a DOLLAR asset, and in an inflation shock
 #   where the dollar falls it can lose double digits for a euro holder.
@@ -359,7 +448,7 @@
 #   42 equity (of which 14 small value)
 #   + ~26.5 nominal duration in 7y-equivalent terms (the euro 25+ line at
 #     ~20y duration counts ~2.9x its 5 points, the US 20+ at ~17y ~2.4x)
-#   + 20 trend + 15 gold + 13 linkers  = ~116% of exposure, no margin.
+#   + 20 trend + 12 gold + 16 linkers  = ~116% of exposure, no margin.
 #   Against a stacked-core build, equivalent duration is HIGHER (~26.5 vs
 #   ~16 points) and concentrated on the very long end: more convex per
 #   euro, and better matched to a euro liability for the euro half.
@@ -367,9 +456,11 @@
 #   another 2022. That is the line doing its job, and the anti-panic rule
 #   must name it explicitly ("do not sell duration after a rate shock").
 #   Currency: ~17 points of EFFECTIVE dollar, measured on the whole book
-#   (EURUSD beta -0.167; per line: the replication trend line -1.04, the
-#   US 20+ line -0.93, gold -0.20, small value -0.11), two points above
-#   the sum of the lines, not eight. The ~5 of the US duration line are a
+#   at 15 points of gold (EURUSD beta -0.167; per line: the replication
+#   trend line -1.04, the US 20+ line -0.93, gold -0.20, small value
+#   -0.11), two points above the sum of the lines, not eight; the three
+#   points since moved from gold to euro linkers take it to about 16, by
+#   those same per-line betas. The ~5 of the US duration line are a
 #   crisis asset WANTED and capped (s. 6). The ~10 riding the replication
 #   trend line are a POSITION, not a side effect: its EUR share class is
 #   UNHEDGED, the NAV carries EURUSD on the whole position (beta -0.94 on
@@ -434,12 +525,13 @@
 #     leaves the other lines nothing to blunt, which defeats the tent.
 #   Trend 20 (15-25). Below 15 the sleeve stops moving the book after
 #     fees; 25 is the behavioral ceiling of section 4, not a risk one.
-#   Gold 15 (10-20). Below 10 the stagflation regime loses one of its only
+#   Gold 12 (10-20). Below 10 the stagflation regime loses one of its only
 #     two legs; above 20 a zero-real-return asset is funded out of the
-#     growth engine.
-#   Linkers 13 (10-20). 10 covers roughly the floor to year 8, 20 to year
-#     15; beyond that the book drifts toward Bodie's abandoned-growth
-#     corner.
+#     growth engine. Inside the range the dose follows the price of the
+#     insurance (s. 7): 15 until 2026-09, 12 since.
+#   Linkers 16 (10-20). 10 covers roughly the floor to year 8, 16 to year
+#     12, 20 to year 15; beyond that the book drifts toward Bodie's
+#     abandoned-growth corner.
 #   Long duration 10, split 5/5 (8-14 total, the unhedged US leg NEVER
 #     above 5). The total rebuilds the overlay lost with the stacked core;
 #     the split is issuer diversification, the cap is section 6.
@@ -514,7 +606,8 @@
 #     metrics) kept THIS file dominant over the blind challenger on every
 #     model, prudent priors included (lost decade: 2.3 mean years at the
 #     floor vs 5.0, P90 11 vs 23; prudent priors: 3.2 vs 3.9). The
-#     drivers: the small-value tilt, gold at 15, and two drags on the
+#     drivers, at the weights of 2026-08: the small-value tilt, gold at
+#     15 (12 since 2026-09, s. 7), and two drags on the
 #     challenger's side (broad commodities, an oversized near-zero-real
 #     linkers block). Ruin stayed <= 0.1% for both, which ruin saturates
 #     near zero for any sane book, which is why section 13 steers on floor
@@ -534,9 +627,10 @@
 #     regime this book fears most, a long choppy stagflation, is ABSENT
 #     from the sample: the gold and trend doses rest on outside evidence
 #     (section 7), not on these twenty years. Measured over the window,
-#     pre-tax and before any withdrawal: CAGR ~7.7%, volatility ~8.3%,
-#     worst drawdown ~-20%, worst rolling 5y ~+0.5%/yr, weighted ongoing
-#     charges 0.58%. Read the drawdown and the worst 5y, not the CAGR.
+#     pre-tax and before any withdrawal (2026-09, current weights): CAGR
+#     ~7.7%, volatility ~7.4%, worst drawdown ~-19%, worst rolling 5y
+#     ~+0.6%/yr, weighted ongoing charges 0.58%. Read the drawdown and
+#     the worst 5y, not the CAGR.
 #     For ruin probabilities rather than a single path, feed the file to
 #     `pofo -fire`, which resamples instead of replaying.
 #   THE LONG WINDOWS (2026-08, on measured stand-in variants of this book,
@@ -849,8 +943,8 @@
 #      exposure (~17 points measured), never on the rate gap.
 #   C. A AND B TOGETHER (US bust, a Fed unable to cut, a falling dollar).
 #      The true worst corner. Rough arithmetic: equity -40% locally and
-#      -15% of currency on ~40 points is ~-20 points; against it gold +5,
-#      trend +3-5, the euro long line +1, linkers stable. Net -12 to -18%
+#      -15% of currency on ~40 points is ~-20 points; against it gold +4,
+#      trend +3-5, the euro long line +1, linkers stable. Net -13 to -19%
 #      real: THE ORDER OF THE MEASURED 1990 (-20.7%, pessimistic, s. 12).
 #      The tent is sized for it: bucket for years 1-3 plus linkers for
 #      4-10 means no forced sale for ten years. No new lever needed.
@@ -995,8 +1089,8 @@
 5	DTLA            # US deflation duration: iShares $ Treasury 20+yr Acc (IE00BFM6TC58) | HEDGE, accumulating and unhedged: crisis dollar, capped at 5 (s. 6)
 10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403; UNHEDGED class kept on measurement, ~10 pts of USD ride the NAV, s. 8; the hedged sister MFEH LU3359622902 is not bought) | MECHANISM, dose capped by error asymmetry (s. 4); holds the long regime (s. 16)
 10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26%/yr flat, all of it inside the NAV, no performance fee, EUR 100k minimum; fallback IAET LU1662498721, same portfolio) | MECHANISM, a second manager against manager risk; pays the accident month (s. 16); on the share-class choice see s. 12
-15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602; the USD and EUR listings are the same ETC and the same exposure, gold, not dollar) | HEDGE, the stagflation regime (s. 7); physical ETC only, never an ETN
-13	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-10 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
+12	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602; the USD and EUR listings are the same ETC and the same exposure, gold, not dollar) | HEDGE, the stagflation regime, dosed on the price of the insurance (s. 7); physical ETC only, never an ETN
+16	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-12 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3, 0.39%) | MECHANISM, weak, hence a minority share; EUR-quoted, USD unhedged
 
 # ---- Tax shelters (equity only by law) --------------------------------
