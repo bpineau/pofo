@@ -51,6 +51,9 @@ func (pr Params) bounded() Params {
 	// carved out of the growth sleeve, so neither can exceed it. A GainFrac
 	// above 1 would price a cost basis below zero, i.e. a tax on capital.
 	pr.GainFrac = clamp(pr.GainFrac, 0, 1)
+	// Inflation erodes every cost basis: bounded to a rate a plan can mean
+	// (20 %/yr already halves a basis in four years), never negative.
+	pr.Inflation = clamp(pr.Inflation, 0, 0.2)
 	g := pr.growthSleeve()
 	pr.PEACapital = clamp(pr.PEACapital, 0, g)
 	pr.AVCapital = clamp(pr.AVCapital, 0, g)

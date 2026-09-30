@@ -298,6 +298,17 @@ type Plan struct {
 	// (CTO/PEA/AV), drained in slice order; nil keeps the single sleeve
 	// taxed by Tax. See Envelope.
 	Envelopes []Envelope
+	// Inflation is the expected inflation rate per year, a FRACTION (0.02 =
+	// 2 %/yr); 0 taxes real gains, the historical behaviour. The kernel runs
+	// in real euros, but France (like most countries) taxes NOMINAL gains:
+	// the cost basis of a holding is fixed in the euros of its purchase, so
+	// in real terms it shrinks by 1/(1+Inflation) every year, and the gap it
+	// opens is taxed like any other gain. Every pocket's basis is eroded that
+	// way each period (monthly at the twelfth root under Monthly), which
+	// makes the effective burden climb even on a flat real path. The
+	// assurance-vie allowance (a nominal statutory amount) is not eroded, a
+	// slightly generous simplification.
+	Inflation float64
 	// SpendSchedule optionally scales the base spending year by year (real
 	// multipliers): a slow health-cost drift ({1, 1.005, 1.010, …}) or a
 	// retirement smile (falling then rising). Years beyond the slice keep a

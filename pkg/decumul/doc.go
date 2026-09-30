@@ -47,7 +47,12 @@
 //	fmt.Println(o.RuinProb)
 //
 // Everything is in real euros: the spending floor is constant in purchasing
-// power, returns are real, pensions are entered as real Cashflows. The
+// power, returns are real, pensions are entered as real Cashflows. The one
+// place the nominal world leaks back in is the tax law, which reads NOMINAL
+// gains: set Plan.Inflation (a fraction per year) and every pocket's cost
+// basis erodes at that rate in real terms, so a holding that merely kept its
+// purchasing power still shows a taxable gain when sold (at 2 % a year, 49 %
+// of its value after twenty years). Zero keeps taxes on real gains. The
 // parametric model is i.i.d. with fat tails and is probably optimistic vs
 // multi-country history; pair it with the bootstrap and historical-cohort
 // scenario.Sources, and read ruin in relative orders of magnitude. This is a

@@ -86,6 +86,7 @@ type Params struct {
 	PEACapital                   float64 `json:"peaCapital"`     // euros held in the PEA envelope (18.6% on gains)
 	AVCapital                    float64 `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
 	GainFrac                     float64 `json:"gainFrac"`       // embedded unrealised gain fraction at start
+	Inflation                    float64 `json:"inflation"`      // expected inflation /yr (fraction): taxes bite NOMINAL gains, so every cost basis erodes at this rate in the real kernel (0 = tax real gains)
 	Ratchet                      bool    `json:"ratchet"`        // only-up spending rule (the written-rules cliquet)
 	WRTrigger                    float64 `json:"wrTrigger"`      // flex also cuts above this current WR (0 = off)
 	SpendDrift                   float64 `json:"spendDrift"`     // real spending drift per year (health costs)
@@ -142,6 +143,7 @@ func (pr Params) plan() decumul.Plan {
 		Buffer:     decumul.BufferSleeve{Years: pr.BufferYears, RealReturn: pr.BufferReturn, RefillStopYear: pr.BufferStopYear},
 		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut, WRThreshold: pr.WRTrigger},
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
+		Inflation:  pr.Inflation,
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
 		Monthly:    pr.Monthly && pr.monthlyCapable(), // regime/pooled sources are annual
 	}

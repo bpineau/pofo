@@ -159,6 +159,7 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 
 	drawTh := p.Buffer.drawThreshold()
 	refillCap := p.Buffer.refillCap()
+	erode := p.basisErosion(1)
 
 	lf := p.life(lives)
 	end := lf.end()
@@ -331,6 +332,9 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		}
 
 		pks.grow(ret(returns, k))
+		if erode != 1 {
+			pks.erode(erode)
+		}
 		buffer *= 1 + p.Buffer.RealReturn
 		res.Wealth[k+1] = pks.total() + buffer
 	}

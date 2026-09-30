@@ -118,7 +118,10 @@ ruin 25%, median terminal wealth 0.5 M
 
 Rates are fractions (`0.035` is 3.5 %/yr real). `Tax` is optional; spending
 rules (guardrails, a percentage of wealth, amortization) and pensions are
-fields of the same `Plan`.
+fields of the same `Plan`. Taxes bite nominal gains while the plan runs in
+real euros: set `Inflation` (`0.02` for 2 %/yr) and every cost basis erodes
+at that rate, so even a flat real path pays tax on its sales; the simulator's
+Taxes group carries the same control, at 2 % by default.
 
 ### Lifetimes, couples and estates
 
