@@ -1,5 +1,5 @@
 # Using the FIRE simulator
-<!-- source: utiliser-la-page-fire @ cde1a6912913 -->
+<!-- source: utiliser-la-page-fire @ 16e85e029c0c -->
 
 pofo's FIRE simulator is a laboratory for a retirement plan, and it runs in a browser. You describe your situation there: capital, spending, age, pension, spending rules. It then runs that one plan through several market models, from the one that follows your own funds most closely to the harshest the century has on record. This article is the full manual. It says which order to read the sections in, what each group of parameters controls, and above all how to **read** what you are looking at. The tool is built to inform a decision, not to hand down a verdict.
 
