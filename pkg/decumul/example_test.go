@@ -191,3 +191,20 @@ func ExamplePlan_Sweep1D() {
 	// 40000 a year: ruin 42 %, median terminal wealth 0.2 M
 	// 50000 a year: ruin 67 %, median terminal wealth 0.0 M
 }
+
+// The tax law reads nominal gains while the plan runs in real euros: with
+// Inflation set, a flat real path still pays tax, because every cost basis
+// loses purchasing power against the holding it prices. One deterministic
+// path, no market move at all, 31.4 % on gains.
+func ExamplePlan_RunPath_nominalGains() {
+	flat := scenario.Sequence{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	p := decumul.Plan{Capital: 500_000, NeedAnnual: 20_000, Years: 10, Tax: decumul.CTOFlatTax{Rate: 0.314}}
+	real := p.RunPath(flat, decumul.Lives{})
+	p.Inflation = 0.02
+	nominal := p.RunPath(flat, decumul.Lives{})
+	fmt.Printf("tax on real gains: %.0f\n", real.TaxPaid)
+	fmt.Printf("tax on nominal gains at 2 %% inflation: %.0f\n", nominal.TaxPaid)
+	// Output:
+	// tax on real gains: 0
+	// tax on nominal gains at 2 % inflation: 5461
+}

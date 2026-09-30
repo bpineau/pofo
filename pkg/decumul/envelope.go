@@ -106,6 +106,18 @@ func (t *avTaxState) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid
 	return gross, newCost, taxPaid
 }
 
+// basisErosion is the per-period factor Plan.Inflation leaves of a nominal
+// cost basis, in real euros, for a kernel stepping periodsPerYear times a
+// year: 1/(1+Inflation) annually, its twelfth root monthly, and exactly 1
+// when Inflation is zero or negative (deflation is not modelled: a basis
+// never gains purchasing power against the tax law).
+func (p *Plan) basisErosion(periodsPerYear float64) float64 {
+	if p.Inflation <= 0 {
+		return 1
+	}
+	return math.Pow(1+p.Inflation, -1/periodsPerYear)
+}
+
 // pocket is the per-path state of one envelope: its market value, cost basis
 // and (possibly per-path stateful) tax.
 type pocket struct {
@@ -185,6 +197,18 @@ func (ps pocketOps) sell(want float64, taxPaid *float64) float64 {
 func (ps pocketOps) grow(r float64) {
 	for i := range ps {
 		ps[i].value *= 1 + r
+	}
+}
+
+// erode multiplies every pocket's cost basis by f, the real value one period
+// of inflation leaves of a nominal basis (1/(1+Inflation) per year): the
+// kernel runs in real euros while the tax law reads nominal ones, so the
+// basis loses purchasing power against the holding it prices, and the gap is
+// a taxable gain. Called once per period after grow; a factor of 1 is a
+// no-op the kernels skip.
+func (ps pocketOps) erode(f float64) {
+	for i := range ps {
+		ps[i].cost *= f
 	}
 }
 

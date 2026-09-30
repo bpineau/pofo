@@ -201,3 +201,30 @@ recipe. Both amounts at zero keeps the single blended sleeve, so the structure
 stays optional as recommended; the default gain fraction, however, moves every
 plan that had none, which is the 0.30 point above and the point of the
 exercise.
+
+## Nominal gains (2026-09-30)
+
+The kernel runs in real euros and, until this date, taxed real gains: a
+holding that only kept its purchasing power was sold tax-free. The law reads
+nominal gains. The cost basis is fixed in the euros of the purchase, so in
+real terms it shrinks by 1/(1+pi) a year and the gap is taxed like any gain:
+at 2 % inflation an asset with a zero real return shows a 49 % nominal gain
+after twenty years, and a 31.4 % rate takes ~15 % of the proceeds. That is
+the linkers' "fuite fiscale sur l'indexation" generalised to every taxable
+euro, and it was missing from every ruin figure the page printed.
+
+Shipped as `Plan.Inflation` (a fraction per year; `basisErosion` gives the
+per-period factor, applied to every pocket after `grow` in both kernels, the
+twelfth root monthly), surfaced as the Taxes group's `inflation` slider with a
+2 % default (the ECB target), 0 restoring the old behaviour. Kept simple on
+purpose: the assurance-vie allowance, a nominal statutory amount, is not
+eroded (slightly generous), deflation never inflates a basis, and the
+embedded-gain slider still describes today's real basis. Measured at 4 000
+paths, 0 against 2 %: the page's default plan (600 k, 24 k a year, 42
+years, a 12 k pension from year 25) goes from 37.6 to 40.7 % of Student-t
+ruin and from 23.1 to 24.8 % of effective tax, its median terminal wealth
+from 226 to 165 k; a 2 M plan spending 60 k under guardrails with a 60 %
+sheltered pocket goes from 1.5 to 1.7 % of ruin and from 16.3 to 17.6 % of
+effective tax (+32 k of cumulative median tax). The cost lands where the
+capital is thin and the horizon long, which is where the old assumption
+flattered most.

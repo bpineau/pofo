@@ -44,6 +44,7 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 	drawTh := p.Buffer.drawThreshold()
 	refillCap := p.Buffer.refillCap()
 	bufferStep := math.Pow(1+p.Buffer.RealReturn, 1.0/12) - 1
+	erode := p.basisErosion(12)
 	monthlyNeedCap := p.NeedAnnual / 12
 
 	lf := p.life(lives)
@@ -173,6 +174,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 			}
 
 			pks.grow(ret(returns, k*12+m))
+			if erode != 1 {
+				pks.erode(erode)
+			}
 			buffer *= 1 + bufferStep
 		}
 		if res.Spend[k] < uncut-1e-6 {
