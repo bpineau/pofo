@@ -252,7 +252,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	site.Handle(mux)
 	css := func(body string) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != http.MethodGet {
+			if !readOnly(r) {
 				http.Error(w, "GET only", http.StatusMethodNotAllowed)
 				return
 			}
@@ -266,7 +266,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux.HandleFunc("/composer.css", css(composerCSS))
 	js := func(body string) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != http.MethodGet {
+			if !readOnly(r) {
 				http.Error(w, "GET only", http.StatusMethodNotAllowed)
 				return
 			}
@@ -280,7 +280,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	// /favicon.ico; the heads also link /favicon.svg for crispness. Both serve
 	// the same bytes (modern browsers render SVG at either path).
 	favicon := func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
+		if !readOnly(r) {
 			http.Error(w, "GET only", http.StatusMethodNotAllowed)
 			return
 		}
@@ -297,7 +297,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		panic(err) // embedded data; cannot fail at runtime
 	}
 	mux.HandleFunc("/catalog.json", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
+		if !readOnly(r) {
 			http.Error(w, "GET only", http.StatusMethodNotAllowed)
 			return
 		}
@@ -353,12 +353,20 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 // sitemap and from robots.txt: it is not a page.
 const healthPath = "/healthz"
 
+// readOnly reports whether r asks to read a page: GET, or HEAD, which
+// net/http answers with the same headers and no body. Monitors, link
+// checkers and the Cloudflare edge probe with HEAD; refusing it made the
+// site look down to them while every GET served fine.
+func readOnly(r *http.Request) bool {
+	return r.Method == http.MethodGet || r.Method == http.MethodHead
+}
+
 // health answers the liveness probe: the process is up and its mux is serving.
 // Nothing is checked beyond that on purpose (no fetch, no cache probe): a
 // health endpoint that depends on a third-party quote source would report the
 // server dead every time Yahoo hiccups.
 func health(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+	if !readOnly(r) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
@@ -662,7 +670,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 
 // view renders the comparison page for the portfolios encoded in the URL.
 func (s *server) view(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if !readOnly(r) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
@@ -707,7 +715,7 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 
 // exampleFile serves one embedded portfolio file as plain text.
 func (s *server) exampleFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if !readOnly(r) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
