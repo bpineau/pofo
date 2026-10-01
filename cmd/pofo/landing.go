@@ -78,7 +78,7 @@ func (s *server) landing(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	if r.Method != http.MethodGet {
+	if !readOnly(r) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}

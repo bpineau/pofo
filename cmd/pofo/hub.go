@@ -274,7 +274,7 @@ body.hub{background:
 // the examples catalog and the links on to the rest of the constellation.
 // GET only.
 func (s *server) hub(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if !readOnly(r) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}

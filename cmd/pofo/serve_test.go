@@ -173,6 +173,26 @@ func TestServeRoutes(t *testing.T) {
 // TestServeLanding locks the front door: the two-tone mark, the four section
 // cards, and the visualizer's canonical path (with the trailing-slash form
 // redirected, and the old front-door content now living there).
+// HEAD is a read like GET: monitors and the edge probe with it, and
+// net/http drops the body itself. Every page and asset answers it, and a
+// POST to a page is still refused.
+func TestServeHeadIsARead(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	for _, path := range []string{"/", "/visualizer", "/theme.css", "/composer.js", "/catalog.json", "/healthz", "/firebook/fr/"} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodHead, path, nil))
+		if rec.Code != 200 {
+			t.Errorf("HEAD %s: code=%d, want 200", path, rec.Code)
+		}
+	}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/", nil))
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST /: code=%d, want 405", rec.Code)
+	}
+}
+
 func TestServeLanding(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
