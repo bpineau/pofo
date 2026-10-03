@@ -273,6 +273,9 @@
 // or its OPEN when the record says nowcast_anchor "open" (a fund whose
 // valuation rules price its holding at the opening of the valuation day),
 // with a silent fall back on the close when that day has no opening price.
+// A consumer that caches its own inputs and computes the estimate at read
+// time gets the proxy, its currency and its anchor from NowcastProxyOf and
+// the opening prints from Client.OpenFactors.
 // The mapping from an IntradaySeries
 // to a chart is caller-side: iterate IntradaySeries.Points and copy
 // IntradayPoint.Time into Dates and IntradayPoint.Close into Values on a chart.Series
