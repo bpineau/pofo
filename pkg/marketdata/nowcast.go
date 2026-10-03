@@ -183,6 +183,51 @@ func (c *Client) nowcastIntraday(ctx context.Context, id string, e datasets.Asse
 // series and no cache file written before they existed is touched.
 func openAnchorFactorView(symbol string) string { return symbol + "~open" }
 
+// NowcastProxy is what a consumer computing a fund's estimate ITSELF needs
+// from the catalog: the listed proxy (a catalog id), the currency it quotes
+// in, and the print the fund's NAV of a day is struck on. Such a consumer
+// caches the raw inputs (the fund's published NAVs, the proxy's closes from
+// FetchExtended, its OpenFactors and the FX crosses) and derives the estimate
+// at read time, the arithmetic nowcastForward documents: never a stored
+// number.
+type NowcastProxy struct {
+	ID       string // catalog id of the proxy
+	Currency string // the proxy's quote currency
+	Anchor   string // datasets.NowcastAnchorClose or datasets.NowcastAnchorOpen
+}
+
+// NowcastProxyOf returns the nowcast proxy the catalog names for id (an id,
+// alias or share code), false when it names none. It reads the catalog only,
+// never the network.
+func NowcastProxyOf(id string) (NowcastProxy, bool) {
+	catalog := catalogByID()
+	e, ok := catalog[CanonicalID(id)]
+	if !ok || e.NowcastProxy == "" {
+		return NowcastProxy{}, false
+	}
+	anchor := e.NowcastAnchor
+	if anchor == "" {
+		anchor = datasets.NowcastAnchorClose
+	}
+	return NowcastProxy{ID: e.NowcastProxy, Currency: catalog[e.NowcastProxy].Currency, Anchor: anchor}, true
+}
+
+// OpenFactors returns the daily open-to-close factors of id's Yahoo line from
+// `from`: one point per session, its opening print divided by its closing
+// print (see fetchYahooOpenFactors). Multiplying a value that stands on a
+// session's close by that session's factor moves it to the open, whatever the
+// currency or the adjustment of the closes, which is what an OPEN-anchored
+// nowcast needs. ErrNotCovered when id has no Yahoo symbol.
+func (c *Client) OpenFactors(ctx context.Context, id string, from time.Time) (*Series, error) {
+	symbol, ok := c.yahooSymbol(ctx, id)
+	if !ok {
+		return nil, fmt.Errorf("%s: no Yahoo symbol: %w", id, ErrNotCovered)
+	}
+	return c.cachedHistory(ctx, "yahoo-opens", openAnchorFactorView(symbol), from, false, func() (*Series, error) {
+		return c.fetchYahooOpenFactors(ctx, symbol, from)
+	})
+}
+
 // openAnchorFactor returns the factor that moves a value standing on the
 // proxy's CLOSE of day to the same value standing on its OPEN of that session:
 // the proxy's open divided by its close, currency-independent (one session
@@ -192,15 +237,7 @@ func openAnchorFactorView(symbol string) string { return symbol + "~open" }
 // proxy with no Yahoo symbol, a day it did not trade, a fetch failure), so the
 // caller keeps its close-anchored estimate rather than failing.
 func (c *Client) openAnchorFactor(ctx context.Context, proxyID string, day time.Time) (float64, bool) {
-	symbol, ok := c.yahooSymbol(ctx, proxyID)
-	if !ok {
-		c.Logf("warning: nowcast proxy %s has no Yahoo symbol, the estimate stays anchored on the close", proxyID)
-		return 1, false
-	}
-	from := day.AddDate(0, 0, -14)
-	s, err := c.cachedHistory(ctx, "yahoo-opens", openAnchorFactorView(symbol), from, false, func() (*Series, error) {
-		return c.fetchYahooOpenFactors(ctx, symbol, from)
-	})
+	s, err := c.OpenFactors(ctx, proxyID, day.AddDate(0, 0, -14))
 	if err != nil {
 		c.Logf("warning: %s: no opening prices (%v), the estimate stays anchored on the close", proxyID, err)
 		return 1, false

@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -329,5 +330,43 @@ func TestIntradayRateAt(t *testing.T) {
 	}
 	if r, ok := fx.rateAt(base.Add(time.Hour)); !ok || r != 0.91 {
 		t.Errorf("after the last tick = %v, %v; want 0.91, true", r, ok)
+	}
+}
+
+// TestNowcastProxyOf: the catalog's proxy, its currency and its anchor, the
+// anchor defaulting to the close; a fund with no proxy answers false.
+func TestNowcastProxyOf(t *testing.T) {
+	for _, tc := range []struct {
+		id   string
+		want NowcastProxy
+		ok   bool
+	}{
+		{"ERESMONDEM", NowcastProxy{ID: "URTH", Currency: "USD", Anchor: "close"}, true},
+		{"eres_datadog", NowcastProxy{ID: "DDOG", Currency: "USD", Anchor: "open"}, true},
+		{"990000124099", NowcastProxy{ID: "DDOG", Currency: "USD", Anchor: "open"}, true}, // share code alias
+		{"URTH", NowcastProxy{}, false},
+		{"NOPE", NowcastProxy{}, false},
+	} {
+		got, ok := NowcastProxyOf(tc.id)
+		if ok != tc.ok || got != tc.want {
+			t.Errorf("NowcastProxyOf(%q) = %+v, %v; want %+v, %v", tc.id, got, ok, tc.want, tc.ok)
+		}
+	}
+}
+
+// TestOpenFactorsServesTheSessionRatios: one open/close ratio per session, and
+// ErrNotCovered for an identifier with no Yahoo symbol.
+func TestOpenFactorsServesTheSessionRatios(t *testing.T) {
+	ny, _ := time.LoadLocation("America/New_York")
+	session := time.Date(2020, 1, 10, 9, 30, 0, 0, ny)
+	c, srv := newTestClient(t, t.TempDir(), openAnchorMux(t, 4, session, true))
+	defer srv.Close()
+	ctx := context.Background()
+	s, err := c.OpenFactors(ctx, "DDOG", d(2020, 1, 1))
+	if err != nil || len(s.Points) != 4 || !near(s.Points[1].Close, 101/102.0) {
+		t.Fatalf("OpenFactors = %+v, %v; want 4 sessions, the second at 101/102", s, err)
+	}
+	if _, err := c.OpenFactors(ctx, "LU1234567890", d(2020, 1, 1)); !errors.Is(err, ErrNotCovered) {
+		t.Errorf("no Yahoo symbol: err = %v, want ErrNotCovered", err)
 	}
 }
