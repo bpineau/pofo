@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -862,5 +863,60 @@ func TestLogAccessRecordsTheStatus(t *testing.T) {
 	}
 	if !strings.Contains(got, "https://example.org/from") || !strings.Contains(got, "pofo-test") {
 		t.Errorf("referer or user agent missing from the access line: %q", got)
+	}
+}
+
+// A window that leaves a holding without a single quote is the request's
+// fault, not the data's: a 400 naming the holding and the window, never the
+// opaque 500. The same failure without a window stays a 500 (the data is
+// missing for real), and holdings whose histories never overlap are a 400
+// either way. Every failure logs an "error:" line the dedup filter lets
+// through, and links back to the composer prefilled with the failing query.
+func TestServeViewWindowErrors(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	var logs bytes.Buffer
+	log.SetOutput(newDedupWriter(&logs))
+	flags := log.Flags()
+	log.SetFlags(0) // as main does for the servers: the filter keys on the line's first word
+	defer func() { log.SetOutput(os.Stderr); log.SetFlags(flags) }()
+
+	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
+		return nil, fmt.Errorf("analyze: portfolio dbmfe: %w", &portfolio.NoQuotesError{Symbol: "DBMFE"})
+	}
+	q := "p=NTSG:100&p=DBMFE:100&start=1972-01-01&end=1982-01-01"
+	for range 2 {
+		rec := serveGet(t, h, "/view?"+q)
+		if rec.Code != http.StatusBadRequest ||
+			!strings.Contains(rec.Body.String(), "DBMFE has no quotes in the window 1972-01-01 to 1982-01-01") {
+			t.Errorf("windowed no-quotes: code=%d body=%q", rec.Code, rec.Body.String())
+		}
+		if !strings.Contains(rec.Body.String(), `href="/visualizer?`+html.EscapeString(q)+`"`) {
+			t.Errorf("the back link must carry the failing query:\n%s", rec.Body.String())
+		}
+	}
+	if n := strings.Count(logs.String(), "error: view "+q+": analyze: portfolio dbmfe: no quotes for DBMFE"); n != 2 {
+		t.Errorf("the cause must be logged on every failure, got %d line(s):\n%s", n, logs.String())
+	}
+
+	rec := serveGet(t, h, "/view?p=NTSG:100&p=DBMFE:100")
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("no-quotes without a window stays a 500: code=%d", rec.Code)
+	}
+
+	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
+		return nil, fmt.Errorf("analyze: portfolio p1: %w", portfolio.ErrNoCommonPeriod)
+	}
+	rec = serveGet(t, h, "/view?p=NTSG:50,DBMFE:50&end=1990-01-01")
+	if rec.Code != http.StatusBadRequest ||
+		!strings.Contains(rec.Body.String(), "share no common period in the window to 1990-01-01") {
+		t.Errorf("no common period: code=%d body=%q", rec.Code, rec.Body.String())
+	}
+
+	// A query the grammar rejects links back the same way: the composer
+	// reopens on what was typed, the mistake one edit away.
+	rec = serveGet(t, h, "/view?p=NTSG:abc&currency=EUR")
+	if rec.Code != http.StatusBadRequest || !strings.Contains(rec.Body.String(), `href="/visualizer?p=NTSG:abc&amp;currency=EUR"`) {
+		t.Errorf("parse failure back link: code=%d body=%q", rec.Code, rec.Body.String())
 	}
 }

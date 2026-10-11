@@ -158,13 +158,21 @@ func columnBudget(specs []*portfolio.Spec) error {
 	return nil
 }
 
-// adhocSpec parses one p= value: "ID:WEIGHT,ID:WEIGHT[!meta:value]...".
+// adhocSpec parses one p= value: "ID[:WEIGHT],ID[:WEIGHT][!meta:value]...".
 // The '!' meta delimiter keeps a shareable link hand-typable (a raw ';'
 // is invalid in a Go query string). It rebuilds the portfolio file text
 // and feeds portfolio.Parse. Control characters (notably a URL-decoded
 // newline) are rejected up front: since the rebuilt text is line-based, a
 // smuggled newline would inject an extra holding line that bypasses both
 // the identifier gate and the holdings-count limit below.
+//
+// A weight may be left out ("SP500", or "SP500:" as the composer writes a
+// blank field): the holdings without one share equally what the written
+// weights leave below 100, so "SP500" alone is 100 %, "SP500,DTLA" is 50/50
+// and "SP500:60,DTLA,IGLN" is 60/20/20. Written weights that already reach
+// 100 leave nothing to share and the value is rejected. A portfolio of one
+// holding and no "!name:" is named after that holding ("SP500" rather than
+// "adhoc-1"), the common "compare bare assets" case.
 //
 // Identifiers the bundled catalog knows (marketdata.KnownLocal) are always
 // accepted. The rest go through the gate: nil (the CLI, and a server with the
@@ -180,7 +188,7 @@ func adhocSpec(raw string, n int, gate *foreignGate) (*portfolio.Spec, error) {
 		return nil, fmt.Errorf("control characters in p parameter")
 	}
 	segments := strings.Split(raw, "!")
-	name := fmt.Sprintf("adhoc-%d", n)
+	name := ""
 	var text strings.Builder
 	for _, meta := range segments[1:] {
 		meta = strings.TrimSpace(meta)
@@ -199,11 +207,24 @@ func adhocSpec(raw string, n int, gate *foreignGate) (*portfolio.Spec, error) {
 	if len(pairs) > maxViewHoldings {
 		return nil, fmt.Errorf("at most %d holdings per portfolio", maxViewHoldings)
 	}
+	type holding struct{ id, weight string }
+	var holdings []holding
 	var foreign []string
+	written, unweighted := 0.0, 0
 	for _, pair := range pairs {
-		id, weight, ok := strings.Cut(strings.TrimSpace(pair), ":")
-		if !ok || id == "" || weight == "" {
-			return nil, fmt.Errorf("malformed holding %q, want ID:WEIGHT (decimal point, no comma)", pair)
+		id, weight, _ := strings.Cut(strings.TrimSpace(pair), ":")
+		id, weight = strings.TrimSpace(id), strings.TrimSpace(weight)
+		if id == "" {
+			return nil, fmt.Errorf("malformed holding %q, want ID or ID:WEIGHT (decimal point, no comma)", pair)
+		}
+		if weight == "" {
+			unweighted++
+		} else {
+			w, err := strconv.ParseFloat(weight, 64)
+			if err != nil {
+				return nil, fmt.Errorf("malformed holding %q, want ID or ID:WEIGHT (decimal point, no comma)", pair)
+			}
+			written += w
 		}
 		if !marketdata.KnownLocal(id) {
 			if !gate.accepts(id) {
@@ -211,7 +232,27 @@ func adhocSpec(raw string, n int, gate *foreignGate) (*portfolio.Spec, error) {
 			}
 			foreign = append(foreign, id)
 		}
-		fmt.Fprintf(&text, "%s %s\n", weight, id)
+		holdings = append(holdings, holding{id, weight})
+	}
+	if unweighted > 0 {
+		if written >= 100 {
+			return nil, fmt.Errorf("%d holding(s) without a weight, but the written weights already reach %g %%", unweighted, written)
+		}
+		share := strconv.FormatFloat((100-written)/float64(unweighted), 'f', -1, 64)
+		for i := range holdings {
+			if holdings[i].weight == "" {
+				holdings[i].weight = share
+			}
+		}
+	}
+	for _, h := range holdings {
+		fmt.Fprintf(&text, "%s %s\n", h.weight, h.id)
+	}
+	if name == "" {
+		name = fmt.Sprintf("adhoc-%d", n)
+		if len(holdings) == 1 {
+			name = holdings[0].id
+		}
 	}
 	// One charge per portfolio, after the whole line-up is known: a p= that
 	// does not fit the allowance is rejected whole, never half-fetched.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"net/url"
 	"strings"
 	"testing"
@@ -207,7 +208,10 @@ func TestParseViewQueryErrors(t *testing.T) {
 		{"traversal", "ex=../../etc/passwd", "unknown example"},
 		{"unknown id", "p=ZZZNOTANID:100", "not in the local catalog"},
 		{"quote symbol", "p=^GSPC:100", "not in the local catalog"},
-		{"malformed pair", "p=NTSG", "ID:WEIGHT"},
+		{"malformed weight", "p=NTSG:abc", "ID or ID:WEIGHT"},
+		{"empty id", "p=:50", "ID or ID:WEIGHT"},
+		{"nothing left to share", "p=NTSG:100,IGLN", "already reach 100"},
+		{"over-written", "p=NTSG:70,IGLN:40,IBCI", "already reach 110"},
 		{"too many portfolios", "ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly", "at most 6"},
 		{"too many holdings", "p=" + strings.Repeat("NTSG:1,", 20) + "NTSG:1", "at most 20"},
 		{"bad start", "ex=golden-butterfly&start=notadate", "start"},
@@ -366,5 +370,47 @@ func TestParseViewQueryCountsCurrencyColumns(t *testing.T) {
 	}}
 	if _, err := parseViewQuery(q, base, nil); err == nil {
 		t.Error("seven columns spread over five p= parameters were accepted")
+	}
+}
+
+// A weight may be left out: the unweighted holdings share what the written
+// ones leave below 100, and a lone unnamed holding names its portfolio.
+func TestParseViewQueryOptionalWeights(t *testing.T) {
+	cases := []struct {
+		raw     string
+		name    string
+		weights []float64
+	}{
+		{"p=NTSG", "NTSG", []float64{100}},
+		{"p=NTSG:", "NTSG", []float64{100}},
+		{"p=NTSG,IGLN", "adhoc-1", []float64{50, 50}},
+		{"p=NTSG:60,IGLN,IBCI", "adhoc-1", []float64{60, 20, 20}},
+		{"p=NTSG:60,IGLN:,IBCI:", "adhoc-1", []float64{60, 20, 20}},
+		{"p=NTSG,IGLN,IBCI!name:trio", "trio", []float64{100.0 / 3, 100.0 / 3, 100.0 / 3}},
+		{"p=NTSG:100", "NTSG", []float64{100}},
+		{"p=NTSG:40,IGLN:60", "adhoc-1", []float64{40, 60}},
+	}
+	for _, c := range cases {
+		vr, err := parseViewQuery(mustQuery(t, c.raw), viewBase(), nil)
+		if err != nil {
+			t.Errorf("%s: %v", c.raw, err)
+			continue
+		}
+		s := vr.specs[0]
+		if s.Name != c.name {
+			t.Errorf("%s: name = %q, want %q", c.raw, s.Name, c.name)
+		}
+		if len(s.Holdings) != len(c.weights) {
+			t.Errorf("%s: %d holdings, want %d", c.raw, len(s.Holdings), len(c.weights))
+			continue
+		}
+		for i, w := range c.weights {
+			if got := s.Holdings[i].RawWeight; math.Abs(got-w) > 1e-9 {
+				t.Errorf("%s: holding %d weight = %g, want %g", c.raw, i, got, w)
+			}
+		}
+		if len(s.Warnings) != 0 {
+			t.Errorf("%s: warnings = %v, want none (the shares must sum to 100 exactly)", c.raw, s.Warnings)
+		}
 	}
 }

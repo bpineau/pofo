@@ -38,7 +38,7 @@ comparison is a URL, so you can bookmark or share it:
 | Parameter | Meaning |
 |---|---|
 | `ex=NAME` | a bundled example portfolio; repeat it to add more |
-| `p=ID:W,ID:W!key:value` | an ad hoc portfolio; `!` appends a `#meta` directive |
+| `p=ID:W,ID:W!key:value` | an ad hoc portfolio; `!` appends a `#meta` directive. A weight may be left out: the holdings without one share what the written ones leave below 100 (`p=SP500` is one asset at 100 %, `p=SP500,DTLA` a 50/50, `p=SP500:60,DTLA,IGLN` a 60/20/20), and a lone unnamed holding names its portfolio |
 | `start`, `end` | the window, `YYYY-MM-DD` |
 | `rebalance` | days between rebalances |
 | `currency` | an ISO code, or `native` to keep each series' own currency |

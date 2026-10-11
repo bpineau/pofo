@@ -111,6 +111,12 @@
 // SimResult.MonthlyContributions folds the attribution into calendar
 // months, the input for contribution timelines and per-regime views.
 //
+// Two failures are typed so a caller can tell a request it should reword
+// from a data problem: an asset with no point at all is a [NoQuotesError]
+// naming it (a fetch window that excludes the asset entirely is the usual
+// cause), and assets whose quoting spans never overlap are
+// [ErrNoCommonPeriod].
+//
 // # Units
 //
 // Holding.Weight, Asset.Weight and Line.Weight are FRACTIONS (0.60 = 60 %);

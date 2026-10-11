@@ -28,9 +28,11 @@ import (
 const dedupLimit = 4096
 
 // dedupWriter forwards log lines to w, printing each distinct informational
-// line only once. A line whose text starts with "warning:" is always printed,
+// line only once. A line whose text starts with "warning:" or "error:" is always printed,
 // however often it repeats: warnings report degraded data (a held-flat FX rate,
-// a stale cache, a missing benchmark) and their repetition is itself the signal.
+// a stale cache, a missing benchmark) and their repetition is itself the signal;
+// an error is a request that failed (a /view that answered 500) and its
+// cause must be in the log every time it is asked for, not only the first.
 //
 // The unit of deduplication is one Write, which the log package guarantees is
 // one logged line. It also assumes the line carries no timestamp, which holds
@@ -51,7 +53,7 @@ func newDedupWriter(w io.Writer) *dedupWriter {
 // to repeat it.
 func (d *dedupWriter) Write(p []byte) (int, error) {
 	line := strings.TrimRight(string(p), "\n")
-	if line == "" || strings.HasPrefix(line, "warning:") {
+	if line == "" || strings.HasPrefix(line, "warning:") || strings.HasPrefix(line, "error:") {
 		return d.w.Write(p)
 	}
 	d.mu.Lock()

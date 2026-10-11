@@ -1,11 +1,32 @@
 package portfolio
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
+
+// NoQuotesError is the error Simulate returns when one asset's series holds
+// no point at all. Symbol is the series' symbol (Asset.Symbol). A caller that
+// fetched the assets with a window (marketdata.FetchOptions.From/To) reads it
+// as "the window excludes this asset entirely", which is the request's fault
+// rather than the data's; without a window it is a data problem.
+type NoQuotesError struct {
+	// Symbol is the series' symbol (Asset.Symbol), what the identifier
+	// resolved to.
+	Symbol string
+}
+
+// Error implements error.
+func (e *NoQuotesError) Error() string { return "no quotes for " + e.Symbol }
+
+// ErrNoCommonPeriod is the error Simulate returns when the assets share no
+// window: the last one to start quoting does so after the first one stops.
+// Narrowing the fetch window (marketdata.FetchOptions.From/To) is the usual
+// way to produce it.
+var ErrNoCommonPeriod = errors.New("no common period between the portfolio's assets")
 
 // daysPerYear is the year length the per-annum quantities Simulate accrues
 // (envelope fees, the financing rate and its spread) are spread over, the
@@ -149,7 +170,7 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 	}
 	for _, a := range p.Assets {
 		if len(a.Series.Points) == 0 {
-			return nil, fmt.Errorf("no quotes for %s", a.Symbol)
+			return nil, &NoQuotesError{Symbol: a.Symbol}
 		}
 	}
 
@@ -165,7 +186,7 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		}
 	}
 	if !start.Before(end) {
-		return nil, fmt.Errorf("no common period between the portfolio's assets")
+		return nil, ErrNoCommonPeriod
 	}
 
 	// Union of trading dates inside the window, prices forward-filled. The

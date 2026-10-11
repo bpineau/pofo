@@ -53,9 +53,15 @@
     return u;
   }
 
-  // parsePValue parses one decoded p= value ("ID:WEIGHT,...!name:..!k:v..")
+  // parsePValue parses one decoded p= value ("ID[:WEIGHT],...!name:..!k:v..")
   // into a p port, or an opaque port when it does not fit the grammar. Shared
   // by parseSearch and Fork so both accept exactly what the server accepts.
+  //
+  // A weight is kept as typed, blank included: the server lets a holding
+  // without one share what the written weights leave below 100 ("SP500"
+  // alone is 100 %), so a blank field is a legal state rather than a reason
+  // to lock the card, and a non-numeric weight stays editable too (the badge
+  // flags it and the server rejects it, one edit away).
   function parsePValue(raw) {
     var segs = raw.split("!");
     var holdings = [];
@@ -64,10 +70,9 @@
       var pair = pairs[i].trim();
       if (pair === "") continue;
       var c = pair.indexOf(":");
-      if (c < 0) return { kind: "opaque", raw: raw };
-      var id = pair.slice(0, c).trim();
-      var w = pair.slice(c + 1).trim();
-      if (id === "" || w === "" || !isFinite(Number(w))) return { kind: "opaque", raw: raw };
+      var id = c < 0 ? pair : pair.slice(0, c).trim();
+      var w = c < 0 ? "" : pair.slice(c + 1).trim();
+      if (id === "") return { kind: "opaque", raw: raw };
       holdings.push({ id: id, w: w });
     }
     if (holdings.length === 0) return { kind: "opaque", raw: raw };
@@ -103,11 +108,12 @@
   }
 
   // serializeP renders one port back into its p=/ex= value. Opaque raws pass
-  // through verbatim; a p port rebuilds holdings, then the explicit name, then
-  // its metas in encounter order.
+  // through verbatim; a p port rebuilds holdings (a blank weight as the bare
+  // id, "SP500" rather than "SP500:"), then the explicit name, then its metas
+  // in encounter order.
   function serializeP(port) {
     if (port.kind === "opaque") return port.raw;
-    var s = port.holdings.map(function (h) { return h.id + ":" + h.w; }).join(",");
+    var s = port.holdings.map(function (h) { return h.w === "" ? h.id : h.id + ":" + h.w; }).join(",");
     if (port.nameSet && port.name !== "") s += "!name:" + port.name;
     Object.keys(port.metas).forEach(function (k) { s += "!" + k + ":" + port.metas[k]; });
     return s;
@@ -153,6 +159,8 @@
       "ex=golden-butterfly&currency=EUR&rebalance=90&sim=on&bench=IWDA&start=2010-01-01&end=2026-06-30",
       "p=IWDA:60,IGLN:40&p=AVUV:100", // a freshly added second portfolio serializes cleanly
       "p=IWDASIM:60,IGLNSIM:40",      // SIM-suffixed ids survive the round trip intact
+      "p=SP500&p=DTLA",               // bare assets: a blank weight is the bare id
+      "p=SP500:60,DTLA,IGLN!name:mix", // the unweighted lines share the remainder server-side
       ""
     ];
     var ok = 0, total = cases.length;
@@ -176,6 +184,13 @@
     var prunePass = pruned === "p=IWDA:60";
     if (prunePass) ok++;
     console.log((prunePass ? "PASS" : "FAIL") + " prune-empty-port -> " + JSON.stringify(pruned));
+    // A blank weight typed in the composer ("SP500:") is a legal holding the
+    // server weights itself; the link carries it as the bare id.
+    total++;
+    var blank = serialize(parseSearch("p=SP500:,DTLA:40"));
+    var blankPass = blank === "p=SP500,DTLA:40";
+    if (blankPass) ok++;
+    console.log((blankPass ? "PASS" : "FAIL") + " blank-weight -> " + JSON.stringify(blank));
     console.log("composerSelfTest: " + ok + "/" + total + " passed");
     return ok === total;
   }
@@ -426,13 +441,29 @@
     refreshBadge(port);
   }
 
-  // refreshBadge updates a card's sum badge, flagging any sum that is not 100.
+  // refreshBadge updates a card's sum badge. With every weight written it
+  // flags a sum that is not 100. Blank weights are legal (the server gives
+  // them equal shares of what the written ones leave below 100), so the badge
+  // then says so, and flags only a line-up that leaves nothing to share or a
+  // weight that is not a number.
   function refreshBadge(port) {
     var bal = port._el.querySelector(".bal");
     if (!bal) return;
+    var blanks = 0, bad = false;
+    port.holdings.forEach(function (h) {
+      var w = String(h.w).trim();
+      if (w === "") blanks++;
+      else if (!isFinite(Number(w))) bad = true;
+    });
     var s = sumOf(port);
-    bal.textContent = "Σ " + fmtNum(s);
-    var ok = Math.abs(s - 100) < 0.005;
+    var ok;
+    if (blanks > 0) {
+      ok = !bad && s < 100;
+      bal.textContent = s > 0 ? "Σ " + fmtNum(s) + " + " + blanks + " sharing " + fmtNum(100 - s) : "equal weights";
+    } else {
+      ok = !bad && Math.abs(s - 100) < 0.005;
+      bal.textContent = "Σ " + fmtNum(s);
+    }
     bal.classList.toggle("ok", ok);
     bal.classList.toggle("off", !ok);
   }
@@ -943,6 +974,33 @@
     }
   }
 
+  // renderEx locks a card built client-side for an ex= port: the hub renders
+  // no cards of its own, yet reaches this state when an error page sends the
+  // visitor back with the failing query attached. The example is shown by
+  // name, read-only, and can be removed; the /view page is where it forks.
+  function renderEx(port) {
+    var el = port._el;
+    var kind = el.querySelector(".kind");
+    if (kind) { kind.textContent = "ex="; kind.className = "kind ex"; }
+    var name = el.querySelector(".pname");
+    if (name) { name.readOnly = true; name.value = port.name; }
+    var body = el.querySelector(".pcard-body");
+    body.textContent = "";
+    var note = document.createElement("div");
+    note.className = "g";
+    note.textContent = "A bundled example: open the result to fork it into an editable copy.";
+    body.appendChild(note);
+    var head = el.querySelector(".pcard-head");
+    if (head && !head.querySelector(".pdrop")) {
+      var drop = document.createElement("button");
+      drop.className = "pdrop";
+      drop.type = "button";
+      drop.title = "Remove this portfolio";
+      drop.textContent = "×";
+      head.appendChild(drop);
+    }
+  }
+
   // ---- wiring -------------------------------------------------------------
 
   // accepted remembers the last within-cap value of each field, so an edit
@@ -1065,11 +1123,18 @@
       // The server renders a fixed number of cards (one blank boot card on the
       // hub); a state carrying more portfolios (returning to the hub via Back,
       // or a shared /?<multi-card> link) needs the extra cards built here.
+      var built = !cards[i];
       var card = cards[i] || stack.appendChild(buildShell());
       port._el = card;
       card.__cmpPort = port;
-      if (port.kind === "p") { renderBody(port); enhanceHead(port); }
+      if (port.kind === "p") {
+        // A shell built here carries no name yet (the server's cards do).
+        var nameInput = built ? card.querySelector(".pname") : null;
+        if (nameInput) nameInput.value = port.nameSet ? port.name : "";
+        renderBody(port); enhanceHead(port);
+      }
       else if (port.kind === "opaque") { renderOpaque(port); }
+      else if (port.kind === "ex" && built) { renderEx(port); }
     }
     forks.forEach(function (f) {
       if (f.card.__cmpPort) {
@@ -1078,6 +1143,7 @@
       }
     });
     mountActions();
+    refreshCount(); // the chip counts the server's cards; those built above too
     buildGlobals();
     wire();
     refreshBudget();

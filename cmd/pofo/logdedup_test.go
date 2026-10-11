@@ -19,15 +19,18 @@ func TestDedupWriter(t *testing.T) {
 		info  = "IE00077IIPQ8: history extended via simdata starting 1969-12-31"
 		other = "NTSG -> IE00077IIPQ8"
 		warn  = "warning: FX rate USD->EUR unavailable before 1971-01-04, held constant earlier"
+		fail  = "error: view p=SP500:100&start=1972-01-01: analyze: portfolio sp500: no quotes for SP500"
 	)
 	lg.Print(info)
 	lg.Print(info)
 	lg.Print(other)
 	lg.Print(warn)
+	lg.Print(fail)
 	lg.Print(warn)
+	lg.Print(fail)
 
 	got := buf.String()
-	for line, want := range map[string]int{info: 1, other: 1, warn: 2} {
+	for line, want := range map[string]int{info: 1, other: 1, warn: 2, fail: 2} {
 		if n := strings.Count(got, line); n != want {
 			t.Errorf("%q printed %d time(s), want %d\nlog:\n%s", line, n, want, got)
 		}

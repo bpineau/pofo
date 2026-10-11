@@ -403,7 +403,8 @@ var composerTmpl = template.Must(template.New("composer").Parse(versionedAssets(
 `)))
 
 // specToP serializes a spec into the /view p= value grammar
-// ("ID:WEIGHT,..." plus "!name:" and "!key:value" directives), the exact
+// ("ID:WEIGHT,..." plus "!name:" and "!key:value" directives, every weight
+// written), the exact
 // inverse of adhocSpec for what the grammar can express.
 //
 // The spec's typed fields (Sim, RebalanceDays, ...) are all mirrored verbatim

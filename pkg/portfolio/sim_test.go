@@ -1,6 +1,7 @@
 package portfolio
 
 import (
+	"errors"
 	"math"
 	"strings"
 	"testing"
@@ -93,8 +94,26 @@ func TestSimulateNoOverlap(t *testing.T) {
 		{Symbol: "A", Weight: 0.5, Series: constSeries("A", 0, 5, 10)},
 		{Symbol: "B", Weight: 0.5, Series: constSeries("B", 10, 5, 10)},
 	}}
-	if _, err := Simulate(p, 90); err == nil {
-		t.Fatal("expected error without a common period")
+	if _, err := Simulate(p, 90); !errors.Is(err, ErrNoCommonPeriod) {
+		t.Fatalf("err = %v, want ErrNoCommonPeriod", err)
+	}
+}
+
+// An asset trimmed to nothing (a fetch window before its inception) is a
+// typed error naming it, so a front end can tell the request to widen its
+// window instead of reporting a failure.
+func TestSimulateNoQuotesNamesTheAsset(t *testing.T) {
+	p := &Portfolio{Name: "t", Assets: []Asset{
+		{Symbol: "A", Weight: 0.5, Series: constSeries("A", 0, 5, 10)},
+		{Symbol: "B", Weight: 0.5, Series: &marketdata.Series{Symbol: "B"}},
+	}}
+	_, err := Simulate(p, 90)
+	var nq *NoQuotesError
+	if !errors.As(err, &nq) || nq.Symbol != "B" {
+		t.Fatalf("err = %v, want NoQuotesError for B", err)
+	}
+	if err.Error() != "no quotes for B" {
+		t.Errorf("message = %q", err.Error())
 	}
 }
 

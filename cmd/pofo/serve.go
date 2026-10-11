@@ -442,15 +442,45 @@ func requestStatus(err error) int {
 // the status and the sentence the visitor gets. A p= identifier no source
 // quotes is the request's own fault and will never work, so it earns a 404
 // naming it (the syntactic gate cannot catch it: ZQXWVT is a perfectly
-// well-formed ticker, it simply does not exist). Anything else, an upstream
-// outage on a real identifier included, stays the opaque 500 whose detail
-// belongs in the server log.
-func renderStatus(err error) (int, string) {
+// well-formed ticker, it simply does not exist). A window that leaves a
+// holding without a single quote, or holdings whose histories never overlap,
+// is the request's fault too and earns a 400 that names what to change (the
+// window, or the holding). Anything else, an upstream outage on a real
+// identifier included, stays the opaque 500 whose detail belongs in the
+// server log.
+func renderStatus(err error, vr *viewRequest) (int, string) {
 	var unknown *marketdata.UnknownIdentifierError
 	if errors.As(err, &unknown) {
 		return http.StatusNotFound, "no source quotes " + unknown.ID
 	}
+	windowed := !vr.start.IsZero() || !vr.end.IsZero()
+	var noQuotes *portfolio.NoQuotesError
+	if errors.As(err, &noQuotes) && windowed {
+		return http.StatusBadRequest, fmt.Sprintf("%s has no quotes in the window %s: widen it or drop the holding",
+			noQuotes.Symbol, windowText(vr))
+	}
+	if errors.Is(err, portfolio.ErrNoCommonPeriod) {
+		msg := "the holdings of one portfolio share no common period"
+		if windowed {
+			msg += " in the window " + windowText(vr)
+		}
+		return http.StatusBadRequest, msg
+	}
 	return http.StatusInternalServerError, "the comparison failed; see the server log"
+}
+
+// windowText spells a request's start/end window for an error message:
+// "1972-01-01 to 1982-01-01", "from 1972-01-01" or "to 1982-01-01".
+func windowText(vr *viewRequest) string {
+	const layout = "2006-01-02"
+	switch {
+	case !vr.start.IsZero() && !vr.end.IsZero():
+		return vr.start.Format(layout) + " to " + vr.end.Format(layout)
+	case !vr.start.IsZero():
+		return "from " + vr.start.Format(layout)
+	default:
+		return "to " + vr.end.Format(layout)
+	}
 }
 
 // statusRecorder is a minimal http.ResponseWriter that remembers the status
@@ -524,7 +554,8 @@ func (s *server) fireComposed(w http.ResponseWriter, r *http.Request, enc string
 	}
 	spec, err := adhocSpec(raw, 1, s.foreignGate(r))
 	if err != nil {
-		s.errorPage(w, requestStatus(err), err.Error())
+		log.Printf("error: fire %s: %v", raw, err)
+		s.errorPageBack(w, requestStatus(err), err.Error(), "/visualizer?"+url.Values{"p": {raw}}.Encode())
 		return
 	}
 	if !slash {
@@ -674,9 +705,14 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
+	// Every failure below sends the visitor back to the composer PREFILLED
+	// with this very query (the hub rebuilds its cards from its query string),
+	// so a typo is one edit away instead of a blank page to retype.
+	back := "/visualizer?" + r.URL.RawQuery
 	vr, err := parseViewQuery(r.URL.Query(), s.opt, s.foreignGate(r))
 	if err != nil {
-		s.errorPage(w, requestStatus(err), err.Error())
+		log.Printf("error: view %s: %v", r.URL.RawQuery, err)
+		s.errorPageBack(w, requestStatus(err), err.Error(), back)
 		return
 	}
 	if len(vr.specs) == 0 {
@@ -700,12 +736,15 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 	page, err := s.render(ctx, vr.serverOptions(s.opt), vr.specs)
 	if err != nil {
 		if ctx.Err() != nil {
-			s.errorPage(w, http.StatusGatewayTimeout, "the computation timed out")
+			s.errorPageBack(w, http.StatusGatewayTimeout, "the computation timed out", back)
 			return
 		}
-		log.Printf("view %s: %v", r.URL.RawQuery, err)
-		code, msg := renderStatus(err)
-		s.errorPage(w, code, msg)
+		// An "error:" line is never deduplicated (logdedup.go): a 500 must
+		// show its cause on every occurrence, not only the first in the
+		// process's life.
+		log.Printf("error: view %s: %v", r.URL.RawQuery, err)
+		code, msg := renderStatus(err, vr)
+		s.errorPageBack(w, code, msg, back)
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -733,7 +772,10 @@ func (s *server) exampleFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(raw)
 }
 
-// errorTmpl is the shared error page: title, message, a way home.
+// errorTmpl is the shared error page: title, message, a way back. Back is
+// where the link under the message leads: the hub by default, or, for a /view
+// failure, the hub with the failing query attached so the composer reopens on
+// the portfolios as they were typed.
 var errorTmpl = template.Must(template.New("err").Parse(versionedAssets(`<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -742,14 +784,28 @@ var errorTmpl = template.Must(template.New("err").Parse(versionedAssets(`<!DOCTY
 <link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/theme.css">
 </head><body>
 <main style="max-width:38rem;margin:4rem auto;padding:0 1.2rem">
-<h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="/visualizer">Back to the portfolios</a></p>
+<h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="{{.Back}}">{{.BackLabel}}</a></p>
 </main></body></html>`)))
 
+// errorPage writes the error page with a plain "Back to the portfolios" link
+// to the hub.
 func (s *server) errorPage(w http.ResponseWriter, code int, msg string) {
+	s.errorPageBack(w, code, msg, "")
+}
+
+// errorPageBack writes the error page with its link leading to back: a hub
+// URL carrying the failing query, so the composer reopens prefilled. An empty
+// back means the bare hub.
+func (s *server) errorPageBack(w http.ResponseWriter, code int, msg, back string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(code)
+	label := "Back to the portfolios"
+	if back == "" {
+		back = "/visualizer"
+	} else {
+		label = "Back to the composer, with these portfolios"
+	}
 	_ = errorTmpl.Execute(w, struct {
-		Status  string
-		Message string
-	}{http.StatusText(code), msg})
+		Status, Message, Back, BackLabel string
+	}{http.StatusText(code), msg, back, label})
 }
