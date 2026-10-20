@@ -2,8 +2,8 @@
 # id: MTH
 # name: Amundi Euro Govt Bond 25+Y: long euro-gov bond
 # method: long euro-area government bond TR (EUROGOV-LONG-EUR, 24y constant maturity, modified duration ~17, ~1970; the real ECB 25y curve point sets level and shape from 2004 via EUROGOV-LONG-DAILY) less 0.07%/yr TER; euro-native, real MTH grafted from 2017
-# validation: corr=0.779 (weekly 0.905) beta=0.69 TE=10.4%/yr CAGR sim -4.84% vs real -4.72% (overlap 2048 d from 2018-09-11 to 2026-09-24) vs MTH
-# generated: 2026-09-27
+# validation: corr=0.779 (weekly 0.905) beta=0.69 TE=10.4%/yr CAGR sim -4.60% vs real -4.63% (overlap 2064 d from 2018-09-11 to 2026-10-15) vs MTH
+# generated: 2026-10-21
 date,close
 1970-01-31,1.086993
 1970-02-28,1.077960
@@ -6022,6 +6022,7 @@ date,close
 2026-07-21,71.980000
 2026-07-22,71.980000
 2026-07-23,71.730000
+2026-07-24,72.140000
 2026-07-27,72.650000
 2026-07-28,72.630000
 2026-07-29,72.380000
@@ -6067,3 +6068,20 @@ date,close
 2026-09-23,68.800000
 2026-09-24,68.500000
 2026-09-25,68.100000
+2026-09-28,67.450000
+2026-09-29,67.290000
+2026-09-30,67.070000
+2026-10-01,66.720000
+2026-10-02,68.240000
+2026-10-05,67.940000
+2026-10-06,68.410000
+2026-10-07,67.750000
+2026-10-08,67.730000
+2026-10-09,67.790000
+2026-10-12,67.900000
+2026-10-13,68.330000
+2026-10-14,68.000000
+2026-10-15,68.830000
+2026-10-16,68.730000
+2026-10-19,67.870000
+2026-10-20,68.510000

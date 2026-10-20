@@ -3,7 +3,7 @@
 # name: US total market total return (USD, daily)
 # method: Ken French Data Library, Fama/French 3 Factors [Daily]: the CRSP value-weighted return of all NYSE/AMEX/NASDAQ common stocks (Mkt-RF) plus the one-month Treasury bill return of the same day (RF), cumulated to a total-return index from 1926-07. https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip . An academic factor, so GROSS of fees, commissions and spreads: what it owes before standing in for a fund is charged by pkg/simgen's longBackFee. The deep proxy behind the total-US-market recipe (VTI).
 # validation: 26317 daily returns 1926-07-01 → 2026-08-31; vs SP500-USD: 100 calendar years, return correlation 0.9906, mean year -0.21 pts; vs VTSMX: 412 months 1992-04 → 2026-08, monthly correlation 0.9992, CAGR 11.08 vs 10.79 %/yr (+0.29 pts/yr gross)
-# generated: 2026-09-27
+# generated: 2026-10-20
 date,close
 1926-07-01,100.100000
 1926-07-02,100.560460

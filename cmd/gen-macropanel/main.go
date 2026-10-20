@@ -144,6 +144,7 @@ func main() {
 	out := flag.String("o", "pkg/datasets/macropanel/oecd-monthly.csv", "output CSV path")
 	dry := flag.Bool("dry", false, "print coverage and checks without writing")
 	check := flag.Bool("check", true, "run the sanity checks before writing")
+	accept := flag.String("accept-revised", "", "comma-separated ISO:column rate series whose revision of firm cells was measured and is accepted (e.g. USA:shortrate)")
 	flag.Parse()
 
 	raw := fetchAll(*base)
@@ -153,7 +154,13 @@ func main() {
 	logCoverage(recs, contrib)
 	if *check {
 		runChecks(panel, recs)
-		compareShipped(*out, panel)
+		accepted := map[string]bool{}
+		for _, s := range strings.Split(*accept, ",") {
+			if s = strings.TrimSpace(s); s != "" {
+				accepted[s] = true
+			}
+		}
+		compareShipped(*out, panel, accepted)
 	}
 	if *dry {
 		return
@@ -337,7 +344,18 @@ func rebase(fallback, primary map[string]float64) (map[string]float64, float64) 
 // to 5.7 pt of year-on-year rate around 2000. The mirror's last Japanese
 // three-month rate (2026-05) was also a provisional 0.73 % the OECD has since
 // replaced with 1.27 %.
-func compareShipped(path string, panel map[string]map[string]map[string]float64) {
+//
+// A revision the gate stops is measured before it is let through, and then
+// only by name: accepted holds the "ISO:column" series whose firm moves are
+// reported but not failed (the -accept-revised flag). The one accepted so far,
+// 2026-10, is the American three-month rate: the OECD now serves the Federal
+// Reserve's three-month AA financial commercial paper rate (H.15, FRED CPF3M)
+// for the whole 1997-2026 span, where the shipped file carried an interbank
+// (LIBOR-like) rate up to that rate's cessation. 197 cells moved, by up to
+// 1.13 pt (2008-10, the crisis spread between the two), and the new history
+// matches CPF3M to the cent on 356 of its 357 months; one definition end to end
+// is better than a silent switch in 2023, so the revision was taken.
+func compareShipped(path string, panel map[string]map[string]map[string]float64, accepted map[string]bool) {
 	const (
 		firmRateMonths  = 12
 		maxFirmRateMove = 0.10 // percentage point
@@ -385,7 +403,7 @@ func compareShipped(path string, panel map[string]map[string]map[string]float64)
 				// What a move is worth is what the model reads: a rate as it
 				// stands, an index level only through its year-on-year ratio.
 				d := math.Abs(now - was)
-				if !c.level && m < firm && d > maxFirmRateMove {
+				if !c.level && m < firm && d > maxFirmRateMove && !accepted[iso+":"+c.name] {
 					failed++
 					log.Printf("CHECK FAILED: %s %s %s moved from %.4f to %.4f, a year-old rate the source should not revise", iso, c.name, m, was, now)
 				}
