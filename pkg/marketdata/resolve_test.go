@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestResolveFromCacheNoNetwork(t *testing.T) {
@@ -166,5 +167,20 @@ func TestResolveReportsAnUnknownIdentifier(t *testing.T) {
 	defer srv.Close()
 	if _, err := c.Resolve(context.Background(), "NOSUCHTICKER"); err == nil {
 		t.Fatal("an unquotable identifier must fail")
+	}
+}
+
+// TestResolveFromIsAUTCDay: the cache records the depth it was asked for as a
+// UTC date and refuses an entry whose date is later than the depth asked
+// again. A local clock east of Greenwich is on the next day between midnight
+// and its offset, so a depth taken off it made every fresh entry unreadable
+// for those hours (the web app then billed a cached fetch to the visitor).
+func TestResolveFromIsAUTCDay(t *testing.T) {
+	from := resolveFrom()
+	if from.Location() != time.UTC || from.Hour() != 0 || from.Minute() != 0 || from.Second() != 0 || from.Nanosecond() != 0 {
+		t.Fatalf("resolveFrom() = %v, want 00:00 UTC", from)
+	}
+	if got, want := from.Format("2006-01-02"), time.Now().UTC().AddDate(-15, 0, 0).Format("2006-01-02"); got != want {
+		t.Fatalf("resolveFrom() = %s, want %s", got, want)
 	}
 }

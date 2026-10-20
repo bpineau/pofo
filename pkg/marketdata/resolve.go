@@ -21,8 +21,14 @@ func toResolution(r resolution) Resolution { return Resolution(r) }
 
 // resolveFrom is the history depth Resolve fetches over when it must run a full
 // resolution: deep enough that the multi-source search settles on the same
-// instrument it would for a real long-horizon request.
-func resolveFrom() time.Time { return time.Now().AddDate(-15, 0, 0) }
+// instrument it would for a real long-horizon request. It is a UTC day, like
+// every date of the package: a local clock east of Greenwich is already on the
+// next day between midnight and its offset, and the cache, which records the
+// depth as a UTC date, would then refuse every entry it had just written.
+func resolveFrom() time.Time {
+	y, m, d := time.Now().UTC().AddDate(-15, 0, 0).Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+}
 
 // Search returns candidate instruments for a free-text query: a name
 // ("MSCI World"), a ticker or an ISIN. When the query canonicalizes to a

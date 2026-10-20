@@ -151,7 +151,7 @@ func (c *Client) saveCacheAs(cacheID string, s *Series, from time.Time) {
 		Currency:      s.Currency,
 		Source:        s.Source,
 		Version:       cacheFormat,
-		RequestedFrom: from.Format("2006-01-02"),
+		RequestedFrom: from.UTC().Format("2006-01-02"),
 		FetchedAt:     time.Now(),
 		Dates:         make([]string, 0, len(s.Points)),
 		Closes:        make([]float64, 0, len(s.Points)),
