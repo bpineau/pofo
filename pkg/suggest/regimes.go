@@ -73,7 +73,7 @@ func (fw Framework) Contribution(m Meta) map[Category]float64 {
 	out := map[Category]float64{}
 	if len(m.Exposures) > 0 && fw.leg != nil {
 		for _, class := range sortedKeys(m.Exposures) {
-			for _, c := range fw.leg(Meta{AssetClass: class}) {
+			for _, c := range fw.leg(legMeta(m, class)) {
 				out[c] += m.Exposures[class]
 			}
 		}
@@ -108,8 +108,8 @@ func hinter(m Meta) func(...string) bool {
 // classifyExposures maps a stacked / efficient-core fund (one carrying an
 // explicit notional exposures breakdown, e.g. NTSX 90/60, RSST 100/100) to
 // the union of the categories of each of its legs, every leg classified as a
-// plain asset of that class. Legs are visited in sorted order so the result
-// is deterministic.
+// plain asset of that class carrying the record's bond duration and hedging
+// (legMeta). Legs are visited in sorted order so the result is deterministic.
 func classifyExposures(m Meta, leg func(Meta) []Category) []Category {
 	classes := make([]string, 0, len(m.Exposures))
 	for c := range m.Exposures {
@@ -119,7 +119,7 @@ func classifyExposures(m Meta, leg func(Meta) []Category) []Category {
 	seen := map[Category]bool{}
 	var out []Category
 	for _, class := range classes {
-		for _, cat := range leg(Meta{AssetClass: class}) {
+		for _, cat := range leg(legMeta(m, class)) {
 			if !seen[cat] {
 				seen[cat] = true
 				out = append(out, cat)
@@ -127,6 +127,18 @@ func classifyExposures(m Meta, leg func(Meta) []Category) []Category {
 		}
 	}
 	return out
+}
+
+// legMeta is one leg of a stacked fund, as the leg classifiers read it: the
+// leg's own asset class, and the record's duration and currency hedging, which
+// the catalog defines for a stacked fund as those of its bond exposure (per
+// unit of notional). Dropping them read a 3x 20+ year Treasury fund as an
+// intermediate bond (deflation only) where the unlevered fund of the same
+// index covers deflation and crisis. The free-text hints are NOT carried: one
+// description covers every leg ("equity + gold futures overlay"), so a keyword
+// cannot say which leg it names.
+func legMeta(m Meta, class string) Meta {
+	return Meta{AssetClass: class, Duration: m.Duration, CurrencyHedged: m.CurrencyHedged}
 }
 
 // regimeClassify drives the mapping from asset_class to macro regimes. Stacked

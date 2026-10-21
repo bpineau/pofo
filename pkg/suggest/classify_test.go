@@ -120,6 +120,36 @@ func TestClassifyExposuresUnionIsDeterministic(t *testing.T) {
 	}
 }
 
+// A leveraged bond fund is classified as a stack of its own bond leg, and that
+// leg is the same bond the wrapper holds: the record's duration and hedging
+// describe the bond exposure (the catalog's "duration" field, per unit of
+// notional), so the leg must read them. A 3x 20+ year Treasury fund dropping
+// them would cover deflation only, three times over, while the unlevered fund
+// of the same index covers deflation AND crisis.
+func TestStackedBondLegKeepsDuration(t *testing.T) {
+	tlt := Meta{AssetClass: "government-bond", Duration: 14.9}
+	tmf := Meta{AssetClass: "government-bond", Duration: 14.8, Exposures: map[string]float64{"government-bond": 3}}
+	if got := Regimes(tlt); !sameRegimes(got, []Category{Deflation, Crisis}) {
+		t.Fatalf("plain long sovereign = %v, want [deflation crisis]", got)
+	}
+	if got := Regimes(tmf); !sameRegimes(got, []Category{Deflation, Crisis}) {
+		t.Errorf("3x long sovereign = %v, want [deflation crisis], the plain fund's regimes", got)
+	}
+	got := RegimeFramework().Contribution(tmf)
+	if got[Deflation] != 3 || got[Crisis] != 3 {
+		t.Errorf("3x long sovereign contribution = %v, want deflation 3 and crisis 3", got)
+	}
+	hedged := tmf
+	hedged.CurrencyHedged = true
+	if got := RegimeFramework().Contribution(hedged); got[Crisis] != 0 || got[Deflation] != 3 {
+		t.Errorf("hedged 3x long sovereign contribution = %v, want deflation 3 only", got)
+	}
+	short := Meta{AssetClass: "multi-asset", Duration: 1, Exposures: map[string]float64{"equity": 1, "government-bond": 1}}
+	if got := FactorFramework().Contribution(short); got[Cash] != 1 || got[Term] != 0 {
+		t.Errorf("stack on a short bond leg = %v, want its bond leg read as cash", got)
+	}
+}
+
 // PortfolioReturns is the aggregate the suggestion engine compares a candidate
 // against. It tolerates a short series (it stops at the shortest) and returns
 // nothing at all when there is no asset.
