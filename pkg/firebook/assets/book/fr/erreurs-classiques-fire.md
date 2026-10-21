@@ -5,7 +5,7 @@ Les plans FIRE échouent rarement par malchance pure : les marchés hostiles son
 Cette page dresse la liste des dix plus meurtrières, dans l'ordre où on les rencontre en construisant un plan, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Six d'entre elles se chiffrent, et l'ordre du coût n'est pas celui de la liste. La figure ci-dessous les classe. Elle se lit deux fois : avant de construire son plan, et pendant sa mise en œuvre ([[revue-annuelle]]).
 
 ::: figure cout-des-erreurs
-Le coût mesuré des six erreurs chiffrables, sur un même plan de référence (1 M€, 3,5 % rigide, 50 ans, pension à partir de l'année 20, 60/40) et un même modèle empirique (16 pays, 1870-2020, 200 000 tirages). Les deux plus chères ajoutent à elles seules 36,8 points de ruine, contre 33,9 pour les quatre autres réunies.
+Le coût mesuré des six erreurs chiffrables, sur un même plan de référence (1 M€, 3,5 % rigide, 50 ans, pension à partir de l'année 20, 60/40) et un même modèle empirique (16 pays, 1870-2020, 200 000 tirages). Les deux plus chères ajoutent à elles seules 36,9 points de ruine, contre 34,1 pour les quatre autres réunies.
 :::
 
 ::: cle Le fil conducteur

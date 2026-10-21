@@ -1,12 +1,12 @@
 # The ten mistakes that wreck a FIRE plan
-<!-- source: erreurs-classiques-fire @ a09fa8480c2c -->
+<!-- source: erreurs-classiques-fire @ 6095978c4216 -->
 
 FIRE plans rarely fail from plain bad luck. Hostile markets are already in the models, and a well-built plan absorbs them. They fail from construction errors, almost always the same ones, documented by twenty years of forums, post-mortem blog posts and research.
 
 This page lists the ten deadliest, in the order you meet them while building a plan, each with its mechanism, its warning sign and its fix. Six of them can be measured, and the ranking by cost is not the order of the list. The chart below does that ranking. Read the page twice: once before you build your plan, and again while you are running it ([[the-annual-review]]).
 
 ::: figure cout-des-erreurs
-The measured cost of the six mistakes that can be quantified, on one shared reference plan ($1M, a rigid 3.5%, 50 years, a pension from year 20, 60/40) and one shared empirical model (16 countries, 1870 to 2020, 200,000 draws). The top two alone add 36.8 points of failure probability, against 33.9 for the other four combined.
+The measured cost of the six mistakes that can be quantified, on one shared reference plan ($1M, a rigid 3.5%, 50 years, a pension from year 20, 60/40) and one shared empirical model (16 countries, 1870 to 2020, 200,000 draws). The top two alone add 36.9 points of failure probability, against 34.1 for the other four combined.
 :::
 
 ::: cle The thread running through them

@@ -67,13 +67,13 @@ var bruitBands = []bruitBand{
 	},
 	{
 		name: "La sensibilité aux paramètres",
-		lo:   2.35, hi: 5.99,
+		lo:   2.21, hi: 5.88,
 		detail: "le rendement réel espéré déplacé d'un demi-point",
 		color:  figBlue,
 	},
 	{
 		name: "Le choix du modèle",
-		lo:   0.00, hi: 35.35,
+		lo:   0.00, hi: 35.15,
 		detail:  "les six colonnes du simulateur, même plan partout",
 		color:   figBad,
 		loLabel: "fenêtres historiques", hiLabel: "décennie perdue",
@@ -88,11 +88,11 @@ var bruitColumns = []struct {
 	ruin float64
 }{
 	{"Fenêtres historiques", 0.00},
-	{"Bootstrap par blocs", 2.77},
-	{"Student-t central", 3.79},
-	{"Stress de séquence", 7.98},
-	{"Échantillon mondial", 22.59},
-	{"Décennie perdue", 35.35},
+	{"Bootstrap par blocs", 2.46},
+	{"Student-t central", 3.67},
+	{"Stress de séquence", 7.76},
+	{"Échantillon mondial", 21.96},
+	{"Décennie perdue", 35.15},
 }
 
 // bruitWidth is one noise's span, in points of ruin.

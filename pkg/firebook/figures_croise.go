@@ -52,17 +52,17 @@ type croiseStep struct {
 // BOTH crossings of the five percent rule are inside the plate: the broad
 // sample is already over it at two.
 var croiseGrid = []croiseStep{
-	{1.50, 0.00, 4.20}, {1.75, 0.00, 5.15}, {2.00, 0.00, 6.35}, {2.25, 0.00, 7.55},
-	{2.50, 0.00, 9.11}, {2.75, 0.00, 10.49}, {3.00, 0.00, 12.21}, {3.25, 0.00, 14.16},
-	{3.50, 0.00, 16.46}, {3.75, 0.00, 19.37}, {4.00, 3.33, 22.59}, {4.25, 9.17, 26.11},
-	{4.50, 12.50, 30.09}, {4.75, 20.00, 34.42}, {5.00, 25.83, 39.05},
+	{1.50, 0.00, 4.08}, {1.75, 0.00, 5.10}, {2.00, 0.00, 6.17}, {2.25, 0.00, 7.51},
+	{2.50, 0.00, 8.72}, {2.75, 0.00, 10.24}, {3.00, 0.00, 12.01}, {3.25, 0.00, 14.04},
+	{3.50, 0.00, 16.34}, {3.75, 0.00, 18.88}, {4.00, 3.33, 21.96}, {4.25, 9.17, 25.61},
+	{4.50, 12.50, 30.00}, {4.75, 20.00, 34.59}, {5.00, 25.83, 38.94},
 }
 
 // The two safe rates the plate marks, in percent: where each curve crosses the
 // five percent failure rule. Frozen from the solver, recomputed by the guard.
 const (
 	croiseSafeUS    = 4.07
-	croiseSafeBroad = 1.72
+	croiseSafeBroad = 1.73
 )
 
 // The band where the article says the gap explodes, and where every plan is
@@ -135,7 +135,9 @@ func figEchantillonCroise() string {
 	}
 	b.WriteString(poly(broadPts, figBad, 2.6, ""))
 	b.WriteString(poly(usPts, figDeep, 2.6, ""))
-	b.WriteString(sTxt(rate.Map(4.6), ruin.Map(35), 10.5, figBad, "start", "600",
+	// The name hangs to the left of the steep end of its curve, which a name
+	// set to the right of it would cross.
+	b.WriteString(sTxt(rate.Map(4.55), ruin.Map(35), 10.5, figBad, "end", "600",
 		"le siècle développé"))
 	b.WriteString(sTxt(rate.Map(2.5), ruin.Map(3), 10.5, figDeep, "start", "600",
 		"le siècle américain"))

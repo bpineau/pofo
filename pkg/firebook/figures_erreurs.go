@@ -39,27 +39,27 @@ type errCost struct {
 // portfolio). TestErreursPlateMatchesTheEngine re-runs all of them.
 //
 // Sampling noise at these path counts is +-0.17 point at 95 %, and the ranking
-// is unchanged across seeds; the two smallest gaps (+10.9 vs +9.5 and +7.4 vs
-// +6.1) are an order of magnitude wider than that.
-const errCostRef = 19.34 // ruin (%) of the clean reference plan
+// is unchanged across seeds; the two smallest gaps (+10.9 vs +9.6 and +7.5 vs
+// +6.2) are an order of magnitude wider than that.
+const errCostRef = 19.13 // ruin (%) of the clean reference plan
 
 // errCostEquity/errCostCutEquity/errCostCutRef are the all-equity mirror of the
 // mono-regime error: on the ruin axis it does not show (it is slightly BELOW
 // the reference), it shows in the number of years lived under a cut budget.
 const (
-	errCostEquity    = 18.31 // ruin (%) of the same plan run 100 % equities
-	errCostCutRef    = 16.75 // mean years with a cut budget, reference 60/40
-	errCostCutEquity = 20.04 // mean years with a cut budget, 100 % equities
+	errCostEquity    = 18.17 // ruin (%) of the same plan run 100 % equities
+	errCostCutRef    = 16.73 // mean years with a cut budget, reference 60/40
+	errCostCutEquity = 20.02 // mean years with a cut budget, 100 % equities
 )
 
 // errCosts is the measured ranking, most expensive first.
 var errCosts = []errCost{
-	{"Portefeuille mono-régime, tout obligataire", "0 % d'actions au lieu de 60 %", 39.57, false},
-	{"Flexibilité surestimée", "4,5 % au lieu de 3,5 %, le taux qu'une coupe de 40 % justifierait", 35.95, false},
-	{"Dépenses sous-estimées de 20 %", "42 k€/an au lieu de 35 k€", 30.25, false},
-	{"Pension oubliée", "aucune pension comptée dans le plan", 28.82, true},
-	{"Taux de 4 % au lieu de 3,5 %", "40 k€/an au lieu de 35 k€", 26.74, false},
-	{"Fiscalité et PUMa ignorées", "12 % de friction non budgétée, soit 39,2 k€ à sortir", 25.44, false},
+	{"Portefeuille mono-régime, tout obligataire", "0 % d'actions au lieu de 60 %", 39.48, false},
+	{"Flexibilité surestimée", "4,5 % au lieu de 3,5 %, le taux qu'une coupe de 40 % justifierait", 35.71, false},
+	{"Dépenses sous-estimées de 20 %", "42 k€/an au lieu de 35 k€", 30.05, false},
+	{"Pension oubliée", "aucune pension comptée dans le plan", 28.70, true},
+	{"Taux de 4 % au lieu de 3,5 %", "40 k€/an au lieu de 35 k€", 26.60, false},
+	{"Fiscalité et PUMa ignorées", "12 % de friction non budgétée, soit 39,2 k€ à sortir", 25.29, false},
 }
 
 // figCoutDesErreurs ranks the six errors of the article that can be measured
@@ -116,7 +116,8 @@ func figCoutDesErreurs() string {
 	for i, s := range []string{
 		"Plan de référence : 1 M€, 35 k€/an réels (3,5 %), 50 ans, 60/40, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.",
 		"Modèle empirique : 16 pays, 1870-2020, blocs de 10 ans, 200 000 tirages. Une seule entrée change par barre.",
-		"Le tout-actions, lui, ne se voit pas sur cet axe (18,3 %) : il coûte 20 années de budget coupé sur 50, contre 16,8.",
+		"Le tout-actions, lui, ne se voit pas sur cet axe (" + frNum(errCostEquity, 1) + " %) : il coûte " +
+			frNum(errCostCutEquity, 0) + " années de budget coupé sur 50, contre " + frNum(errCostCutRef, 1) + ".",
 	} {
 		b.WriteString(sTxt(24, 431+float64(i)*14, 9.5, figMuted, "start", "400", s))
 	}
