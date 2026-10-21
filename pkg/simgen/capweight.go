@@ -194,12 +194,50 @@ const worldMethod = "cap-weighted VFINX + VTMGX + VEIEX (US / developed-ex-US / 
 	"weights pinned to the FTSE All-World split published for 2009-10-31 (40.4/46.1/13.5) " +
 	"and drifted by the legs' own returns, net issuance ignored"
 
+// The world-equity targets' published ongoing charges (2026), FRACTIONS per
+// year: Vanguard Total World Stock ETF (VT), Vanguard FTSE All-World UCITS ETF
+// (IE00BK5BQT80, justETF TER), Return Stacked Global Stocks & Bonds (RSSB,
+// gross and net expense ratio on the issuer page).
+const (
+	vtTER   = 0.0006
+	vwraTER = 0.0014
+	rssbTER = 0.0039
+)
+
 // worldEquityFloat is the shared Build of the world-equity reconstructions: the
 // three legs at the published anchor split, drifting as a cap-weighted index
-// does. fee is the target's own load where its donors' NAVs do not already
-// carry it (see the fee constants next to composite).
-func worldEquityFloat(name string, fee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
-	return capWeighted(name, worldLegs, worldAnchor, fee)
+// does, charged what the target's ongoing charge (target, a fraction per year)
+// exceeds the loads its donors' NAVs already carry (feeGap), on the calendar.
+//
+// Every caller passed a zero charge until 2026-10, so VT and VWRA paid nothing
+// over the era their legs are the fee-free MSCI reconstructions (before
+// VEIEX's 1994 and VTMGX's 1999 first NAVs), and the RSSB stack paid nothing
+// at all (see rssbBuild).
+func worldEquityFloat(name string, target float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+		s, err := capWeighted(name, worldLegs, worldAnchor, 0)(f, from)
+		if err != nil {
+			return nil, err
+		}
+		steps, err := feeGap(f, from, target, worldPricedLegs())
+		if err != nil {
+			return nil, err
+		}
+		return afterFeeSteps(name, s, steps), nil
+	}
+}
+
+// worldPricedLegs is worldLegs with the ongoing charge each donor's NAV
+// carries. The notional is the anchor split: the cap weights drift around it,
+// which moves the donors' blended load by a few hundredths of a point at most
+// (VEIEX, the dearest fund, holds 13.5 % at the anchor).
+func worldPricedLegs() []pricedLeg {
+	load := map[string]float64{"VFINX": vfinxTER, "VTMGX": vtmgxTER, "VEIEX": veiexTER}
+	out := make([]pricedLeg, len(worldLegs))
+	for i, l := range worldLegs {
+		out[i] = pricedLeg{ID: l.ID, Weight: l.Weight, Load: load[l.ID]}
+	}
+	return out
 }
 
 // worldEquityID is the synthetic frame component the stacked recipes hold their
@@ -211,14 +249,31 @@ const worldEquityID = "WORLD-EQ"
 // on top of it. The equity sleeve is built first, as its own cap-weighted
 // index, because its weights drift and a constant-weight composite cannot
 // express that; the stack itself is then an ordinary two-leg composite.
+//
+// The fund's 0.39 %/yr is charged through feeGap on the whole stack, the four
+// donors' own loads deducted from it as each one starts quoting: 0.39 before
+// VFINX's first NAV, 0.07 once all four carry theirs (0.119 on the equity
+// sleeve, 0.20 on the Treasury leg). Until 2026-10 the build charged nothing,
+// which is about a third of a point a year over its 1988-1991 head and part
+// of why the engine read 1.3 points a year hot on the live window.
 func rssbBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	eq, err := worldEquityFloat("RSSB (world equity sleeve)", 0)(f, from)
 	if err != nil {
 		return nil, err
 	}
+	const name = "RSSB (100/100 stocks+bonds replication)"
 	inj := injected{inner: extend(f), have: map[string]*marketdata.Series{worldEquityID: eq}}
-	return composite("RSSB (100/100 stocks+bonds replication)", []Leg{
+	s, err := composite(name, []Leg{
 		{ID: worldEquityID, Weight: 1.00},
 		{ID: "VFITX", Weight: 1.00, Excess: true},
 	}, usdOvernight, 0)(inj, from)
+	if err != nil {
+		return nil, err
+	}
+	steps, err := feeGap(f, from, rssbTER, append(worldPricedLegs(),
+		pricedLeg{ID: "VFITX", Weight: 1.00, Excess: true, Load: vfitxTER}))
+	if err != nil {
+		return nil, err
+	}
+	return afterFeeSteps(name, s, steps), nil
 }

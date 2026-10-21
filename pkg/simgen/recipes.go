@@ -144,8 +144,8 @@ func vwraRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BK5BQT80",
 		Name:            "Vanguard FTSE All-World: world equity (cap-weighted US/dev-ex-US/EM)",
-		Method:          worldMethod + " (~1988→), real VWRA grafted from 2019",
-		Build:           worldEquityFloat("VWRA (FTSE All-World replication)", 0),
+		Method:          worldMethod + " (~1988→), the 0.14%/yr TER charged only where the donors' own charges do not already cover it, real VWRA grafted from 2019",
+		Build:           worldEquityFloat("VWRA (FTSE All-World replication)", vwraTER),
 		ValidateAgainst: "IE00BK5BQT80",
 		SpliceReal:      "IE00BK5BQT80",
 	}
@@ -991,7 +991,7 @@ func rssbRecipe() Recipe {
 	return Recipe{
 		ID:              "RSSB",
 		Name:            "Return Stacked Global Stocks & Bonds",
-		Method:          "100% world equity (" + worldMethod + ") + 100% (VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) Treasury stack (~1988→), real RSSB grafted from 2023",
+		Method:          "100% world equity (" + worldMethod + ") + 100% (VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) Treasury stack (~1988→), the 0.39%/yr expense ratio charged only where the donors' own charges (0.319%/yr once all four quote) do not already cover it, real RSSB grafted from 2023",
 		Build:           rssbBuild,
 		ValidateAgainst: "RSSB",
 		SpliceReal:      "RSSB",
@@ -1069,8 +1069,8 @@ func vtRecipe() Recipe {
 	return Recipe{
 		ID:              "VT",
 		Name:            "Vanguard Total World Stock",
-		Method:          worldMethod + " (1988→), real VT grafted from 2008",
-		Build:           worldEquityFloat("VT (total world replication)", 0),
+		Method:          worldMethod + " (1988→), the 0.06%/yr expense ratio charged only where the donors' own charges do not already cover it, real VT grafted from 2008",
+		Build:           worldEquityFloat("VT (total world replication)", vtTER),
 		ValidateAgainst: "VT",
 		SpliceReal:      "VT",
 	}
@@ -1979,6 +1979,7 @@ const (
 	vfitxTER = 0.0020
 	vustxTER = 0.0020
 	vtmgxTER = 0.0005
+	veiexTER = 0.0029
 	ezuTER   = 0.0050
 	eunhTER  = 0.0007
 	dtlaTER  = 0.0007

@@ -409,3 +409,58 @@ func TestWintonOverlayCarriesTheCatalogNotional(t *testing.T) {
 		t.Errorf("trend overlay notional %v, the catalog record declares %v", wintonTrendNotional, want)
 	}
 }
+
+// A world-equity reconstruction owes its target's ongoing charge wherever its
+// donors' NAVs do not already carry one (feeGap). Every leg here is flat and
+// every rate zero, so the output moves by the charge alone: the whole of it
+// while the legs are the fee-free reference series spliced behind the funds,
+// less each fund's own load from its first quote on.
+func TestWorldEquityBlendsChargeTheirFeeGap(t *testing.T) {
+	const n = 1200
+	flat := func(id string, start int) *marketdata.Series { return from(mkLevels(id, n, 100), start) }
+	universe := fakeFetcher{
+		// The fee-free reference series extend() splices behind each fund.
+		"SP500-USD": flat("SP500-USD", 0), "DEVEXUS-USD": flat("DEVEXUS-USD", 0),
+		"EM-USD": flat("EM-USD", 0), "TREASURY-INT-USD": flat("TREASURY-INT-USD", 0),
+		"^IRX": mkLevels("^IRX", n, 0),
+		// The funds themselves, each from its own inception.
+		"VFINX": flat("VFINX", 200), "VEIEX": flat("VEIEX", 400),
+		"VTMGX": flat("VTMGX", 600), "VFITX": flat("VFITX", 800),
+	}
+	wLoad := worldLegs[0].Weight*vfinxTER + worldLegs[1].Weight*vtmgxTER + worldLegs[2].Weight*veiexTER
+	for _, c := range []struct {
+		id    string
+		build func(Fetcher, time.Time) (*marketdata.Series, error)
+		eras  map[int]float64 // the charge in force from that day to the next era
+	}{
+		{"RSSB", rssbBuild, map[int]float64{
+			0:   rssbTER,
+			200: rssbTER - worldLegs[0].Weight*vfinxTER,
+			400: rssbTER - worldLegs[0].Weight*vfinxTER - worldLegs[2].Weight*veiexTER,
+			600: rssbTER - wLoad,
+			800: max(0, rssbTER-wLoad-vfitxTER),
+		}},
+		{"IE00BK5BQT80", worldEquityFloat("VWRA", vwraTER), map[int]float64{
+			0:   vwraTER,
+			200: vwraTER - worldLegs[0].Weight*vfinxTER,
+			600: max(0, vwraTER-wLoad),
+		}},
+	} {
+		s, err := c.build(universe, time.Time{})
+		if err != nil {
+			t.Fatalf("%s: %v", c.id, err)
+		}
+		at := map[time.Time]float64{}
+		for _, p := range s.Points {
+			at[p.Date] = p.Close
+		}
+		for start, want := range c.eras {
+			a, b := day(start+20), day(start+180)
+			years := b.Sub(a).Hours() / 24 / 365.25
+			got := 1 - math.Pow(at[b]/at[a], 1/years)
+			if math.Abs(got-want) > 1e-6 {
+				t.Errorf("%s from day %d: charged %.5f %%/yr, want %.5f", c.id, start, got*100, want*100)
+			}
+		}
+	}
+}

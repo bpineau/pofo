@@ -107,3 +107,19 @@ monthly correlation).
   include Canada: its index was Europe-plus-Pacific for much of the deep era.
   Canada's 3.3 % therefore rides on a leg that historically excluded it, which
   is the best of the three available homes for it, not a faithful one.
+
+## Fees (2026-10)
+
+The three blends shipped with no fee at all until 2026-10, which bills
+nothing over the era the legs are the fee-free reference series (before
+VEIEX's 1994-12 and VTMGX's 1999-08 first NAVs) and, for RSSB, nothing on a
+fund charging 0.39 %/yr. They now charge their target's ongoing charge less
+what the donors' NAVs already carry, on the calendar (`feeGap`, on the anchor
+split, a cap-weight drift moving the donors' blended load by a few hundredths
+of a point at most):
+
+| file | target | owed, deep era | owed, all donors quoting | live-window CAGR gap |
+|---|---|---|---|---|
+| VT | 0.06 % | 0.003 % (VFINX alone covers it) | 0 | +0.31 -> +0.31 pt/yr |
+| VWRA class | 0.14 % | 0.083 % | 0.021 % | +0.52 -> +0.50 pt/yr |
+| RSSB | 0.39 % (stack) | 0.333 % to 1991-10 | 0.071 % | +1.29 -> +1.20 pt/yr |
