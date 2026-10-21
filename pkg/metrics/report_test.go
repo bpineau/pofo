@@ -102,3 +102,17 @@ func TestReportDropsPreOriginWindowsAndGatesLongFigures(t *testing.T) {
 		t.Fatalf("empty input must return zero values: %+v %+v", r, s)
 	}
 }
+
+// TestReportDrawdownIgnoresWithdrawals: withdrawing half of a flat account
+// is not a -50 % drawdown.
+func TestReportDrawdownIgnoresWithdrawals(t *testing.T) {
+	d0 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	day := func(i int) time.Time { return d0.AddDate(0, 0, i) }
+	dates := []time.Time{day(0), day(1), day(2), day(3)}
+	values := []float64{100, 100, 50, 45}
+	flows := []Flow{{Date: day(2), Amount: -50}}
+	_, sum := Report(dates, values, flows, ReportOptions{})
+	if math.Abs(sum.MaxDrawdown.Depth-(-0.10)) > 1e-12 {
+		t.Fatalf("MaxDrawdown = %v, want -10 %% (the market move, not the withdrawal)", sum.MaxDrawdown.Depth)
+	}
+}

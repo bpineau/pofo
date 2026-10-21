@@ -207,6 +207,22 @@ func ExampleTWR() {
 	// ok=true TWR=10.0 %
 }
 
+// FlowIndex is the series a scope with flows is measured on. Selling half of
+// a line that stays flat halves its value and loses nothing: the index stays
+// at 1, and the -10 % day after it is the only drawdown. The sale is booked at
+// the day's close, so the whole line earned that day before half of it left.
+func ExampleFlowIndex() {
+	d0 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	dates := []time.Time{d0, d0.AddDate(0, 0, 1), d0.AddDate(0, 0, 2), d0.AddDate(0, 0, 3)}
+	values := []float64{100, 100, 50, 45}
+	flows := []metrics.Flow{{Date: dates[2], Amount: -50}}
+	index := metrics.FlowIndex(dates, values, flows)
+	fmt.Printf("index %.2f, drawdown on the index %.0f %%, on the value %.0f %%\n",
+		index, metrics.MaxDrawdown(dates, index).Depth*100, metrics.MaxDrawdown(dates, values).Depth*100)
+	// Output:
+	// index [1.00 1.00 1.00 0.90], drawdown on the index -10 %, on the value -55 %
+}
+
 // IRR weighs each cash flow by its date: money invested early counts more
 // than money added late. Flows are signed from the investor's standpoint
 // (negative going in, positive coming out).

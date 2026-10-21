@@ -147,6 +147,7 @@ fmt.Printf("%d two-year windows, %d lost money; the worst ran %d to %d at %.1f %
 | tail losses | `VaR`, `CVaR` (positive per-period losses) |
 | rolling risk | `RollingBeta`, `RollingCorr` |
 | money-weighted and time-weighted returns | `IRR`, `TWR` |
+| a value with deposits and sales: its flow-neutral growth, period table and drawdown | `FlowIndex`, `Report` (inflows booked at the start of the day, outflows at its close) |
 | a return quantile | `Quantiles` |
 
 Scripts that put these together: `describe.go`, `stats.go`, `rolling.go`,

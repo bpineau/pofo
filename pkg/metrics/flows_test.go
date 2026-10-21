@@ -159,3 +159,65 @@ func TestAnnualize(t *testing.T) {
 		t.Fatal("Annualize of degenerate inputs should be 0")
 	}
 }
+
+// TestTWROutflowLeavesAtTheClose pins the outflow convention: a line bought
+// at 100 that rises to 110 and is sold whole at the next close of 105 earned
+// +5 %. Booked at the start of the day, the sale (worth 105) was subtracted
+// from the previous close of 110 and left a 0/5 growth factor: a TWR of
+// -100 %, for ever.
+func TestTWROutflowLeavesAtTheClose(t *testing.T) {
+	dates := []time.Time{fday(0), fday(1), fday(2)}
+	values := []float64{100, 110, 0}
+	flows := []Flow{{Date: fday(2), Amount: -105}}
+	got, ok := TWR(dates, values, flows)
+	if !ok || math.Abs(got-0.05) > 1e-12 {
+		t.Fatalf("TWR = %v, %v; want +5 %% (110 -> 105 before the sale)", got, ok)
+	}
+	// A partial sale on a down day keeps that day's return whole: 110 -> 99
+	// is -10 %, half of the position leaving at the 99 close.
+	values = []float64{100, 110, 49.5}
+	flows = []Flow{{Date: fday(2), Amount: -49.5}}
+	got, _ = TWR(dates, values, flows)
+	if want := 0.99 - 1; math.Abs(got-want) > 1e-12 {
+		t.Fatalf("TWR with a partial sale = %v, want %v", got, want)
+	}
+	// A cost posted once the scope is empty is no return at all.
+	dates = append(dates, fday(3))
+	values = []float64{100, 110, 0, 0}
+	flows = []Flow{{Date: fday(2), Amount: -105}, {Date: fday(3), Amount: -1}}
+	if got, _ = TWR(dates, values, flows); math.Abs(got-0.05) > 1e-12 {
+		t.Fatalf("TWR with a fee after the sale = %v, want +5 %%", got)
+	}
+}
+
+// TestFlowIndexIsFlowNeutral: selling half of a flat line halves its value
+// and loses nothing, so the index stays at 1 and nothing draws down.
+func TestFlowIndexIsFlowNeutral(t *testing.T) {
+	dates := []time.Time{fday(0), fday(1), fday(2), fday(3)}
+	values := []float64{100, 100, 50, 55}
+	flows := []Flow{{Date: fday(2), Amount: -50}}
+	idx := FlowIndex(dates, values, flows)
+	want := []float64{1, 1, 1, 1.1}
+	for i := range want {
+		if math.Abs(idx[i]-want[i]) > 1e-12 {
+			t.Fatalf("FlowIndex = %v, want %v", idx, want)
+		}
+	}
+	if ep := MaxDrawdown(dates, idx); ep.Depth != 0 {
+		t.Fatalf("drawdown on the index = %v, want none", ep.Depth)
+	}
+	if FlowIndex(dates, values[:2], nil) != nil {
+		t.Fatal("FlowIndex of mismatched lengths should be nil")
+	}
+}
+
+// TestFlowReturnsFoldsWeekendMoves: a series that moves at the weekend keeps
+// that move in Monday's return instead of losing it.
+func TestFlowReturnsFoldsWeekendMoves(t *testing.T) {
+	dates := []time.Time{fday(4), fday(5), fday(6), fday(7)}
+	values := []float64{100, 110, 110, 121}
+	got, _ := FlowReturns(dates, values, nil)
+	if len(got) != 1 || math.Abs(got[0]-0.21) > 1e-12 {
+		t.Fatalf("returns = %v, want the Friday-to-Monday +21 %%", got)
+	}
+}

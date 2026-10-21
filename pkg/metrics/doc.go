@@ -26,7 +26,9 @@
 //     [Track] measures a replica against what it follows ([Tracking]).
 //   - [LowestK] and [HighestK] date a sample's extremes; [VaR] and [CVaR]
 //     read its tail.
-//   - [TWR] and [IRR] measure a series that carries external flows ([Flow]).
+//   - [TWR] and [IRR] measure a series that carries external flows ([Flow]);
+//     [FlowIndex] is its flow-neutral growth, what its statistics read, and
+//     [Report] the period table and track record over it.
 //
 // Every return and statistic is a FRACTION (0.07 = +7 %), except
 // [Stats].Ulcer in percent points and [Stats].CWARP in percent.
@@ -155,10 +157,16 @@
 //
 // When a series carries external contributions and withdrawals (a savings
 // account, a wealth tracker), Compute's raw figures would mistake them for
-// performance. TWR chain-links flow-neutralized daily returns, FlowReturns
-// yields the flow-adjusted returns and their cadence (weekend points dropped,
-// so calendar-daily forward-filled series keep an honest volatility and read
-// as trading days), and Volatility, Sharpe and Sortino accept those returns
+// performance. FlowIndex chain-links the flow-neutralized daily growth into an
+// index from 1, the series every statistic of such a scope reads (a drawdown
+// included: a withdrawal lowers the value and loses nothing); the flows of a
+// day are netted, money coming in booked at the start of the day and money
+// going out at its close, so a sale valued at the day's close earns that day
+// before it leaves. TWR is that index's last point less one, FlowReturns
+// yields the flow-adjusted returns and their cadence (weekend points folded
+// into the next weekday, so calendar-daily forward-filled series keep an
+// honest volatility and read as trading days), Report measures the windows,
+// risk and drawdown on it, and Volatility, Sharpe and Sortino accept those returns
 // with an explicit annual risk-free rate (Compute's convention stays rf = 0). Annualize
 // turns a cumulative return over a day span into a compound annual rate,
 // and IRR solves the money-weighted rate of the flows themselves.

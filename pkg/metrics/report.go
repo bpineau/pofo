@@ -57,7 +57,10 @@ type ReportSummary struct {
 	CAGR, Vol, Sharpe, Sortino float64 // annualized FRACTIONS, as in Stats; read them only under their gate
 	HasCAGR, HasRisk           bool    // the span is long enough to annualize the return, the risk figures
 
-	MaxDrawdown Episode // deepest drawdown of the whole record
+	// MaxDrawdown is the deepest drawdown of the whole record, measured on
+	// the FlowIndex rather than on the value: a withdrawal or a sale lowers
+	// the value and loses nothing, so it is never a drawdown.
+	MaxDrawdown Episode
 }
 
 // ReportOptions parameterizes Report. The zero value keeps every default:
@@ -80,7 +83,8 @@ const (
 
 // Report builds the standard period table plus summary statistics for a
 // value series with external flows, typically daily; the risk figures are
-// annualized at the cadence FlowReturns measures. Windows whose From pre-dates
+// annualized at the cadence FlowReturns measures, and every figure but the
+// money gains reads the flow-neutral FlowIndex. Windows whose From pre-dates
 // the first point are dropped (the summary covers them); windows are
 // otherwise reported even when flat. Empty or single-point input returns
 // (nil, zero ReportSummary): nothing measurable, no error.
@@ -116,7 +120,7 @@ func Report(dates []time.Time, values []float64, flows []Flow, opt ReportOptions
 		TWR:         twr,
 		Since:       origin,
 		Days:        days,
-		MaxDrawdown: MaxDrawdown(dates, values),
+		MaxDrawdown: MaxDrawdown(dates, FlowIndex(dates, values, flows)),
 	}
 	if days >= minRisk && len(returns) >= 2 {
 		sum.Vol = Volatility(returns, ppy)
