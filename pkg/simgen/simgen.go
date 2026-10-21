@@ -117,9 +117,10 @@ func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 		lv := levels[i]
 		ret := make([]float64, len(dates))
 		if isRate(id) {
-			// Annualized percent level → daily accrual.
+			// Annualized percent level → the accrual of the step, on the
+			// calendar days it spans (see rateAccrual).
 			for k := 1; k < len(dates); k++ {
-				ret[k] = lv[k-1] / 100 / 252
+				ret[k] = rateAccrual(lv[k-1], dates[k-1], dates[k])
 			}
 		} else {
 			for k := 1; k < len(dates); k++ {
@@ -129,6 +130,24 @@ func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 		fr.Returns[id] = ret
 	}
 	return fr, nil
+}
+
+// rateAccrual is what an annualized percent rate earns between two dates:
+// the level ruling at the start, simple, over the calendar days between them
+// in 365.25-day years, the convention cashAccrual reads and the constant-
+// maturity bond engines age a bond by.
+//
+// It is NOT the level over 252 per frame step, which is what it was until
+// 2026-10. A frame's calendar is the union of its components' dates, and the
+// union is not a 252-day year: a developed-ex-US daily shape quotes on US
+// holidays, so any frame holding a world-equity leg steps on every weekday,
+// 260 or 261 times a year, and a month-end anchor dated on a weekend adds a
+// step of its own. At a 252-step convention such a frame's cash leg earned,
+// and every leg financed against it paid, 3.5 to 5 % more than the rate, and
+// a monthly stretch of a frame accrued a twenty-first of it. On the calendar
+// every step accrues what it spans, at any cadence.
+func rateAccrual(level float64, from, to time.Time) float64 {
+	return level / 100 * to.Sub(from).Hours() / 24 / 365.25
 }
 
 // isRate reports whether an identifier is a yield series quoted in
@@ -154,9 +173,11 @@ type Leg struct {
 // cashID (e.g. "^IRX") backs both the Excess financing and an optional
 // collateral leg.
 //
-// annualFee is charged PER FRAME STEP at a 252-step year, the same convention
-// the excess legs finance at, so it is only a yearly charge on a frame whose
-// steps are trading days. Hand it a weekly or monthly frame and the fee shrinks
+// annualFee is charged PER FRAME STEP at a 252-step year (unlike the rate legs,
+// which accrue on the calendar, see rateAccrual), so it is only a yearly charge
+// on a frame whose steps are trading days; on an every-weekday union calendar it
+// runs 3.6 % over, a few thousandths of a point on a typical fee. Hand it a
+// weekly or monthly frame and the fee shrinks
 // with the step count: twelve monthly steps carry a twentieth of it. Every
 // caller here passes a daily frame, and the fee schedules that have to survive a
 // coarse era go through afterFeeSteps instead, which compounds on calendar days

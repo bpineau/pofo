@@ -39,8 +39,8 @@ const usdOvernight = "^USD-OVERNIGHT"
 // overnight rate. The series is built on ^IRX's own trading calendar and
 // carries the overnight LEVEL on those dates: the federal funds series is
 // published for every calendar day, and Align takes the UNION of its inputs'
-// dates, so serving it raw would inject weekends into every frame it joins and
-// hand a /252 accrual convention 365 days a year.
+// dates, so serving it raw would inject weekends into every frame it joins,
+// splitting every other leg's Monday return over three steps.
 //
 // When neither policy series answers, the financing falls back to ^IRX and the
 // build says so on stderr rather than failing: a reconstruction that reaches

@@ -64,14 +64,45 @@ func near(t *testing.T, name string, got, want, tol float64) {
 func TestBuildFrameConvertsRates(t *testing.T) {
 	f := fakeFetcher{
 		"EQ":   mkSeries("EQ", 10, 0.01),
-		"^IRX": mkLevels("^IRX", 10, 5.04), // 5.04%/yr → 0.02%/day
+		"^IRX": mkLevels("^IRX", 10, 7.305), // 7.305%/yr → 0.02% per calendar day
 	}
 	fr, err := BuildFrame(f, []string{"EQ", "^IRX"}, day(0))
 	if err != nil {
 		t.Fatal(err)
 	}
 	near(t, "EQ return", fr.Returns["EQ"][1], 0.01, 1e-12)
-	near(t, "accrual ^IRX", fr.Returns["^IRX"][1], 5.04/100/252, 1e-12)
+	near(t, "accrual ^IRX", fr.Returns["^IRX"][1], 0.0002, 1e-12)
+}
+
+// A rate accrues on the calendar, not on the frame's step count. A frame's
+// calendar is the UNION of its components' dates, and a world-equity leg
+// whose daily shape quotes on US holidays (the developed-ex-US one does) turns
+// it into every weekday, 261 steps a year: at a 252-step convention the cash
+// leg then earned, and every financed leg paid, 3.6 % more than the rate. Over
+// one calendar year of weekdays, a constant 5 % must compound to 5 %.
+func TestBuildFrameRateAccruesOnTheCalendar(t *testing.T) {
+	var eq, irx marketdata.Series
+	start := time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)
+	end := start.AddDate(1, 0, 0)
+	for d := start; !d.After(end); d = d.AddDate(0, 0, 1) {
+		if d.Weekday() == time.Saturday || d.Weekday() == time.Sunday {
+			continue
+		}
+		eq.Points = append(eq.Points, marketdata.Point{Date: d, Close: 100})
+		irx.Points = append(irx.Points, marketdata.Point{Date: d, Close: 5})
+	}
+	fr, err := BuildFrame(fakeFetcher{"EQ": &eq, "^IRX": &irx}, []string{"EQ", "^IRX"}, start)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := len(fr.Dates) - 1; n != 261 {
+		t.Fatalf("%d steps, want the 261 weekdays of 2019", n)
+	}
+	var sum float64
+	for _, r := range fr.Returns["^IRX"] {
+		sum += r
+	}
+	near(t, "one year of simple accrual at 5 %", sum, 0.05*365/365.25, 1e-12)
 }
 
 func TestCompositeNinetySixty(t *testing.T) {
@@ -79,7 +110,7 @@ func TestCompositeNinetySixty(t *testing.T) {
 	f := fakeFetcher{
 		"EQ":   mkSeries("EQ", 5, 0.01),
 		"BD":   mkSeries("BD", 5, 0.001),
-		"^IRX": mkLevels("^IRX", 5, 2.52), // 0.0001/day
+		"^IRX": mkLevels("^IRX", 5, 3.6525), // 0.0001 per calendar day
 	}
 	fr, err := BuildFrame(f, []string{"EQ", "BD", "^IRX"}, day(0))
 	if err != nil {
@@ -93,7 +124,7 @@ func TestCompositeNinetySixty(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cash := 2.52 / 100 / 252
+	cash := 0.0001
 	want := 0.9*0.01 + 0.6*(0.001-cash) + 0.1*cash
 	near(t, "composite return", values[1]/values[0]-1, want, 1e-12)
 }

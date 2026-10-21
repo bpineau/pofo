@@ -86,8 +86,8 @@ func TestFinancingFallsBackToBills(t *testing.T) {
 func TestCompositeFinancesExcessAtTheOvernightRate(t *testing.T) {
 	const n = 30
 	f := financed(fakeFetcher{
-		"^IRX":      mkLevels("^IRX", n, 2.52), // 0.0001/day
-		"^FEDFUNDS": mkLevels("^FEDFUNDS", n, 5.04),
+		"^IRX":      mkLevels("^IRX", n, 3.6525), // 0.0001 per calendar day
+		"^FEDFUNDS": mkLevels("^FEDFUNDS", n, 7.305),
 		"BD":        mkSeries("BD", n, 0.0),
 	})
 	fr, err := BuildFrame(f, []string{usdOvernight, "^IRX", "BD"}, day(0))
