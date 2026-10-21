@@ -5,7 +5,7 @@
 # Bundled history of ^HICP-FR, served offline-first; the live Eurostat+FRED path is read on warmup only.
 # Regenerate: make snapshots (cmd/gen-snapshots) refetches the Eurostat leg only and
 # carries the pre-1996 OECD head over. See pkg/marketdata/eurostat.go.
-# generated: 2026-09-27
+# generated: 2026-10-20
 1955-01,7.2475
 1955-02,7.2325
 1955-03,7.2275
@@ -866,3 +866,4 @@
 2026-06,127.3700
 2026-07,128.1700
 2026-08,129.1100
+2026-09,128.7300
