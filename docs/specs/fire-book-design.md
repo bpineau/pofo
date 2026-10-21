@@ -247,6 +247,31 @@ agents a data file to append to. And ucits-implantation introduced
 figuresAdapted, for a plate whose English article is an adaptation and needs
 its own data table under the same renderer.
 
+Catch-up 2026-10-21, on three engine changes and one refresh rather than on
+data repairs: per-path Monte-Carlo seeding in decumul (every engine-drawn
+plate resampled), the mortality law refitted on INSEE 2023-2025, the
+single-fund trackers charging their TER over the reference era (the IEF
+leg), and the 2026-10-21 refresh. Thirteen plates were refrozen; the trend
+plates barely moved after the donor fee-load fix (a hundredth on five
+readings, one triangle cell from -0,05 to -0,04). Three claims had to move
+rather than be re-rounded. vivant-ruine-parti: with longer lives, more
+failures are lived through, so the mortality weighting takes off a sixth
+(14,6 % lived against 17,6 % gross), not a fifth, and nearly three couples
+in four still have a survivor in year 40, not two in three; the plate's
+thesis (far less than the half often claimed) is sharper for it.
+importance-annees: the first decade's share has read 70,0, 71,6, 70,6 and
+69,0 % across refreezes, so the article's "70 % au moins" became "70 %
+environ"; it sits on 70 within Monte-Carlo noise. tous-temps-echange: the
+ladder's shallowest worst path is −36 %, not −35 %. Smaller printed moves:
+cout-des-erreurs' caption (36,9 against 34,1 points), douleur-prime's gold
+residual (4,1 points), panier-mediane-plancher's trade (24 % of median for
+0,80 point of floor), the 2000 replay's risk-based guardrail row, and the
+CAPE sample (1 245 starts to September 2016). Four layouts the moves broke
+or exposed were fixed: tous-temps-echange's floor note (the 0/100 point fell
+onto it), douleur-prime's line name (crossed by its line), echantillon-croise's
+"developed century" (crossed by its curve, and an English footnote running off
+the plate), vivant-ruine-parti's leader (now on the ribbon at its peak).
+
 Style-finishing pass done 2026-07-16 (full line-by-line read of all 79 FR
 articles): rewrote the telegraphic `cas-types` into prose and broke the worst
 colon-cascade sentences elsewhere (couple-et-famille, plancher-plafond,

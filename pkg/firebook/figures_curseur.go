@@ -53,11 +53,11 @@ type curseurStep struct {
 // December rebalancing, on the same legs and the same engine as the family
 // plate of this article (SP500, IEF, TLT, XAUUSD, deflator ^CPI-US).
 var curseurSweep = []curseurStep{
-	{0, 5.96, -41.6, -26.3, 1974},
-	{10, 5.94, -35.6, -22.1, 2022},
-	{20, 5.88, -29.2, -22.0, 2022},
-	{30, 5.78, -25.6, -21.8, 2022},
-	{40, 5.65, -25.4, -21.7, 2022},
+	{0, 5.94, -41.7, -26.3, 1974},
+	{10, 5.92, -35.6, -22.1, 2022},
+	{20, 5.86, -29.3, -22.0, 2022},
+	{30, 5.76, -25.7, -21.8, 2022},
+	{40, 5.63, -25.4, -21.7, 2022},
 }
 
 // The plateau the article recommends, in points of dose.
