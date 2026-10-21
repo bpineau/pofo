@@ -122,7 +122,12 @@ func hedgeToEUR(name string, local *marketdata.Series, f Fetcher, from time.Time
 	if err != nil {
 		return nil, err
 	}
-	dates, lv := marketdata.Align([]*marketdata.Series{local, usd, eur}, local.First().Date, time.Time{})
+	// The calendar stops at the index's own last date: the cash legs quote to
+	// yesterday where a monthly composite is published weeks late, and Align
+	// would forward-fill the index flat across the gap, shipping the carry
+	// differential as the index's return (seven weeks of it on BTOP50E and
+	// ILSFUNDE at the 2026-10 regeneration).
+	dates, lv := marketdata.Align([]*marketdata.Series{local, usd, eur}, local.First().Date, local.Last().Date)
 	if len(dates) < 2 {
 		return nil, fmt.Errorf("%s: %d aligned dates", name, len(dates))
 	}

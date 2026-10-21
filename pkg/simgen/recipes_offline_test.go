@@ -510,3 +510,50 @@ func TestRecipeTargetChargesAreTheCatalogFees(t *testing.T) {
 		}
 	}
 }
+
+// A hedged index stops where its index stops. The two cash legs quote to
+// yesterday while a monthly composite of funds is published weeks later, and
+// past its last month nothing is known of its return: carrying the hedge on
+// alone ships the carry differential as if it were the index's.
+func TestHedgeToEURStopsWithItsIndex(t *testing.T) {
+	const n = 600
+	local := &marketdata.Series{Symbol: "IDX"}
+	for i := 0; i <= 300; i += 30 {
+		local.Points = append(local.Points, marketdata.Point{Date: day(i), Close: 100 + float64(i)/30})
+	}
+	f := fakeFetcher{
+		"^IRX":  mkLevels("^IRX", n, 4),
+		"^ESTR": mkLevels("^ESTR", n, 2),
+	}
+	s, err := hedgeToEUR("IDX hedged", local, f, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := s.Last().Date, local.Last().Date; !got.Equal(want) {
+		t.Errorf("hedged index ends %s, want its index's last date %s", got.Format("2006-01-02"), want.Format("2006-01-02"))
+	}
+}
+
+// The same bound holds for the hedged long-Treasury total return, which no
+// real series is ever grafted on: its euro cash leg is a monthly index
+// published a month or two late, and past its last point the frame would
+// forward-fill it flat, charging the USD carry with no euro carry against it.
+func TestDTLEStopsWithItsEuroCashLeg(t *testing.T) {
+	const n = 600
+	eur := &marketdata.Series{Symbol: "EURCASH-EUR"}
+	for i := 0; i <= 300; i += 30 {
+		eur.Points = append(eur.Points, marketdata.Point{Date: day(i), Close: 100 * (1 + 0.0002*float64(i))})
+	}
+	f := fakeFetcher{
+		"^IRX":        mkLevels("^IRX", n, 4),
+		"VUSTX":       mkWave("VUSTX", n, 2e-4, 0.007, 0.9, 2.3),
+		"EURCASH-EUR": eur,
+	}
+	s, err := dtleBuild(f, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := s.Last().Date, eur.Last().Date; !got.Equal(want) {
+		t.Errorf("DTLETR ends %s, want its euro cash leg's last date %s", got.Format("2006-01-02"), want.Format("2006-01-02"))
+	}
+}

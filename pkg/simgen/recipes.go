@@ -2734,6 +2734,16 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	irx, vustx, eur := fr.Returns["^IRX"], fr.Returns["VUSTX"], fr.Returns["EURCASH-EUR"]
+	// The file stops with its euro cash leg. That leg is a monthly index
+	// published a month or two late, and the frame forward-fills it flat past
+	// its last point: the weeks after it would pay the USD carry and earn no
+	// euro carry (seven weeks, about 0.27 % of level, at the 2026-10
+	// regeneration). Nothing is grafted on this file to cover them.
+	eurLeg, err := f.Fetch("EURCASH-EUR", from)
+	if err != nil || eurLeg == nil || eurLeg.Len() == 0 {
+		return nil, fmt.Errorf("DTLETR: euro cash leg EURCASH-EUR: %v", err)
+	}
+	eurEnd := eurLeg.Last().Date
 
 	twin := map[time.Time]float64{}
 	if real, err := f.Fetch("DTLA", from); err == nil && real != nil {
@@ -2754,7 +2764,7 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	}
 	v := 100.0
 	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[0], Close: v})
-	for k := 1; k < len(fr.Dates); k++ {
+	for k := 1; k < len(fr.Dates) && !fr.Dates[k].After(eurEnd); k++ {
 		excess, fee := longTreasuryGearing*(vustx[k]-irx[k]), vustxFee
 		if r, ok := twin[fr.Dates[k]]; ok {
 			excess, fee = r-irx[k], twinFee
