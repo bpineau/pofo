@@ -163,7 +163,7 @@ func ExampleAnnuity() {
 		{"no annuity", nil},
 		{"a third at 65", &decumul.Annuity{Year: 0, Share: 1.0 / 3, Rate: 0.02, Load: 0.05, Joint: true}},
 		{"a third at 75", &decumul.Annuity{Year: 10, Share: 1.0 / 3, Rate: 0.02, Load: 0.10, Joint: true,
-			Law: decumul.Gompertz{Mode: 91, Dispersion: 10}}}, // annuitants outlive the table
+			Law: decumul.FrenchAnnuitants}}, // priced on the regulatory TGF05 table
 	}
 	for _, c := range cases {
 		p := base
@@ -174,7 +174,7 @@ func ExampleAnnuity() {
 	// Output:
 	// no annuity    broke while alive 33%, median estate 0.26 M
 	// a third at 65 broke while alive 29%, median estate 0.23 M
-	// a third at 75 broke while alive 35%, median estate 0.19 M
+	// a third at 75 broke while alive 42%, median estate 0.10 M
 }
 
 // Solving needs no special case for mortality: the axes, the bisection and the

@@ -161,8 +161,9 @@ annuity bought out of a taxable account really does cost its capital-gains
 tax, and the kernel now says so.
 
 `Law` exists because annuitants are not the general population: French
-insurers price on generational annuitant tables (TGH/TGF-05), which are much
-longer-lived than the INSEE period table. Pricing on the household's own law
+insurers price on the generational annuitant table TGF05 (`FrenchAnnuitants`,
+calibrated in §5), which is much longer-lived than the INSEE period table
+(31.6 years left at 65 against 21.7). Pricing on the household's own law
 and calling the difference "load" conflates two effects that move
 differently with age. One optional field keeps them separable.
 
@@ -338,12 +339,96 @@ at a 5 % alive-ruin on `ExamplePlan_Solve` from 24 000 to 23 500 a year.
 
 **What still flatters.** It is a PERIOD law: it carries no future mortality
 improvement, where the generational tables an insurer prices with
-(TGH/TGF-05) run materially longer. It is unisex by default; `FrenchWomen`
+(TGH05/TGF05) run materially longer. It is unisex by default; `FrenchWomen`
 and `FrenchMen` are there for a household that wants each member on their
 own column (`Life.Law`). A household wanting the conservative reading should
-raise `Mode`; `Gompertz{92, 9}` gives 23.4 years at 65, which is what the web
-page's annuity pricing uses as the insurer's law. The godoc says this at the
-constant, and the design records it here so nobody rediscovers it as a bug.
+raise `Mode`. The godoc says this at the constant, and the design records it
+here so nobody rediscovers it as a bug.
+
+### Calibration of the insurer's law (`FrenchAnnuitants`, 2026-10-21)
+
+**What an insurer must price on.** The arrêté of 1 August 2006
+(JORFTEXT000000820127, art. 2) homologates, for annuity contracts from
+2007-01-01, TGF05 for women and TGH05 for men: generational tables of
+survivors by age for every birth year 1900 to 2005, built on insured
+populations and projected forward from 2005. Article A132-18 of the Code des
+assurances (version in force since 2017-09-07) lets a tariff use those
+tables or an insurer's own certified table, never below the homologated
+tariff, and when ONE table serves every insured, as a unisex tariff must
+since 2012-12-21, "celle-ci correspond à la table appropriée conduisant au
+tarif le plus prudent". For an annuity the prudent table is the
+longer-lived one, TGF05, and the government's answer to written question
+41093 (JO AN, 2021-12-28, p. 9213) confirms the market's practice and that it
+leaves insurers a technical profit, a large share of which they must hand
+back as profit sharing within eight years.
+
+**Source of the numbers.** The survivor counts were read from the
+spreadsheet reproduction published by Oract Advisory
+(https://www.oractadvisory.com/ressources/, "TGH-TGF-05"), checked point for
+point against a second public reproduction (logement-seniors.com, "Les
+Tables de mortalité TGF05 et TGH05": all 24 printed values of generations
+1950 and 2000 at ages 60, 65, 80, 90, 100 and 110 agree exactly); the
+tables also ship in the CASdatasets R package as `freTGF05`/`freTGH05`.
+Remaining life expectancy is the curtate expectation off the counts plus
+half a year; annuity factors are annuity-due at a 1 % real rate, the
+kernel's convention.
+
+**Fit.** The same method as the population law: Mode and dispersion
+minimise the squared error of the remaining life expectancy at every age
+from 60 to 100, rounded to a tenth. Generation 1978 is the reference cohort
+(a buyer born 1975 to 1980 annuitising around 2040):
+
+| table, generation 1978 | Gompertz | rms 60-100 | worst 60-100 | e65 fit / table | joint factor at 65, fit / table |
+|---|---|---|---|---|---|
+| TGF05 (`FrenchAnnuitants`) | {100.7, 7.7} | 0.17 y | 0.47 y (100) | 31.64 / 31.62 | 31.10 / 31.12 |
+| TGH05 | {96.9, 8.4} | 0.21 y | 0.60 y (100) | 27.86 / 27.90 | 28.56 / 28.52 |
+
+On what an annuity actually prices, the fit is closer still: the joint-life
+factor over two TGF05 lives is within 0.25 % of the table at every age from
+60 to 75 (34.46 / 34.43 at 60, 33.14 / 33.12 at 62, 27.61 / 27.65 at 70), and
+the single-life one within 0.65 %. The two-parameter tail is thinner than the
+table past 100 (2.9 years left at 110 against 1.8 for the law), which moves
+no factor that matters. A mixed couple priced sex by sex (a TGH05 man and a
+TGF05 woman) would have a joint factor 3.6 % below the two-TGF05 one at 65
+(29.99 against 31.12): that is the price of the unisex rule, and the page
+charges it because the law does.
+
+**Cohort drift.** Each later birth year adds about 0.15 year of modal age:
+TGF05 generation 1960 fits {98.1, 8.1}, 1965 {98.8, 8.0}, 1975 {100.3, 7.8},
+1980 {101.0, 7.7}, 1985 {101.7, 7.6}, all within 0.2 year rms. A buyer born
+in 1960 is therefore quoted about 6 % more income at 65 than the reference
+cohort (about 1.7 % of the joint factor per five years of birth date). The page
+does not know the reader's birth year, so it prices the reference cohort.
+
+**Before and after.** The web page priced on `Gompertz{92, 9}`, a figure
+chosen in 2026-08 as "3.3 years above the population law of the time" and
+never sourced against TGH05/TGF05. It gave 23.4 years left at 65 where the
+table gives 31.6: it priced the insurer's longevity as barely above the
+population's, and quoted about a fifth too much income per euro. Income per
+100 000 of premium, joint life on a same-age couple, 1 % real rate:
+
+| purchase age | fair, 92/9 -> TGF05 | 10 % margin, 92/9 -> TGF05 |
+|---|---|---|
+| 62 | 3 659 -> 3 018 (-17.5 %) | 3 293 -> 2 716 |
+| 65 | 3 966 -> 3 215 (-18.9 %) | 3 569 -> 2 893 |
+
+On the §8 household (a couple of 65 on a million at 42 k, µ 3.5 %, σ 12 %,
+Student-t df 5, 40 years, no tax, no buffer, half the sleeve annuitised at 65,
+20 000 paths, measured through `/api/lifecycle`'s cards on the current
+population law), the readout moves from "pays 3.6 % vs withdraws 4.2 %,
+alive-ruin 27.0 % -> 40.4 %, median estate 419 k -> 85 k" to "pays 2.9 % vs
+4.2 %, alive-ruin 27.0 % -> 55.1 %, median estate 419 k -> 0". `ExampleAnnuity`
+(a third at 75, 2 % real, 10 % load; it used `Gompertz{91, 10}`, equally
+unsourced) moves from 35 % alive-ruin and a 0.19 M estate to 42 % and 0.10 M,
+its payout from 5.53 % to 4.25 % of the premium.
+
+**What is still assumed.** The insurer's margin (10 % by default, 2 % to 25 %
+on the slider) and the 1 % real pricing rate are planning figures, not
+sourced quotes; the profit sharing the regulatory table's prudence generates
+is not returned to the household, so the page quotes the contractual floor of
+an indexed annuity rather than its expected payout. The book's
+`credits-mortalite` plate still draws the annuitant pool on
+`Gompertz{91, 10}`.
 
 **Book.** One plate freezes the law: `vivant-ruine-parti` (article
 `horizon-et-esperance-de-vie`, `TestVivantRuinePartiMatchesTheEngine`), which
@@ -415,8 +500,9 @@ couple retiring at 65 on a million at 42 k a year, converting half the
 portfolio into an actuarially fair joint annuity moves the alive-ruin from
 **24.4 % to 12.1 %** and the median estate from **460 k to 367 k**: the
 insurance is bought, and the bequest pays for it. Price it realistically
-instead, a third at 75 on an annuitant table with a 10 % load, and it pays
-3.6 % where the plan withdraws 4.2 %, so both readings get worse. Neither
+instead, at the web page's quote (1 % real, the TGF05 annuitant law, a 10 %
+load), and it pays 2.9 % where the plan withdraws 4.2 %, so both readings get
+worse (the measured figures are in §5, "Before and after"). Neither
 result was reachable under a fixed horizon, where the 2026-07 sweep found the
 two readings moving together at every age and rate.
 
@@ -456,10 +542,10 @@ draw stream for returns is unchanged.
   to 10 %, where an unset zero means that default rather than a fair annuity so
   a link written before the control cannot quietly buy one). Fixed, and stated
   in the UI rather than offered as knobs: a joint-life, inflation-linked quote
-  at a **1 % real rate** on an **annuitant** table (`Gompertz{92, 9}`, 23.4
-  years of remaining life expectancy at 65: chosen as 3.3 years above the
-  population law of the time, it sits 1.9 years above the INSEE-fitted one
-  since 2026-10, and was never re-sourced against TGH/TGF-05 themselves).
+  at a **1 % real rate** on an **annuitant** table (`FrenchAnnuitants` since
+  2026-10-21, TGF05 generation 1978, 31.6 years left at 65, calibrated in §5;
+  until then `Gompertz{92, 9}`, 23.4 years, chosen as 3.3 years above the
+  population law of the time and never sourced against TGH05/TGF05).
   **The panel lives in `/api/lifecycle` and nowhere else**, because that is the
   only view whose households can outlive their money. Everything fixed-horizon
   ignores the block, and the view carries one standing line saying why. Wiring
@@ -477,7 +563,9 @@ draw stream for returns is unchanged.
   withdrawal and moves alive-ruin 24.0 % → 12.0 % with the estate 460 k → 367 k,
   while at the page's realistic quote (1 % real, annuitant table, 10 % margin)
   it pays 3.57 % and moves alive-ruin 24.0 % → 36.6 % with the estate 460 k →
-  117 k. Break-even sits near a payout equal to the plan's withdrawal rate.
+  117 k (measured in 2026-08 on the laws of the time; on the TGF05 law it pays
+  2.9 %, see §5). Break-even sits near a payout equal to the plan's
+  withdrawal rate.
   The truncation caveat is named on the card: the plan stops at the reader's
   horizon, so payments the annuity would still make after it are neither
   collected nor counted.
@@ -493,10 +581,11 @@ draw stream for returns is unchanged.
   repo cannot source.
 - **Full life tables (INSEE, TGH/TGF-05).** The interface already accepts
   them; what is missing is bundled data and a generator, which is a
-  `pkg/datasets` job with its own validation spec, not a kernel job. The
-  two-parameter law is within about 1.5 years of remaining life expectancy at
-  the planning ages, which is smaller than the spread between the male and
-  female tables it averages.
+  `pkg/datasets` job with its own validation spec, not a kernel job. Since
+  2026-10 the two-parameter laws sit within half a year of both references
+  at the planning ages (INSEE 2023-2025 for the household, TGF05 for the
+  insurer, joint annuity factors within 0.25 %), so a bundled table would
+  buy less than the cohort choice it would also have to make.
 - **Reversion-rate and deferred-with-no-cash-value annuities.** A joint
   annuity paying the survivor a reduced rate, and a pure longevity annuity
   (deferred, no surrender value), both change the PRICING formula, not the

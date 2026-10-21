@@ -84,9 +84,10 @@ type Annuity struct {
 	Joint bool
 	// Law is the mortality the INSURER prices with; nil uses the household's
 	// own. Annuitants are not the general population, and French insurers
-	// price on generational annuitant tables (TGH/TGF-05) that run materially
-	// longer than an INSEE period table; folding that into Load would conflate
-	// two effects that move differently with age.
+	// price on the generational annuitant table TGF05 (FrenchAnnuitants),
+	// which runs ten years longer at 65 than an INSEE period table; folding
+	// that into Load would conflate two effects that move differently with
+	// age.
 	Law MortalityLaw
 }
 

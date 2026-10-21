@@ -449,7 +449,7 @@ func TestAnnuityPricingRespondsToAgeAndLaw(t *testing.T) {
 	if at(now, 15) <= at(now, 0) {
 		t.Error("buying at 75 must buy more income per euro than at 60")
 	}
-	annuitants := &Annuity{Joint: true, Rate: 0.01, Law: Gompertz{Mode: 91, Dispersion: 10}}
+	annuitants := &Annuity{Joint: true, Rate: 0.01, Law: FrenchAnnuitants}
 	if at(annuitants, 0) >= at(now, 0) {
 		t.Error("pricing on a longer-lived table must buy less income per euro")
 	}

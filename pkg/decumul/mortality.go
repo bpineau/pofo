@@ -35,6 +35,26 @@ var FrenchWomen = Gompertz{Mode: 91.9, Dispersion: 8.3}
 // the INSEE table: 19.7 years left at 65 (INSEE 19.87).
 var FrenchMen = Gompertz{Mode: 87.5, Dispersion: 9.9}
 
+// FrenchAnnuitants is the law a French insurer prices a life annuity with,
+// for Annuity.Law: a Gompertz law fitted by least squares on the remaining
+// life expectancy at every age from 60 to 100 of the regulatory TGF05 table
+// (the women's generational annuitant table homologated by the arrêté of
+// 1 August 2006, JORFTEXT000000820127), generation 1978. It is the women's
+// table for everybody because a unisex tariff must use the table "conduisant
+// au tarif le plus prudent" (Code des assurances, art. A132-18, version of
+// 2017-09-07), which for an annuity is the longer-lived one. The fit holds
+// the remaining life expectancy within 0.3 year from 60 to 90 (31.6 years
+// left at 65, TGF05 31.62) and the joint-life annuity factor at a 1 % real
+// rate within 0.25 % from 60 to 75.
+//
+// It is a GENERATIONAL law, so it lives longer than any period table:
+// 10 years more at 65 than FrenchMortality. Each later birth year adds about
+// 0.15 year of modal age (generation 1960 fits {98.1, 8.1}, generation 1980
+// {101.0, 7.7}). The fit and the law it replaced on the web page
+// (Gompertz{92, 9}, never sourced, 23.4 years at 65) are recorded in
+// docs/specs/stochastic-lifetime-kernel-design.md.
+var FrenchAnnuitants = Gompertz{Mode: 100.7, Dispersion: 7.7}
+
 // LifeExpectancy is the remaining life expectancy at age, in years: the
 // integral of Survival over the years ahead, the "complete expectation" a
 // national life table publishes (INSEE's "espérance de vie à l'âge x"). The

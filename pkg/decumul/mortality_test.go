@@ -49,6 +49,40 @@ var inseeRemaining = []struct {
 	{90, 5.03, 5.39, 4.47},
 }
 
+// tgf05Gen1978 is the regulatory TGF05 table (arrêté of 1 August 2006), for
+// the generation born in 1978: the remaining life expectancy at age x
+// (curtate expectation from the published survivor counts, plus half a year)
+// and the joint-life annuity-due factor at a 1 % real rate over two lives of
+// that age, both read off the table itself.
+var tgf05Gen1978 = []struct {
+	age, remaining, joint float64
+}{
+	{60, 36.26, 34.43},
+	{62, 34.40, 33.12},
+	{65, 31.62, 31.12},
+	{70, 27.00, 27.65},
+	{75, 22.45, 24.05},
+	{80, 18.01, 0},
+	{90, 10.08, 0},
+}
+
+// FrenchAnnuitants must price what the regulatory table prices: within half a
+// year of its remaining life expectancy from 60 to 90, and within half a
+// percent of its joint-life annuity factor at the ages an annuity is bought.
+func TestFrenchAnnuitantsMatchesTGF05(t *testing.T) {
+	for _, row := range tgf05Gen1978 {
+		if got := FrenchAnnuitants.LifeExpectancy(row.age); math.Abs(got-row.remaining) > 0.5 {
+			t.Errorf("at %v: %.2f years left, TGF05 %.2f", row.age, got, row.remaining)
+		}
+		if row.joint == 0 {
+			continue
+		}
+		if got := AnnuityFactor(FrenchAnnuitants, row.age, 0.01); math.Abs(got/row.joint-1) > 0.005 {
+			t.Errorf("at %v: joint annuity factor %.2f, TGF05 %.2f", row.age, got, row.joint)
+		}
+	}
+}
+
 // The bundled laws must reproduce INSEE's remaining life expectancy within
 // half a year at every age from 50 to 90, for both sexes and each sex: a law
 // that runs short flatters every plan it drives.

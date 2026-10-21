@@ -73,7 +73,7 @@ const GROUPS = [
     r("annuityYear", "Buy in year", 0, 30, 1, 0, "int",
       "Plan year of the purchase: 0 buys at retirement, later buys at the age shown. Waiting raises the payout (fewer years left to pay for) and leaves the money invested meanwhile, at the price of carrying the longevity risk yourself until then. The page starts at retirement, so there is no buying before year 0."),
     r("annuityLoad", "Insurer margin", 0.02, 0.25, 0.01, 0.10, "pct",
-      "What the insurer keeps, as a share of the actuarially fair income: 10% is the conventional planning figure for a retail annuity, and the 2% floor stands in for a fair quote, which is a teaching device rather than a product you can buy. Two further costs are fixed and not yours to set: the quote is priced at a 1% real rate, and on an annuitant table, since people who buy lifelong income outlive the general population."),
+      "What the insurer keeps, as a share of the actuarially fair income: 10% is the conventional planning figure for a retail annuity, and the 2% floor stands in for a fair quote, which is a teaching device rather than a product you can buy. Two further costs are fixed and not yours to set: the quote is priced at a 1% real rate, and on the regulatory annuitant table French insurers must use (TGF05, the women's generational table, applied to both of you as a unisex tariff requires), since people who buy lifelong income outlive the general population."),
   ]},
   {title: "Market model", col: 3, items: [
     r("mu", "Real growth return", 0.01, 0.12, 0.005, 0.05, "pct",

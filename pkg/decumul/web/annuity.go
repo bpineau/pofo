@@ -43,20 +43,24 @@ const (
 	maxAnnuityLoad = 0.50
 )
 
-// annuitantLaw is the mortality the INSURER prices with, not the household's.
-// Annuitants are self-selected: people who buy lifelong income expect to
-// collect it, and French insurers price on the generational TGH/TGF-05 tables,
-// which run materially longer than an INSEE period table. A modal age of 92
-// with a 9-year dispersion gives 23.4 years of remaining life expectancy at
-// 65, 1.9 years above the bundled FrenchMortality (21.5, fitted on INSEE's
-// 2023-2025 table). It was chosen against an older population law that ran 1.6
-// years short, when the gap read 3.3 years; it is NOT re-sourced against the
-// TGH/TGF-05 tables themselves, so read it as a floor on the insurer's
-// longevity rather than as its table.
+// annuitantLaw is the mortality the INSURER prices with, not the household's:
+// decumul.FrenchAnnuitants, the regulatory generational table TGF05
+// (generation 1978) that a unisex French annuity tariff must use (Code des
+// assurances, art. A132-18: a single table is the one giving the most prudent
+// tariff, the women's for an annuity). It gives 31.6 years of remaining life
+// expectancy at 65, ten more than the household's own FrenchMortality (21.5),
+// and both members of the couple are priced on it, which is what a unisex
+// joint-life quote does. It replaced Gompertz{92, 9} (23.4 years at 65), a
+// figure that was never sourced and quoted 23 % more income per euro at 65
+// than the table does.
+// The regulatory table is prudent by design, so an insurer pricing on it books
+// a technical profit and owes a large share of it back as profit sharing
+// (participation aux bénéfices); the page does not model that return, which
+// makes its quote the contractual floor rather than the expected payout.
 // It is a fixed choice, deliberately: folding it into the load would conflate
 // two costs that move differently with age, and offering it as a control would
 // ask a reader to price a table.
-var annuitantLaw = decumul.Gompertz{Mode: 92, Dispersion: 9}
+var annuitantLaw = decumul.FrenchAnnuitants
 
 // annuity translates the rail's three annuity controls into the kernel's
 // product, or nil when the control is off (share 0, the default) or the plan
@@ -128,7 +132,7 @@ func annuityCards(with, without decumul.Ensemble, pr Params, a *decumul.Annuity)
 			Help:  "Real wealth left at the household's own end, without the annuity and with it. Insurance is paid for out of the bequest: the premium leaves the portfolio for good, and what it buys stops the day the last covered life does."},
 		{Label: "Annuity · pays vs withdraws",
 			Value: fmt.Sprintf("%.1f%% vs %.1f%%", payout*100, wr*100),
-			Help: fmt.Sprintf("The whole trade in one ratio: the annuity pays %.1f k€/yr for life%s, %.1f%% of its %s premium, where the plan withdraws %.1f%% of capital. Pay more than the plan withdraws and the insurance is bought cheaply; pay less, as here the quote often does, and the guaranteed income costs more than the risk it removes. The quote assumes a %.0f%% real rate, a %.0f%% insurer margin and an annuitant table (buyers of lifelong income outlive the general population, so the same premium buys less than your own mortality would suggest); on top of that the sale that raises the premium pays its capital-gains tax.",
+			Help: fmt.Sprintf("The whole trade in one ratio: the annuity pays %.1f k€/yr for life%s, %.1f%% of its %s premium, where the plan withdraws %.1f%% of capital. Pay more than the plan withdraws and the insurance is bought cheaply; pay less, as here the quote often does, and the guaranteed income costs more than the risk it removes. The quote assumes a %.0f%% real rate, a %.0f%% insurer margin and the regulatory annuitant table TGF05, applied to both of you as a unisex tariff must (buyers of lifelong income outlive the general population: about 31 years left at 65 against 21 for the population, so the same premium buys less than your own mortality would suggest); on top of that the sale that raises the premium pays its capital-gains tax.",
 				income/1000, needShare, payout*100, fmtWealth(premium), wr*100, annuityRealRate*100, pr.annuityLoad()*100)},
 	}
 }
