@@ -21,7 +21,8 @@ import (
 //
 // They are a guard against silent drift, so they carry no tolerance: any
 // change to the arithmetic, to the order of the floating-point summations, to
-// the worker striding or to the number or order of the RNG calls moves them.
+// the per-path seeding or to the number or order of the RNG calls moves them.
+// The worker count must NOT move them (TestResultsIndependentOfWorkers).
 // An optimisation that moves a digest is not an optimisation, it is a
 // different model; revert it. A DELIBERATE model change updates the literals
 // here in the same commit that justifies it.
@@ -233,21 +234,21 @@ func determinismPlans() []struct {
 // every envelope arrangement and the lifetime kernel.
 func TestDeterminismPlans(t *testing.T) {
 	want := map[string]string{
-		"fixed":             "a99e488631f6bd8cbd193adf74a985b837c564a4cd1fcbfaaa4917bb4c854004",
-		"ratchet":           "17fa08b47a92680085a14ffdb86509e9649cd9e9d424944a53091f5f2ef6ff44",
-		"guardrails":        "b18b6485bcb987ec89d438c6716c20a03bed14f51e931898b7ad17cf2ce22abf",
-		"riskguard":         "0506c8115cdff11650215ab7ba5f64b56f1ebbf55cd386cc251bd6ccd779addf",
-		"percent":           "aa933ea317460f57bc84dd08c12c94e8eaf5b2e08a96ea6baf77bb941d2f9b49",
-		"bounded":           "1f033fc29fb82257e34f4531788ed48ae2ed1f2eee6ef19fcadfb562f28a4cdf",
-		"amortize":          "dfce07fe6aa20ca655172d5d236e594a26d047ec85652ebc0f11fc3f612fb65c",
-		"envelopes":         "da5f6dd072c369f54e8ba71b8abbcb27c18d6755981b8baf382b891fd00676a8",
-		"monthly":           "d8845288131956eef75525a79cc847320687c60dc98d129ebd084e9718e891c5",
-		"monthly-riskguard": "d6d05fc1e7a892c7d7a2ad95af0b8eb48a842bca9ebc3ae0a5226fc0a928a3aa",
-		"schedule":          "2583093ef4faa8cd92705090a2ce10ce7d6db87619e81cdae0fa9633306f2888",
-		"lifetime-single":   "b7cf0ff71b94c4669657ed1ef7d8a321ad46b3d6305e1867dfd7b08dbf4806c1",
-		"lifetime-couple":   "9d9f17a818fc10f6aff2be73a21f70bfc534920e779eddce48f801176b37fbcb",
-		"lifetime-annuity":  "0ee6cc4151e6cee090653f8f7ec672d48186ccd90c886ef738116d23b421db73",
-		"lifetime-amortize": "ea574821017cf11894ef001f53f753e5c70cba2f43b16c57a45aedab596f25c1",
+		"fixed":             "0b31e728f9c9eb16dc831fe25b06de3606dd59ccd8d53b58b0690913179393d4",
+		"ratchet":           "a03d07fe1f6777edac5ef91cff7a2380d0c206bacba80402b83115610d6f89d3",
+		"guardrails":        "e30a21710b0eb910b72221ef9bd6e45441c60002832ada58268692f7e87b609d",
+		"riskguard":         "b6c3a58d5f12960d07eb774d7b75fabde7285600ea2bdca4720240c1e48fa19b",
+		"percent":           "aa30a73b7b36856b41a912c723745e6d10a9383b453a382df3ab9696ec0c77ea",
+		"bounded":           "a6b911e006c2a646d27e36cf9bc1f7db0ac158b9ff9e1477344278be6f450f9f",
+		"amortize":          "c12e0633a4de93cc52e86b3f8d0d9ac3ad10980069b4f092b90558c5886c06c5",
+		"envelopes":         "e3ae5eee59783e2bb52c9e3545bc1c1146846dbef04cb00ed5745f2a85370dd7",
+		"monthly":           "68b9057f474a340237053dca5b71201cce95f0bcb175bbf15abd0b8ae0dd4810",
+		"monthly-riskguard": "25e89620ecfa206714a5e1e18d5bbafd6088915f07d1e0cc199676cd23839462",
+		"schedule":          "191403b4a8a7a98d822c4adf2e08bfcee0bb001643a0cd013c4c44449076ee99",
+		"lifetime-single":   "1efc210a3057f890383c24d578856e96b9d10df0a07df90d7d80b2b8244aa10e",
+		"lifetime-couple":   "2cf960500d5badfcec7183a87f626b843efd9412dff0ff568e7ca027f5a0fa02",
+		"lifetime-annuity":  "7679b5d04e35b2032d08718ceeada16f168c47ba520b46f01924e0ba8ece46c3",
+		"lifetime-amortize": "28f7b631871bcadb0618c6d5e025c2a23da4d611cf68018bcc41d03143fdfed9",
 	}
 	for _, c := range determinismPlans() {
 		d := newDigest()
@@ -305,15 +306,15 @@ func determinismSources() []struct {
 // full plan run on each of them.
 func TestDeterminismSources(t *testing.T) {
 	want := map[string]string{
-		"parametric":           "e8e4815429213fea438112d8f9d71ee444861abba30d6e9e15a56237ffe357e4",
-		"parametric-normal":    "bf81a5720bf85a522169083ecb2d2a8008b8faa1698e93e29f9e4bbc584abf6d",
-		"markov-regime":        "e519a4b4d22595d8c08795cf700f39b712cd9817c0a1adc7d8078a751e223b21",
-		"lost-decade":          "fd90d9fb79fad8285fd4df5cfdcf0357feda258c418bfb9408eaf7a699035fcb",
-		"glidepath":            "09e06b62bde36fed8183b7439c0efbf2fd1821f954d259716c40e9d9d9b3ed40",
-		"block-bootstrap":      "8ce450542509b66bd3804a12a0e33ce1419494b55a6cd84cc89e5c967e84f69e",
-		"stationary-bootstrap": "72390f678551144c9b1186d74b183cf655460c50163d9aff49eff33a8eed3837",
-		"historical-cohorts":   "8d3bbbcb9ab76c5a8c0046ff45d67200e32c3b65e21848ac094f424ae047ce7b",
-		"pooled-bootstrap":     "77cb487d3d3179164a308a3bd3f0467c3452225c90f84358dd89f63bad652303",
+		"parametric":           "c0c178500f3b3352878cab0764c8974001a6b3337684543fb9dbb1653fe7e4ca",
+		"parametric-normal":    "09d59446a9c8e7aae5040152a0c66b6c1471d66afe3f2b422fb3949aaaa0159a",
+		"markov-regime":        "7a69e9e1224ace60649d00ed4c90c20c04cd50f399cb7df40689e1c4694a6141",
+		"lost-decade":          "f76326baaa9051af0f942a096c9a03a47538ff8bdb985caeada38bd4c802211b",
+		"glidepath":            "da17ad8a8f48b43a501be01b1c04b6e09afdf63c798d8097f8c5ef2baf9757fc",
+		"block-bootstrap":      "2df39aadb2c641bd3f6bd7cbc8f2b0882946042c6aabb6c214146dde0087f152",
+		"stationary-bootstrap": "a89d11ca213c913763c696f9485fa35a1072042e8aadf74d0ce2910a850d7d11",
+		"historical-cohorts":   "069c1f12bda419e1a0f39a2fd7b7ee495df52b8633cc6f6ad1bcae41dff21e20",
+		"pooled-bootstrap":     "a0cb67c721eba05cf3214d222e9a29e5a80a54bba8ef396499bc5b4851175ff6",
 	}
 	for _, c := range determinismSources() {
 		d := newDigest()
@@ -331,6 +332,43 @@ func TestDeterminismSources(t *testing.T) {
 		d.ensemble(p.Simulate(400, 4, 11))
 		if got := d.sum(); got != want[c.name] {
 			t.Errorf("%s digest = %q, want %q", c.name, got, want[c.name])
+		}
+	}
+}
+
+// TestResultsIndependentOfWorkers: the worker count is a scheduling choice and
+// must never reach a result. Every path draws from its OWN stream, derived
+// from the seed and its index, so a FIRE URL rendered on a two-core server and
+// on a ten-core laptop gives the same bits: the draws, every per-path series
+// and every aggregate, for every plan and source kind of the digests above.
+func TestResultsIndependentOfWorkers(t *testing.T) {
+	type run struct {
+		name string
+		plan Plan
+	}
+	var runs []run
+	for _, c := range determinismPlans() {
+		runs = append(runs, run{c.name, c.plan})
+	}
+	for _, c := range determinismSources() {
+		p := determinismPlan(c.src.Len())
+		p.Source = c.src
+		runs = append(runs, run{"source " + c.name, p})
+	}
+	for _, r := range runs {
+		var ref string
+		for _, workers := range []int{1, 3, 8} {
+			d := newDigest()
+			d.ensemble(r.plan.Simulate(300, workers, 7))
+			d.f(r.plan.Solve(0.05, WithdrawalAxis(0, 150_000), 300, workers, 7))
+			got := d.sum()
+			if workers == 1 {
+				ref = got
+				continue
+			}
+			if got != ref {
+				t.Errorf("%s: %d workers give %s, 1 worker %s", r.name, workers, got, ref)
+			}
 		}
 	}
 }

@@ -23,8 +23,9 @@ type errCost struct {
 // repository's own engine, decumul.Plan over the empirical broad-sample source
 // (scenario.PooledBootstrap of the bundled Jorda-Schularick-Taylor per-country
 // real returns blended 60/40 within each country, mean block 10 years),
-// 200 000 paths, seed 1, 8 workers (the draw is split per worker, so the worker
-// count is part of the reproduction recipe), annual kernel:
+// 200 000 paths, seed 1 (frozen with 8 workers when the draw was split per
+// worker; since 2026-10 each path has its own stream and the worker count no
+// longer reaches the result), annual kernel:
 //
 //	plan: Capital 1e6, NeedAnnual 35000 (3.5 %), Years 50,
 //	      Cashflows {FromYear: 20, Annual: 14000},

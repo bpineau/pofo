@@ -27,12 +27,12 @@
 //
 // # Performance and determinism
 //
-// Every result is a pure function of the plan, the path count, the worker
-// count and the seed, bit for bit: a shared FIRE URL reproduces, and the
-// solvers bisect on common random numbers. The worker count matters only to
-// [Plan.Draw], whose paths are dealt to the workers' RNG streams in a fixed
-// stride; everything run on drawn paths (the kernel, the ruin counts, the
-// solves, the statistics) is scheduled freely across the cores and answers
+// Every result is a pure function of the plan, the path count and the seed,
+// bit for bit, whatever the worker count: a shared FIRE URL reproduces on any
+// host, and the solvers bisect on common random numbers. [Plan.Draw] seeds
+// every path's own RNG stream from the seed and the path's index, so the
+// paths, like everything run on them (the kernel, the ruin counts, the
+// solves, the statistics), are scheduled freely across the cores and answer
 // the same whatever ran where. [Ensemble.Outcome] and [Ensemble.Fan] spread
 // their per-path work over GOMAXPROCS. The measurements and what did not pay:
 // docs/specs/decumul-performance.md.

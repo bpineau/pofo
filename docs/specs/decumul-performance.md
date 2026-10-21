@@ -11,12 +11,27 @@ Determinism is a feature: a shared `/view` or `-fire` URL must reproduce byte
 for byte, and the solvers rely on common random numbers. So every optimisation
 here is held to the same bits, never to a tolerance:
 
-- untouchable: the float summation order, the RNG calls and their order, the
-  seeding scheme, and the fixed stride that deals `Plan.Draw`'s paths to the
-  workers' RNG streams (a draw's value is tied to its worker);
-- free: which goroutine runs a path through the kernel, and in which order,
-  since the kernel is a pure function of its draw and the aggregates index
-  their per-path figures by path.
+- untouchable: the float summation order, the RNG calls and their order, and
+  the seeding scheme (`seedPath`: each path's own PCG stream, its two words a
+  SplitMix64 of the seed, the stream and the path index);
+- free: which goroutine draws a path or runs it through the kernel, and in
+  which order, since a path's draw depends on its index alone, the kernel is a
+  pure function of its draw and the aggregates index their per-path figures by
+  path. `TestResultsIndependentOfWorkers` holds every plan and source of the
+  digests to the same bits at 1, 3 and 8 workers.
+
+Until 2026-10 `Plan.Draw` dealt the paths to one RNG stream PER WORKER in a
+fixed stride, so a draw's value was tied to its worker and every result to the
+worker count. The page passes `GOMAXPROCS`, so a shared FIRE URL rendered on a
+four-core server and on a ten-core laptop gave different figures (and a book
+plate had to freeze its worker count). That was never a measured choice, only
+the shape the code had, and the switch to per-path streams cost nothing
+measurable: `BenchmarkSimulate` 1.09 to 0.96 ms/op, `BenchmarkSolve` 6.52 to
+6.45, `BenchmarkDrawLifetime` 0.74 to 0.66, `BenchmarkSimulateBootstrap` 2.70
+to 2.70, allocations unchanged (reseeding writes two words into a PCG each
+worker owns; the draw now also claims chunks like the kernel, which is the
+small gain). It moved every digest, as it must, and the package examples by at
+most one point of ruin or one 500-step of solved spending (Monte-Carlo noise).
 
 `TestDeterminismPlans` and `TestDeterminismSources` pin the bits of everything
 the package produces; `TestShortcutsMatchEnsemble` pins each shortcut below to
@@ -51,7 +66,8 @@ Profiling the endpoints, not the kernel benchmarks, is what showed it:
   `i mod W`, so each barrier waited for the goroutines on the efficiency cores:
   ten cores ran the kernel 4.2 times faster than one. The drivers over drawn
   paths now hand out chunks of consecutive paths from an atomic counter
-  (`forEachPath`); `Plan.Draw` keeps the stride.
+  (`forEachPath`); `Plan.Draw` kept the stride until its paths got their own
+  streams (2026-10, above), and now claims chunks too.
 - **A bisection step reads one bit.** `ruinAbove` stops as soon as the count
   settles `ruin > target` (enough failures, or too few paths left to reach
   it). The count does not depend on the order, so the verdict is exact; it

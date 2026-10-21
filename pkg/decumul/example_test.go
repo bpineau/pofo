@@ -21,7 +21,7 @@ func ExamplePlan_Simulate() {
 	o := p.Simulate(20_000, 4, 7).Outcome()
 	fmt.Printf("ruin %.0f%%, median terminal wealth %.1f M\n", o.RuinProb*100, o.TerminalP50/1e6)
 	// Output:
-	// ruin 25%, median terminal wealth 0.5 M
+	// ruin 24%, median terminal wealth 0.5 M
 }
 
 // FIRE in a dozen lines: a scenario.Source of real returns, a plan, the
@@ -40,7 +40,7 @@ func Example_fire() {
 	spend := p.Solve(0.05, decumul.WithdrawalAxis(10_000, 100_000), 20_000, 4, 7)
 	fmt.Printf("5%% ruin at %.0f a year\n", math.Round(spend/500)*500)
 	// Output:
-	// ruin 25%, median terminal wealth 0.5 M
+	// ruin 24%, median terminal wealth 0.5 M
 	// 5% ruin at 22000 a year
 }
 
@@ -66,9 +66,9 @@ func ExamplePlan_Simulate_lifetime() {
 	fmt.Printf("median life %.0f years, still alive at the horizon %.0f%%\n", o.MedianLifeYears, o.OutlivedPlan*100)
 	fmt.Printf("estate p50 %.1f M, nothing left %.0f%%\n", o.EstateP50/1e6, o.EstateZero*100)
 	// Output:
-	// broke while alive 14%, for 1.2 years on average
-	// median life 32 years, still alive at the horizon 0%
-	// estate p50 0.7 M, nothing left 14%
+	// broke while alive 13%, for 1.2 years on average
+	// median life 33 years, still alive at the horizon 0%
+	// estate p50 0.7 M, nothing left 13%
 }
 
 // The bundled laws against the INSEE table they were fitted on: remaining
@@ -148,7 +148,7 @@ func ExampleAnnuity() {
 		fmt.Printf("%-13s broke while alive %.0f%%, median estate %.2f M\n", c.name, o.RuinAlive*100, o.EstateP50/1e6)
 	}
 	// Output:
-	// no annuity    broke while alive 33%, median estate 0.27 M
+	// no annuity    broke while alive 33%, median estate 0.26 M
 	// a third at 65 broke while alive 29%, median estate 0.23 M
 	// a third at 75 broke while alive 35%, median estate 0.19 M
 }
@@ -168,7 +168,7 @@ func ExamplePlan_Solve() {
 	spend := p.Solve(0.05, decumul.WithdrawalAxis(10_000, 100_000), 20_000, 8, 7)
 	fmt.Printf("5%% chance of ever being broke and alive at %.0f a year\n", math.Round(spend/500)*500)
 	// Output:
-	// 5% chance of ever being broke and alive at 23500 a year
+	// 5% chance of ever being broke and alive at 23000 a year
 }
 
 // Several questions about one plan share one set of futures: Draw them once,
@@ -186,8 +186,8 @@ func ExamplePlan_RuinProbOn() {
 	spend := p.SolveOn(0.10, decumul.WithdrawalAxis(10_000, 100_000), draws, 4)
 	fmt.Printf("10 %% ruin at %.0f a year\n", math.Round(spend/500)*500)
 	// Output:
-	// ruin at 40000 a year: 53 %
-	// 10 % ruin at 25500 a year
+	// ruin at 40000 a year: 52 %
+	// 10 % ruin at 26000 a year
 }
 
 // Sweep1D maps ruin across one parameter on one set of drawn paths, so the
@@ -205,8 +205,8 @@ func ExamplePlan_Sweep1D() {
 		fmt.Printf("%.0f a year: ruin %.0f %%, median terminal wealth %.1f M\n", pt.Value, pt.RuinProb*100, pt.TerminalP50/1e6)
 	}
 	// Output:
-	// 30000 a year: ruin 17 %, median terminal wealth 0.8 M
-	// 40000 a year: ruin 42 %, median terminal wealth 0.2 M
+	// 30000 a year: ruin 16 %, median terminal wealth 0.8 M
+	// 40000 a year: ruin 41 %, median terminal wealth 0.2 M
 	// 50000 a year: ruin 67 %, median terminal wealth 0.0 M
 }
 

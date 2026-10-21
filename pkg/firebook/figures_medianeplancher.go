@@ -19,8 +19,9 @@ import (
 // The plan both portfolios are run through: a thirty-year horizon, a fixed
 // inflation-indexed withdrawal, and the conventional definition of a safe rate,
 // the one that leaves 95 % of the paths solvent. The capital is arbitrary (the
-// plate reports a multiple of it and a rate), and the seed and the worker count
-// are fixed so the reading is reproducible to the last digit.
+// plate reports a multiple of it and a rate), and the seed is fixed so the
+// reading is reproducible to the last digit (the worker count no longer
+// matters since each path draws from its own stream).
 const (
 	plancherYears   = 30
 	plancherRule    = 0.04 // the withdrawal the median wealth is read at

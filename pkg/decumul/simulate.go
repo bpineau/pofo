@@ -38,16 +38,18 @@ const lifeStream = 1 << 40
 // and the solvers still see common random numbers.
 const fallbackLifeSeed = 0x5eed11fe
 
-// Simulate runs nPaths Monte-Carlo paths across workers goroutines. Each
-// worker derives its RNG from (seed, workerID) so the result is reproducible
-// for a fixed worker count.
+// Simulate runs nPaths Monte-Carlo paths across workers goroutines. Each path
+// derives its RNG from (seed, path index), so the result is a function of the
+// plan, the path count and the seed alone: the worker count only sets how
+// many cores share the work.
 func (p Plan) Simulate(nPaths, workers int, seed uint64) Ensemble {
 	return p.SimulateOn(p.Draw(nPaths, workers, seed), workers)
 }
 
 // Draw samples nPaths return sequences from the plan's Source, and nPaths
-// household lifespans from its Lifetime when it has one, with the same
-// per-worker RNG split as Simulate so the draws are identical.
+// household lifespans from its Lifetime when it has one, each path from its
+// own RNG stream of the seed, so the draws are identical whatever the worker
+// count and the same as Simulate's.
 func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
 	d := Draws{Returns: make([]scenario.Sequence, nPaths)}
 	if p.Lifetime != nil {
@@ -61,15 +63,14 @@ func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
 	// panel into one weighted history) is hoisted out of the path loop; the
 	// draws are byte-identical, the rng being consumed in the same order.
 	src := scenario.Prepare(p.Source)
-	forEachWorker(nPaths, workers, func(w int, lo func(func(int))) {
-		rng := rand.New(rand.NewPCG(seed, uint64(w)+1))
-		var lives *rand.Rand
-		if d.Lives != nil {
-			lives = rand.New(rand.NewPCG(seed, uint64(w)+1+lifeStream))
-		}
+	forEachPath(nPaths, workers, func(_ int, lo func(func(int))) {
+		retPCG, lifePCG := new(rand.PCG), new(rand.PCG)
+		rng, lives := rand.New(retPCG), rand.New(lifePCG)
 		lo(func(i int) {
+			seedPath(retPCG, seed, i, 0)
 			d.Returns[i] = src.Draw(rng)
-			if lives != nil {
+			if d.Lives != nil {
+				seedPath(lifePCG, seed, i, lifeStream)
 				d.Lives[i] = sampler.draw(lives)
 			}
 		})
@@ -78,15 +79,40 @@ func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
 }
 
 // drawLives samples nPaths lifespans alone, for a Draws that arrived without
-// them.
+// them, from the same per-path streams Draw uses.
 func (p Plan) drawLives(nPaths, workers int, seed uint64) []Lives {
 	out := make([]Lives, nPaths)
 	sampler := p.Lifetime.sampler(p.Years)
-	forEachWorker(nPaths, workers, func(w int, lo func(func(int))) {
-		rng := rand.New(rand.NewPCG(seed, uint64(w)+1+lifeStream))
-		lo(func(i int) { out[i] = sampler.draw(rng) })
+	forEachPath(nPaths, workers, func(_ int, lo func(func(int))) {
+		pcg := new(rand.PCG)
+		rng := rand.New(pcg)
+		lo(func(i int) {
+			seedPath(pcg, seed, i, lifeStream)
+			out[i] = sampler.draw(rng)
+		})
 	})
 	return out
+}
+
+// seedPath points pcg at path i's own stream: its two words are a splitmix64
+// of the seed, the stream (returns or lifespans) and the path index, so
+// neighbouring paths start from unrelated states. Seeding by PATH rather than
+// by worker is what makes every result independent of the worker count: path
+// i draws the same numbers whichever goroutine runs it, on any host. Reseeding
+// is two word writes, nothing allocated.
+func seedPath(pcg *rand.PCG, seed uint64, i int, stream uint64) {
+	hi := splitmix64(seed ^ splitmix64(stream+1))
+	pcg.Seed(hi, splitmix64(hi^uint64(i)))
+}
+
+// splitmix64 is the SplitMix64 finalizer (Steele, Lea and Flood 2014): a
+// bijective mix of a 64-bit word whose outputs for consecutive inputs are
+// statistically unrelated, the standard way to seed a generator's state.
+func splitmix64(x uint64) uint64 {
+	x += 0x9e3779b97f4a7c15
+	x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9
+	x = (x ^ (x >> 27)) * 0x94d049bb133111eb
+	return x ^ (x >> 31)
 }
 
 // SimulateOn runs the kernel on already-drawn paths (from Draw) across workers
@@ -240,28 +266,6 @@ func aggregateWorkers(n int) int {
 	return max(1, min(runtime.GOMAXPROCS(0), n/256))
 }
 
-// forEachWorker runs body on workers goroutines, each handed its worker index
-// and a loop over the path indices it owns (a stride, so a worker's draws stay
-// tied to its own RNG stream).
-func forEachWorker(n, workers int, body func(w int, loop func(func(int)))) {
-	if workers < 1 {
-		workers = 1
-	}
-	var wg sync.WaitGroup
-	for w := 0; w < workers; w++ {
-		wg.Add(1)
-		go func(w int) {
-			defer wg.Done()
-			body(w, func(f func(int)) {
-				for i := w; i < n; i += workers {
-					f(i)
-				}
-			})
-		}(w)
-	}
-	wg.Wait()
-}
-
 // CapitalForRuin returns the smallest starting capital in [lo, hi] whose
 // ruin probability is at most target, by ~18 bisection steps. The same seed
 // is reused at every capital so Monte-Carlo noise does not break
@@ -301,12 +305,12 @@ func (e Ensemble) RuinProb() float64 {
 	return float64(n) / float64(len(e.Paths))
 }
 
-// forEachPath runs body on workers goroutines like forEachWorker, but the
-// paths are not dealt in a fixed stride: each goroutine claims the next chunk
-// of consecutive indices from a shared counter until none is left. It is for
-// the loops whose result does not depend on which goroutine ran a path (the
-// kernel is a pure function of its draw), never for Draw, whose values are
-// tied to a worker's RNG stream. A fixed stride makes every run wait for its
+// forEachPath runs body on workers goroutines, each handed its worker index
+// and a loop over the paths it claims: the next chunk of consecutive indices
+// from a shared counter, until none is left. It is for the loops whose result
+// does not depend on which goroutine ran a path, which is every loop here: the
+// kernel is a pure function of its draw, and Draw seeds each path's own RNG
+// stream (seedPath). A fixed stride (the old dealing) made every run wait for its
 // slowest goroutine, and on a machine that mixes fast and slow cores (or
 // shares them with other requests) that goroutine finished far behind the
 // others; claimed chunks keep every core busy to the end, and consecutive

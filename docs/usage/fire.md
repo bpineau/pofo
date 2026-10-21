@@ -112,7 +112,7 @@ fmt.Printf("5%% ruin at %.0f a year\n", math.Round(spend/500)*500)
 ```
 
 ```text
-ruin 25%, median terminal wealth 0.5 M
+ruin 24%, median terminal wealth 0.5 M
 5% ruin at 22000 a year
 ```
 
@@ -150,9 +150,9 @@ fmt.Printf("estate p50 %.1f M, nothing left %.0f%%\n", o.EstateP50/1e6, o.Estate
 ```
 
 ```text
-broke while alive 14%, for 1.2 years on average
-median life 32 years, still alive at the horizon 0%
-estate p50 0.7 M, nothing left 14%
+broke while alive 13%, for 1.2 years on average
+median life 33 years, still alive at the horizon 0%
+estate p50 0.7 M, nothing left 13%
 ```
 
 `Years` is the simulation length and `PlanHorizon` the horizon the spending
