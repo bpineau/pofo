@@ -1515,8 +1515,9 @@ func sp500IndexRecipe() Recipe {
 }
 
 // wintonRecipe rebuilds the Winton Trend-Enhanced Global Equity fund as
-// global equities (60/40 US/international) plus a half-sized self-generated
-// TSMOM trend overlay, net of what its 0.80%/yr load exceeds its equity
+// global equities (60/40 US/international) plus a self-generated TSMOM trend
+// overlay at the fund's 100 % notional (wintonTrendNotional), net of what its
+// 0.80%/yr load exceeds its equity
 // donors' own (wintonFee): the two Vanguard funds charge 0.60×0.14 +
 // 0.40×0.05 = 0.112 %/yr inside their NAVs, and the file starts at the trend
 // reference's 2000-01, where both already quote, so the charge is a constant.
@@ -1526,14 +1527,30 @@ func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
 		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
-		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend − overnight financing, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees less the equity donors' own 0.112%/yr (2000→, where that reference begins)",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 1.00×(TSMOM trend at a 10% volatility target − overnight financing, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees less the equity donors' own 0.112%/yr (2000→, where that reference begins)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
 }
 
-// wintonBuild blends a 60/40 equity core with a half-weighted TSMOM trend
-// overlay (the trend run as a pure excess strategy, no collateral).
+// wintonTrendNotional is the trend overlay's notional per unit of capital: the
+// fund provides "$100 of exposure to the MSCI World and $100 of exposure to the
+// same trend-following strategy traded in the Winton Trend Fund UCITS" for every
+// $100 invested (issuer page, 2026-10), which is also what the catalog record's
+// exposures declare. The overlay itself is the anchored engine at its 10 %
+// volatility target, about three quarters of the pure-trend reference (13.3 %
+// monthly since 2000).
+//
+// It was 0.5 until 2026-10, a half-sized overlay nothing documented, and the
+// fund's own record refuses it: regressing its monthly returns over 2025-04 to
+// 2026-09 on IWDA and the pure-trend reference gives a beta of 0.80 (standard
+// error 0.11) on the reference, against the 0.38 a half-sized overlay carries
+// and the 0.75 a full one does.
+const wintonTrendNotional = 1.0
+
+// wintonBuild blends a 60/40 equity core with the TSMOM trend overlay at the
+// fund's full notional (the trend run as a pure excess strategy, no
+// collateral).
 func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	ids := append([]string{"^IRX", usdOvernight, "VFINX", "VTMGX"}, mfMarkets...)
 	fr, err := BuildFrame(financed(extend(f)), ids, from)
@@ -1575,7 +1592,7 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		// that bill rate, so it gives back the difference. Same convention as
 		// stackedTrend, written on an excess rather than a funded record.
 		rTrend := trend[i]/trend[i-1] - 1 - (fin[k] - cash[i])
-		val *= 1 + rEq + 0.5*rTrend - feeDaily
+		val *= 1 + rEq + wintonTrendNotional*rTrend - feeDaily
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
 	}
 	return trimToAnchor(f, PureTrendAnchor, s)

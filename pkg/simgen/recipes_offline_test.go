@@ -388,3 +388,24 @@ func TestCHSNReshapesTheStaleDonorAndPassesTheCleanOneThrough(t *testing.T) {
 		t.Errorf("file starts %s, want the proxy's own first day", got.First().Date)
 	}
 }
+
+// A stacked recipe carries the notionals its catalog record declares: the
+// record's exposures are what the composition views, the regime coverage and
+// the plausibility bands read, so a reconstruction sized otherwise describes
+// another fund. The Winton fund provides $100 of MSCI World and $100 of the
+// Winton trend programme per $100 invested (issuer page, 2026-10).
+func TestWintonOverlayCarriesTheCatalogNotional(t *testing.T) {
+	var rec datasets.Asset
+	for _, a := range datasets.Catalog() {
+		if a.ID == "IE000O1VI174" {
+			rec = a
+		}
+	}
+	want, ok := rec.Exposures["managed-futures"]
+	if !ok {
+		t.Fatal("IE000O1VI174: no managed-futures exposure in the catalog")
+	}
+	if wintonTrendNotional != want {
+		t.Errorf("trend overlay notional %v, the catalog record declares %v", wintonTrendNotional, want)
+	}
+}

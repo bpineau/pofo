@@ -1125,6 +1125,27 @@ The chains were untouched by the swap, and their validation lines are
 identical to the digit before and after (correlation, beta, tracking error,
 CAGR), which is the check that the anchor change reached only the overlays.
 
+### The Winton overlay is the fund's full notional (measured, 2026-10)
+
+`wintonBuild` stacked its trend overlay at HALF a unit of notional, a choice
+nothing recorded. The fund provides $100 of MSCI World and $100 of the Winton
+trend programme per $100 invested (issuer page), which is what its catalog
+record's `exposures` declare too, and its own record agrees: its monthly
+returns over 2025-04 to 2026-09 regressed on IWDA and on the pure-trend
+reference read 0.93 on the equity and 0.80 (standard error 0.11) on the trend
+reference. A full unit of the engine's 10 %-target overlay is 0.75 of that
+reference (13.3 % monthly), the half unit 0.38. Moved to a full unit
+(`wintonTrendNotional`, held to the catalog by a test), on the fund's 17 live
+months:
+
+| | monthly vol (fund 15.1 %) | monthly beta | CAGR gap |
+|---|---|---|---|
+| half overlay | 13.2 % | 0.83 | -8.9 pts |
+| full overlay | **15.1 %** | **0.95** | **-2.9 pts** |
+
+The file over 2000-2026 reads 9.08 %/yr at 21.5 % daily volatility, against
+7.87 % and 19.3 %; its worst drawdown, -51.6 %, is the equity core's.
+
 ### An overlay finances at the overnight rate, not at the T-bill (measured, 2026-08)
 
 A stacked overlay used to pay `^IRX`, the 13-week T-bill rate, for the notional
