@@ -965,7 +965,12 @@ CAPE", "parametric models only"); the paraphrase is not the label.
 | les guardrails, les guardrails par risque | `Guyton-Klinger guardrails`, `Risk-based guardrails (Kitces / Morningstar)` | With `Risk-guardrail raise ceiling (x planned spend)` and `Guardrails floor (% of initial, 0 = none)`. | guardrails-morningstar |
 | le cliquet à la hausse | `Ratchet lifestyle up when rich` | | utiliser-la-page-fire |
 | la dérive structurelle des dépenses, le sourire | `Real spending drift /yr`, `Retirement smile (down, plateau, up late)` | | suivre-inflation |
-| le VPW pur, l'ABW, le pourcentage borné, la rente | `Spend % of portfolio (VPW, 0 = off)`, `Amortize over the horizon (ABW / TPAW)`, `Bounded % of portfolio (Vanguard-style)`, `Annuitise % of capital` | Exactly one spending policy runs at a time. | vpw |
+| le VPW pur, l'ABW, le pourcentage borné | `Spend % of portfolio (VPW, 0 = off)`, `Amortize over the horizon (ABW / TPAW)`, `Bounded % of portfolio (Vanguard-style)` | Exactly one spending policy runs at a time. | vpw |
+| la rente viagère et ses réglages | `Annuitise % of the growth sleeve`, `Buy in year`, `Insurer margin`, the card `Annuity · pays vs withdraws` | Group "Longevity insurance", NOT a spending policy since 2026-08: bought in §05 only. | utiliser-la-page-fire |
+| l'indexation de la pension | `Pension indexation vs prices /yr` | Group "Pension & side income". | utiliser-la-page-fire |
+| les flux datés, ponctuel / annuel | the `dated flows` fold, `once` / `each year` | Lower case on the page. "One-off flow" in prose. | utiliser-la-page-fire |
+| ouvrir un futur, ses colonnes | open a future; `Year`, `Age`, `Market`, `Opening`, `One-off`, `Income`, `From portfolio`, `of which buffer`, `Sold`, `Tax`, `Buffer`, `Closing` | Click (or tap) a thin line on a §01 wealth fan. | utiliser-la-page-fire |
+| les états de §05 | `Broke`, `≤ start`, `1-2x start`, `> 2x start`, `Gone` | Red on the baseline, gray from the top, three amber steps between. | utiliser-la-page-fire |
 | mu, sigma, df, le prior mondial, l'ancre CAPE, la tente, les retraits mensuels | `Real growth return`, `Volatility (long-horizon)`, `Tail df (low = fat)`, `Broad-sample prior (override the fit)`, `Anchor return to today's valuation (CAPE)`, `Rising-equity glidepath (bond tent)`, `Monthly withdrawals (salary-like)` | Group "Market model". | la-machine-pofo |
 | le matelas et ses réglages, la fiscalité, le nombre de chemins | `Buffer (years of spending)`, `Buffer real return`, `Buffer refill stops in year (0 = never)`, `Tax on gains`, `Simulated paths` | | cash-buffer |
 | la ruine acceptable, la pastille de confiance | `Acceptable ruin`, `Confidence: Medium` | | utiliser-la-page-fire |
