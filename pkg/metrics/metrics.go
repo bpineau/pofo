@@ -125,33 +125,43 @@ func Beta(dates []time.Time, values []float64, benchDates []time.Time, benchValu
 }
 
 // paired is two series' returns matched by date: own[k] and bench[k] are
-// each series' return from its own previous point to end[k], a date both
-// quote, and start[k] is the date own[k] is measured from.
+// each series' return over the same interval, from start[k] to end[k], two
+// consecutive dates both series quote.
 type paired struct {
 	start, end []time.Time
 	own, bench []float64
 }
 
 // pairReturns matches a series' simple returns with a benchmark's on the
-// dates both quote, each return taken from that series' own previous point:
-// the pairing Beta, VsBenchmark, RollingBeta and RollingCorr share. It is
-// empty when the slices are mismatched or shorter than two points.
+// dates both quote, both measured from the previous date both quote: the
+// pairing Beta, VsBenchmark, CWARPvs, RollingBeta and RollingCorr share. On a
+// shared calendar that is each series' own previous point; on two different
+// ones it keeps the two returns on one interval, where pairing each with its
+// own previous point would set a weekly fund's week against the benchmark's
+// last day. It is empty when the slices are mismatched or shorter than two
+// points.
 func pairReturns(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64) paired {
 	var p paired
 	if len(dates) != len(values) || len(dates) < 2 || len(benchDates) != len(benchValues) || len(benchDates) < 2 {
 		return p
 	}
-	bench := make(map[time.Time]float64, len(benchDates)-1)
-	for i := 1; i < len(benchDates); i++ {
-		bench[benchDates[i]] = benchValues[i]/benchValues[i-1] - 1
+	bench := make(map[time.Time]float64, len(benchDates))
+	for i, d := range benchDates {
+		bench[d] = benchValues[i]
 	}
-	for i := 1; i < len(dates); i++ {
-		if br, ok := bench[dates[i]]; ok {
-			p.start = append(p.start, dates[i-1])
-			p.end = append(p.end, dates[i])
-			p.own = append(p.own, values[i]/values[i-1]-1)
-			p.bench = append(p.bench, br)
+	last, lastBench := -1, 0.0 // the previous date both quote
+	for i, d := range dates {
+		b, ok := bench[d]
+		if !ok {
+			continue
 		}
+		if last >= 0 {
+			p.start = append(p.start, dates[last])
+			p.end = append(p.end, d)
+			p.own = append(p.own, values[i]/values[last]-1)
+			p.bench = append(p.bench, b/lastBench-1)
+		}
+		last, lastBench = i, b
 	}
 	return p
 }

@@ -176,3 +176,42 @@ func TestPairedReturnsCadence(t *testing.T) {
 	}
 	near(t, "Alpha", rel.Alpha, (Mean(p.own)-rel.Beta*Mean(p.bench))*12, 1e-12)
 }
+
+// TestPairedReturnsShareTheirInterval: a weekly fund geared twice on a daily
+// benchmark has a beta of 2. Pairing the fund's weekly return with the
+// benchmark's ONE-DAY return of the same date (each from its own previous
+// point) read a beta near 0 and an alpha made of the whole week; both returns
+// must run over the same interval, between two dates both series quote.
+func TestPairedReturnsShareTheirInterval(t *testing.T) {
+	d0 := time.Date(2020, 1, 6, 0, 0, 0, 0, time.UTC) // a Monday
+	var bd, wd []time.Time
+	var bv, wv []float64
+	b, f, prev := 100.0, 100.0, 0.0
+	for i := range 2000 {
+		d := d0.AddDate(0, 0, i)
+		if w := d.Weekday(); w == time.Saturday || w == time.Sunday {
+			continue
+		}
+		bd, bv = append(bd, d), append(bv, b)
+		if d.Weekday() == time.Friday {
+			// Re-geared every Friday: each weekly return is exactly twice
+			// the benchmark's over the same week.
+			if prev > 0 {
+				f *= 1 + 2*(b/prev-1)
+			}
+			wd, wv, prev = append(wd, d), append(wv, f), b
+		}
+		b *= 1 + 0.01*math.Sin(float64(i)*1.7)
+	}
+	beta, ok := Beta(wd, wv, bd, bv)
+	if !ok || math.Abs(beta-2) > 1e-9 {
+		t.Fatalf("Beta = %v, %v; want 2 on the weekly intervals", beta, ok)
+	}
+	rel, ok := VsBenchmark(wd, wv, bd, bv)
+	if !ok || math.Abs(rel.Alpha) > 1e-9 || math.Abs(rel.Beta-2) > 1e-9 {
+		t.Fatalf("VsBenchmark = %+v, %v; want beta 2, alpha 0", rel, ok)
+	}
+	if p := pairReturns(wd, wv, bd, bv); p.cadence() != 52 {
+		t.Fatalf("paired cadence = %v, want 52", p.cadence())
+	}
+}

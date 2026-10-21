@@ -58,7 +58,10 @@
 //     date.
 //
 // The main entry point is Compute. Beta pairs returns with the benchmark's by
-// date. VarianceRatio resamples a series sampled more often than monthly to
+// date, both measured between two consecutive dates both series quote, so a
+// weekly fund against a daily index reads its week against the index's week
+// (VsBenchmark, CWARPvs, RollingBeta and RollingCorr pair the same way).
+// VarianceRatio resamples a series sampled more often than monthly to
 // month-end closes and reports the volatility at both frequencies plus their
 // ratio, revealing the autocorrelation the daily statistics hide. Returns and
 // Mean are exposed as building blocks.

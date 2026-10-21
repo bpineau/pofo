@@ -99,8 +99,8 @@ func RollingUlcer(dates []time.Time, values []float64, years float64) ([]time.Ti
 
 // RollingBeta is Beta over every trailing calendar window of the given length
 // in years: the slope of the series' simple returns on the benchmark's, both
-// as fractions, paired by date as Beta pairs them (each return from its own
-// series' previous point, on the dates both quote). The windows are
+// as fractions, paired by date as Beta pairs them (both returns over the
+// interval between two consecutive dates both series quote). The windows are
 // RollingVol's: one per paired date, ending there and holding the returns
 // measured from a point inside (end-years, end], emitted only once the pairs
 // reach back the full length, so on a shared calendar the dates are exactly
