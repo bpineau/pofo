@@ -47,9 +47,12 @@ func (p ParametricSource) Draw(rng *rand.Rand) Sequence {
 }
 
 // studentT returns a standard Student-t variate at df degrees of freedom
-// (variance df/(df-2) for df>2). df <= 0 returns a standard normal.
+// (variance df/(df-2) for df>2). df <= 2 returns a standard normal: a t with
+// so few degrees of freedom has no finite variance, so it cannot be scaled to
+// a Sigma, and the sources fall back to a Normal there (they scale by Sigma
+// alone below df 2).
 func studentT(rng *rand.Rand, df float64) float64 {
-	if df <= 0 {
+	if df <= 2 {
 		return rng.NormFloat64()
 	}
 	z := rng.NormFloat64()

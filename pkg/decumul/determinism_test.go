@@ -307,7 +307,7 @@ func determinismSources() []struct {
 func TestDeterminismSources(t *testing.T) {
 	want := map[string]string{
 		"parametric":           "ac5ce475001a10c6a17c599856f09fab1e7bee9040861fbd4ec106548851e51f",
-		"parametric-normal":    "69c99a8d1492c216fd7d3c30947416a8ca95d6ef0dc79b9a430dc328ccc4f6da",
+		"parametric-normal":    "fe5ed8b0430d5ab249e6cb466b1a7d0a0b7388aa12771d0aa1d96ddd4cc8a4dc",
 		"markov-regime":        "cd4e81e0ad04472ec90529609bc1e4dedc4eb865e61db075001da7fde3c713cf",
 		"lost-decade":          "1367d7ca168a4b29dc56634dfc8bdbadde0b241a79d02aa7307087fdbb9ef0cb",
 		"glidepath":            "b4fa490323f4ad16fdb02eab0df4909dc7be323b9355bea6074d5d682564743c",
