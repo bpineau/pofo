@@ -12,7 +12,7 @@ import (
 type BlockBootstrap struct {
 	Panel    Panel     // the history resampled, real returns per period
 	Weights  []float64 // fractions per Panel asset; nil uses Panel.Weights
-	BlockLen int       // periods per block
+	BlockLen int       // periods per block; below 1 resamples single periods (1)
 	Periods  int       // length of every drawn path
 
 	hist Sequence // Panel combined at Weights, filled by prepare
@@ -38,7 +38,7 @@ func (b BlockBootstrap) Len() int { return b.Periods }
 
 // Draw returns one resampled path.
 func (b BlockBootstrap) Draw(rng *rand.Rand) Sequence {
-	return blocks(rng, b.history(), b.BlockLen, b.Periods, func() bool { return false })
+	return blocks(rng, b.history(), max(b.BlockLen, 1), b.Periods, func() bool { return false })
 }
 
 // StationaryBootstrap is a block bootstrap with random block lengths drawn

@@ -44,3 +44,26 @@ func TestStationaryBootstrapLen(t *testing.T) {
 		t.Fatalf("len = %d, want 20", len(got))
 	}
 }
+
+// TestBlockBootstrapZeroBlockLen: a BlockLen below one resamples single
+// periods. It used to fall through the restart test (the counter went
+// negative and never met zero again) and copy ONE block for the whole path,
+// the history in order from a random start: a cohort, not a bootstrap.
+func TestBlockBootstrapZeroBlockLen(t *testing.T) {
+	row := make([]float64, 100)
+	for i := range row {
+		row[i] = float64(i)
+	}
+	p := Panel{Returns: [][]float64{row}, Weights: []float64{1}}
+	rng := rand.New(rand.NewPCG(5, 6))
+	path := BlockBootstrap{Panel: p, BlockLen: 0, Periods: 60}.Draw(rng)
+	runs := 0
+	for k := 1; k < len(path); k++ {
+		if path[k] == math.Mod(path[k-1]+1, 100) {
+			runs++
+		}
+	}
+	if runs > 10 {
+		t.Fatalf("%d of %d steps continue the previous period: one block, not single periods", runs, len(path)-1)
+	}
+}
