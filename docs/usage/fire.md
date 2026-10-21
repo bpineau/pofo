@@ -150,9 +150,9 @@ fmt.Printf("estate p50 %.1f M, nothing left %.0f%%\n", o.EstateP50/1e6, o.Estate
 ```
 
 ```text
-broke while alive 11%, for 1.0 years on average
-median life 31 years, still alive at the horizon 0%
-estate p50 0.8 M, nothing left 11%
+broke while alive 14%, for 1.2 years on average
+median life 32 years, still alive at the horizon 0%
+estate p50 0.7 M, nothing left 14%
 ```
 
 `Years` is the simulation length and `PlanHorizon` the horizon the spending

@@ -47,9 +47,12 @@ const (
 // Annuitants are self-selected: people who buy lifelong income expect to
 // collect it, and French insurers price on the generational TGH/TGF-05 tables,
 // which run materially longer than an INSEE period table. A modal age of 92
-// with a 9-year dispersion sits about three to four years of remaining life
-// expectancy above the bundled FrenchMortality (88/10), which is the order of
-// magnitude the annuitant-versus-population gap has in the published tables.
+// with a 9-year dispersion gives 23.4 years of remaining life expectancy at
+// 65, 1.9 years above the bundled FrenchMortality (21.5, fitted on INSEE's
+// 2023-2025 table). It was chosen against an older population law that ran 1.6
+// years short, when the gap read 3.3 years; it is NOT re-sourced against the
+// TGH/TGF-05 tables themselves, so read it as a floor on the insurer's
+// longevity rather than as its table.
 // It is a fixed choice, deliberately: folding it into the load would conflate
 // two costs that move differently with age, and offering it as a control would
 // ask a reader to price a table.

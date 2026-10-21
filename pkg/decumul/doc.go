@@ -90,6 +90,12 @@
 // crash; the statistics that are genuinely per-lifetime stop at
 // PathResult.LifeYears.
 //
+// The mortality laws are Gompertz laws fitted on INSEE's 2023-2025 France
+// table: FrenchMortality (both sexes, the default of every Life),
+// FrenchWomen and FrenchMen, each within half a year of the published
+// remaining life expectancy from 50 to 90 ([Gompertz.LifeExpectancy] reads
+// it off a law).
+//
 // Design and calibration, including what the bundled Gompertz law gets wrong
 // and in which direction: docs/specs/stochastic-lifetime-kernel-design.md.
 //

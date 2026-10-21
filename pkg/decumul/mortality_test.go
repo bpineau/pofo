@@ -30,6 +30,70 @@ func TestGompertzSurvivalShape(t *testing.T) {
 	}
 }
 
+// inseeRemaining is the remaining life expectancy (complete expectation, in
+// years) of INSEE's triennial France table for 2023-2025, provisional results
+// published 2026-01-13 in "Bilan démographique 2025", file
+// 6_FR_Table_mortalite_triennale.xlsx of https://www.insee.fr/fr/statistiques/8721189:
+// age, both sexes ("Ensemble"), women, men.
+var inseeRemaining = []struct {
+	age, both, women, men float64
+}{
+	{50, 34.68, 37.05, 32.37},
+	{55, 30.19, 32.42, 27.99},
+	{60, 25.86, 27.91, 23.81},
+	{65, 21.73, 23.55, 19.87},
+	{70, 17.81, 19.34, 16.19},
+	{75, 14.08, 15.29, 12.73},
+	{80, 10.59, 11.47, 9.52},
+	{85, 7.50, 8.10, 6.70},
+	{90, 5.03, 5.39, 4.47},
+}
+
+// The bundled laws must reproduce INSEE's remaining life expectancy within
+// half a year at every age from 50 to 90, for both sexes and each sex: a law
+// that runs short flatters every plan it drives.
+func TestBundledLawsMatchINSEE(t *testing.T) {
+	const tol = 0.5
+	for _, row := range inseeRemaining {
+		for _, c := range []struct {
+			name string
+			law  Gompertz
+			want float64
+		}{
+			{"FrenchMortality", FrenchMortality, row.both},
+			{"FrenchWomen", FrenchWomen, row.women},
+			{"FrenchMen", FrenchMen, row.men},
+		} {
+			got := c.law.LifeExpectancy(row.age)
+			if math.Abs(got-c.want) > tol {
+				t.Errorf("%s at %v: %.2f years left, INSEE %.2f (tolerance %.1f)", c.name, row.age, got, c.want, tol)
+			}
+		}
+	}
+}
+
+// LifeExpectancy is the integral of the survival curve: check it against a
+// brute-force trapezoid, and against the kernel's own count of yearly
+// payments (AnnuityFactor at a zero rate on a single life), which the
+// Euler-Maclaurin formula puts half a year above the integral.
+func TestGompertzLifeExpectancy(t *testing.T) {
+	g := Gompertz{Mode: 88, Dispersion: 10}
+	brute, h := 0.0, 0.001
+	for x := 0.0; x < 80; x += h {
+		brute += h * (g.Survival(65, x) + g.Survival(65, x+h)) / 2
+	}
+	if got := g.LifeExpectancy(65); math.Abs(got-brute) > 1e-4 {
+		t.Errorf("LifeExpectancy(65) = %.5f, trapezoid %.5f", got, brute)
+	}
+	payments := AnnuityFactorFor(func(years float64) float64 { return g.Survival(65, years) }, 0)
+	if d := payments - g.LifeExpectancy(65); math.Abs(d-0.5) > 0.02 {
+		t.Errorf("expected payments %.3f minus life expectancy = %.3f, want about 0.5", payments, d)
+	}
+	if g.LifeExpectancy(90) >= g.LifeExpectancy(60) {
+		t.Error("remaining life expectancy must fall with age")
+	}
+}
+
 // A couple (first death does not end the household) survives longer than a
 // single person at every horizon.
 func TestCoupleSurvivalDominates(t *testing.T) {

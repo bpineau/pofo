@@ -233,21 +233,21 @@ func determinismPlans() []struct {
 // every envelope arrangement and the lifetime kernel.
 func TestDeterminismPlans(t *testing.T) {
 	want := map[string]string{
-		"fixed":             "c492941f124a478e9488c164305242b88b814af6137c3e07c24e83466dd3e94f",
-		"ratchet":           "f03dd8b5e9e32174634ac65c4e0efc65a2984c7f2c5b1ecd13b104c83eb09c42",
-		"guardrails":        "8721bd8d89408fb872fe49c0156b962fdde6614d81a1f9e201b0b77f58651271",
-		"riskguard":         "ae59b85955431ac5e96d4c27a9c666130c50c6d47609fd0679c2162a4637b2e7",
-		"percent":           "0fb11c7724fe5178e10f5dd83dc85bdfd4da4777aa121d6c7fbcdd6c671cd990",
-		"bounded":           "b9656d0ad795ac47778e3636f0ccdb0d186db9f59923f65956cddc9fd313151a",
-		"amortize":          "d9b268b1ea73b66c8aa05b64532f41e7e0430eacea4e3ef95a91e5b5edd844b3",
-		"envelopes":         "1cfb23892a9d05efdbd66881debdc01a5105b9f2d43225ae9dab73860c512971",
-		"monthly":           "358c4597414baea7b17a0134434ac7144c1b74c50633c15ef1923085abd282cb",
-		"monthly-riskguard": "d029445ca13b08166088f48e58b3cc63ef727fcbe376ee3c1f1b52b76672e62a",
-		"schedule":          "c836df55470ed70418294ef8a94e33cbfbf7c1933d98f6fb5cde3bf439272784",
-		"lifetime-single":   "ec4ea7251ab386528b311913f47c6791ab14105c3b57268a550b8fb03eda4471",
-		"lifetime-couple":   "2164eb86f2cc43d116f717b2319758cc20d18b5a7d7b507d600fb1978b0cccf4",
-		"lifetime-annuity":  "e30b3c223d1c5ccd096301061c97929e500988da478d3d50e3ef592082332f81",
-		"lifetime-amortize": "baf815526ca45a480c8a25a87bc5f98e4833e37a2b8839c0e73d2aed1bb49928",
+		"fixed":             "a99e488631f6bd8cbd193adf74a985b837c564a4cd1fcbfaaa4917bb4c854004",
+		"ratchet":           "17fa08b47a92680085a14ffdb86509e9649cd9e9d424944a53091f5f2ef6ff44",
+		"guardrails":        "b18b6485bcb987ec89d438c6716c20a03bed14f51e931898b7ad17cf2ce22abf",
+		"riskguard":         "0506c8115cdff11650215ab7ba5f64b56f1ebbf55cd386cc251bd6ccd779addf",
+		"percent":           "aa933ea317460f57bc84dd08c12c94e8eaf5b2e08a96ea6baf77bb941d2f9b49",
+		"bounded":           "1f033fc29fb82257e34f4531788ed48ae2ed1f2eee6ef19fcadfb562f28a4cdf",
+		"amortize":          "dfce07fe6aa20ca655172d5d236e594a26d047ec85652ebc0f11fc3f612fb65c",
+		"envelopes":         "da5f6dd072c369f54e8ba71b8abbcb27c18d6755981b8baf382b891fd00676a8",
+		"monthly":           "d8845288131956eef75525a79cc847320687c60dc98d129ebd084e9718e891c5",
+		"monthly-riskguard": "d6d05fc1e7a892c7d7a2ad95af0b8eb48a842bca9ebc3ae0a5226fc0a928a3aa",
+		"schedule":          "2583093ef4faa8cd92705090a2ce10ce7d6db87619e81cdae0fa9633306f2888",
+		"lifetime-single":   "b7cf0ff71b94c4669657ed1ef7d8a321ad46b3d6305e1867dfd7b08dbf4806c1",
+		"lifetime-couple":   "9d9f17a818fc10f6aff2be73a21f70bfc534920e779eddce48f801176b37fbcb",
+		"lifetime-annuity":  "0ee6cc4151e6cee090653f8f7ec672d48186ccd90c886ef738116d23b421db73",
+		"lifetime-amortize": "ea574821017cf11894ef001f53f753e5c70cba2f43b16c57a45aedab596f25c1",
 	}
 	for _, c := range determinismPlans() {
 		d := newDigest()
@@ -305,15 +305,15 @@ func determinismSources() []struct {
 // full plan run on each of them.
 func TestDeterminismSources(t *testing.T) {
 	want := map[string]string{
-		"parametric":           "1a2076379a8fbbad3b197ef13af88e4e1b063db309bff622d634a749ecdbc338",
-		"parametric-normal":    "31b6895eec06259ee6f49391a7d23b69ceca5f56fe2771c13013894e7f5c5692",
-		"markov-regime":        "061e49bfc3975dbf57b7d3728af60bcbad6d389777f5e42d6d15a997e129d3be",
-		"lost-decade":          "c6d8d4b7d1bd0c669f9aa8c042af37410e6a975e4e426bab46d6ef354ee473f2",
-		"glidepath":            "2e742df1bf94cfd176a39c22e60060c3023c1c177fc5abc0e006bfcf8bb4c86f",
-		"block-bootstrap":      "2f87a7b074a036ee6d1d356bdc16f9e9e38a89051f7416367e7d13d07f814080",
-		"stationary-bootstrap": "c06555f720afd948745b4bb209c67ea8c18af7a4f399860b276c203330e2c091",
-		"historical-cohorts":   "9ad64c69483dde4dfbfe38f73b020b0e6cb5f739ac902ef3f79f53f0617eb25b",
-		"pooled-bootstrap":     "6e373d5984971de3e6fd789442bd009d2e736880bc8d4ddc6be92400444a98c8",
+		"parametric":           "e8e4815429213fea438112d8f9d71ee444861abba30d6e9e15a56237ffe357e4",
+		"parametric-normal":    "bf81a5720bf85a522169083ecb2d2a8008b8faa1698e93e29f9e4bbc584abf6d",
+		"markov-regime":        "e519a4b4d22595d8c08795cf700f39b712cd9817c0a1adc7d8078a751e223b21",
+		"lost-decade":          "fd90d9fb79fad8285fd4df5cfdcf0357feda258c418bfb9408eaf7a699035fcb",
+		"glidepath":            "09e06b62bde36fed8183b7439c0efbf2fd1821f954d259716c40e9d9d9b3ed40",
+		"block-bootstrap":      "8ce450542509b66bd3804a12a0e33ce1419494b55a6cd84cc89e5c967e84f69e",
+		"stationary-bootstrap": "72390f678551144c9b1186d74b183cf655460c50163d9aff49eff33a8eed3837",
+		"historical-cohorts":   "8d3bbbcb9ab76c5a8c0046ff45d67200e32c3b65e21848ac094f424ae047ce7b",
+		"pooled-bootstrap":     "77cb487d3d3179164a308a3bd3f0467c3452225c90f84358dd89f63bad652303",
 	}
 	for _, c := range determinismSources() {
 		d := newDigest()

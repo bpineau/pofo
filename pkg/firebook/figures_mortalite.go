@@ -22,8 +22,11 @@ import (
 //	draw: 200 000 paths, seed 1, 8 workers (Draw splits the sampling per
 //	      worker, so the worker count is part of the reproduction recipe).
 //
-// Mortality is decumul.FrenchMortality (Gompertz, modal age 88, dispersion
-// 10), read through CoupleSurvival at age 47. That law is UNISEX and
+// Mortality is decumul.FrenchMortality read through CoupleSurvival at age 47.
+// The plate was frozen under its earlier calibration (Gompertz, modal age 88,
+// dispersion 10); the law was refitted on INSEE's 2023-2025 table in 2026-10
+// (89.8 / 9.3), which `make figure-drift` reports until the plate is
+// refrozen. That law is UNISEX and
 // CoupleSurvival assumes two independent lives of the SAME age, so the plate
 // says so: no sex split is invented here, and Sam's two extra years are not
 // modelled.

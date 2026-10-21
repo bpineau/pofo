@@ -294,19 +294,60 @@ money-back identity of §7 exact rather than approximate:
 
 ### Calibration of the bundled law
 
-`FrenchMortality = Gompertz{Mode: 88, Dispersion: 10}` gives a remaining life
-expectancy at 65 of **20.1 years**. INSEE's 2025 period table gives 19.7 for
-men and 23.4 for women, so the bundled law sits essentially on the male
-figure and about 1.5 years below the unisex average. It is also a PERIOD law:
-it carries no future mortality improvement, where the generational tables an
-insurer prices with (TGH/TGF-05) run materially longer.
+**Reference.** INSEE's triennial France period table for 2023-2025
+(provisional results published 2026-01-13 with the "Bilan démographique
+2025", https://www.insee.fr/fr/statistiques/8721189, file
+`6_FR_Table_mortalite_triennale.xlsx`, sheet "2025"), whose "Espérance de vie"
+columns are the complete expectation at exact age x, for both sexes
+("Ensemble"), women and men. `Gompertz.LifeExpectancy` computes the same
+quantity (the integral of `Survival`), so the two compare directly.
 
-Both gaps point the same way, and it is the flattering way: the bundled law
-**understates** longevity, therefore understates the risk an annuity insures.
-A household wanting the conservative reading should raise `Mode`;
-`Gompertz{91, 10}` gives 22.6 years at 65, in the region of an annuitant
-table. The godoc says this at the constant, and the design records it here so
-nobody rediscovers it as a bug.
+**Fit.** Mode and dispersion minimise the squared error of the remaining life
+expectancy at every single age from 50 to 90, on each column, then rounded to
+a tenth (the rounding costs under 0.01 year of rms):
+
+| law | Gompertz | rms 50-90 | worst 50-90 |
+|---|---|---|---|
+| `FrenchMortality` (Ensemble) | {89.8, 9.3} | 0.25 y | 0.43 y (age 90) |
+| `FrenchWomen` | {91.9, 8.3} | 0.24 y | 0.37 y (age 90) |
+| `FrenchMen` | {87.5, 9.9} | 0.25 y | 0.48 y (age 90) |
+
+Remaining years, model versus INSEE (`TestBundledLawsMatchINSEE` holds every
+age 50, 55, ..., 90 within 0.5 year):
+
+| age | before {88, 10} | Ensemble fit / INSEE | women fit / INSEE | men fit / INSEE |
+|---|---|---|---|---|
+| 50 | 33.18 | 35.04 / 34.68 | 37.40 / 37.05 | 32.74 / 32.37 |
+| 60 | 24.26 | 25.83 / 25.86 | 27.88 / 27.91 | 23.83 / 23.81 |
+| 65 | 20.13 | 21.51 / 21.73 | 23.33 / 23.55 | 19.71 / 19.87 |
+| 70 | 16.30 | 17.46 / 17.81 | 19.00 / 19.34 | 15.90 / 16.19 |
+| 80 | 9.82 | 10.50 / 10.59 | 11.39 / 11.47 | 9.48 / 9.52 |
+
+The residual has the two-parameter law's shape: about +0.35 year at 50, -0.3
+around 70, +0.4 at 90. A Makeham term or a bundled table would remove it; at
+a fifth of the gap it replaced, it was not worth the extra parameter.
+
+**Before.** `Gompertz{88, 10}` (the calibration until 2026-10) ran **1.5 to
+1.6 years short** of the Ensemble column from 50 to 70 and 0.8 year short at
+80: it sat on the MEN's figures and flattered every plan. Measured on the
+package examples (20 000 paths, same seeds), the refit moves a 60-year-old
+couple's alive-ruin from 11 % to 14 % on `ExamplePlan_Simulate_lifetime`, the
+65-year-old couple of `ExampleAnnuity` from 30 % to 33 % without an annuity
+and from 24 % to 29 % with a third annuitised at 65, and the spending solved
+at a 5 % alive-ruin on `ExamplePlan_Solve` from 24 000 to 23 500 a year.
+
+**What still flatters.** It is a PERIOD law: it carries no future mortality
+improvement, where the generational tables an insurer prices with
+(TGH/TGF-05) run materially longer. It is unisex by default; `FrenchWomen`
+and `FrenchMen` are there for a household that wants each member on their
+own column (`Life.Law`). A household wanting the conservative reading should
+raise `Mode`; `Gompertz{92, 9}` gives 23.4 years at 65, which is what the web
+page's annuity pricing uses as the insurer's law. The godoc says this at the
+constant, and the design records it here so nobody rediscovers it as a bug.
+
+**Book.** One plate freezes the law: `vivant-ruine-parti` (article
+`horizon-et-esperance-de-vie`, `TestVivantRuinePartiMatchesTheEngine`), which
+`make figure-drift` reports stale until it is refrozen.
 
 Couple survival treats the two lives as **independent** draws from their own
 laws. Real couples are positively dependent (shared environment, shared
@@ -409,9 +450,10 @@ draw stream for returns is unchanged.
   to 10 %, where an unset zero means that default rather than a fair annuity so
   a link written before the control cannot quietly buy one). Fixed, and stated
   in the UI rather than offered as knobs: a joint-life, inflation-linked quote
-  at a **1 % real rate** on an **annuitant** table (`Gompertz{92, 9}`, about
-  three to four years of remaining life expectancy above the bundled population
-  law, the order of magnitude of the TGH/TGF-05 gap).
+  at a **1 % real rate** on an **annuitant** table (`Gompertz{92, 9}`, 23.4
+  years of remaining life expectancy at 65: chosen as 3.3 years above the
+  population law of the time, it sits 1.9 years above the INSEE-fitted one
+  since 2026-10, and was never re-sourced against TGH/TGF-05 themselves).
   **The panel lives in `/api/lifecycle` and nowhere else**, because that is the
   only view whose households can outlive their money. Everything fixed-horizon
   ignores the block, and the view carries one standing line saying why. Wiring

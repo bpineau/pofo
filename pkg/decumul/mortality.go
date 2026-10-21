@@ -10,11 +10,49 @@ type Gompertz struct {
 	Mode, Dispersion float64 // modal age at death and dispersion, in years
 }
 
-// FrenchMortality approximates the INSEE 2020s unisex period table for adults:
-// modal age at death ≈ 88 with a ≈ 10-year dispersion (women ≈ 90/9, men ≈
-// 85/10.5). Remaining life expectancy at 50 comes out in the mid-30s of years,
-// matching the published tables closely enough for retirement planning.
-var FrenchMortality = Gompertz{Mode: 88, Dispersion: 10}
+// FrenchMortality is the bundled default law: a Gompertz law fitted by least
+// squares on the remaining life expectancy at every age from 50 to 90 of
+// INSEE's triennial France period table for 2023-2025, both sexes together
+// ("Ensemble"; provisional results published 2026-01-13 with the "Bilan
+// démographique 2025", https://www.insee.fr/fr/statistiques/8721189, file
+// 6_FR_Table_mortalite_triennale.xlsx). It reproduces the table within half a
+// year over that range: 35.0 years left at 50 (INSEE 34.7), 25.8 at 60
+// (25.9), 21.5 at 65 (21.7), 17.5 at 70 (17.8), 10.5 at 80 (10.6).
+//
+// It is a PERIOD law, unisex, and carries no future mortality improvement,
+// so it still runs shorter than the generational tables an insurer prices
+// with; FrenchWomen and FrenchMen are the same fit on each sex's column. The
+// fit, its residuals and the calibration it replaced (Gompertz{88, 10}, which
+// ran 1.5 years short at 50 to 70) are recorded in
+// docs/specs/stochastic-lifetime-kernel-design.md.
+var FrenchMortality = Gompertz{Mode: 89.8, Dispersion: 9.3}
+
+// FrenchWomen is the same calibration as FrenchMortality on the women's
+// column of the INSEE table: 23.3 years left at 65 (INSEE 23.55).
+var FrenchWomen = Gompertz{Mode: 91.9, Dispersion: 8.3}
+
+// FrenchMen is the same calibration as FrenchMortality on the men's column of
+// the INSEE table: 19.7 years left at 65 (INSEE 19.87).
+var FrenchMen = Gompertz{Mode: 87.5, Dispersion: 9.9}
+
+// LifeExpectancy is the remaining life expectancy at age, in years: the
+// integral of Survival over the years ahead, the "complete expectation" a
+// national life table publishes (INSEE's "espérance de vie à l'âge x"). The
+// kernel draws whole years and pays at the start of each, so its expected
+// count of yearly payments runs about half a year above this figure.
+func (g Gompertz) LifeExpectancy(age float64) float64 {
+	// Composite Simpson at a fortnight's step, until survival is negligible.
+	const h, limit = 1.0 / 24, 150.0
+	sum := 0.0
+	for t := 0.0; t < limit; t += 2 * h {
+		a, m, b := g.Survival(age, t), g.Survival(age, t+h), g.Survival(age, t+2*h)
+		sum += h / 3 * (a + 4*m + b)
+		if b < 1e-12 {
+			break
+		}
+	}
+	return sum
+}
 
 // Survival is the probability that a person of the given age is still alive
 // after years more years.

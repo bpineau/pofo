@@ -66,9 +66,27 @@ func ExamplePlan_Simulate_lifetime() {
 	fmt.Printf("median life %.0f years, still alive at the horizon %.0f%%\n", o.MedianLifeYears, o.OutlivedPlan*100)
 	fmt.Printf("estate p50 %.1f M, nothing left %.0f%%\n", o.EstateP50/1e6, o.EstateZero*100)
 	// Output:
-	// broke while alive 11%, for 1.0 years on average
-	// median life 31 years, still alive at the horizon 0%
-	// estate p50 0.8 M, nothing left 11%
+	// broke while alive 14%, for 1.2 years on average
+	// median life 32 years, still alive at the horizon 0%
+	// estate p50 0.7 M, nothing left 14%
+}
+
+// The bundled laws against the INSEE table they were fitted on: remaining
+// years at 65 for both sexes, women and men (INSEE 2023-2025: 21.7, 23.5,
+// 19.9). A member of the household takes a sex-specific law through Life.Law.
+func ExampleGompertz_LifeExpectancy() {
+	for _, c := range []struct {
+		name string
+		law  decumul.Gompertz
+	}{{"both", decumul.FrenchMortality}, {"women", decumul.FrenchWomen}, {"men", decumul.FrenchMen}} {
+		fmt.Printf("%-5s %.1f years left at 65\n", c.name, c.law.LifeExpectancy(65))
+	}
+	_ = decumul.Lifetime{Self: decumul.Life{Age: 62, Law: decumul.FrenchMen},
+		Partner: &decumul.Life{Age: 60, Law: decumul.FrenchWomen}}
+	// Output:
+	// both  21.5 years left at 65
+	// women 23.3 years left at 65
+	// men   19.7 years left at 65
 }
 
 // A pension tied to one life, of which 54 % keeps being paid to the survivor:
@@ -95,9 +113,9 @@ func ExampleCashflow_reversion() {
 			reversion*100, p.Simulate(20_000, 4, 7).LifeOutcome().RuinAlive*100)
 	}
 	// Output:
-	// reversion 100%: broke while alive 2%
-	// reversion 54%: broke while alive 4%
-	// reversion 0%: broke while alive 8%
+	// reversion 100%: broke while alive 3%
+	// reversion 54%: broke while alive 5%
+	// reversion 0%: broke while alive 9%
 }
 
 // Annuitising a third of the portfolio. The income lasts exactly as long as the
@@ -130,9 +148,9 @@ func ExampleAnnuity() {
 		fmt.Printf("%-13s broke while alive %.0f%%, median estate %.2f M\n", c.name, o.RuinAlive*100, o.EstateP50/1e6)
 	}
 	// Output:
-	// no annuity    broke while alive 30%, median estate 0.33 M
-	// a third at 65 broke while alive 24%, median estate 0.29 M
-	// a third at 75 broke while alive 32%, median estate 0.23 M
+	// no annuity    broke while alive 33%, median estate 0.27 M
+	// a third at 65 broke while alive 29%, median estate 0.23 M
+	// a third at 75 broke while alive 35%, median estate 0.19 M
 }
 
 // Solving needs no special case for mortality: the axes, the bisection and the
@@ -150,7 +168,7 @@ func ExamplePlan_Solve() {
 	spend := p.Solve(0.05, decumul.WithdrawalAxis(10_000, 100_000), 20_000, 8, 7)
 	fmt.Printf("5%% chance of ever being broke and alive at %.0f a year\n", math.Round(spend/500)*500)
 	// Output:
-	// 5% chance of ever being broke and alive at 24000 a year
+	// 5% chance of ever being broke and alive at 23500 a year
 }
 
 // Several questions about one plan share one set of futures: Draw them once,
