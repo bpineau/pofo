@@ -9,12 +9,18 @@ import (
 )
 
 // GeoMean estimates a return model's effective real geometric mean per period by
-// drawing nPaths and averaging log(1+r) across every drawn return. It is the
+// drawing nPaths and averaging log(1+r) across every drawn return, a draw
+// clamped to a total loss excepted (see the loop). It is the
 // single most useful sanity number for a decumulation model: the arithmetic mean
 // and the one-period volatility can look reasonable while the geometric mean, the
 // rate wealth actually compounds at, is quietly negative (arithmetic-vs-geometric
 // confusion, volatility drag, an over-pessimistic prior). A plan built on an
 // implausible geometric mean is impossible by construction, not by bad luck.
+//
+// It is also the rate Plan.AmortReturn should be set to: the return the
+// source's own paths compound at. The closed form mu - sigma^2/2 is that rate
+// only for an i.i.d. model; on a regime, a glidepath or a resampled history it
+// can overstate it by a point or more.
 func GeoMean(src scenario.Source, nPaths int, rng *rand.Rand) float64 {
 	if nPaths <= 0 || src.Len() == 0 {
 		return 0
@@ -24,11 +30,18 @@ func GeoMean(src scenario.Source, nPaths int, rng *rand.Rand) float64 {
 	src = scenario.Prepare(src) // combine a data-driven source's panel once, not per draw
 	for range nPaths {
 		for _, r := range src.Draw(rng) {
-			// Floor 1+r: an extreme tail draw clamped to a total loss (1+r<=0)
-			// would send log to -inf and poison the estimate. Such a draw is a
-			// measure-zero model artifact, not the typical compounding rate the
-			// guard cares about.
-			sumLog += math.Log(math.Max(1+r, 1e-9))
+			// A draw clamped to a total loss (1+r <= 0) is left out: its log
+			// is -inf, and a Student-t tail clamped at -100 % is a model
+			// artifact no diversified portfolio produces, not the compounding
+			// rate the estimate is after. Flooring it instead (at 1+r = 1e-9,
+			// until 2026-10) charged each one 20.7 log points, which made the
+			// estimate a measure of the floor: on a df-4, 15 % volatility
+			// model, 2.8 such draws in 10 000 cost 0.6 point and swung the
+			// figure by 0.1 point between seeds.
+			if 1+r <= 0 {
+				continue
+			}
+			sumLog += math.Log(1 + r)
 			n++
 		}
 	}

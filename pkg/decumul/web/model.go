@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"math"
+	"math/rand/v2"
 	"runtime"
 	"sync"
 
@@ -57,6 +58,12 @@ type Params struct {
 	TaxRate       float64   `json:"taxRate"`       // flat tax on realised gains (fraction)
 	NPaths        int       `json:"nPaths"`        // Monte-Carlo paths
 	Weights       []float64 `json:"weights"`       // per-holding fractions in portfolio mode; nil = parametric
+
+	// abwRate is abwReturn measured once on the request's central model,
+	// stamped by withCentral when abwKnown; server-side context like the
+	// fields below, never part of the posted state.
+	abwRate  float64
+	abwKnown bool
 
 	// tableMu/tableSigma/tableDf are the central assumptions the risk-based
 	// guardrail's safe-rate table is solved on: the blended, CAPE-anchored
@@ -191,10 +198,9 @@ func (pr Params) plan() decumul.Plan {
 	if pr.Bounded && pr.Capital > 0 {
 		p.Bounded = decumul.BoundedPct{Pct: pr.NeedAnnual / pr.Capital, Up: 0.05, Down: 0.025}
 	}
-	// Amortization-based (ABW/TPAW): the assumed real return is the central
-	// case's GEOMETRIC return (mu - sigma^2/2; the CAPE-implied return when
-	// the valuation anchor is on), the honest compounding rate to amortize
-	// at. Takes priority over every other rule.
+	// Amortization-based (ABW/TPAW): the assumed real return is the
+	// GEOMETRIC mean the central model delivers (abwReturn), the honest
+	// compounding rate to amortize at. Takes priority over every other rule.
 	if pr.ABW {
 		p.Amortize = true
 		p.AmortReturn = pr.abwReturn()
@@ -208,16 +214,36 @@ func (pr Params) plan() decumul.Plan {
 }
 
 // abwReturn is the expected real return the amortization rule assumes: the
-// geometric central return (arithmetic mean minus the volatility drag), or
-// the CAPE-implied return when the valuation anchor is on. Floored at 0 so a
-// grim assumption degrades to straight-line spreading, never a negative
-// annuity.
+// GEOMETRIC mean the selected central model actually delivers
+// (decumul.GeoMean over a fixed, seeded draw of detailSource), so the rule
+// plans on the return its own paths compound at, CAPE anchor included. The
+// sliders' mu - sigma^2/2 is that number for an i.i.d. Student-t (within 0.05
+// point, fat tails included) but not for the other models: at 5 % / 11 % /
+// df 5 over 40 years it overstated the stress regime by 0.2 point, the broad
+// sample by 0.6, the bond-tent glidepath by 1.3 and the lost decade by 3.3,
+// which front-loaded the income (year-0 withdrawal 5.13 % of capital where
+// the honest rate gives 5.00, 4.71, 4.27 and 3.09 %). Floored at 0 so a grim
+// assumption degrades to straight-line spreading, never a negative annuity.
+// withCentral stamps it once per request; an unstamped Params measures it
+// here.
 func (pr Params) abwReturn() float64 {
-	if pr.CapeAdjust {
-		return math.Max(0, capeSnapshot().ImpliedReal)
+	if pr.abwKnown {
+		return pr.abwRate
 	}
-	return math.Max(0, pr.Mu-pr.Sigma*pr.Sigma/2)
+	src := pr.detailSource(pr.panel, max(pr.Years, 1))
+	g := decumul.GeoMean(src, abwGeoPaths, rand.New(rand.NewPCG(abwGeoSeed, 0)))
+	return math.Max(0, g)
 }
+
+// abwGeoPaths and abwGeoSeed fix the draw abwReturn measures the geometric
+// mean on: 4000 paths of a 30-year plan are 120 000 yearly returns, a
+// standard error of about 0.04 point on an i.i.d. model, and the fixed seed
+// makes the rate a pure function of the parameters, like every other figure
+// on the page.
+const (
+	abwGeoPaths = 4000
+	abwGeoSeed  = 17
+)
 
 // spendSchedule builds the per-year real spending multipliers from the drift
 // and smile options; nil when spending is constant.

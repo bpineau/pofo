@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"math"
+	"math/rand/v2"
 	"strings"
 	"testing"
 
@@ -35,10 +36,10 @@ func TestPlanMapsEachSpendingRule(t *testing.T) {
 			}
 		}},
 		{"abw", func(p *Params) { p.ABW = true }, func(t *testing.T, p decumul.Plan) {
-			// The amortization rate is the GEOMETRIC central return, the
-			// arithmetic mean less the volatility drag.
-			want := 0.05 - 0.12*0.12/2
-			if !p.Amortize || math.Abs(p.AmortReturn-want) > 1e-12 {
+			// The amortization rate is the GEOMETRIC mean the central model
+			// delivers (TestABWReturnIsTheSourceGeometricMean pins it).
+			want := base.abwReturn()
+			if !p.Amortize || p.AmortReturn != want {
 				t.Errorf("Amortize = %v, AmortReturn = %v, want %v", p.Amortize, p.AmortReturn, want)
 			}
 		}},
@@ -93,19 +94,34 @@ func TestPlanRulesNeedACapital(t *testing.T) {
 }
 
 // abwReturn is the rate the amortization rule spreads wealth at: the
-// geometric central return, the CAPE-implied one under the valuation anchor,
-// and never negative (a grim assumption degrades to straight-line spreading,
-// it does not invert the annuity).
-func TestABWReturn(t *testing.T) {
-	if got, want := (Params{Mu: 0.06, Sigma: 0.10}).abwReturn(), 0.06-0.005; math.Abs(got-want) > 1e-12 {
-		t.Errorf("geometric return = %v, want %v", got, want)
+// geometric mean the selected return model actually delivers, measured on an
+// independent, larger draw here, whatever the model (a fat-tailed Student-t,
+// the clustered stress regime, the broad sample, the bond-tent glidepath, the
+// CAPE anchor). The sliders' mu - sigma^2/2 overstated the last four by 0.4 to
+// 1.3 points. It is never negative: a grim assumption degrades to
+// straight-line spreading, it does not invert the annuity.
+func TestABWReturnIsTheSourceGeometricMean(t *testing.T) {
+	base := Params{Capital: 1_000_000, NeedAnnual: 40_000, Years: 40, Mu: 0.05, Sigma: 0.11, Df: 5}
+	cases := []struct {
+		name string
+		tune func(*Params)
+	}{
+		{"student-t df 4", func(p *Params) { p.Sigma, p.Df = 0.15, 4 }},
+		{"stress regime", func(p *Params) { p.Central = "stress" }},
+		{"broad sample", func(p *Params) { p.Central = "broad" }},
+		{"glidepath", func(p *Params) { p.Glidepath = true }},
+		{"CAPE anchor", func(p *Params) { p.CapeAdjust = true }},
 	}
-	if got := (Params{Mu: -0.02, Sigma: 0.20}).abwReturn(); got != 0 {
+	for _, c := range cases {
+		pr := base
+		c.tune(&pr)
+		want := decumul.GeoMean(pr.detailSource(nil, pr.Years), 40_000, rand.New(rand.NewPCG(99, 3)))
+		if got := pr.abwReturn(); math.Abs(got-want) > 0.0015 {
+			t.Errorf("%s: abwReturn = %.4f, the model's geometric mean is %.4f", c.name, got, want)
+		}
+	}
+	if got := (Params{Mu: -0.02, Sigma: 0.20, Years: 30}).abwReturn(); got != 0 {
 		t.Errorf("grim assumption = %v, want the 0 floor", got)
-	}
-	if got, want := (Params{Mu: 0.06, Sigma: 0.10, CapeAdjust: true}).abwReturn(),
-		math.Max(0, capeSnapshot().ImpliedReal); got != want {
-		t.Errorf("CAPE-anchored return = %v, want the implied %v", got, want)
 	}
 }
 

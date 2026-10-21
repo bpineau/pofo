@@ -121,6 +121,9 @@ func (pr Params) withCentral(panel *scenario.Panel) Params {
 	pr.Weights = normalize(pr.Weights)
 	pr.tableMu, pr.tableSigma, pr.tableDf = centralParams(pr, panel)
 	pr.panel = panel
+	if pr.ABW { // 5 to 10 ms of draws: measured only when a plan amortizes
+		pr.abwRate, pr.abwKnown = pr.abwReturn(), true
+	}
 	return pr
 }
 

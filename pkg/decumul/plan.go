@@ -286,7 +286,7 @@ type Plan struct {
 	// smoothly than VPW because the shortening horizon lifts the payout rate
 	// over time. Overrides every other spending rule; annual.
 	Amortize    bool
-	AmortReturn float64 // expected real return the amortization assumes
+	AmortReturn float64 // expected real return the amortization assumes, a FRACTION; GeoMean(Source) is the honest value
 	// Bounded, when active, is the bounded percent-of-portfolio rule
 	// (Vanguard's "dynamic spending"): each year target Pct of current
 	// wealth, but never move more than Up above or Down below last year's
