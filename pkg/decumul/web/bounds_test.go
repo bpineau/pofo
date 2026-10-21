@@ -216,3 +216,13 @@ func TestWeightsAreReadUpToScale(t *testing.T) {
 		t.Errorf("percents and fractions disagree: %+v vs %+v", a, b)
 	}
 }
+
+// The pension's indexation drift is a rate a pension can mean: anything past
+// 5 % a year either way is clamped, and an in-range drift passes untouched.
+func TestBoundedClampsThePensionDrift(t *testing.T) {
+	for _, tc := range []struct{ in, want float64 }{{-3, -0.05}, {7, 0.05}, {-0.005, -0.005}, {0, 0}} {
+		if got := (Params{PensionDrift: tc.in}).bounded().PensionDrift; got != tc.want {
+			t.Errorf("PensionDrift %v -> %v, want %v", tc.in, got, tc.want)
+		}
+	}
+}

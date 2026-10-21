@@ -327,3 +327,86 @@ func TestRiskGuardrailsPrecedenceAndMonthly(t *testing.T) {
 		t.Errorf("monthly first-year spending %.0f: expected between one annual cut and none", y0)
 	}
 }
+
+// A drifting flow compounds from its OWN first year, not from year 0, and a
+// zero drift is the plain flat flow.
+func TestCashflowAmountAtDrift(t *testing.T) {
+	c := Cashflow{FromYear: 10, ToYear: 30, Annual: 20_000, Drift: -0.01}
+	cases := []struct {
+		year int
+		want float64
+	}{
+		{9, 0},
+		{10, 20_000},
+		{11, 19_800},
+		{20, 20_000 * math.Pow(0.99, 10)},
+		{29, 20_000 * math.Pow(0.99, 19)},
+		{30, 0},
+	}
+	for _, tc := range cases {
+		if got := c.AmountAt(tc.year); math.Abs(got-tc.want) > 1e-9 {
+			t.Errorf("AmountAt(%d) = %.4f, want %.4f", tc.year, got, tc.want)
+		}
+	}
+	flat := Cashflow{FromYear: 3, Annual: 12_000}
+	if got := flat.AmountAt(40); got != 12_000 {
+		t.Errorf("flat AmountAt(40) = %v, want 12000", got)
+	}
+}
+
+// The drift is applied before the reversion: a survivor receives the share
+// of the amount the flow had reached, not of its first payment.
+func TestCashflowDriftThenReversion(t *testing.T) {
+	c := Cashflow{FromYear: 0, Annual: 10_000, Owner: Self, Reversion: 0.5, Drift: 0.02}
+	l := life{horizon: 40, self: 5, partner: 40, survivor: 1, annYear: -1}
+	if got, want := c.paidAt(4, l), 10_000*math.Pow(1.02, 4); math.Abs(got-want) > 1e-9 {
+		t.Errorf("paidAt(4) alive = %.4f, want %.4f", got, want)
+	}
+	if got, want := c.paidAt(8, l), 0.5*10_000*math.Pow(1.02, 8); math.Abs(got-want) > 1e-9 {
+		t.Errorf("paidAt(8) reverted = %.4f, want %.4f", got, want)
+	}
+}
+
+// The household's own forecast discounts the drifted amounts: a drift equal
+// to the discount rate makes every year worth exactly the first payment, and
+// an eroding pension is worth less than an indexed one.
+func TestCashflowPVReadsDrift(t *testing.T) {
+	r := 0.03
+	p := Plan{Years: 20, Cashflows: []Cashflow{{FromYear: 0, Annual: 1000, Drift: r}}}
+	if got := p.cashflowPV(0, r, p.life(Lives{})); math.Abs(got-20_000) > 1e-6 {
+		t.Errorf("PV with drift == rate = %.6f, want 20000", got)
+	}
+	flat := Plan{Years: 20, Cashflows: []Cashflow{{FromYear: 0, Annual: 1000}}}
+	eroding := Plan{Years: 20, Cashflows: []Cashflow{{FromYear: 0, Annual: 1000, Drift: -0.005}}}
+	if a, b := flat.cashflowPV(0, r, flat.life(Lives{})), eroding.cashflowPV(0, r, eroding.life(Lives{})); b >= a {
+		t.Errorf("an eroding pension is worth %.0f, not less than the indexed one's %.0f", b, a)
+	}
+}
+
+// A pension that loses purchasing power must raise ruin: the drift reaches
+// the kernel, in both the shared-table path and the monthly kernel.
+func TestCashflowDriftRaisesRuin(t *testing.T) {
+	for _, monthly := range []bool{false, true} {
+		periods := 40
+		if monthly {
+			periods = 40 * 12
+		}
+		src := scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: periods}
+		if monthly {
+			src = scenario.ParametricSource{Mu: math.Pow(1.035, 1.0/12) - 1, Sigma: 0.12 / math.Sqrt(12), Df: 6, Periods: periods}
+		}
+		mk := func(drift float64) Plan {
+			return Plan{
+				Capital: 1_000_000, NeedAnnual: 42_000, Years: 40, Monthly: monthly,
+				Cashflows: []Cashflow{{FromYear: 12, Annual: 18_000, Drift: drift}},
+				Source:    src,
+			}
+		}
+		indexed, eroding := mk(0), mk(-0.01)
+		a := indexed.Simulate(4000, 4, 7).Outcome().RuinProb
+		b := eroding.Simulate(4000, 4, 7).Outcome().RuinProb
+		if b <= a {
+			t.Errorf("monthly=%v: ruin with an eroding pension %.3f, not above the indexed one's %.3f", monthly, b, a)
+		}
+	}
+}

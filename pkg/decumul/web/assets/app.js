@@ -33,6 +33,8 @@ const GROUPS = [
       "Net real pension once it starts. Simulations show this is the plan's second-biggest sensitivity."),
     r("pensionYear", "Pension starts in year", 0, 40, 1, 25, "int",
       "Years from retirement to the pension. Retiring at 42 with a pension at 67 = year 25."),
+    r("pensionDrift", "Pension indexation vs prices /yr", -0.02, 0.01, 0.001, 0, "pct",
+      "How the pension is revalued against prices once it pays. The page runs in real euros, so 0 is a pension indexed exactly on inflation, which is what every income here was silently assumed to be. Pensions are not always revalued that way: a supplementary scheme or a government can revalue below inflation, or freeze, for a year or for good, and each such year is purchasing power that never comes back. -0.5% a year leaves 82% of the pension's purchasing power after forty years; the figure in brackets is what is left of it at the horizon. The pension slider above stays its FIRST payment, in today's euros."),
     r("sideAnnual", "Side income /yr", 0, 100000, 1000, 0, "eur",
       "Temporary net real income (rental, activity…) subtracted from the need while it lasts. Income covering the early years is the best sequence-risk insurance there is."),
     r("sideUntilYear", "Side income until year", 0, 40, 1, 0, "int",
@@ -260,7 +262,14 @@ function refreshVal(k) {
   let text = fmtVal(k, state[k]);
   if (k === "pensionYear" || k === "years" || k === "annuityYear")
     text += ` (age ${Math.round(state.age + state[k])})`;
+  // A drift reads best as what it does by the end: the share of the pension's
+  // purchasing power left at the horizon.
+  if (k === "pensionDrift" && state[k] !== 0) {
+    const n = Math.max(0, Math.round(state.years) - Math.round(state.pensionYear) - 1);
+    text += ` (${Math.round(100 * Math.pow(1 + state[k], n))}% left)`;
+  }
   el.textContent = text;
+  if (k === "pensionYear" || k === "years") refreshVal("pensionDrift");
 }
 function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); refreshVal("annuityYear"); }
 
@@ -383,7 +392,7 @@ function applyConservative() {
 // ONLY these keys, and a shared #hash always overrides it (applied after), so
 // a link reproduces the sender's exact scenario for anyone, cookie or not.
 // ---------------------------------------------------------------------------
-const SAVEKEYS = ["capital", "age", "years", "needAnnual", "pensionAnnual", "pensionYear",
+const SAVEKEYS = ["capital", "age", "years", "needAnnual", "pensionAnnual", "pensionYear", "pensionDrift",
   "annuityShare", "annuityYear", "annuityLoad",
   "gainFrac", "peaCapital", "avCapital"];
 const PREF_COOKIE = "fire_defaults";

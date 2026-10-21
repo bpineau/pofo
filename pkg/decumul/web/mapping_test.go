@@ -305,6 +305,24 @@ func TestCashflowAt(t *testing.T) {
 	}
 }
 
+// The pension's drift reaches the plan's cashflow and every view that sums the
+// pension by itself (the spending fan, the funding layers): one construction,
+// read by all.
+func TestPensionDriftReachesPlanAndViews(t *testing.T) {
+	pr := Params{PensionAnnual: 12_000, PensionYear: 5, PensionDrift: -0.01, Years: 30}
+	p := pr.plan()
+	if len(p.Cashflows) != 1 || p.Cashflows[0].Drift != -0.01 || p.Cashflows[0].FromYear != 5 {
+		t.Fatalf("plan cashflows = %+v", p.Cashflows)
+	}
+	want := 12_000 * math.Pow(0.99, 10)
+	if got := pr.cashflowAt(15); math.Abs(got-want) > 1e-9 {
+		t.Errorf("cashflowAt(15) = %.4f, want %.4f", got, want)
+	}
+	if got := pr.cashflowAt(5); got != 12_000 {
+		t.Errorf("cashflowAt(5) = %.4f, want the first payment 12000", got)
+	}
+}
+
 // The mortality age defaults to an early retiree rather than to zero, which
 // would price an annuity for a newborn.
 func TestAgeDefault(t *testing.T) {

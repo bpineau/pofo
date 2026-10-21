@@ -33,6 +33,15 @@
 // controls of the others; a shared URL is left as it arrived, only dimmed,
 // so old links keep reproducing the run their sender saw.
 //
+// The pension is three controls: its first real payment, its start year and
+// its indexation against prices (PensionDrift, decumul.Cashflow.Drift), zero
+// by default, which is a pension indexed on inflation exactly as every income
+// was before the control existed. Every view that charts or sums the pension
+// reads its amounts from the one cashflow the plan is built with
+// (Params.pension), so the drift reaches the kernel, the present value the
+// amortization rule and the risk-based guardrail fold into wealth, the
+// funding layers and the spending fan alike.
+//
 // The tax book is three controls in the Taxes group, over the kernel's
 // per-envelope model (decumul.Envelope). GainFrac is the share of today's
 // capital that is unrealised GAIN rather than cost basis, which is what the

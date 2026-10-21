@@ -118,6 +118,30 @@ func ExampleCashflow_reversion() {
 	// reversion 0%: broke while alive 9%
 }
 
+// A pension that is not fully indexed. The engine runs in real money, so a
+// flow with no Drift keeps its purchasing power for ever; a pension revalued
+// at inflation minus half a point is Drift -0.005, and after forty years it
+// buys a fifth less. Here it pays from the first year, and the erosion costs
+// six points of ruin and about 2 000 a year of spending at 5 % ruin.
+func ExampleCashflow_drift() {
+	for _, drift := range []float64{0, -0.005, -0.01} {
+		p := decumul.Plan{
+			Capital: 1_000_000, NeedAnnual: 52_000, Years: 40,
+			Cashflows: []decumul.Cashflow{{FromYear: 0, Annual: 24_000, Drift: drift}},
+			Tax:       decumul.CTOFlatTax{Rate: 0.314},
+			Source:    scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 40},
+		}
+		ruin := p.Simulate(20_000, 4, 7).Outcome().RuinProb
+		spend := p.Solve(0.05, decumul.WithdrawalAxis(10_000, 100_000), 20_000, 4, 7)
+		fmt.Printf("drift %+.1f%%: pension %.0f in year 39, ruin %.0f%%, 5%% ruin at %.0f a year\n",
+			drift*100, p.Cashflows[0].AmountAt(39), ruin*100, math.Round(spend/500)*500)
+	}
+	// Output:
+	// drift +0.0%: pension 24000 in year 39, ruin 21%, 5% ruin at 43500 a year
+	// drift -0.5%: pension 19738 in year 39, ruin 27%, 5% ruin at 41500 a year
+	// drift -1.0%: pension 16217 in year 39, ruin 34%, 5% ruin at 39500 a year
+}
+
 // Annuitising a third of the portfolio. The income lasts exactly as long as the
 // household does, so the mortality credit is realised inside the path: it buys
 // down the risk of outliving the plan and the bequest pays for it. Whether it

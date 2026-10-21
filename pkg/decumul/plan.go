@@ -18,7 +18,7 @@ import (
 type Cashflow struct {
 	FromYear int     // first year it pays, 0-based
 	ToYear   int     // exclusive end; 0 = to the horizon
-	Annual   float64 // real income per year, in the units of Plan.Capital
+	Annual   float64 // real income of the FIRST year it pays, in the units of Plan.Capital
 	// Owner names the life the flow depends on. The zero value, Household,
 	// pays while anyone is alive.
 	Owner Owner
@@ -27,26 +27,52 @@ type Cashflow struct {
 	// French pension reversion. Ignored for a Household flow, and moot when
 	// there is nobody left to revert to.
 	Reversion float64
+	// Drift is the flow's REAL growth per year, a FRACTION, compounding from
+	// FromYear: Annual is the first payment and each later one is (1+Drift)
+	// times the one before (see AmountAt). The kernel runs in real money, so
+	// the zero value is a flow indexed exactly on inflation, which is what
+	// every flow silently was before the field existed. A pension revalued at
+	// inflation minus half a point is -0.005, and it has lost 18 % of its
+	// purchasing power after forty years (0.995^40 = 0.82); a positive drift
+	// is a flow that outruns prices.
+	Drift float64
+}
+
+// AmountAt is the flow's scheduled real amount in a plan year: zero outside
+// [FromYear, ToYear), Annual in FromYear, then compounded at Drift once a
+// year. It is the amount promised, before any death: the kernel applies Owner
+// and Reversion on top of it, and the household's own forecasts (the present
+// value the amortization rule and the risk-based guardrail fold into wealth)
+// read it as is.
+func (c Cashflow) AmountAt(year int) float64 {
+	if year < c.FromYear || (c.ToYear != 0 && year >= c.ToYear) {
+		return 0
+	}
+	if c.Drift == 0 {
+		return c.Annual // the historical flow, bit for bit
+	}
+	return c.Annual * math.Pow(1+c.Drift, float64(year-c.FromYear))
 }
 
 // paidAt is the flow's amount in a given year, after its owner's death and
 // the reversion. Without a drawn lifetime every member is alive throughout, so
-// this is the plain date test.
+// this is the scheduled amount.
 func (c Cashflow) paidAt(year int, l life) float64 {
-	if year < c.FromYear || (c.ToYear != 0 && year >= c.ToYear) {
+	amount := c.AmountAt(year)
+	if amount == 0 {
 		return 0
 	}
 	switch c.Owner {
 	case Self, Partner:
 		switch {
 		case l.alive(c.Owner, year):
-			return c.Annual
+			return amount
 		case l.alive(c.Owner.other(), year):
-			return c.Annual * c.Reversion
+			return amount * c.Reversion
 		}
 		return 0
 	}
-	return c.Annual
+	return amount
 }
 
 // BufferSleeve is a low-volatility cash or inflation-linked pocket sized at
@@ -582,9 +608,7 @@ func (p *Plan) cashflowPV(from int, r float64, l life) float64 {
 	for j := from; j < p.planYears(); j++ {
 		cf := l.annuityPlanned(j)
 		for _, c := range p.Cashflows {
-			if j >= c.FromYear && (c.ToYear == 0 || j < c.ToYear) {
-				cf += c.Annual
-			}
+			cf += c.AmountAt(j)
 		}
 		if cf > 0 {
 			pv += cf * disc

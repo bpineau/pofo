@@ -6,7 +6,10 @@ three places: a web simulator, two example scripts and a Go library. The
 [book](#the-book) explains the ideas behind every choice.
 
 Everything is in **real** money: spending keeps its purchasing power, returns
-are net of inflation, and pensions are entered in today's money.
+are net of inflation, and pensions are entered in today's money. A pension
+that is not fully indexed says so with its indexation drift: -0.5 %/yr is a
+pension revalued at inflation minus half a point, which keeps 82 % of its
+purchasing power after forty years.
 
 ## The simulator
 
@@ -17,7 +20,8 @@ are net of inflation, and pensions are entered in today's money.
 
 It opens in your browser, and every slider recomputes the plan: capital,
 spending floor, cash-buffer years, expected real return and volatility, tail
-thickness, horizon, pension, spending rules and French taxes. The engine runs
+thickness, horizon, pension (its amount, start year and indexation against
+prices), spending rules and French taxes. The engine runs
 in Go, in parallel; the page only draws.
 
 The page reads top to bottom as one argument:
@@ -118,7 +122,12 @@ ruin 24%, median terminal wealth 0.5 M
 
 Rates are fractions (`0.035` is 3.5 %/yr real). `Tax` is optional; spending
 rules (guardrails, a percentage of wealth, amortization) and pensions are
-fields of the same `Plan`. Taxes bite nominal gains while the plan runs in
+fields of the same `Plan`. A pension is a `Cashflow`, and its `Drift` is its
+real revaluation per year from the first payment: a zero drift is a pension
+indexed on prices, `-0.005` one that loses half a point a year, which on a
+1 M plan spending 52 000 a year with a 24 000 pension raises ruin from 21 %
+to 27 % and lowers the spending at 5 % ruin from 43 500 to 41 500 a year
+(`decumul.ExampleCashflow_drift`). Taxes bite nominal gains while the plan runs in
 real euros: set `Inflation` (`0.02` for 2 %/yr) and every cost basis erodes
 at that rate, so even a flat real path pays tax on its sales; the simulator's
 Taxes group carries the same control, at 2 % by default.

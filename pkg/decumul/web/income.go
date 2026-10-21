@@ -42,12 +42,8 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	pension := make([]float64, years)
 	side := make([]float64, years)
 	for k := range years {
-		if pr.PensionAnnual > 0 && k >= pr.PensionYear {
-			pension[k] = pr.PensionAnnual / 1000
-		}
-		if pr.SideAnnual > 0 && k < pr.SideUntilYear {
-			side[k] = pr.SideAnnual / 1000
-		}
+		pension[k] = flowAt(pr.pension(), k) / 1000
+		side[k] = flowAt(pr.side(), k) / 1000
 	}
 	pf := make([]float64, years)
 	for k := range years {
@@ -73,10 +69,8 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	if pr.PensionAnnual <= 0 {
 		gapYears = years
 	}
-	lastGuaranteed := 0.0
-	if pr.PensionAnnual > 0 {
-		lastGuaranteed += pr.PensionAnnual
-	}
+	// The pension as it stands in the last year, after its indexation drift.
+	lastGuaranteed := flowAt(pr.pension(), years-1)
 	lastShare := 0.0
 	if total := lastGuaranteed + pf[years-1]*1000; total > 0 {
 		lastShare = lastGuaranteed / total

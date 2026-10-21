@@ -72,14 +72,7 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 // them: it is priced and paid in the mortality kernel alone (see annuity.go),
 // so this fixed-horizon fan neither spends its premium nor collects its income.
 func (pr Params) cashflowAt(year int) float64 {
-	total := 0.0
-	if pr.PensionAnnual > 0 && year >= pr.PensionYear {
-		total += pr.PensionAnnual
-	}
-	if pr.SideAnnual > 0 && year < pr.SideUntilYear {
-		total += pr.SideAnnual
-	}
-	return total
+	return flowAt(pr.pension(), year) + flowAt(pr.side(), year)
 }
 
 // firstCutText formats the median first-cut year, or a dash when no path cut.

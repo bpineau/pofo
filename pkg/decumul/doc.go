@@ -47,7 +47,12 @@
 //	fmt.Println(o.RuinProb)
 //
 // Everything is in real euros: the spending floor is constant in purchasing
-// power, returns are real, pensions are entered as real Cashflows. The one
+// power, returns are real, pensions are entered as real Cashflows. A flow
+// that is NOT fully indexed says so with Cashflow.Drift, its real growth per
+// year from its first payment (-0.005 for a pension revalued at inflation
+// minus half a point, which has lost 18 % of its purchasing power after forty
+// years; the Cashflow drift example prices it); the zero value keeps the flow
+// indexed, which every flow silently was before the field existed. The one
 // place the nominal world leaks back in is the tax law, which reads NOMINAL
 // gains: set Plan.Inflation (a fraction per year) and every pocket's cost
 // basis erodes at that rate in real terms, so a holding that merely kept its

@@ -57,7 +57,7 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 		{"Buffer +2 y", func(p decumul.Plan) decumul.Plan { p.Buffer.Years += 2; return p }},
 		{"Cut 20% in downturns", func(p decumul.Plan) decumul.Plan { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.20}; return p }},
 		{"Pension +500 €/m", func(p decumul.Plan) decumul.Plan {
-			p.Cashflows = append(slices.Clip(p.Cashflows), decumul.Cashflow{FromYear: pr.PensionYear, Annual: 6000})
+			p.Cashflows = append(slices.Clip(p.Cashflows), decumul.Cashflow{FromYear: pr.PensionYear, Annual: 6000, Drift: pr.PensionDrift})
 			return p
 		}},
 		{"Side income 12 k€ ×8 y", func(p decumul.Plan) decumul.Plan {

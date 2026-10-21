@@ -44,20 +44,24 @@ const shapePaths = 1000
 // Params is the slider state posted by the browser. Weights is nil in
 // parametric mode and holds per-holding fractions in portfolio mode.
 type Params struct {
-	Capital       float64   `json:"capital"`       // starting wealth
-	NeedAnnual    float64   `json:"needAnnual"`    // real net spending per year
-	BufferYears   float64   `json:"bufferYears"`   // buffer size, in years of NeedAnnual
-	Mu            float64   `json:"mu"`            // real mean return per year (fraction), parametric model
-	Sigma         float64   `json:"sigma"`         // real volatility per year (fraction), parametric model
-	Df            float64   `json:"df"`            // Student-t degrees of freedom, parametric model
-	BufferReturn  float64   `json:"bufferReturn"`  // the buffer's real return per year (fraction)
-	Years         int       `json:"years"`         // horizon in years
-	PensionYear   int       `json:"pensionYear"`   // plan year the pension starts
-	PensionAnnual float64   `json:"pensionAnnual"` // real pension per year
-	FlexCut       float64   `json:"flexCut"`       // spending cut in a deep drawdown (fraction); 0 = off
-	TaxRate       float64   `json:"taxRate"`       // flat tax on realised gains (fraction)
-	NPaths        int       `json:"nPaths"`        // Monte-Carlo paths
-	Weights       []float64 `json:"weights"`       // per-holding fractions in portfolio mode; nil = parametric
+	Capital       float64 `json:"capital"`       // starting wealth
+	NeedAnnual    float64 `json:"needAnnual"`    // real net spending per year
+	BufferYears   float64 `json:"bufferYears"`   // buffer size, in years of NeedAnnual
+	Mu            float64 `json:"mu"`            // real mean return per year (fraction), parametric model
+	Sigma         float64 `json:"sigma"`         // real volatility per year (fraction), parametric model
+	Df            float64 `json:"df"`            // Student-t degrees of freedom, parametric model
+	BufferReturn  float64 `json:"bufferReturn"`  // the buffer's real return per year (fraction)
+	Years         int     `json:"years"`         // horizon in years
+	PensionYear   int     `json:"pensionYear"`   // plan year the pension starts
+	PensionAnnual float64 `json:"pensionAnnual"` // real pension per year, its first year
+	// PensionDrift is the pension's real revaluation per year once it pays, a
+	// FRACTION (decumul.Cashflow.Drift): 0, the default, is a pension indexed
+	// exactly on prices, -0.005 one revalued at inflation minus half a point.
+	PensionDrift float64   `json:"pensionDrift"`
+	FlexCut      float64   `json:"flexCut"` // spending cut in a deep drawdown (fraction); 0 = off
+	TaxRate      float64   `json:"taxRate"` // flat tax on realised gains (fraction)
+	NPaths       int       `json:"nPaths"`  // Monte-Carlo paths
+	Weights      []float64 `json:"weights"` // per-holding fractions in portfolio mode; nil = parametric
 
 	// abwRate is abwReturn measured once on the request's central model,
 	// stamped by withCentral when abwKnown; server-side context like the
@@ -154,12 +158,7 @@ func (pr Params) plan() decumul.Plan {
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
 		Monthly:    pr.Monthly && pr.monthlyCapable(), // regime/pooled sources are annual
 	}
-	if pr.PensionAnnual > 0 {
-		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: pr.PensionYear, Annual: pr.PensionAnnual})
-	}
-	if pr.SideAnnual > 0 {
-		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, ToYear: pr.SideUntilYear, Annual: pr.SideAnnual})
-	}
+	p.Cashflows = append(pr.pension(), pr.side()...)
 	// Guardrails band centred on the initial withdrawal rate (±20%), with an
 	// optional incompressible floor bounding the cut spiral.
 	if pr.Guardrails && pr.Capital > 0 {
@@ -211,6 +210,33 @@ func (pr Params) plan() decumul.Plan {
 	p.SpendSchedule = pr.spendSchedule()
 	p.Envelopes = pr.envelopes()
 	return p
+}
+
+// pension is the pension slider as the kernel's cashflow, or nil when there is
+// none: every view that charts or sums the pension reads its amounts from
+// here (Cashflow.AmountAt), so the indexation drift reaches them all.
+func (pr Params) pension() []decumul.Cashflow {
+	if pr.PensionAnnual <= 0 {
+		return nil
+	}
+	return []decumul.Cashflow{{FromYear: pr.PensionYear, Annual: pr.PensionAnnual, Drift: pr.PensionDrift}}
+}
+
+// side is the temporary side income as the kernel's cashflow, or nil.
+func (pr Params) side() []decumul.Cashflow {
+	if pr.SideAnnual <= 0 {
+		return nil
+	}
+	return []decumul.Cashflow{{FromYear: 0, ToYear: pr.SideUntilYear, Annual: pr.SideAnnual}}
+}
+
+// flowAt sums the scheduled amounts of some cashflows in a plan year.
+func flowAt(cfs []decumul.Cashflow, year int) float64 {
+	total := 0.0
+	for _, c := range cfs {
+		total += c.AmountAt(year)
+	}
+	return total
 }
 
 // abwReturn is the expected real return the amortization rule assumes: the

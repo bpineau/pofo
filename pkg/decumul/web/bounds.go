@@ -54,6 +54,11 @@ func (pr Params) bounded() Params {
 	// Inflation erodes every cost basis: bounded to a rate a plan can mean
 	// (20 %/yr already halves a basis in four years), never negative.
 	pr.Inflation = clamp(pr.Inflation, 0, 0.2)
+	// The pension's real indexation drift: a pension that lost 5 % of its
+	// purchasing power every year, or gained it, is no longer a pension but a
+	// different instrument, and an unbounded drift would compound into an
+	// overflow over a long horizon.
+	pr.PensionDrift = clamp(pr.PensionDrift, -0.05, 0.05)
 	g := pr.growthSleeve()
 	pr.PEACapital = clamp(pr.PEACapital, 0, g)
 	pr.AVCapital = clamp(pr.AVCapital, 0, g)
