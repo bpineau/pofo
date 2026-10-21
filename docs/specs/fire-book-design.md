@@ -59,8 +59,9 @@ claim to that rule, and those corrections matter more than the drawings:
     of ten-year real returns. Measured on the earnings yield it is 0,29, and
     0,28 on Shiller's own series from 1881, so it is not a window artefact.
   - horizon-et-esperance-de-vie claimed mortality weighting cuts ruin to a half
-    or a third. For a couple retiring at 47 it removes a fifth (17,7 % gross
-    against 14,1 % lived); the discount is a property of the reader's age, not
+    or a third. For a couple retiring at 47 it removed a fifth (17,7 % gross
+    against 14,1 % lived), and a sixth since the 2026-10 mortality refit
+    (17,6 against 14,6); the discount is a property of the reader's age, not
     of the plan.
   - erreurs-classiques-fire announced its ten sections were ordered by cost.
     Measured, the two dearest are sections 6 and 7, together outweighing the

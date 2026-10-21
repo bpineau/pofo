@@ -23,61 +23,60 @@ import (
 //	      the sampling per worker; since 2026-10 each path has its own stream
 //	      and the worker count no longer reaches the result).
 //
-// Mortality is decumul.FrenchMortality read through CoupleSurvival at age 47.
-// The plate was frozen under its earlier calibration (Gompertz, modal age 88,
-// dispersion 10); the law was refitted on INSEE's 2023-2025 table in 2026-10
-// (89.8 / 9.3), which `make figure-drift` reports until the plate is
-// refrozen. That law is UNISEX and
-// CoupleSurvival assumes two independent lives of the SAME age, so the plate
-// says so: no sex split is invented here, and Sam's two extra years are not
-// modelled.
+// Mortality is decumul.FrenchMortality read through CoupleSurvival at age 47:
+// the Gompertz law refitted on INSEE's 2023-2025 table in 2026-10 (modal age
+// 89.8, dispersion 9.3; the plate was first frozen on 88 / 10, which ran a
+// year and a half short of INSEE and lifted the relief to a fifth). That law
+// is UNISEX and CoupleSurvival assumes two independent lives of the SAME age,
+// so the plate says so: no sex split is invented here, and Sam's two extra
+// years are not modelled.
 //
-// Sampling noise at 200 000 paths is well inside a tenth of a point: seeds 1,
-// 2 and 3 give a gross ruin of 17.68 / 17.67 / 17.58 % and a lived ruin of
-// 14.12 / 14.07 / 14.04 %.
+// Sampling noise at 200 000 paths stays within a quarter of a point: seeds
+// 1, 2 and 3 give a gross ruin of 17.56 / 17.66 / 17.79 % and a lived
+// ruin of 14.57 / 14.67 / 14.77 %, a relief of 17.0 % on all three.
 const (
-	vrpGross = 17.68 // ruin probability (%), mortality ignored
-	vrpLived = 14.12 // probability (%) of ever being alive AND broke
-	vrpPeak  = 9.72  // largest alive-and-broke share (%), reached at year 35
-	vrpPeakY = 35
+	vrpGross = 17.56  // ruin probability (%), mortality ignored
+	vrpLived = 14.57  // probability (%) of ever being alive AND broke
+	vrpPeak  = 10.352 // largest alive-and-broke share (%), reached at year 37; three decimals so the plate prints 10,4
+	vrpPeakY = 37
 	// vrpAliveY40 is the couple survival 40 years in (ages 87), the number that
 	// explains why the weighting relieves so little.
-	vrpAliveY40 = 65.35
+	vrpAliveY40 = 73.16
 	// vrpLived65 reads the SAME ensemble, hence the same failure timing,
 	// against a couple aged 65 instead of 47. Only the mortality reading
-	// changes, and the relief goes from a fifth to more than a half. The
+	// changes, and the relief goes from a sixth to more than a half. The
 	// article quotes it to show that the discount is a property of the reader's
 	// age, not of the plan. It is not drawn on the plate.
-	vrpLived65 = 7.67
+	vrpLived65 = 8.15
 )
 
 // vrpBroke is the share of households (%) that are alive AND broke at each
 // year-end 0..53: Ensemble.LifeCurve(couple survival).Broke.
 var vrpBroke = []float64{
-	0.00, 0.00, 0.00, 0.03, 0.07, 0.20,
-	0.31, 0.47, 0.70, 0.94, 1.28, 1.69,
-	2.08, 2.43, 2.85, 3.34, 3.82, 4.30,
-	4.85, 5.48, 5.83, 6.19, 6.54, 6.89,
-	7.24, 7.61, 7.95, 8.23, 8.51, 8.79,
-	9.04, 9.25, 9.45, 9.60, 9.69, 9.72,
-	9.70, 9.62, 9.45, 9.22, 8.92, 8.52,
-	8.05, 7.51, 6.91, 6.25, 5.56, 4.86,
-	4.15, 3.48, 2.84, 2.25, 1.74, 1.28,
+	0.00, 0.00, 0.00, 0.03, 0.07, 0.18,
+	0.30, 0.46, 0.69, 0.92, 1.26, 1.66,
+	2.04, 2.40, 2.80, 3.31, 3.79, 4.33,
+	4.89, 5.52, 5.87, 6.21, 6.56, 6.89,
+	7.24, 7.61, 7.97, 8.28, 8.60, 8.94,
+	9.23, 9.50, 9.76, 9.97, 10.13, 10.26,
+	10.33, 10.35, 10.29, 10.14, 9.90, 9.58,
+	9.18, 8.70, 8.12, 7.47, 6.76, 6.00,
+	5.22, 4.45, 3.69, 2.97, 2.33, 1.73,
 }
 
 // vrpAlive is the couple survival curve (%) at age 47, year-ends 0..53:
 // decumul.FrenchMortality.CoupleSurvival(47, t). It is the ceiling that
 // crushes the red band from above.
 var vrpAlive = []float64{
-	100.00, 100.00, 100.00, 100.00, 99.99, 99.99,
-	99.98, 99.97, 99.96, 99.94, 99.92, 99.89,
-	99.86, 99.81, 99.76, 99.69, 99.60, 99.49,
-	99.36, 99.19, 98.99, 98.75, 98.45, 98.09,
-	97.66, 97.14, 96.52, 95.78, 94.90, 93.86,
-	92.65, 91.22, 89.57, 87.66, 85.47, 82.97,
-	80.14, 76.97, 73.45, 69.57, 65.35, 60.82,
-	56.00, 50.96, 45.77, 40.51, 35.28, 30.17,
-	25.30, 20.76, 16.62, 12.97, 9.83, 7.22,
+	100.00, 100.00, 100.00, 100.00, 100.00, 99.99,
+	99.99, 99.99, 99.98, 99.97, 99.96, 99.95,
+	99.93, 99.91, 99.88, 99.84, 99.80, 99.74,
+	99.67, 99.58, 99.46, 99.32, 99.15, 98.93,
+	98.67, 98.35, 97.96, 97.48, 96.90, 96.20,
+	95.36, 94.36, 93.16, 91.75, 90.08, 88.14,
+	85.88, 83.27, 80.30, 76.93, 73.16, 68.98,
+	64.42, 59.50, 54.27, 48.81, 43.21, 37.58,
+	32.05, 26.73, 21.76, 17.24, 13.25, 9.86,
 }
 
 // figVivantRuineParti stacks the three exclusive states of a retirement plan,
@@ -85,7 +84,7 @@ var vrpAlive = []float64{
 // only state that costs anything, and it is squeezed from below by the plans
 // that hold and from above by the couples that are no longer there. The plate
 // exists to replace an assertion by a measurement: the mortality weighting
-// does NOT divide a FIRE couple's ruin by two or three, it takes about a fifth
+// does NOT divide a FIRE couple's ruin by two or three, it takes about a sixth
 // off, because the failures land while the couple is still very much alive.
 func figVivantRuineParti() string {
 	m := mapper(0, 53, 0, 100, 60, 600, 352, 100)
@@ -120,10 +119,10 @@ func figVivantRuineParti() string {
 	b.WriteString(plateHead("ruine et mortalité", "Vivant, ruiné ou parti : les trois états, année par année"))
 
 	// the headline pair, read left to right
-	b.WriteString(mTxt(24, 76, 15, figMuted, "start", "600", "17,7 %"))
+	b.WriteString(mTxt(24, 76, 15, figMuted, "start", "600", frNum(vrpGross, 1)+" %"))
 	b.WriteString(sTxt(82, 76, 11, figMuted, "start", "400", "de ruine brute"))
 	b.WriteString(sTxt(168, 76, 12, figMuted, "start", "400", "→"))
-	b.WriteString(mTxt(190, 76, 15, figBad, "start", "600", "14,1 %"))
+	b.WriteString(mTxt(190, 76, 15, figBad, "start", "600", frNum(vrpLived, 1)+" %"))
 	b.WriteString(sTxt(248, 76, 11, figSoft, "start", "600", "de ruine vécue, un jour vivant et ruiné"))
 
 	// the three states, stacked
@@ -144,13 +143,16 @@ func figVivantRuineParti() string {
 	b.WriteString(sTxt(76, 300, 12, figSoft, "start", "600", "vivant et solvable"))
 	b.WriteString(sTxt(76, 316, 10.5, figMuted, "start", "400", "le plan tient"))
 
-	// the ribbon, called out with a leader into the pale zone below it
-	b.WriteString(line(292, 216, 414, 156, figBad, 1))
-	fmt.Fprintf(&b, `<circle cx="414.0" cy="156.0" r="2.8" fill="%s"/>`, figBad)
+	// the ribbon, called out with a leader into the pale zone below it; the
+	// leader lands in the middle of the ribbon at its peak, the year the
+	// callout names
+	px, py := x(vrpPeakY), y(vrpAlive[vrpPeakY]-vrpBroke[vrpPeakY]/2)
+	b.WriteString(line(292, 216, px, py, figBad, 1))
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="2.8" fill="%s"/>`, px, py, figBad)
 	b.WriteString(sTxt(180, 222, 12, figBad, "start", "600", "vivant et ruiné"))
 	b.WriteString(sTxt(180, 238, 10.5, figMuted, "start", "400", "le seul état qui coûte quelque chose"))
-	b.WriteString(mTxt(180, 256, 10.5, figBad, "start", "600", "9,7 %"))
-	b.WriteString(sTxt(219, 256, 10.5, figMuted, "start", "400", "au pic, à l'année 35"))
+	b.WriteString(mTxt(180, 256, 10.5, figBad, "start", "600", frNum(vrpPeak, 1)+" %"))
+	b.WriteString(sTxt(226, 256, 10.5, figMuted, "start", "400", fmt.Sprintf("au pic, à l'année %d", vrpPeakY)))
 
 	// x scale
 	b.WriteString(line(60, 352, 600, 352, figRule, 1))
@@ -163,7 +165,7 @@ func figVivantRuineParti() string {
 	for i, s := range []string{
 		"Plan : 1 M€, 33 k€/an réels (3,3 %), 53 ans, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.",
 		"Modèle : 16 pays, 1871-2020, 60/40, blocs de 10 ans, 200 000 tirages. Gompertz unisexe, couple de même âge.",
-		"À l'année 40, deux couples sur trois ont encore un survivant, d'où une remise d'un cinquième seulement.",
+		"À l'année 40, près de trois couples sur quatre ont encore un survivant, d'où une remise d'un sixième seulement.",
 	} {
 		b.WriteString(sTxt(24, 412+float64(i)*14, 9.5, figMuted, "start", "400", s))
 	}

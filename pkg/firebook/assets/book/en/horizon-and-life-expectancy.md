@@ -1,5 +1,5 @@
 # Horizon, life expectancy, and 50-year retirements
-<!-- source: horizon-et-esperance-de-vie @ 84680a193740 -->
+<!-- source: horizon-et-esperance-de-vie @ 8f5fe0f193a3 -->
 
 How long does your plan have to last? The question sounds trivial. It has three traps in it.
 
@@ -66,15 +66,15 @@ The mirror-image mistake exists, and it does more damage. Picture the 65-year-ol
 
 The standard failure probability acts as if you never die. It assumes you are alive at 99 to watch the money run out ([[failure-probability]]). The real question is a joint one: **what is the probability of being alive and broke at the same time?** You answer it by crossing failure with the couple's mortality tables, a calculation sometimes summed up as alive, broke or gone. The method is actuarial and simple. In each year of each scenario you sort the household into three states: alive and solvent, alive and broke, or gone. The death probabilities come from national tables, INSEE and INED here, applied to both ages of the couple; a US reader can substitute the Social Security tables, which run a little lower, and nothing else in the reasoning moves.
 
-The weighting is a relief, but a much smaller one than it is usually sold as. Measure it on Léa and Sam's plan. Ruin "40 years into the plan" arrives at 87 and 89, and it is only lived through if someone is still there. **Two couples in three** are. Raw failure for this plan comes out at 17.7%, failure actually lived at 14.1%. The weighting takes off **a fifth**, not the half or two thirds you often read. The reason fits in a sentence: a couple who left at forty-seven is almost always still alive when the plan gives way.
+The weighting is a relief, but a much smaller one than it is usually sold as. Measure it on Léa and Sam's plan. Ruin "40 years into the plan" arrives at 87 and 89, and it is only lived through if someone is still there. **Nearly three couples in four** are. Raw failure for this plan comes out at 17.6%, failure actually lived at 14.6%. The weighting takes off **a sixth**, not the half or two thirds you often read. The reason fits in a sentence: a couple who left at forty-seven is almost always still alive when the plan gives way.
 
-The discount grows with the age you leave at. The same failure profile, reread for a couple of sixty-five, would give 7.7% lived failure, a discount of more than half. So the weighting is above all a reading of the **timing** of your risk. If it takes almost nothing off, your failures are arriving early, and that is a serious signal ([[sequence-of-returns]]).
+The discount grows with the age you leave at. The same failure profile, reread for a couple of sixty-five, would give 8.1% lived failure, a discount of more than half. So the weighting is above all a reading of the **timing** of your risk. If it takes almost nothing off, your failures are arriving early, and that is a serious signal ([[sequence-of-returns]]).
 
 ::: figure vivant-ruine-parti
 The three states of Léa and Sam's plan, year by year, over 53 years ($1M, $33k a year in real terms, a pension of $14k a year from year 20). Empirical model from the JST panel (16 countries, 1871 to 2020, a 60/40 portfolio, 200,000 draws), with unisex Gompertz mortality fitted to the French tables and applied to a couple of the same age.
 :::
 
-None of which means you should size the plan on the weighted number. Size on raw failure over a prudent horizon: it covers the surviving spouse and the longevity surprises at once. Weighted failure then earns its keep on the **borderline** cases, and only at the margin. A discount of a fifth can tip a decision that was already close. It does not rescue a plan the raw reading condemns, and leaning on it is a good way to misjudge an exit date ([[one-more-year]]).
+None of which means you should size the plan on the weighted number. Size on raw failure over a prudent horizon: it covers the surviving spouse and the longevity surprises at once. Weighted failure then earns its keep on the **borderline** cases, and only at the margin. A discount of a sixth can tip a decision that was already close. It does not rescue a plan the raw reading condemns, and leaning on it is a good way to misjudge an exit date ([[one-more-year]]).
 
 For the extreme longevity tail, the hundred-year-old case, the right tool is not the portfolio. It is the asset that pays **as long as** you live, calibrated to exactly that risk. Your state pension is already an inflation-linked life annuity (US claiming ages, and what they buy, are in [[us-healthcare-and-social-security]]). An annuity bought late, at 75 to 80, when pooling works hardest, is its technical complement ([[annuities-and-safety-first]]). Test the trade in a simulation: convert a slice of capital into an annuity at a chosen date, then compare the two risk profiles. Annuitizing often pushes the **average** failure probability up, because growth assets turn into floor income. What it crushes is the alive, broke and 95 tail, which is precisely the scenario you set out to remove.
 
@@ -97,7 +97,7 @@ People a few years into FIRE say this constantly. Restate "my plan has to last 5
 - The right horizon target is the 85th to 90th percentile of survival for the **last** survivor, conditional on your ages and corrected for the socioeconomic gradient (plus 2 to 4 years for the typical FIRE profile). For a couple in their forties, that means planning to about 100, a horizon of 50 to 55 years.
 - The rate-horizon curve flattens: about 4% at 30 years, about 3.5% at 40, about 3.3% at 50 to 60 and in perpetuity. A plan that survives its first 30 to 35 years has become a perpetuity. The risk in a long plan is its beginning, not its length.
 - The corollaries: taking the very prudent quantile costs almost nothing at FIRE horizons; truncating the horizon is dangerous mostly for **short** retirements; and preserving capital is nearly free past 45 years.
-- Crossing failure with the couple's mortality tables answers the real question, the alive-and-broke one, but the discount stays modest for an early exit (a fifth on our example plan, 17.7% raw failure against 14.1% lived). Size on raw failure, settle the borderline cases on the weighted number, and treat the longevity tail with annuities rather than with more capital.
+- Crossing failure with the couple's mortality tables answers the real question, the alive-and-broke one, but the discount stays modest for an early exit (a sixth on our example plan, 17.6% raw failure against 14.6% lived). Size on raw failure, settle the borderline cases on the weighted number, and treat the longevity tail with annuities rather than with more capital.
 - A 50-year FIRE plan equals a 15 to 25 year uncovered crossing plus a pension-covered phase: size the robustness on the first, the inflation defense on the second.
 
 ---

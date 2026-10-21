@@ -358,11 +358,11 @@ var figureDict = map[string]string{
 	"le plan tient":                        "the plan holds",
 	"vivant et ruiné":                      "alive and broke",
 	"le seul état qui coûte quelque chose": "the only state that costs anything",
-	"au pic, à l'année 35":                 "at the peak, in year 35",
-	"année du plan (départ à 47 ans, donc 87 ans à l'année 40)":                                                   "plan year (leaving at 47, so age 87 in year 40)",
-	"Plan : 1 M€, 33 k€/an réels (3,3 %), 53 ans, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.":         "Plan: $1M, $33k a year real (3.3%), 53 years, pension of $14k a year from year 20, a 10% cut held.",
-	"Modèle : 16 pays, 1871-2020, 60/40, blocs de 10 ans, 200 000 tirages. Gompertz unisexe, couple de même âge.": "Model: 16 countries, 1871 to 2020, 60/40, 10-year blocks, 200,000 draws. Unisex Gompertz, couple of the same age.",
-	"À l'année 40, deux couples sur trois ont encore un survivant, d'où une remise d'un cinquième seulement.":     "In year 40, two couples in three still have a survivor, so the discount is only a fifth.",
+	"au pic, à l'année 37":                 "at the peak, in year 37",
+	"année du plan (départ à 47 ans, donc 87 ans à l'année 40)":                                                       "plan year (leaving at 47, so age 87 in year 40)",
+	"Plan : 1 M€, 33 k€/an réels (3,3 %), 53 ans, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.":             "Plan: $1M, $33k a year real (3.3%), 53 years, pension of $14k a year from year 20, a 10% cut held.",
+	"Modèle : 16 pays, 1871-2020, 60/40, blocs de 10 ans, 200 000 tirages. Gompertz unisexe, couple de même âge.":     "Model: 16 countries, 1871 to 2020, 60/40, 10-year blocks, 200,000 draws. Unisex Gompertz, couple of the same age.",
+	"À l'année 40, près de trois couples sur quatre ont encore un survivant, d'où une remise d'un sixième seulement.": "In year 40, nearly three couples in four still have a survivor, so the discount is only a sixth.",
 
 	// the-math-of-4-percent
 	"LES MATHS DU 4 %": "THE MATH OF 4%",

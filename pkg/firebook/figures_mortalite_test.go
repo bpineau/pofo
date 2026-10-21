@@ -24,8 +24,9 @@ const (
 	vrpAge     = 47.0
 	// vrpTol absorbs the plate's rounding to two decimals plus any last-bit
 	// floating-point difference between architectures. Seed-to-seed noise at
-	// this path count is about the same size (see the file's godoc), and both
-	// are an order of magnitude smaller than the effect the plate shows.
+	// this path count is larger, up to a quarter of a point (see the file's
+	// godoc), which is why the guard pins one seed; both are an order of
+	// magnitude smaller than the effect the plate shows.
 	vrpTol = 0.06
 )
 
@@ -143,12 +144,13 @@ func TestVivantRuinePartiMatchesTheEngine(t *testing.T) {
 		t.Error("the article claims the relief passes half at 65; the constants say otherwise")
 	}
 
-	// The plate's whole point: the weighting takes about a FIFTH off, not a
-	// half and not two thirds. If this band ever moves, the article's prose
-	// (and the plate's footnote) must move with it.
+	// The plate's whole point: the weighting takes about a SIXTH off, not a
+	// half and not two thirds (a fifth before the 2026-10 mortality refit,
+	// which lengthened the lives). If this band ever moves, the article's
+	// prose (and the plate's footnote) must move with it.
 	relief := 1 - vrpLived/vrpGross
-	if relief < 0.15 || relief > 0.25 {
-		t.Errorf("the plate and its footnote claim a relief of about one fifth, the numbers say %.3f", relief)
+	if relief < 0.13 || relief > 0.20 {
+		t.Errorf("the plate and its footnote claim a relief of about one sixth, the numbers say %.3f", relief)
 	}
 }
 
@@ -163,11 +165,11 @@ func TestVivantRuinePartiAgreesWithTheArticle(t *testing.T) {
 	article := string(raw)
 	for _, want := range []string{
 		"::: figure vivant-ruine-parti",
-		"17,7 %", // gross ruin
-		"14,1 %", // lived ruin
-		"un cinquième",
-		"deux couples sur trois",
-		"7,7 %", // the same failures read for a couple aged 65
+		"17,6 %", // gross ruin
+		"14,6 %", // lived ruin
+		"un sixième",
+		"près de trois couples sur quatre",
+		"8,1 %", // the same failures read for a couple aged 65
 	} {
 		if !strings.Contains(article, want) {
 			t.Errorf("the article no longer carries %q, which the plate asserts", want)
