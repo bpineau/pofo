@@ -19,8 +19,11 @@ type Window struct {
 // StandardWindows returns the usual trailing report windows ending at to:
 // 1d, 7d, 1m, 3m, ytd, 1y and prev-yr (the last full calendar year). 7d -
 // one calendar week - covers five trading sessions, what "a week" means
-// to a human (and what finance UIs label 5D). Month and year arithmetic
-// follows Go's AddDate normalization. Callers slice, filter or extend the
+// to a human (and what finance UIs label 5D). Months and years are counted
+// on the calendar and clamped to the end of a shorter month, as a
+// spreadsheet's EDATE does: one month before March 31 is February 28 (29 in a
+// leap year), never Go's AddDate normalization to March 3, which left a
+// month-end "1m" row three days short. Callers slice, filter or extend the
 // result freely before passing it to Report.
 func StandardWindows(to time.Time) []Window {
 	dec31 := func(year int) time.Time {
@@ -29,12 +32,22 @@ func StandardWindows(to time.Time) []Window {
 	return []Window{
 		{Name: "1d", From: to.AddDate(0, 0, -1), To: to},
 		{Name: "7d", From: to.AddDate(0, 0, -7), To: to},
-		{Name: "1m", From: to.AddDate(0, -1, 0), To: to},
-		{Name: "3m", From: to.AddDate(0, -3, 0), To: to},
+		{Name: "1m", From: monthsBefore(to, 1), To: to},
+		{Name: "3m", From: monthsBefore(to, 3), To: to},
 		{Name: "ytd", From: dec31(to.Year() - 1), To: to},
-		{Name: "1y", From: to.AddDate(-1, 0, 0), To: to},
+		{Name: "1y", From: monthsBefore(to, 12), To: to},
 		{Name: "prev-yr", From: dec31(to.Year() - 2), To: dec31(to.Year() - 1)},
 	}
+}
+
+// monthsBefore is t moved n calendar months back, its day clamped to the
+// last day of the target month (March 31 less one month is February 28 or
+// 29), the time of day and location kept.
+func monthsBefore(t time.Time, n int) time.Time {
+	y, m, d := t.Date()
+	first := time.Date(y, m-time.Month(n), 1, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
+	last := first.AddDate(0, 1, -1).Day()
+	return first.AddDate(0, 0, min(d, last)-1)
 }
 
 // ReportRow is one measured window of a period report. OK is false when

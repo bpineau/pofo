@@ -140,3 +140,29 @@ func TestReportWindowBaseIsTheLastCloseAtFrom(t *testing.T) {
 		t.Fatalf("ytd with a weekend deposit = %+v, want TWR %v and a gain of 10", rows[0], want)
 	}
 }
+
+// TestStandardWindowsClampToMonthEnd: a month back from March 31 is the last
+// day of February, not Go's normalized March 3, which left the 1m row three
+// sessions short; a year back from a leap day is February 28.
+func TestStandardWindowsClampToMonthEnd(t *testing.T) {
+	day := func(y int, m time.Month, d int) time.Time { return time.Date(y, m, d, 0, 0, 0, 0, time.UTC) }
+	cases := []struct {
+		to   time.Time
+		name string
+		want time.Time
+	}{
+		{day(2026, 3, 31), "1m", day(2026, 2, 28)},
+		{day(2024, 3, 31), "1m", day(2024, 2, 29)},
+		{day(2026, 5, 31), "3m", day(2026, 2, 28)},
+		{day(2024, 2, 29), "1y", day(2023, 2, 28)},
+		{day(2026, 1, 31), "1m", day(2025, 12, 31)},
+		{day(2026, 7, 4), "3m", day(2026, 4, 4)},
+	}
+	for _, c := range cases {
+		for _, w := range StandardWindows(c.to) {
+			if w.Name == c.name && !w.From.Equal(c.want) {
+				t.Errorf("%s ending %s starts %s, want %s", c.name, c.to.Format(time.DateOnly), w.From.Format(time.DateOnly), c.want.Format(time.DateOnly))
+			}
+		}
+	}
+}
