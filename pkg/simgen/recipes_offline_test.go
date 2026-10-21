@@ -481,6 +481,12 @@ func TestRecipeTargetChargesAreTheCatalogFees(t *testing.T) {
 		"RSSB":         rssbTER,
 		"VT":           vtTER,
 		"IE00BK5BQT80": vwraTER,
+		"TLT":          tltTER,
+		"IEF":          iefTER,
+		"IE00BSKRJZ44": dtlaTER,
+		"DTLA":         dtlaTER,
+		"IE00BKM4GZ66": eimiTER,
+		"IE00BFMXXD54": vuaaTER,
 		"IE00BDFL4P12": icomFee,
 		"DBXG":         dbxgFee,
 		"MTH":          mthFee,
@@ -555,5 +561,53 @@ func TestDTLEStopsWithItsEuroCashLeg(t *testing.T) {
 	}
 	if got, want := s.Last().Date, eur.Last().Date; !got.Equal(want) {
 		t.Errorf("DTLETR ends %s, want its euro cash leg's last date %s", got.Format("2006-01-02"), want.Format("2006-01-02"))
+	}
+}
+
+// A single-fund recipe owes its target's whole ongoing charge over the era its
+// donor is the fee-free reference series spliced behind the fund (a par bond
+// on the H.15 yields, an index), and nothing once the donor's own NAV, dearer
+// than the target, carries a charge of its own. Flat legs and zero rates, so
+// the output moves by the charge alone.
+func TestSingleFundRecipesChargeTheReferenceEra(t *testing.T) {
+	const n, inception = 1000, 400
+	flat := func(id string, start int) *marketdata.Series { return from(mkLevels(id, n, 100), start) }
+	universe := fakeFetcher{
+		"TREASURY-LONG-USD": flat("TREASURY-LONG-USD", 0), "TREASURY-INT-USD": flat("TREASURY-INT-USD", 0),
+		"EM-USD": flat("EM-USD", 0), "SP500-USD": flat("SP500-USD", 0),
+		"^IRX":  mkLevels("^IRX", n, 0),
+		"VUSTX": flat("VUSTX", inception), "VFITX": flat("VFITX", inception),
+		"VEIEX": flat("VEIEX", inception), "VFINX": flat("VFINX", inception),
+	}
+	for _, c := range []struct {
+		r      Recipe
+		target float64
+	}{
+		{tltRecipe(), tltTER},
+		{iefRecipe(), iefTER},
+		{idtlRecipe(), dtlaTER},
+		{dtlaRecipe(), dtlaTER},
+		{eimiRecipe(), eimiTER},
+		{spxRecipe(), vuaaTER},
+	} {
+		s, err := c.r.Build(universe, time.Time{})
+		if err != nil {
+			t.Fatalf("%s: %v", c.r.ID, err)
+		}
+		at := map[time.Time]float64{}
+		for _, p := range s.Points {
+			at[p.Date] = p.Close
+		}
+		for _, era := range []struct {
+			start int
+			want  float64
+		}{{0, c.target}, {inception, 0}} {
+			a, b := day(era.start+20), day(era.start+380)
+			years := b.Sub(a).Hours() / 24 / 365.25
+			got := 1 - math.Pow(at[b]/at[a], 1/years)
+			if math.Abs(got-era.want) > 1e-6 {
+				t.Errorf("%s from day %d: charged %.5f %%/yr, want %.5f", c.r.ID, era.start, got*100, era.want*100)
+			}
+		}
 	}
 }

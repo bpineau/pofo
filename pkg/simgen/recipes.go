@@ -125,8 +125,8 @@ func eimiRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BKM4GZ66",
 		Name:            "iShares Core MSCI EM IMI: emerging-market equity (VEIEX)",
-		Method:          "VEIEX (Vanguard Emerging Markets, 1994->, extended EM-USD MSCI EM net TR to ~1988), real EIMI grafted from 2014",
-		Build:           composite("EIMI (emerging markets)", []Leg{{ID: "VEIEX", Weight: 1}}, "", 0),
+		Method:          "VEIEX (Vanguard Emerging Markets, 1994->, extended EM-USD MSCI EM net TR to ~1988, charged the fund's 0.18%/yr TER over that fee-free index era), real EIMI grafted from 2014",
+		Build:           alignedComposite("EIMI (emerging markets)", []pricedLeg{{ID: "VEIEX", Weight: 1, Load: veiexTER}}, "", eimiTER),
 		ValidateAgainst: "IE00BKM4GZ66",
 		SpliceReal:      "IE00BKM4GZ66",
 	}
@@ -191,8 +191,8 @@ func idtlRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BSKRJZ44",
 		Name:            "iShares $ Treasury 20+yr: VUSTX long Treasury",
-		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986->, extended TREASURY-LONG daily from 1962), real IDTL grafted from 2015",
-		Build:           composite("IDTL (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
+		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986->, extended TREASURY-LONG daily from 1962, charged the fund's 0.07%/yr TER over that fee-free reconstruction), real IDTL grafted from 2015",
+		Build:           alignedComposite("IDTL (long Treasury)", []pricedLeg{{ID: "VUSTX", Weight: 1, Load: vustxTER}}, "", dtlaTER),
 		ValidateAgainst: "IE00BSKRJZ44",
 		SpliceReal:      "IE00BSKRJZ44",
 	}
@@ -221,11 +221,11 @@ func dtlaRecipe() Recipe {
 	return Recipe{
 		ID:     "DTLA",
 		Name:   "iShares $ Treasury 20+ Acc: VUSTX long Treasury",
-		Method: "cash + 1.13×(VUSTX − cash) (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018",
-		Build: composite("DTLA (long Treasury, accumulating)", []Leg{
-			{ID: "VUSTX", Weight: longTreasuryGearing, Excess: true},
+		Method: "cash + 1.13×(VUSTX − cash) (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration, charged the fund's 0.07%/yr TER over that fee-free reconstruction), real DTLA grafted from 2018",
+		Build: alignedComposite("DTLA (long Treasury, accumulating)", []pricedLeg{
+			{ID: "VUSTX", Weight: longTreasuryGearing, Excess: true, Load: vustxTER},
 			{ID: "^IRX", Weight: 1},
-		}, "^IRX", 0),
+		}, "^IRX", dtlaTER),
 		ValidateAgainst: "DTLA",
 		SpliceReal:      "DTLA",
 	}
@@ -726,8 +726,8 @@ func spxRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BFMXXD54",
 		Name:            "Vanguard S&P 500 UCITS ETF: S&P 500 total return (1871 with -refdata)",
-		Method:          "VFINX (Vanguard 500, extended with the S&P 500 total return via SP500-USD refdata ~1871); real VUAA auto-spliced from 2019",
-		Build:           composite("S&P 500 total return (VFINX)", []Leg{{ID: "VFINX", Weight: 1}}, "", 0),
+		Method:          "VFINX (Vanguard 500, extended with the S&P 500 total return via SP500-USD refdata ~1871, charged the fund's 0.07%/yr TER over that fee-free index era); real VUAA auto-spliced from 2019",
+		Build:           alignedComposite("S&P 500 total return (VFINX)", []pricedLeg{{ID: "VFINX", Weight: 1, Load: vfinxTER}}, "", vuaaTER),
 		ValidateAgainst: "IE00BFMXXD54",
 	}
 }
@@ -1996,6 +1996,18 @@ const (
 	dtlaTER  = 0.0007
 )
 
+// The single-fund trackers' own ongoing charges (2026, the catalog's fees),
+// FRACTIONS per year: what each owes over the era its donor is a fee-free
+// reference series rather than a fund (the recipes charge it through
+// alignedComposite; until 2026-10 they charged nothing there). DTLA's is
+// dtlaTER above, which its distributing twin IDTL shares.
+const (
+	tltTER  = 0.0015 // iShares 20+ Year Treasury Bond ETF
+	iefTER  = 0.0015 // iShares 7-10 Year Treasury Bond ETF
+	eimiTER = 0.0018 // iShares Core MSCI EM IMI UCITS ETF
+	vuaaTER = 0.0007 // Vanguard S&P 500 UCITS ETF
+)
+
 // pricedLeg is a composite leg plus the ongoing charge that already sits inside
 // its donor's own NAV, on the leg's own notional (a 0.60 leg of a fund charging
 // 0.20 %/yr costs the composite 0.12). Load is 0 for a rate, a futures price or
@@ -2561,11 +2573,11 @@ func iefRecipe() Recipe {
 	return Recipe{
 		ID:     "IEF",
 		Name:   "iShares 7-10Y Treasury: VFITX intermediate Treasury",
-		Method: "cash + 1.41×(VFITX − cash) (Vanguard Intermediate-Term Treasury, 1991→, geared to the 7-10 segment's duration), real IEF grafted from 2002",
-		Build: composite("IEF (intermediate Treasury)", []Leg{
-			{ID: "VFITX", Weight: intTreasuryGearing, Excess: true},
+		Method: "cash + 1.41×(VFITX − cash) (Vanguard Intermediate-Term Treasury, 1991→, extended TREASURY-INT daily from 1962, geared to the 7-10 segment's duration, charged the fund's 0.15%/yr TER over that fee-free reconstruction), real IEF grafted from 2002",
+		Build: alignedComposite("IEF (intermediate Treasury)", []pricedLeg{
+			{ID: "VFITX", Weight: intTreasuryGearing, Excess: true, Load: vfitxTER},
 			{ID: "^IRX", Weight: 1},
-		}, "^IRX", 0),
+		}, "^IRX", iefTER),
 		ValidateAgainst: "IEF",
 		SpliceReal:      "IEF",
 	}
@@ -2627,8 +2639,8 @@ func tltRecipe() Recipe {
 	return Recipe{
 		ID:              "TLT",
 		Name:            "iShares 20+Y Treasury: VUSTX long Treasury",
-		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986→), real TLT grafted from 2002",
-		Build:           composite("TLT (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
+		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, charged the fund's 0.15%/yr TER over that fee-free reconstruction), real TLT grafted from 2002",
+		Build:           alignedComposite("TLT (long Treasury)", []pricedLeg{{ID: "VUSTX", Weight: 1, Load: vustxTER}}, "", tltTER),
 		ValidateAgainst: "TLT",
 		SpliceReal:      "TLT",
 	}
