@@ -110,12 +110,16 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, 
 	}
 	s := &Series{Symbol: symbol, Name: name, Currency: r.Meta.Currency, Source: "yahoo"}
 	tz := venueTimezone(symbol, r.Meta.ExchangeTimezoneName)
+	_, _, isCross := fxCross(symbol)
 	for i, ts := range r.Timestamp {
 		cl := closes[i]
 		if cl == nil || *cl <= 0 {
 			continue
 		}
 		day := sessionDay(ts, tz)
+		if isCross {
+			day = crossSessionDay(ts, r.Meta.ExchangeTimezoneName)
+		}
 		// Yahoo sometimes repeats the current day; keep the latest value.
 		if n := len(s.Points); n > 0 && s.Points[n-1].Date.Equal(day) {
 			s.Points[n-1].Close = *cl

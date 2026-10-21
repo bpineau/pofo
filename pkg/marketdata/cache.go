@@ -17,7 +17,11 @@ import (
 //	1: daily bars dated in the venue's own time zone (sessionDay). Before
 //	   it, a session opening before midnight UTC landed a day early, which
 //	   shows as a weekend-dated close on an exchange-traded series.
-const cacheFormat = 1
+//	2: currency crosses dated on the session whose close they hold
+//	   (crossSessionDay). An older cross file has no fingerprint (its winter
+//	   is simply a day late), so every cross below 2 is distrusted; they are
+//	   a handful of files.
+const cacheFormat = 2
 
 // cacheFile is the JSON document stored in the cache directory, one per
 // series view (a raw view lives under its own "SYMBOL~raw" identity).
@@ -52,21 +56,28 @@ func (c *Client) loadCache(symbol string, from time.Time) (*Series, bool) {
 	if !ok || (!c.Offline && time.Since(cf.FetchedAt) > c.MaxAge) {
 		return nil, false
 	}
-	if cf.Version < cacheFormat && misdated(s) {
+	if misdated(s, cf.Version) {
 		c.Logf("cached %s was written before the session-day fix and shows it: downloading again…", symbol)
 		return nil, false
 	}
 	return s, true
 }
 
-// misdated is the fingerprint of the dating fault cacheFormat 1 repairs: an
-// exchange-traded series carrying a Saturday or Sunday close. The venues that
-// legitimately trade at the weekend (Tel Aviv on Sunday, a crypto pair every
-// day) simply refetch once and are then stamped with the current format like
-// everything else; a currency cross is exempt, its weekend dating being the
-// separate anomaly venueTimezone documents.
-func misdated(s *Series) bool {
+// misdated reports a file that a later cacheFormat distrusts. Format 1's
+// fingerprint is an exchange-traded series carrying a Saturday or Sunday
+// close: the venues that legitimately trade at the weekend (Tel Aviv on
+// Sunday, a crypto pair every day) simply refetch once and are then stamped
+// with the current format like everything else. Format 2 distrusts every
+// currency cross written before it, the old cross dating having no
+// fingerprint (see crossSessionDay).
+func misdated(s *Series, version int) bool {
+	if version >= cacheFormat {
+		return false
+	}
 	if _, _, isCross := fxCross(s.Symbol); isCross {
+		return version < 2
+	}
+	if version >= 1 {
 		return false
 	}
 	for _, p := range s.Points {

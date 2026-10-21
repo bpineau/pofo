@@ -142,36 +142,111 @@ func TestMisdatedCacheFileIsRefetched(t *testing.T) {
 	}
 }
 
-// TestCurrencyCrossKeepsTheUTCDay: a cross has no exchange, and its dating is
-// left exactly as it was (see venueTimezone).
-func TestCurrencyCrossKeepsTheUTCDay(t *testing.T) {
-	days := testDays(3)
-	ts := ""
-	for i, d := range days {
+// TestCurrencyCrossDatedOnTheSessionItCloses: Yahoo stamps every daily bar of
+// a cross at MIDNIGHT LONDON, and since 2010-08-04 the bar's close is the rate
+// at that instant, the end of the PREVIOUS session (open and close equal, the
+// level within 0.1 % of the previous day's FRED noon fixing). The bar stamped
+// Monday 00:00 is therefore Friday's close, and so on through the week, on
+// either side of a clock change. Before the switch a bar carried its own
+// day's rate. A bar stamped at any other instant is the live quote and keeps
+// its day. The old UTC dating put the whole of winter a day late and, in
+// summer, dated Monday's bar on a Sunday and left Friday empty.
+func TestCurrencyCrossDatedOnTheSessionItCloses(t *testing.T) {
+	lon, err := time.LoadLocation("Europe/London")
+	if err != nil {
+		t.Fatal(err)
+	}
+	at := func(y int, m time.Month, d, hh, mm int) time.Time { return time.Date(y, m, d, hh, mm, 0, 0, lon) }
+	day := func(y int, m time.Month, d int) time.Time { return time.Date(y, m, d, 0, 0, 0, 0, time.UTC) }
+	bars := []struct {
+		stamp time.Time
+		close float64
+		want  time.Time
+	}{
+		// Before the switch: the bar is its own day, summer time or not.
+		{at(2009, 6, 1, 0, 0), 1.41, day(2009, 6, 1)}, // Monday, BST: used to land on Sunday
+		{at(2009, 6, 5, 0, 0), 1.42, day(2009, 6, 5)},
+		// After it, across the March clock change (GMT -> BST on 2024-03-31).
+		{at(2024, 3, 28, 0, 0), 1.0830, day(2024, 3, 27)},
+		{at(2024, 3, 29, 0, 0), 1.0790, day(2024, 3, 28)},
+		{at(2024, 4, 1, 0, 0), 1.0786, day(2024, 3, 29)}, // Monday's bar is Friday's close
+		{at(2024, 4, 2, 0, 0), 1.0740, day(2024, 4, 1)},
+		// And across the October one (BST -> GMT on 2024-10-27).
+		{at(2024, 10, 24, 0, 0), 1.0781, day(2024, 10, 23)},
+		{at(2024, 10, 25, 0, 0), 1.0824, day(2024, 10, 24)},
+		{at(2024, 10, 28, 0, 0), 1.0797, day(2024, 10, 25)},
+		{at(2024, 10, 29, 0, 0), 1.0817, day(2024, 10, 28)},
+		// The live quote, stamped when it was taken: its own day.
+		{at(2024, 10, 30, 2, 11), 1.0821, day(2024, 10, 30)},
+	}
+	ts, cl := "", ""
+	for i, b := range bars {
 		if i > 0 {
-			ts += ","
+			ts, cl = ts+",", cl+","
 		}
-		ts += fmt.Sprint(d.Add(23 * time.Hour).Unix()) // 23:00 UTC, midnight in London on BST
+		ts += fmt.Sprint(b.stamp.Unix())
+		cl += fmt.Sprint(b.close)
 	}
 	// A cross with no bundled long proxy, so the series is exactly what the
 	// provider sent (see extendFXBack).
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v8/finance/chart/SEKNOK=X", func(w http.ResponseWriter, _ *http.Request) {
-		fmt.Fprintf(w, `{"chart":{"result":[{"meta":{"currency":"NOK","symbol":"SEKNOK=X","exchangeTimezoneName":"Europe/London"},"timestamp":[%s],"indicators":{"quote":[{"close":[1.15,1.16,1.17]}],"adjclose":[{"adjclose":[1.15,1.16,1.17]}]}}],"error":null}}`, ts)
+		fmt.Fprintf(w, `{"chart":{"result":[{"meta":{"currency":"NOK","symbol":"SEKNOK=X","exchangeTimezoneName":"Europe/London"},"timestamp":[%s],"indicators":{"quote":[{"close":[%s]}],"adjclose":[{"adjclose":[%s]}]}}],"error":null}}`, ts, cl, cl)
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.History(context.Background(), "SEKNOK=X", days[0])
+	s, err := c.History(context.Background(), "SEKNOK=X", day(2009, 1, 1))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(s.Points) != 3 {
-		t.Fatalf("a cross must keep every point, got %d", len(s.Points))
+	if len(s.Points) != len(bars) {
+		t.Fatalf("a cross must keep every bar, got %d points for %d bars", len(s.Points), len(bars))
 	}
 	for i, p := range s.Points {
-		if !p.Date.Equal(days[i]) {
-			t.Fatalf("cross point %d dated %s, want %s", i, p.Date.Format("2006-01-02"), days[i].Format("2006-01-02"))
+		if !p.Date.Equal(bars[i].want) || p.Close != bars[i].close {
+			t.Errorf("bar stamped %s: %.4f dated %s, want %.4f on %s", bars[i].stamp.Format("Mon 2006-01-02 15:04 MST"),
+				p.Close, p.Date.Format("Mon 2006-01-02"), bars[i].close, bars[i].want.Format("Mon 2006-01-02"))
 		}
+		if wd := p.Date.Weekday(); wd == time.Saturday || wd == time.Sunday {
+			t.Errorf("a cross point dated on a %s: %s", wd, p.Date.Format("2006-01-02"))
+		}
+	}
+}
+
+// TestCrossCacheFromBeforeTheFixIsRefetched: a cross file written under an
+// older format carries the old dating with no fingerprint to recognise it by
+// (winter is simply a day late), so every such cross is refetched once; an
+// exchange-traded file of the same vintage keeps answering.
+func TestCrossCacheFromBeforeTheFixIsRefetched(t *testing.T) {
+	dir := t.TempDir()
+	write := func(symbol string, version int) {
+		cf := cacheFile{Version: version, Symbol: symbol, Currency: "USD", Source: "yahoo",
+			RequestedFrom: "2020-01-01", FetchedAt: time.Now()}
+		for i, d := range testDays(3) {
+			cf.Dates = append(cf.Dates, d.Format("2006-01-02"))
+			cf.Closes = append(cf.Closes, 1.1+float64(i)/100)
+		}
+		data, err := json.Marshal(cf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		c := NewClient(dir)
+		c.writeCacheFile(c.cachePath(symbol), data)
+	}
+	write("SEKNOK=X", 1)
+	write("VOO", 1)
+	write("NOKSEK=X", cacheFormat)
+
+	c := NewClient(dir)
+	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	if _, ok := c.loadCache("SEKNOK=X", from); ok {
+		t.Error("a cross cached before the cross dating fix must be refetched")
+	}
+	if _, ok := c.loadCache("NOKSEK=X", from); !ok {
+		t.Error("a cross written under the current format must answer")
+	}
+	if _, ok := c.loadCache("VOO", from); !ok {
+		t.Error("an exchange-traded file of the same vintage must keep answering")
 	}
 }

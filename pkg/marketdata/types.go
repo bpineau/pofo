@@ -14,23 +14,63 @@ func dayUTC(t time.Time) time.Time {
 
 // venueTimezone is the time zone a symbol's daily bars are to be dated in:
 // the venue's own, as the provider reports it, except for a currency cross,
-// which is left on the UTC calendar it has always used.
-//
-// A cross has no exchange and no trading day, and the zone Yahoo attaches to
-// one is decorative. Its dating also carries an anomaly of its own that this
-// rule must not paper over: in the European summer a cross has no Friday-dated
-// close and one dated on the SUNDAY before the following week, whose level
-// measures as that missing Friday (median 0.10 % from the FRED noon fixing of
-// that Friday, against 0.24 % from the Monday after, over EURUSD=X since
-// 2016). Re-dating that point by a time zone would land it on a Monday the
-// series already holds, and the later value would silently overwrite the
-// earlier one: a lost session, which is worse than a misplaced one. The
-// anomaly stands, named, for a fix that understands it.
+// which has no venue and is dated by crossSessionDay instead.
 func venueTimezone(symbol, reported string) string {
 	if _, _, isCross := fxCross(symbol); isCross {
 		return ""
 	}
 	return reported
+}
+
+// crossBarSwitch is the first London date on which Yahoo's daily bar of a
+// currency cross carries the rate at its own opening instant, i.e. the
+// previous session's close, rather than its own day's rate. Measured on
+// EURUSD=X, GBPUSD=X, JPY=X and CHF=X against the FRED noon fixings: through
+// 2010-08-03 the bar sits within 0.08 to 0.20 % (yearly medians) of its own
+// day's fixing and 0.3 to 0.6 % from the previous one; from 2010-08-04 the
+// four crosses flip together, the same day, to 0.06 to 0.18 % from the
+// previous day's fixing and 0.17 to 0.47 % from their own.
+var crossBarSwitch = time.Date(2010, 8, 4, 0, 0, 0, 0, time.UTC)
+
+// crossSessionDay is the calendar day a Yahoo daily bar of a currency cross
+// belongs to, a session being the day whose closing rate the bar holds.
+//
+// Yahoo stamps every completed cross bar at MIDNIGHT LONDON (tz, the reported
+// exchangeTimezoneName, Europe/London when absent), and since crossBarSwitch
+// the bar's close is the rate at that instant: its open and close coincide,
+// and its level is that of the evening before. The bar stamped Tuesday 00:00
+// is therefore Monday's close, and the one stamped Monday 00:00 is FRIDAY's
+// (the rate as the market reopens, within 0.10 % of that Friday's fixing,
+// against 0.24 % from the Monday's). Before the switch the bar held its own
+// day's rate and keeps its London date. A bar stamped at any other instant is
+// the live quote of the day in progress, and keeps its day.
+//
+// The UTC dating this replaces read midnight London as 00:00 UTC in winter
+// (every point a day LATE, so a Friday close was converted at Thursday's
+// rate) and as 23:00 UTC the day before in summer (right since 2010, except
+// that Monday's bar fell on a Sunday and Friday had no point at all, a summer
+// Friday then converting at Thursday's rate too); before 2010 the summer half
+// was a day early. Either way a date-matched join (ConvertCurrency picks the
+// rate of the asset's own day) read the wrong session.
+func crossSessionDay(ts int64, tz string) time.Time {
+	loc := time.UTC
+	if tz == "" {
+		tz = "Europe/London"
+	}
+	if l, err := time.LoadLocation(tz); err == nil {
+		loc = l
+	}
+	t := time.Unix(ts, 0).In(loc)
+	day := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	midnight := t.Hour() == 0 && t.Minute() == 0 && t.Second() == 0
+	if !midnight || day.Before(crossBarSwitch) {
+		return day
+	}
+	day = day.AddDate(0, 0, -1)
+	for day.Weekday() == time.Saturday || day.Weekday() == time.Sunday {
+		day = day.AddDate(0, 0, -1)
+	}
+	return day
 }
 
 // sessionDay is the calendar day a provider's daily bar belongs to: its

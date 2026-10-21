@@ -186,9 +186,13 @@
 // early, Monday's session on a Sunday. The correction only ever moves a date
 // forward, since a UTC reading is never late, only early.
 //
-// One family is deliberately left on the UTC calendar: a currency cross, which
-// has no exchange and no trading day (see venueTimezone, which also records
-// the separate dating anomaly Yahoo's crosses carry in the European summer).
+// A currency cross has no exchange, and its day is the session whose CLOSE the
+// rate is: Yahoo stamps every daily cross bar at midnight London and, since
+// 2010-08-04, fills it with the rate at that instant, the previous evening's,
+// so the bar stamped Monday is Friday's close (see crossSessionDay, which
+// holds the measurement against the FRED fixings). Read in UTC, as it once
+// was, every winter point was a day late and every summer Friday empty, and
+// a converted series picked the previous session's rate on those days.
 //
 // Eurostat serves the Harmonised Index of Consumer Prices under the
 // "^HICP-<geo>" identifiers (^HICP-FR France, ^HICP-EA euro area, …): the
