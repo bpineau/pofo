@@ -62,26 +62,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	e := mortal.SimulateOn(draws, simWorkers)
 	immortal := base.SimulateOn(draws, simWorkers) // same returns, nobody dies
 
-	states := e.LifeStates()
-	funded := make([]float64, len(states))
-	broke := make([]float64, len(states))
-	dead := make([]float64, len(states))
-	for i, pt := range states {
-		funded[i] = pt.Funded * 100
-		broke[i] = pt.Broke * 100
-		dead[i] = pt.Dead * 100
-	}
-	lifeSVG := darkStackedArea(
-		chart.Options{Title: fmt.Sprintf("Alive, broke or gone (couple aged %.0f at retirement)", age), Width: 900, Height: 360},
-		"Years into retirement", "% of simulated households",
-		// Funded is the ground, not a subject: it is where nothing has
-		// happened yet, so it stays a quiet accent wash and the ink goes to
-		// the two frontiers that carry the story.
-		[]chart.AreaSeries{
-			{Name: "Funded", Values: funded, Color: chart.ColorAccent, Weight: 0.07},
-			{Name: "Broke", Values: broke, Color: chart.ColorBad, Weight: 0.5},
-			{Name: "Gone", Values: dead, Color: chart.ColorDead, Weight: 0.5},
-		})
+	lifeSVG := lifeBandSVG(e.LifeBands(1, 2), age, pr, mortal.Annuity)
 
 	// Ruin-year histogram, folded into 5-year buckets so it reads at a glance.
 	hist := e.RuinYearHistogram()
@@ -128,6 +109,60 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	}
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG,
 		Cards: cards, Annuitised: mortal.Annuity != nil}
+}
+
+// lifeBandSVG draws the lifecycle band: at every age, the share of the
+// simulated households that are gone, alive and broke, or alive and funded,
+// the funded split by their wealth against the capital they started with.
+//
+// The two risks sit on the two edges, where each reads against an axis rather
+// than floating mid-stack: broke while alive on the baseline, so its height is
+// its share, and gone from the top, so the reader sees at a glance which of
+// the two a plan is really exposed to (the comparison Engaging Data's "Rich,
+// Broke or Dead" made famous). Those two frontiers are the only drawn lines;
+// the funded bands between them are one hue stepped by wealth (an ordinal
+// ramp, dimmest nearest the failure) parted by surface gaps, and the
+// mortality layer is a neutral grey, an absorbing state rather than an outcome
+// to grade. The x axis is the AGE of the household's first member, with the
+// plan year in the hover header, since "broke at 92" and "broke at 61" are the
+// distinction the section exists to draw.
+func lifeBandSVG(bands []decumul.LifeBand, age float64, pr Params, annuity *decumul.Annuity) string {
+	n := len(bands)
+	broke, poor, mid, rich, dead := make([]float64, n), make([]float64, n), make([]float64, n), make([]float64, n), make([]float64, n)
+	ticks, tips := make([]string, n), make([]string, n)
+	step := 5
+	if n > 50 {
+		step = 10
+	}
+	for t, b := range bands {
+		broke[t], dead[t] = b.Broke*100, b.Dead*100
+		poor[t], mid[t], rich[t] = b.Funded[0]*100, b.Funded[1]*100, b.Funded[2]*100
+		a := int(age) + t
+		if a%step == 0 {
+			ticks[t] = strconv.Itoa(a)
+		}
+		tips[t] = fmt.Sprintf("age %d · year %d", a, t)
+	}
+	var markers []chart.Marker
+	if pr.PensionAnnual > 0 && pr.PensionYear > 0 && pr.PensionYear < n-1 {
+		markers = append(markers, chart.Marker{Axis: 'x', Value: float64(pr.PensionYear), Label: "pension"})
+	}
+	if annuity != nil && annuity.Year > 0 && annuity.Year < n-1 {
+		markers = append(markers, chart.Marker{Axis: 'x', Value: float64(annuity.Year), Label: "annuity"})
+	}
+	return darkStackedAreaWith(
+		chart.Options{Title: fmt.Sprintf("Alive, broke or gone · a couple aged %.0f at retirement", age), Width: 900, Height: 380},
+		chart.StackOptions{
+			XLabel: "age", YLabel: "% of simulated households", XTicks: ticks, XTips: tips,
+			Max: 100, Unit: "%", Gaps: true, EndLabels: true, Markers: markers,
+		},
+		[]chart.AreaSeries{
+			{Name: "Broke", Values: broke, Color: chart.ColorBad, Weight: 0.85, Outline: true},
+			{Name: "≤ start", Values: poor, Color: chart.ColorAccent, Weight: 0.45},
+			{Name: "1-2x start", Values: mid, Color: chart.ColorAccent, Weight: 0.68},
+			{Name: "> 2x start", Values: rich, Color: chart.ColorAccent, Weight: 0.95},
+			{Name: "Gone", Values: dead, Color: chart.ColorDead, Weight: 1, Outline: true},
+		})
 }
 
 // bequestBuckets buckets each path's estate (real wealth at the household's

@@ -639,12 +639,12 @@ snippet gets a new `Example` first, on synthetic data with a pinned
   unrelated fund.
 - FIRE/decumulation work: `go doc ./pkg/decumul` is the design (its "Realism"
   section records the optimism that was measured out of the defaults and must
-  not creep back). Two items are known open and deliberately so: wiring the
-  lifecycle view and the annuity toggle of `pkg/decumul/web` to the exact
-  kernel (`LifeStates`, the estate panel, `Plan.Annuity` instead of a
-  hand-built cashflow: UI work only), and a CAPE-conditioned spending rule
-  (WR = a + b/CAPE), refused until a scenario source simulates a valuation
-  path. The per-envelope tax model was measured and refused
+  not creep back). The lifecycle view (§05) runs the exact kernel: its band
+  is `Ensemble.LifeBands` (gone from the top, broke on the baseline, the
+  funded split by wealth against the starting capital), drawn with
+  `chart.StackedAreaWith`. One item is known open and deliberately so: a
+  CAPE-conditioned spending rule (WR = a + b/CAPE), refused until a
+  scenario source simulates a valuation path. The per-envelope tax model was measured and refused
   (`docs/specs/fire-envelopes-tax-model-design.md`). Anything
   touching mortality, estates, couples or annuities goes through
   `docs/specs/stochastic-lifetime-kernel-design.md` as well: `Plan.Lifetime` draws the

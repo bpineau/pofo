@@ -1,7 +1,10 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
+	"math"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -46,10 +49,36 @@ func TestLifecycle(t *testing.T) {
 	if !strings.HasPrefix(r.RuinYearSVG, "<svg") {
 		t.Fatalf("RuinYearSVG missing: %.30q", r.RuinYearSVG)
 	}
-	// The stacked chart should name the three states.
-	for _, s := range []string{"Funded", "Broke", "Gone"} {
+	// The band names the two risks and the three wealth steps of the funded,
+	// and its hover payload partitions every household at every age.
+	for _, s := range []string{"Broke", "Gone", "≤ start", "1-2x start", "&gt; 2x start"} {
 		if !strings.Contains(r.LifeSVG, s) {
 			t.Errorf("LifeSVG misses the %q layer", s)
+		}
+	}
+	m := regexp.MustCompile(`<metadata class="hover">(.*?)</metadata>`).FindStringSubmatch(r.LifeSVG)
+	if m == nil {
+		t.Fatal("LifeSVG carries no hover payload")
+	}
+	var hd struct {
+		Rows   []string `json:"rows"`
+		Series []struct {
+			Ys []float64 `json:"ys"`
+		} `json:"series"`
+	}
+	if err := json.Unmarshal([]byte(m[1]), &hd); err != nil {
+		t.Fatal(err)
+	}
+	if len(hd.Series) != 5 || len(hd.Rows) != testParams().Years+1 || !strings.HasPrefix(hd.Rows[0], "age ") {
+		t.Fatalf("hover payload: %d layers, rows %v", len(hd.Series), hd.Rows)
+	}
+	for k := range hd.Rows {
+		sum := 0.0
+		for _, s := range hd.Series {
+			sum += s.Ys[k]
+		}
+		if math.Abs(sum-100) > 1e-9 {
+			t.Errorf("year %d: the band sums to %.6f%%", k, sum)
 		}
 	}
 	// The view runs the exact lifetime kernel against its mortality-free twin:

@@ -35,3 +35,7 @@ func darkFan(o chart.Options, xLabel string, bands, samples [][]float64, markers
 func darkScatter(o chart.Options, xlab, ylab string, pts []chart.LabeledPoint) string {
 	return chart.Darken(chart.Scatter(o, xlab, ylab, pts))
 }
+
+func darkStackedAreaWith(o chart.Options, so chart.StackOptions, series []chart.AreaSeries) string {
+	return chart.Darken(chart.StackedAreaWith(o, so, series))
+}

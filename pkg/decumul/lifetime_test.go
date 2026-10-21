@@ -458,3 +458,38 @@ func TestAnnuityPricingRespondsToAgeAndLaw(t *testing.T) {
 		t.Error("a single-life annuity must pay more than a joint one at the same age")
 	}
 }
+
+// LifeBands opens up LifeStates' funded share and nothing else: the dead and
+// the broke are the same counts, the wealth bands add up to the funded share,
+// and at year 0 every living household holds exactly its starting capital.
+func TestLifeBandsPartitionLifeStates(t *testing.T) {
+	e := couplePlan(55).Simulate(4000, 4, 7)
+	states, bands := e.LifeStates(), e.LifeBands(1, 2)
+	if len(bands) != len(states) {
+		t.Fatalf("lengths %d vs %d", len(bands), len(states))
+	}
+	sawRich, sawPoor := false, false
+	for t0, b := range bands {
+		if len(b.Funded) != 3 {
+			t.Fatalf("year %d: %d funded bands, want 3", t0, len(b.Funded))
+		}
+		sum := 0.0
+		for _, f := range b.Funded {
+			sum += f
+		}
+		if math.Abs(sum-states[t0].Funded) > 1e-12 || b.Dead != states[t0].Dead || b.Broke != states[t0].Broke {
+			t.Errorf("year %d: bands %+v disagree with states %+v", t0, b, states[t0])
+		}
+		sawPoor = sawPoor || b.Funded[0] > 0
+		sawRich = sawRich || b.Funded[2] > 0
+	}
+	if b := bands[0]; b.Funded[0] != 1 {
+		t.Errorf("year 0 bands %+v: everyone starts at exactly 1x, the top of the first band", b)
+	}
+	if !sawRich || !sawPoor {
+		t.Errorf("a 4000-path plan never reached both outer bands (rich %v, poor %v)", sawRich, sawPoor)
+	}
+	if got := (Ensemble{Years: 3}).LifeBands(1); len(got) != 4 || len(got[2].Funded) != 2 {
+		t.Errorf("empty ensemble bands = %+v", got)
+	}
+}

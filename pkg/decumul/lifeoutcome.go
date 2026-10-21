@@ -153,3 +153,69 @@ func (e Ensemble) LifeStates() []LifePoint {
 	}
 	return out
 }
+
+// LifeBand is one year-end of the lifecycle band: every household is gone,
+// alive and broke, or alive and funded, and the funded are further split by
+// their real wealth as a multiple of the capital they started with. It is
+// LifePoint with the funded share opened up, which is what lets one stacked
+// chart set the risk being planned against (broke while alive) beside the
+// one nobody plans against (not being there) and beside how comfortably the
+// rest are living.
+type LifeBand struct {
+	Dead, Broke float64 // shares of all households, as in LifePoint
+	// Funded holds the shares of the households alive and funded, by wealth
+	// band against the path's starting capital (Wealth[0]): Funded[0] at or
+	// below edges[0] times it, Funded[i] in (edges[i-1], edges[i]] times it,
+	// and the last above the last edge. A band includes its upper edge so that
+	// year 0, where every path holds exactly its start, sits whole in the band
+	// that the spending then draws it out of. They sum to LifePoint.Funded.
+	Funded []float64
+}
+
+// LifeBands is LifeStates with the funded households split by wealth: edges
+// are multiples of the starting capital, ascending (1, 2 gives at or
+// below the start, up to twice it, and more than twice it). Wealth is the path's
+// total real wealth at the year-end, buffer included, before the tax its
+// sale would owe. Dead and Broke are LifeStates' own counts, so the two
+// views never disagree; on a fixed-horizon Ensemble Dead is 0 throughout.
+func (e Ensemble) LifeBands(edges ...float64) []LifeBand {
+	out := make([]LifeBand, e.Years+1)
+	counts := make([][]float64, e.Years+1)
+	for t := range out {
+		counts[t] = make([]float64, len(edges)+1)
+	}
+	n := len(e.Paths)
+	if n == 0 {
+		for t := range out {
+			out[t].Funded = counts[t]
+		}
+		return out
+	}
+	states := e.LifeStates()
+	for _, p := range e.Paths {
+		aliveTo := e.Years
+		if !p.Outlived && p.LifeYears > 0 && p.LifeYears <= e.Years {
+			aliveTo = p.LifeYears - 1
+		}
+		brokeFrom := aliveTo + 1
+		if p.Ruined && p.RuinYear >= 0 {
+			brokeFrom = p.RuinYear
+		}
+		start := p.Wealth[0]
+		for t := 0; t <= min(aliveTo, brokeFrom-1, len(p.Wealth)-1); t++ {
+			band := 0
+			for band < len(edges) && p.Wealth[t] > edges[band]*start {
+				band++
+			}
+			counts[t][band]++
+		}
+	}
+	fn := float64(n)
+	for t := range out {
+		for i := range counts[t] {
+			counts[t][i] /= fn
+		}
+		out[t] = LifeBand{Dead: states[t].Dead, Broke: states[t].Broke, Funded: counts[t]}
+	}
+	return out
+}

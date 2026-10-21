@@ -79,7 +79,9 @@
 // the household's lifespan inside every path instead, which unlocks what the
 // weighting cannot produce: ruin as broke-WHILE-ALIVE counted exactly, the
 // estate at death as a first-class output (Ensemble.LifeOutcome,
-// Ensemble.Estates), couple dynamics (a survivor spending less, a pension only
+// Ensemble.Estates), the per-year split into gone, broke and funded
+// households (Ensemble.LifeStates, and Ensemble.LifeBands, which opens the
+// funded share up by wealth against the starting capital), couple dynamics (a survivor spending less, a pension only
 // partly reverting via Cashflow.Owner and Cashflow.Reversion), and an optional
 // Annuity whose income stops with its annuitant, so the mortality credit is
 // realised rather than narrated. It is opt-in: a nil Lifetime is the special

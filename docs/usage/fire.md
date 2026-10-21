@@ -36,7 +36,9 @@ The page reads top to bottom as one argument:
 5. ruin split by the **first decade's return**, which is where sequence risk
    lives;
 6. the **spending** actually delivered, and how it was funded;
-7. ruin crossed with **mortality**: alive and broke, or gone first;
+7. ruin crossed with **mortality**: at every age, the share of households
+   gone, alive and broke, or alive and funded (split by wealth against the
+   starting capital), one band where the two risks read side by side;
 8. the **levers** that move ruin most, and the cash-buffer trade-off.
 
 Given a portfolio file, the simulator derives its return assumptions from the

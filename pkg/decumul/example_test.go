@@ -250,3 +250,28 @@ func ExamplePlan_RunPath_nominalGains() {
 	// tax on real gains: 0
 	// tax on nominal gains at 2 % inflation: 5461
 }
+
+// The lifecycle band of a couple retiring at 62: at each age, the share of
+// households gone, alive and broke, and alive and funded, the funded split by
+// wealth against the capital they started with (at or under it, up to twice
+// it, more). It is the chart that sets the risk a plan is built against beside
+// the one nobody plans for.
+func ExampleEnsemble_LifeBands() {
+	partner := decumul.Life{Age: 62}
+	p := decumul.Plan{
+		Capital: 1_000_000, NeedAnnual: 40_000, Years: 45, PlanHorizon: 35,
+		Tax:      decumul.CTOFlatTax{Rate: 0.314},
+		Source:   scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 45},
+		Lifetime: &decumul.Lifetime{Self: decumul.Life{Age: 62}, Partner: &partner},
+	}
+	bands := p.Simulate(20_000, 4, 7).LifeBands(1, 2)
+	for _, age := range []int{72, 82, 92} {
+		b := bands[age-62]
+		fmt.Printf("age %d: gone %2.0f%%, broke %2.0f%%, funded %2.0f%% / %2.0f%% / %2.0f%%\n",
+			age, b.Dead*100, b.Broke*100, b.Funded[0]*100, b.Funded[1]*100, b.Funded[2]*100)
+	}
+	// Output:
+	// age 72: gone  1%, broke  0%, funded 65% / 33% /  2%
+	// age 82: gone 10%, broke  8%, funded 60% / 18% /  5%
+	// age 92: gone 50%, broke 20%, funded 21% /  6% /  4%
+}

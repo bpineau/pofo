@@ -436,6 +436,12 @@ draw stream for returns is unchanged.
   measured on the default plan, "8M+" falls from 17.1 % to 12.8 % because most
   households die before the horizon), and one card was added for the length of
   a failure (`BrokeYearsMean / RuinAlive`).
+  Since 2026-10 the stack reads `LifeBands(1, 2)`, `LifeStates` with the
+  funded share split by real wealth against the path's own starting capital
+  (at or under it, up to twice it, above), its dead and broke shares being
+  `LifeStates`' own counts. The broke layer sits on the baseline and the dead
+  one hangs from the top, so each risk reads against an axis; the x axis is
+  the first member's age, the plan year riding in the hover header.
   Measured on the page's default plan, 20 000 paths: the alive-and-broke
   figure moves 1.62 % -> 1.65 %, the still-alive-at-horizon figure 40.9 % ->
   40.1 %, and the alive-broke-dead curves never differ by more than 0.80 pt on

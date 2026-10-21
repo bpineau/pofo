@@ -13,6 +13,11 @@
 //   - [DivergingStack] stacks signed series around a zero axis (positives up,
 //     negatives down), with an optional net line and categorical strip: the
 //     shape of a return-contribution timeline;
+//   - [StackedArea] stacks shares over an x index (part-to-whole over time);
+//     [StackedAreaWith] adds the instrument layers through [StackOptions]: a
+//     labelled x axis (ages over a year index) with per-position hover
+//     headers, a fixed top, surface gaps with only the chosen frontiers
+//     outlined ([AreaSeries].Outline), direct end labels and markers;
 //   - [BarMatrix] lays out a small-multiples grid of horizontal diverging
 //     bars (rows x categories on one shared scale), e.g. per-regime
 //     realized contributions;

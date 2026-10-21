@@ -160,3 +160,27 @@ func ExampleBarMatrix() {
 	// Output:
 	// true true
 }
+
+// A share stack in the instrument dialect: an age axis over a year index,
+// a fixed 0 to 100 % top, surface gaps between the layers with only the two
+// frontiers outlined, and each layer's last share printed at the right edge.
+// The hover payload carries one header per position.
+func ExampleStackedAreaWith() {
+	broke := []float64{0, 2, 5, 9}
+	funded := []float64{100, 93, 80, 61}
+	gone := []float64{0, 5, 15, 30}
+	svg := chart.StackedAreaWith(chart.Options{Title: "Alive, broke or gone", Width: 600, Height: 300},
+		chart.StackOptions{
+			XLabel: "age", XTicks: []string{"60", "", "70", ""},
+			XTips: []string{"age 60", "age 65", "age 70", "age 75"},
+			Max:   100, Unit: "%", Gaps: true, EndLabels: true,
+		},
+		[]chart.AreaSeries{
+			{Name: "Broke", Values: broke, Color: chart.ColorBad, Weight: 0.85, Outline: true},
+			{Name: "Funded", Values: funded, Color: chart.ColorAccent, Weight: 0.5},
+			{Name: "Gone", Values: gone, Color: chart.ColorDead, Weight: 1, Outline: true},
+		})
+	fmt.Println(strings.Count(svg, "<polygon"), strings.Contains(svg, "age 75"), strings.Contains(svg, ">61%"))
+	// Output:
+	// 3 true true
+}

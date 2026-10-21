@@ -1080,7 +1080,10 @@ function showCrosshair(svg, hd, xdom, clientX, clientY) {
   xline.setAttribute("y1", hd.y0); xline.setAttribute("y2", hd.y1);
 
   const xv = Math.abs(snapX - Math.round(snapX)) < 1e-9 ? String(Math.round(snapX)) : snapX.toFixed(1);
-  fillTip((hd.xlabel || "x") + " " + xv + (hd.ylabel ? " · " + hd.ylabel : ""), rows, clientX, clientY);
+  // An indexed chart may name each position itself (an age over a plan
+  // year): its own header then replaces the bare index.
+  const own = hd.rows && hd.rows[Math.round(snapX)];
+  fillTip((own || (hd.xlabel || "x") + " " + xv) + (hd.ylabel ? " · " + hd.ylabel : ""), rows, clientX, clientY);
   return true;
 }
 
