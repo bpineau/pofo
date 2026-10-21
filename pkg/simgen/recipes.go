@@ -1042,8 +1042,8 @@ func rsstRecipe() Recipe {
 	return Recipe{
 		ID:              "RSST",
 		Name:            "Return Stacked US Stocks & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFINX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.96%/yr fees less the equity donor's own 0.14%, real RSST grafted from 2023",
-		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", vfinxTER, mfConfig(0.10, 0), 0.0096),
+		Method:          "1.00×VFINX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.99%/yr fees less the equity donor's own 0.14%, real RSST grafted from 2023",
+		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", vfinxTER, mfConfig(0.10, 0), rsstTER),
 		ValidateAgainst: "RSST",
 		SpliceReal:      "RSST",
 	}
@@ -1058,8 +1058,8 @@ func rsbtRecipe() Recipe {
 	return Recipe{
 		ID:              "RSBT",
 		Name:            "Return Stacked Bonds & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFITX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.97%/yr fees less the bond donor's own 0.20%, real RSBT grafted from 2023",
-		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", vfitxTER, mfConfig(0.10, 0), 0.0097),
+		Method:          "1.00×VFITX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 1.01%/yr fees less the bond donor's own 0.20%, real RSBT grafted from 2023",
+		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", vfitxTER, mfConfig(0.10, 0), rsbtTER),
 		ValidateAgainst: "RSBT",
 		SpliceReal:      "RSBT",
 	}
@@ -1517,8 +1517,8 @@ func sp500IndexRecipe() Recipe {
 // wintonRecipe rebuilds the Winton Trend-Enhanced Global Equity fund as
 // global equities (60/40 US/international) plus a self-generated TSMOM trend
 // overlay at the fund's 100 % notional (wintonTrendNotional), net of what its
-// 0.80%/yr load exceeds its equity
-// donors' own (wintonFee): the two Vanguard funds charge 0.60×0.14 +
+// 1.10%/yr ongoing charge (wintonTER) exceeds its equity donors' own: the two
+// Vanguard funds charge 0.60×0.14 +
 // 0.40×0.05 = 0.112 %/yr inside their NAVs, and the file starts at the trend
 // reference's 2000-01, where both already quote, so the charge is a constant.
 // The overlay leg is left as its net reference gives it, for the reason
@@ -1527,11 +1527,23 @@ func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
 		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
-		Method:          "0.60×VFINX + 0.40×VTMGX + 1.00×(TSMOM trend at a 10% volatility target − overnight financing, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees less the equity donors' own 0.112%/yr (2000→, where that reference begins)",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 1.00×(TSMOM trend at a 10% volatility target − overnight financing, its months and its level from the bundled net pure-trend reference), 1.10%/yr ongoing charges less the equity donors' own 0.112%/yr (2000→, where that reference begins)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
 }
+
+// The stacked trend funds' ongoing charges, FRACTIONS per year, read off the
+// issuer pages (2026-10) and held to the catalog's fees by a test: Winton
+// 1.10 % ongoing charges (of which 0.80 % management), RSST 0.99 % and RSBT
+// 1.01 % expense ratio. Until 2026-10 the recipes charged 0.80, 0.96 and 0.97:
+// Winton's management fee alone where the doctrine is the whole ongoing charge
+// (what is in the price), and the two Return Stacked funds a superseded list.
+const (
+	wintonTER = 0.0110
+	rsstTER   = 0.0099
+	rsbtTER   = 0.0101
+)
 
 // wintonTrendNotional is the trend overlay's notional per unit of capital: the
 // fund provides "$100 of exposure to the MSCI World and $100 of exposure to the
@@ -1577,9 +1589,8 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
 	fin := fr.Returns[usdOvernight]
 	const (
-		wintonUS  = 0.60
-		wintonTER = 0.0080
-		feeDaily  = max(0, wintonTER-(wintonUS*vfinxTER+(1-wintonUS)*vtmgxTER)) / 252
+		wintonUS = 0.60
+		feeDaily = max(0, wintonTER-(wintonUS*vfinxTER+(1-wintonUS)*vtmgxTER)) / 252
 	)
 	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
 	val := 100.0

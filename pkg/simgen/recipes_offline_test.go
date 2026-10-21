@@ -464,3 +464,49 @@ func TestWorldEquityBlendsChargeTheirFeeGap(t *testing.T) {
 		}
 	}
 }
+
+// Every target charge a recipe deducts is the fund's published ongoing charge,
+// and the catalog record's fees field is where that charge is pinned (percent
+// per year there, a fraction here). A recipe constant that drifts from it
+// charges a price list nobody publishes.
+func TestRecipeTargetChargesAreTheCatalogFees(t *testing.T) {
+	fees := map[string]float64{}
+	for _, a := range datasets.Catalog() {
+		fees[a.ID] = a.Fees
+	}
+	for id, charge := range map[string]float64{
+		"IE000O1VI174": wintonTER,
+		"RSST":         rsstTER,
+		"RSBT":         rsbtTER,
+		"RSSB":         rssbTER,
+		"VT":           vtTER,
+		"IE00BK5BQT80": vwraTER,
+		"IE00BDFL4P12": icomFee,
+		"DBXG":         dbxgFee,
+		"MTH":          mthFee,
+		"ZROZ":         zrozTER,
+		"IE000S67ID55": dpgtTER,
+		"IE0003R87OG3": avwsTER,
+		"ERES_DATADOG": eresDatadogCharge,
+		"LU1662501532": aqrRAEFOngoing,
+		"LU1662498721": aqrIAETOngoing,
+		"LU2622190622": aqrIAE1FTOngoing,
+		"DBMF":         trendFeeLoad["DBMF"],
+		"KMLM":         trendFeeLoad["KMLM"],
+		"CTA":          trendFeeLoad["CTA"],
+		"LU1103257975": trendFeeLoad["LU1103257975"],
+		"IE00BKYBHJ61": trendFeeLoad[campbellB],
+		"IE00B3Q8M574": ilsFeeLoad["IE00B3Q8M574"],
+		"LI0049587301": ilsFeeLoad["LI0049587301"],
+		"LI0115208543": ilsFeeLoad["LI0115208543"],
+	} {
+		pct, ok := fees[id]
+		if !ok {
+			t.Errorf("%s: no catalog record", id)
+			continue
+		}
+		if math.Abs(charge*100-pct) > 1e-9 {
+			t.Errorf("%s: the recipe charges %.2f %%/yr, the catalog pins %.2f %%/yr", id, charge*100, pct)
+		}
+	}
+}

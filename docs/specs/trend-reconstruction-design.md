@@ -2151,8 +2151,11 @@ match stays.
   The three OVERLAY builds (`stackedTrend`, `wintonBuild`) obey the same rule on
   their funded CORE, which is a Vanguard index fund and therefore already net of
   its own charge: since 2026-08 they charge the fund's fee less that core's load
-  (RSST 0.96 − 0.14, RSBT 0.97 − 0.20, Winton 0.80 − 0.112), worth +0.1 to
-  +0.2 pt/yr on the reconstruction. Their trend leg is deliberately NOT
+  (RSST 0.99 − 0.14, RSBT 1.01 − 0.20, Winton 1.10 − 0.112), worth +0.1 to
+  +0.2 pt/yr on the reconstruction. The fund side of those differences is the
+  published ongoing charge, held to the catalog's fees by a test since 2026-10,
+  when it was found charging 0.96, 0.97 and Winton's 0.80 management fee
+  alone. Their trend leg is deliberately NOT
   corrected, although its net reference carries its constituents' load by the
   same argument: that load is the 2 % ESTIMATE of `trendFeeLoad` rather than a
   price list, correcting it would hand the overlay about two points a year, and
