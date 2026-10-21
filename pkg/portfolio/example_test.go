@@ -58,8 +58,9 @@ func ExampleSimFetchID() {
 
 // Simulate replays a portfolio (base 100, periodic rebalancing) on series
 // obtained from marketdata or built by hand. Weights are FRACTIONS summing
-// to 1; fees fields are PERCENT per year. The result chains directly into
-// metrics.Compute.
+// to 1; fees fields are PERCENT per year. The result's Index chains directly
+// into metrics.Compute: Values follows the money, and as soon as a file
+// carries flows a statistic on it would read every withdrawal as a loss.
 func ExampleSimulate() {
 	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	mk := func(symbol string, daily float64) *marketdata.Series {
@@ -82,7 +83,7 @@ func ExampleSimulate() {
 	if err != nil {
 		panic(err)
 	}
-	stats, err := metrics.Compute(sim.Dates, sim.Values)
+	stats, err := metrics.Compute(sim.Dates, sim.Index) // statistics read the time-weighted Index, never Values
 	if err != nil {
 		panic(err)
 	}
