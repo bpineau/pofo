@@ -20,9 +20,11 @@ func TestResolvedFundIsCleanedOnFirstFetch(t *testing.T) {
 		isin  = "FR0000288946"
 		franc = 6.55957
 	)
-	// 40 points in francs, then 40 in euros: one denomination break, and both
+	// 40 points in francs, then 40 in euros from 1999-01-04, the euro's first
+	// trading day (the real junction's date, and inside the changeover window a
+	// franc-to-euro mend is accepted in): one denomination break, and both
 	// sides long enough for the repair to trust them.
-	start := time.Date(1998, 1, 1, 0, 0, 0, 0, time.UTC)
+	start := time.Date(1998, 11, 25, 0, 0, 0, 0, time.UTC)
 	var dates []string
 	var closes []float64
 	for i := 0; i < 80; i++ {

@@ -282,7 +282,7 @@ func TestDropRoundTripsGuards(t *testing.T) {
 		// cleanQuotes is the gate: a yield level crossing zero produces ratios
 		// that mean nothing, so no cleaner runs on it.
 		in := iemlLocalGovt2015.series()
-		if got := cleanQuotes("^TNX", in); len(got) != len(in) {
+		if got := cleanQuotes("^TNX", "", in); len(got) != len(in) {
 			t.Fatalf("^TNX was cleaned: %d points in, %d out", len(in), len(got))
 		}
 	})

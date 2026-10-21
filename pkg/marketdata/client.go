@@ -492,7 +492,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		// since dropping a leading placeholder changes a candidate's depth.
 		// Cleaning is idempotent, so the already-clean Yahoo ones are safe.
 		if s != nil {
-			s.Points = cleanQuotes(query, s.Points)
+			s.Points = cleanQuotes(query, s.Currency, s.Points)
 		}
 		i := slotOther
 		switch {
@@ -795,7 +795,7 @@ func (c *Client) historyForResolution(ctx context.Context, isin string, res reso
 	// FT / Morningstar / Stooq bypass history(), so clean here: a resolved ISIN
 	// must get the same scale-break / dropout hygiene as a direct symbol.
 	if err == nil && s != nil {
-		s.Points = cleanQuotes(isin, s.Points)
+		s.Points = cleanQuotes(isin, s.Currency, s.Points)
 	}
 	return s, err
 }
@@ -900,7 +900,7 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 	if len(s.Points) == 0 {
 		return c.staleFallback(ctx, cacheID, symbol, from, markAbsent(fmt.Errorf("no quotes returned for %s", symbol)))
 	}
-	s.Points = cleanQuotes(symbol, s.Points)
+	s.Points = cleanQuotes(symbol, s.Currency, s.Points)
 	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil

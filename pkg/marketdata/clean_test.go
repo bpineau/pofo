@@ -14,6 +14,19 @@ func pts(closes ...float64) []Point {
 	return out
 }
 
+// ptsFrom is pts on daily dates from start.
+func ptsFrom(start time.Time, closes ...float64) []Point {
+	out := pts(closes...)
+	for i := range out {
+		out[i].Date = start.AddDate(0, 0, i)
+	}
+	return out
+}
+
+// changeover puts a 50-point series' junction (index 25) inside the euro
+// changeover window: 1999-01-04 is the euro's first trading day.
+var changeover = time.Date(1998, 12, 10, 0, 0, 0, 0, time.UTC)
+
 func closes(ps []Point) []float64 {
 	out := make([]float64, len(ps))
 	for i, p := range ps {
@@ -56,7 +69,7 @@ func TestMendScaleBreak(t *testing.T) {
 	t.Run("single clean break rescaled", func(t *testing.T) {
 		old := ramp(12000, 20, 25) // pence, ~12000..12480
 		new := ramp(124.9, 0.2, 25)
-		got := closes(mendScaleBreak(pts(concat(old, new)...)))
+		got := closes(mendScaleBreak(pts(concat(old, new)...), "ITPS.L", "GBP"))
 		// Junction ratio at index 25: 124.9/12480 ≈ 0.010008; older *= that.
 		if got[24] > 200 || got[24] < 100 {
 			t.Errorf("older segment not rescaled onto newer: got[24]=%.2f", got[24])
@@ -77,7 +90,7 @@ func TestMendScaleBreak(t *testing.T) {
 		new := ramp(129.5, 0.1, 25)
 		s := concat(old, new)
 		in := append([]float64{}, s...)
-		got := closes(mendScaleBreak(pts(s...)))
+		got := closes(mendScaleBreak(pts(s...), "IBGS.L", "GBP"))
 		if !eq(got, in...) {
 			t.Errorf("cross-currency weld was mended: got[24]=%.4f, want %.4f", got[24], in[24])
 		}
@@ -86,7 +99,7 @@ func TestMendScaleBreak(t *testing.T) {
 	t.Run("multiple breaks untouched", func(t *testing.T) {
 		s := concat(concat(ramp(12000, 20, 25), ramp(120, 1, 25)), ramp(40000, 50, 25))
 		in := append([]float64{}, s...)
-		got := closes(mendScaleBreak(pts(s...)))
+		got := closes(mendScaleBreak(pts(s...), "ITPS.L", "GBP"))
 		if !eq(got, in...) {
 			t.Errorf("multiple-break series was modified")
 		}
@@ -95,7 +108,7 @@ func TestMendScaleBreak(t *testing.T) {
 	t.Run("short side untouched", func(t *testing.T) {
 		s := concat(ramp(12000, 20, 5), ramp(120, 1, 40))
 		in := append([]float64{}, s...)
-		got := closes(mendScaleBreak(pts(s...)))
+		got := closes(mendScaleBreak(pts(s...), "ITPS.L", "GBP"))
 		if !eq(got, in...) {
 			t.Errorf("short-older-side series was modified")
 		}
@@ -104,7 +117,7 @@ func TestMendScaleBreak(t *testing.T) {
 	t.Run("moderate move untouched", func(t *testing.T) {
 		s := concat(ramp(40, 0.1, 25), ramp(120, 0.3, 25))
 		in := append([]float64{}, s...)
-		got := closes(mendScaleBreak(pts(s...)))
+		got := closes(mendScaleBreak(pts(s...), "IWDA", "USD"))
 		if !eq(got, in...) {
 			t.Errorf("moderate 3x move was modified")
 		}
@@ -115,7 +128,7 @@ func TestMendScaleBreak(t *testing.T) {
 	t.Run("euro-legacy redenomination mended", func(t *testing.T) {
 		old := ramp(200, 0.75, 25)         // francs, ending at 218
 		new := ramp(218/6.55957, 0.05, 25) // euros, starting at 218/6.55957
-		got := closes(mendScaleBreak(pts(concat(old, new)...)))
+		got := closes(mendScaleBreak(ptsFrom(changeover, concat(old, new)...), "ZZFRANC", "EUR"))
 		if got[24] > 40 || got[24] < 28 { // 218 franc point rescaled to ~33 euro
 			t.Errorf("franc segment not rescaled onto euro NAV: got[24]=%.2f", got[24])
 		}
@@ -125,6 +138,57 @@ func TestMendScaleBreak(t *testing.T) {
 			}
 		}
 	})
+	// A unit ratio alone does not prove a unit change: an instrument can
+	// genuinely lose 90 % (1/10) or 96 % (1/25) in a session, a bankrupt stock or
+	// a blown-up volatility note. Without independent evidence that the move is
+	// a change of units, the cliff is history and must stay.
+	collapse := func(ratio float64) []float64 {
+		return concat(ramp(40, -0.2, 25), ramp(35.2*ratio, -0.01, 25))
+	}
+	for _, c := range []struct {
+		name, id, currency string
+		start              time.Time
+		ratio              float64
+	}{
+		{"-90 % on an uncatalogued line", "ZZCRASH", "USD", time.Date(2019, 2, 20, 0, 0, 0, 0, time.UTC), 0.1},
+		{"-96 % on an uncatalogued line", "ZZCRASH", "EUR", time.Date(2019, 2, 20, 0, 0, 0, 0, time.UTC), 1.0 / 25},
+		{"-99 % on a US line", "ZZCRASH", "USD", time.Date(2019, 2, 20, 0, 0, 0, 0, time.UTC), 0.01},
+		{"-90 % on a single stock", "DDOG", "USD", time.Date(2019, 2, 20, 0, 0, 0, 0, time.UTC), 0.1},
+		{"a franc-sized fall long after the changeover", "ZZCRASH", "EUR", time.Date(2015, 3, 2, 0, 0, 0, 0, time.UTC), 1 / 6.55957},
+		// On the first session of a year, but a full point off the unit ratio.
+		{"-90.1 % on the first session of a year", "ZZCRASH", "USD", time.Date(2013, 12, 7, 0, 0, 0, 0, time.UTC), 0.099},
+	} {
+		t.Run("genuine collapse untouched: "+c.name, func(t *testing.T) {
+			s := collapse(c.ratio)
+			in := append([]float64{}, s...)
+			got := closes(mendScaleBreak(ptsFrom(c.start, s...), c.id, c.currency))
+			if !eq(got, in...) {
+				t.Errorf("a genuine collapse was welded away: got[24]=%.4f, want %.4f", got[24], in[24])
+			}
+		})
+	}
+	// And each piece of evidence, alone, still mends its own case.
+	mid := time.Date(2019, 2, 20, 0, 0, 0, 0, time.UTC)
+	for _, c := range []struct {
+		name, id, currency string
+		start              time.Time
+		ratio              float64
+	}{
+		{"a hundredfold break on a catalogued fund, which no fund falls in a day", "IWDA", "USD", mid, 0.01},
+		{"a twenty-fivefold break on a catalogued fund", "VOO", "USD", mid, 1.0 / 25},
+		{"pence to pounds on an uncatalogued London line", "ZZLSE.L", "GBP", mid, 0.01},
+		// The real SPYI.DE shape: 83.06 on 2014-12-30, 3.3172 on 2015-01-02,
+		// 0.16 % from 1/25, on an uncatalogued euro line. The junction lands
+		// on index 25, the first point of 2015.
+		{"a provider splice on the first session of a year", "SPYI.DE", "EUR", time.Date(2014, 12, 7, 0, 0, 0, 0, time.UTC), 0.0399374},
+	} {
+		t.Run("unit change mended: "+c.name, func(t *testing.T) {
+			got := closes(mendScaleBreak(ptsFrom(c.start, collapse(c.ratio)...), c.id, c.currency))
+			if r := got[25] / got[24]; r < 0.5 || r > 2 {
+				t.Errorf("the break was left: %.4f -> %.4f", got[24], got[25])
+			}
+		})
+	}
 }
 
 func TestIsRateSymbol(t *testing.T) {

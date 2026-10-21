@@ -3,6 +3,9 @@ package marketdata
 import (
 	"math"
 	"strings"
+	"time"
+
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 // cleanQuotes applies the price-hygiene passes to a freshly fetched daily
@@ -26,17 +29,19 @@ import (
 //     it can only tell an impossible session from a violent one once the series
 //     is a single instrument expressed in fixed units. Run before mending, a
 //     hundredfold junction inside its window would swamp that sigma and silence
-//     it exactly where the data is worst. It is also the only pass that needs
-//     to know WHAT the asset is, which it asks bandFor.
+//     it exactly where the data is worst. It asks bandFor WHAT the asset is,
+//     as mendScaleBreak does.
 //
 // id is whatever the caller holds: a canonical id, an ISIN, or a bare provider
 // symbol. All three reach a plausibility band, and an unrecognized one reaches
-// the widest, which only makes the cleaning timid.
-func cleanQuotes(id string, pts []Point) []Point {
+// the widest, which only makes the cleaning timid. currency is the series'
+// quote currency, already in major units (see normalizeUnits): it is part of
+// the evidence a pence-to-pounds junction is judged on.
+func cleanQuotes(id, currency string, pts []Point) []Point {
 	if !isRateSymbol(id) {
-		pts = dropDropouts(pts)                // strip provider placeholders/bad prints
-		pts = mendScaleBreak(pts)              // repair a single denomination break
-		pts = dropRoundTrips(pts, bandFor(id)) // strip impossible one-session round trips
+		pts = dropDropouts(pts)                 // strip provider placeholders/bad prints
+		pts = mendScaleBreak(pts, id, currency) // repair a single denomination break
+		pts = dropRoundTrips(pts, bandFor(id))  // strip impossible one-session round trips
 	}
 	if strings.HasSuffix(id, "=X") {
 		pts = dropFXSpikes(pts) // strip isolated self-cancelling FX prints
@@ -111,14 +116,23 @@ var unitRatios = append([]float64{10, 20, 25, 50, 100, 200, 500, 1000, 10000}, e
 
 // nearRatio reports whether r matches one of the ratios, in either direction,
 // within the 1.5 % that absorbs the real market move sitting across a junction.
-func nearRatio(r float64, ratios []float64) bool {
+func nearRatio(r float64, ratios []float64) bool { return withinRatio(r, ratios, 0.015) }
+
+// withinRatio is nearRatio at an explicit relative tolerance.
+func withinRatio(r float64, ratios []float64, tol float64) bool {
 	for _, want := range ratios {
-		if math.Abs(r/want-1) <= 0.015 || math.Abs(r*want-1) <= 0.015 {
+		if math.Abs(r/want-1) <= tol || math.Abs(r*want-1) <= tol {
 			return true
 		}
 	}
 	return false
 }
+
+// yearSpliceTolerance is how close to an exact unit ratio a junction on the
+// first session of a year must sit to count as a provider splice (see
+// unitChangeEvidence): the two such unit changes measured sit at 0.16 and
+// 0.25 %, and half a point leaves room for one quiet session's real move.
+const yearSpliceTolerance = 0.005
 
 // mendScaleBreak repairs a single large, persistent denomination break: when a
 // series has EXACTLY ONE adjacent jump beyond scaleBreakFactor with a
@@ -154,7 +168,15 @@ func nearRatio(r float64, ratios []float64) bool {
 // 1.5 % nearRatio allows, and the gap is unexplained. Mending at 288.3 would
 // bake that 4 % into every pre-2012 return, so the series keeps its one honest
 // finding instead.
-func mendScaleBreak(pts []Point) []Point {
+//
+// A unit ratio is still not a proof. A bankrupt stock or a blown-up
+// volatility note can genuinely lose 90 % (1/10), 96 % (1/25) or 99 % (1/100)
+// in a session, and such a fall lands within 1.5 % of a unit ratio often
+// enough to matter: welding it away would erase the loss from every
+// statistic. So the junction must ALSO carry independent evidence that it is
+// a change of units (unitChangeEvidence), and is otherwise left as history.
+// id and currency are that evidence's inputs (see cleanQuotes).
+func mendScaleBreak(pts []Point, id, currency string) []Point {
 	n := len(pts)
 	if n < 2*minScaleSegment {
 		return pts
@@ -175,13 +197,89 @@ func mendScaleBreak(pts []Point) []Point {
 	// segment: the spurious junction move is absorbed (a normal day's real move
 	// across it is negligible next to an 8x+ break).
 	f := pts[breakIdx].Close / pts[breakIdx-1].Close
-	if !nearRatio(f, unitRatios) {
+	if !nearRatio(f, unitRatios) || !unitChangeEvidence(f, pts[breakIdx-1].Date, pts[breakIdx].Date, id, currency) {
 		return pts
 	}
 	for i := 0; i < breakIdx; i++ {
 		pts[i].Close *= f
 	}
 	return pts
+}
+
+// euroChangeover bounds the dates a euro-legacy conversion can happen on:
+// from the euro's first trading day to the end of the dual-circulation period
+// (the franc ceased to be legal tender on 2002-02-17). A fund redenominated
+// its units inside it; a fall to 1/6.55957 of the price anywhere else is a
+// fall.
+var euroChangeover = [2]time.Time{
+	time.Date(1999, 1, 1, 0, 0, 0, 0, time.UTC),
+	time.Date(2002, 3, 1, 0, 0, 0, 0, time.UTC),
+}
+
+// impossibleMoveMultiple is how many times its class's largest plausible
+// session move (Band.Move, stretched for the record's leverage) a junction
+// must exceed before a catalogued holding's break counts as units. Three
+// keeps every leveraged or single-name record, which can genuinely lose 90 %
+// in a day, out of reach: a single stock's stretched ceiling is 40 %, three
+// times which is past any unit-sized fall; a plain equity fund's is 23 %, and
+// a hundredfold or tenfold fall is three times past even that.
+const impossibleMoveMultiple = 3
+
+// unitChangeEvidence reports whether a junction of ratio f (new over old) on
+// date is shown, by something other than its size, to be a change of units.
+// Any one of three suffices:
+//
+//   - a euro-legacy conversion rate, on a date inside euroChangeover: the
+//     only time an instrument can be re-expressed from francs or markkas into
+//     euros (the two catalogued cases, FR0000288946 on 1999-01-04 and
+//     LU0131510165 on 1999-02-26, are both here);
+//
+//   - a hundredfold junction on a line quoted in a currency the venues price in
+//     a sub-unit (pounds, rand, shekels: pence, cents and agorot), the shape a
+//     provider splicing a pence segment onto a pounds one leaves;
+//
+//   - a catalogued holding that is not a single name, whose class cannot
+//     move by a third of the junction in a session (impossibleMoveMultiple):
+//     a broad fund does not lose 90 % in a day, so its tenfold break is units.
+//
+//   - a junction on the FIRST SESSION OF A YEAR that sits within
+//     yearSpliceTolerance of its unit ratio: the date the provider splices an
+//     old segment on. Every splice met in this catalog's history is dated so
+//     (IBGS.L and ITPS.L 2009-01-02, CL2.PA 2012-01-02, SPXS.L 2014-01-02,
+//     SPYI.DE 2015-01-02), and the two of them that are plain unit changes,
+//     both uncatalogued lines, sit 0.25 % (SPXS.L, 1/100) and 0.16 %
+//     (SPYI.DE, 1/25) from the exact ratio. A genuine collapse would have to
+//     fall on that one session AND within half a point of a unit ratio.
+//
+// Otherwise an uncatalogued line has no class to say what it can do, so a
+// tenfold or hundredfold fall on it, in a currency without sub-units, stays a
+// fall. prev is the session before the junction.
+func unitChangeEvidence(f float64, prev, date time.Time, id, currency string) bool {
+	if nearRatio(f, euroLegacyRates) {
+		return !date.Before(euroChangeover[0]) && date.Before(euroChangeover[1])
+	}
+	if date.Year() != prev.Year() && withinRatio(f, unitRatios, yearSpliceTolerance) {
+		return true
+	}
+	switch currency {
+	case "GBP", "ZAR", "ILS":
+		if nearRatio(f, []float64{100}) {
+			return true
+		}
+	}
+	a, ok := Lookup(id)
+	if !ok || a.Strategy == datasets.StrategySingleStock {
+		return false
+	}
+	band, known := ClassBand(a.AssetClass)
+	if !known {
+		return false
+	}
+	move := f - 1 // the junction read as a market move, up or down
+	if f < 1 {
+		move = 1 - f
+	}
+	return move > impossibleMoveMultiple*band.Scale(recordStretch(a)).Move
 }
 
 // dropDropouts removes obvious bad prints from a sorted daily series:
