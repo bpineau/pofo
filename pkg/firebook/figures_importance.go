@@ -22,8 +22,8 @@ import (
 //
 // The central model of the simulator draws twenty thousand independent
 // forty-year paths (Student-t fitted on the four bricks' common monthly
-// history, the same panel and the same fit as the basket plate, seed 7, one
-// worker so the draw is reproducible anywhere). Each path is run through the
+// history, the same panel and the same fit as the basket plate, seed 7, each
+// path drawn from its own stream so the draw is reproducible anywhere). Each path is run through the
 // withdrawal kernel of pkg/decumul at a fixed inflation-indexed 4 % of the
 // starting capital.
 //
@@ -35,7 +35,7 @@ import (
 // year's return accounts for.
 //
 // Read on terminal WEALTH instead of on success, the same profile is flatter
-// (60 % for the first decade rather than 71 %); the legend carries that second
+// (59 % for the first decade rather than 69 %); the legend carries that second
 // reading, because the choice of outcome moves the number and hiding it would
 // make the plate look more certain than it is.
 //
@@ -61,16 +61,16 @@ var impWeights = []float64{0.60, 0.25, 0.075, 0.075}
 // The measured profile: the share of the outcome each retirement year accounts
 // for, in percent, year 1 first. Frozen, and recomputed by the guard test.
 var impShares = [impYears]float64{
-	10.49, 9.45, 9.58, 6.76, 6.86, 6.86, 6.08, 4.86, 4.34, 5.31, 3.28,
-	3.48, 3.57, 2.24, 2.61, 2.44, 2.04, 1.43, 1.14, 1.06, 1.27, 0.77,
-	0.89, 0.62, 0.75, 0.35, 0.23, 0.25, 0.26, 0.06, 0.05, 0.36, 0.12,
-	0.06, 0.05, 0.00, 0.02, 0.01, 0.00, 0.01,
+	9.97, 9.11, 8.30, 8.83, 5.72, 6.55, 5.38, 5.22, 5.56, 4.35, 3.94,
+	3.74, 3.09, 3.28, 2.51, 1.86, 2.79, 2.28, 1.34, 0.99, 0.98, 0.96,
+	0.47, 0.49, 0.45, 0.51, 0.44, 0.13, 0.11, 0.08, 0.12, 0.14, 0.18,
+	0.01, 0.02, 0.00, 0.02, 0.01, 0.05, 0.02,
 }
 
 // impWealthDecade is the same first-decade share computed on the log of
 // terminal wealth rather than on success, the second reading the legend
 // carries. Frozen and recomputed alongside the profile.
-const impWealthDecade = 59.5
+const impWealthDecade = 58.7
 
 // impDecadeShare is what the first decade carries, in percent.
 func impDecadeShare() float64 {
@@ -159,7 +159,7 @@ func figImportanceAnnees() string {
 			"Le « succès final » est l'issue que le texte nomme.",
 		"Lue sur la richesse finale plutôt que sur le succès, la concentration tombe à " +
 			frNum(impWealthDecade, 0) + " % pour la première décennie.",
-		"Le texte annonce 70 % au moins, la mesure en donne " + frNum(impDecadeShare(), 0) +
+		"Le texte annonce 70 % environ, la mesure en donne " + frNum(impDecadeShare(), 0) +
 			", stable de 67 à 77 % selon l'horizon, le retrait et le portefeuille.",
 		"Un tirage indépendant sous-estime le risque de séquence : la concentration réelle est plutôt " +
 			"au-dessus de cette planche.",

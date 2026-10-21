@@ -105,13 +105,14 @@ func TestImportanceProfileMatchesTheModel(t *testing.T) {
 }
 
 // The claim the plate is built to test, checked on the frozen profile. The
-// article says at least 70 %; the measurement has to land in the same
+// article says about 70 %; the measurement has to land in the same
 // neighbourhood or the plate would be contradicting the sentence it
-// illustrates, and no drawing choice could repair that.
+// illustrates, and no drawing choice could repair that. Resampling alone
+// has moved it between 69 and 72 % over the book's refreezes.
 func TestImportanceFirstDecadeIsNearTheArticlesClaim(t *testing.T) {
 	got := impDecadeShare()
 	if got < 65 || got > 85 {
-		t.Errorf("the first decade carries %.1f %% of the outcome, the article says at least 70", got)
+		t.Errorf("the first decade carries %.1f %% of the outcome, the article says about 70", got)
 	}
 	// The shares are shares: they add up.
 	sum := 0.0
@@ -144,7 +145,7 @@ func TestImportanceAgreesWithItsArticle(t *testing.T) {
 	art := bookArticle(t, "sequence-des-rendements")
 	for _, want := range []string{
 		"::: figure importance-annees",
-		"le sort d'une retraite de 40 ans se joue **à 70 % au moins dans sa première décennie**",
+		"le sort d'une retraite de 40 ans se joue **à 70 % environ dans sa première décennie**",
 		"la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années",
 		"Tout modèle qui tire les années indépendamment (Monte-Carlo naïf, y compris le modèle Student-t central) sous-estime légèrement le risque de séquence",
 	} {
@@ -177,13 +178,13 @@ func TestImportancePlateRenders(t *testing.T) {
 		}
 	}
 	for _, want := range []string{
-		">les dix premières années : 71 % de l'issue<",
-		">les deux premières années : 20 %<",
-		">les vingt dernières : 6 % en tout<",
+		">les dix premières années : 69 % de l'issue<",
+		">les deux premières années : 19 %<",
+		">les vingt dernières : 5 % en tout<",
 		">année de retraite  →<",
-		"Le quart le plus court de l'horizon porte 71 % du résultat",
-		"la concentration tombe à 60 % pour la première décennie",
-		"Le texte annonce 70 % au moins, la mesure en donne 71",
+		"Le quart le plus court de l'horizon porte 69 % du résultat",
+		"la concentration tombe à 59 % pour la première décennie",
+		"Le texte annonce 70 % environ, la mesure en donne 69",
 		"sous-estime le risque de séquence",
 	} {
 		if !strings.Contains(svg, want) {
