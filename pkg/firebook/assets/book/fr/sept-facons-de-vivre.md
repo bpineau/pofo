@@ -103,7 +103,7 @@ Sept vies dans la décennie perdue. Six règles sur sept ont déjà fait vivre l
 | Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 276 |
 | Flex −10 % | 21,9 | 4 % | 21,6 | 23 | 392 |
 | Guardrails (GK) | 19,2 | 12 % | 17,5 | 23 | 529 |
-| Guardrails par risque | 19,7 | 24 % | 15,7 | 21 | 593 |
+| Guardrails par risque | 19,5 | 25 % | 15,7 | 21 | 602 |
 | % borné | 19,5 | 10 % | 17,0 | 25 | 513 |
 | Amortissement (ABW) | 23,8 | 12 % | 18,2 | 16 | 317 |
 | % du portefeuille (VPW) | 19,2 | 12 % | 14,8 | 25 | 570 |

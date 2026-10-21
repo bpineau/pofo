@@ -1,5 +1,5 @@
 # Seven ways to live on one portfolio
-<!-- source: sept-facons-de-vivre @ 17641f10d1d5 -->
+<!-- source: sept-facons-de-vivre @ e95b1f4df977 -->
 
 A withdrawal rule has a name, not a face. Everyone knows that Bengen pays a fixed amount, that VPW pays a percentage, that guardrails cut when the current rate runs away. Far fewer people know what a life lived under each of those rules looks like. How much you get in year one, how much in year ten, whether the cut lands all at once or stretches over fifteen years, and what is left in the account the day you stop counting.
 
@@ -104,7 +104,7 @@ Seven lives inside the lost decade. Six rules out of seven have already had the 
 | Fixed (inflation-adjusted) | 24.0 | 0% | 24.0 | 0 | 276 |
 | Flex −10% | 21.9 | 4% | 21.6 | 23 | 392 |
 | Guardrails (GK) | 19.2 | 12% | 17.5 | 23 | 529 |
-| Risk-based guardrails | 19.7 | 24% | 15.7 | 21 | 593 |
+| Risk-based guardrails | 19.5 | 25% | 15.7 | 21 | 602 |
 | Bounded % | 19.5 | 10% | 17.0 | 25 | 513 |
 | Amortization (ABW) | 23.8 | 12% | 18.2 | 16 | 317 |
 | % of portfolio (VPW) | 19.2 | 12% | 14.8 | 25 | 570 |
