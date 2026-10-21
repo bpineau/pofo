@@ -135,7 +135,9 @@ func VsBenchmark(dates []time.Time, values []float64, benchDates []time.Time, be
 	ppy := p.cadence()
 	r.Beta = cov / varb
 	r.Alpha = (mp - r.Beta*mb) * ppy
-	if te := math.Sqrt(varActive/float64(len(rp))) * math.Sqrt(ppy); te > 0 {
+	// The tracking error is the sample one (n - 1), TrackingError's and
+	// Track's, so the ratio's denominator is the figure printed beside it.
+	if te := math.Sqrt(varActive/float64(len(rp)-1)) * math.Sqrt(ppy); te > 0 {
 		r.InfoRatio = meanActive * ppy / te
 	}
 	capture := func(p, b float64, n int) float64 {

@@ -106,3 +106,28 @@ func TestVsBenchmarkLeveredClone(t *testing.T) {
 		t.Errorf("down capture = %v, want ≈2", rel.DownCapture)
 	}
 }
+
+// TestInfoRatioOnTheSampleTrackingError: VsBenchmark's information ratio is
+// the annualized mean active return over TrackingError, the sample (n - 1)
+// figure Track reports, not over a population deviation of its own.
+func TestInfoRatioOnTheSampleTrackingError(t *testing.T) {
+	var dates []time.Time
+	var own, bench []float64
+	o, b := 100.0, 100.0
+	for m := range 36 {
+		dates = append(dates, time.Date(2020, time.Month(m+2), 0, 0, 0, 0, 0, time.UTC))
+		own, bench = append(own, o), append(bench, b)
+		x := 0.03 * math.Sin(float64(m)*1.3)
+		o *= 1 + x + 0.004 + 0.01*math.Cos(float64(m)*2.1)
+		b *= 1 + x
+	}
+	rel, ok := VsBenchmark(dates, own, dates, bench)
+	if !ok {
+		t.Fatal("VsBenchmark not ok")
+	}
+	ro, rb := Returns(own), Returns(bench)
+	want := (Mean(ro) - Mean(rb)) * 12 / TrackingError(ro, rb, 12)
+	if math.Abs(rel.InfoRatio-want) > 1e-12 {
+		t.Fatalf("InfoRatio = %v, want %v", rel.InfoRatio, want)
+	}
+}
