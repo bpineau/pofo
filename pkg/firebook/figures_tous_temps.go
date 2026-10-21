@@ -35,23 +35,23 @@ type tousTempsPoint struct {
 // and fails when the plate and the data disagree.
 var (
 	tousTempsFamily = []tousTempsPoint{
-		{"Browne 4 × 25", 4.44, -22.5},
-		{"All-Weather *", 5.08, -28.7},
-		{"Golden Butterfly", 5.81, -21.6},
+		{"Browne 4 × 25", 4.43, -22.5},
+		{"All-Weather *", 5.06, -28.6},
+		{"Golden Butterfly", 5.80, -21.6},
 	}
 	// tousTempsLadder runs from 100 % intermediate Treasuries to 100 %
 	// equities, by steps of 10 points of equities.
 	tousTempsLadder = []tousTempsPoint{
-		{"0/100", 2.73, -42.4},
-		{"10/90", 3.29, -40.2},
-		{"20/80", 3.82, -38.6},
-		{"30/70", 4.32, -37.2},
-		{"40/60", 4.78, -36.1},
-		{"50/50", 5.21, -35.2},
-		{"60/40", 5.60, -38.0},
-		{"70/30", 5.96, -41.6},
-		{"80/20", 6.28, -45.2},
-		{"90/10", 6.56, -48.6},
+		{"0/100", 2.66, -43.4},
+		{"10/90", 3.23, -41.1},
+		{"20/80", 3.77, -39.5},
+		{"30/70", 4.27, -38.0},
+		{"40/60", 4.74, -36.7},
+		{"50/50", 5.17, -35.7},
+		{"60/40", 5.57, -38.1},
+		{"70/30", 5.94, -41.7},
+		{"80/20", 6.26, -45.2},
+		{"90/10", 6.55, -48.6},
 		{"100/0", 6.80, -54.0},
 	}
 )
@@ -122,9 +122,11 @@ func figTousTempsEchange() string {
 	// the ladder's own floor, named where the eye already sees the curve turn
 	floor := tousTempsLadder[5] // 50 % equities, 50 % intermediate Treasuries
 	fp := m(floor.cagr, floor.drawdn)
-	b.WriteString(dashLine(300, 250, fp[0]-3, fp[1]+8, figMuted, 1, "2 3"))
-	b.WriteString(sTxt(140, 262, 10.5, figSoft, "start", "600", "le moins profond de toute l'échelle, vers 50 % d'actions"))
-	b.WriteString(mTxt(140, 278, 10.5, figSoft, "start", "600", ttNum(floor.drawdn, 0)+" %"))
+	// The block sits under the −50 % rule, clear of the 100 % bonds label
+	// that hangs below the ladder's first point.
+	b.WriteString(dashLine(300, 279, fp[0]-3, fp[1]+8, figMuted, 1, "2 3"))
+	b.WriteString(sTxt(140, 291, 10.5, figSoft, "start", "600", "le moins profond de toute l'échelle, vers 50 % d'actions"))
+	b.WriteString(mTxt(140, 307, 10.5, figSoft, "start", "600", ttNum(floor.drawdn, 0)+" %"))
 
 	// the Golden Butterfly read against the ladder at its own return
 	gb := tousTempsFamily[2]

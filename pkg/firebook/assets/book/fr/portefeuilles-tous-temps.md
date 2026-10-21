@@ -36,7 +36,7 @@ Sur 1972-2024 (séries américaines, reconstruction indépendante recoupée avec
 | Golden Butterfly | 5,8 % | −22 % | ~5,5 % |
 | All-Weather | 5,1 % | −29 % (2022 compris) | ~4,5 % |
 
-La leçon robuste tient en trois constats. À rendement égal, le pire chemin est presque deux fois moins profond : le Golden Butterfly rend comme un 70/30 en ne plongeant que de 22 %, quand ce 70/30 plonge de 42 %. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −35 %. Et c'est le pire chemin qui fixe le taux de retrait.
+La leçon robuste tient en trois constats. À rendement égal, le pire chemin est presque deux fois moins profond : le Golden Butterfly rend comme un 70/30 en ne plongeant que de 22 %, quand ce 70/30 plonge de 42 %. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −36 %. Et c'est le pire chemin qui fixe le taux de retrait.
 
 Les limites sont tout aussi robustes. On travaille sur **un seul** échantillon de 50 ans, dominé par un marché obligataire haussier séculaire et un or parti de prix administrés en 1972. Sa décennie 1970 à +1 300 % nominal est un événement de libération, pas une propriété permanente de l'actif ([[or-en-retrait]]). Hors États-Unis, les répliques donnent la même **forme**, des queues courtes, avec des niveaux plus modestes. La prudence s'impose : retenir la structure, décoter les niveaux, tester sur le siècle mondial.
 

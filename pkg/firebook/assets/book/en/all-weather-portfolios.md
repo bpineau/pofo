@@ -1,5 +1,5 @@
 # All-weather portfolios: Browne, All Weather, Golden Butterfly, Dragon
-<!-- source: portefeuilles-tous-temps @ a6a0d90ea6a8 -->
+<!-- source: portefeuilles-tous-temps @ 94ea4cc407b5 -->
 
 Markets have seasons, and no asset wins in all of them ([[market-regimes]]). One conclusion follows. Instead of betting on the likely season, you hold at least one winner per season at all times and let rebalancing harvest the rotations. That simple idea produced a line of famous portfolios: Harry Browne's Permanent Portfolio (1981), Ray Dalio's All Weather (Bridgewater), the Golden Butterfly from the Portfolio Charts community, then Artemis Capital's Dragon. They are all cousins. They all rest on the same growth × inflation grid. And they all sell the same product: a **tighter** distribution of returns, with no fat left tail (the flank of the distribution where the extreme losses live, [[fat-tails]]), paid for with a lower expected return than a portfolio dominated by stocks.
 
@@ -37,7 +37,7 @@ Over 1972-2024 (US series, an independent reconstruction cross-checked against P
 | Golden Butterfly | 5.8% | −22% | ~5.5% |
 | All Weather | 5.1% | −29% (2022 included) | ~4.5% |
 
-The robust lesson comes in three findings. At equal return, the worst path is almost twice as shallow: the Golden Butterfly returns like a 70/30 while diving only 22%, where that 70/30 dives 42%. No mix of stocks and bonds, however cautious, ever did better than −35%. And it is the worst path that sets the withdrawal rate.
+The robust lesson comes in three findings. At equal return, the worst path is almost twice as shallow: the Golden Butterfly returns like a 70/30 while diving only 22%, where that 70/30 dives 42%. No mix of stocks and bonds, however cautious, ever did better than −36%. And it is the worst path that sets the withdrawal rate.
 
 The limits are just as robust. We are working on **one** 50-year sample, dominated by a secular bond bull market and by a gold price that started from administered levels in 1972. Its 1970s decade at +1,300% nominal was a liberation event, not a permanent property of the asset ([[gold-in-retirement]]). Outside the United States, the replications give the same **shape**, short tails, at more modest levels. Caution is in order: keep the structure, mark the levels down, test against the world century.
 

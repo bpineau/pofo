@@ -303,8 +303,8 @@ func TestTousTempsClaimsHold(t *testing.T) {
 		t.Errorf("at %.2f %% the ladder plunges %.1f times deeper, the plate title says nearly twice",
 			gb.cagr, ratio)
 	}
-	if got := tousTempsLadderAt(6.0); math.Abs(got-(-42.1)) > 0.2 {
-		t.Errorf("the ladder reads %.1f %% at 6 %%, expected about −42.1 %%", got)
+	if got := tousTempsLadderAt(6.0); math.Abs(got-(-42.4)) > 0.2 {
+		t.Errorf("the ladder reads %.1f %% at 6 %%, expected about −42.4 %%", got)
 	}
 }
 
@@ -324,7 +324,7 @@ func TestTousTempsFigureAgreesWithTheArticle(t *testing.T) {
 		"4,4 %", "−22 %", // Browne
 		"5,8 %",          // Golden Butterfly
 		"5,1 %", "−29 %", // All-Weather
-		"−35 %", // the ladder's own floor
+		"−36 %", // the ladder's own floor
 	} {
 		if !strings.Contains(article, want) {
 			t.Errorf("the article no longer states %q, which the plate draws", want)
