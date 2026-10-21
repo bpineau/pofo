@@ -158,3 +158,26 @@ func TestSimulateLastWithdrawalIsWhatIsLeft(t *testing.T) {
 		t.Errorf("final value = %v, want 0", got)
 	}
 }
+
+// TestSimulateAmountNeedsCapital: without a Capital the simulation runs on a
+// relative base of 100, so a contribution of 100 a month doubled the
+// "portfolio" at the first flow and fed every money figure (Values, IRR) a
+// number with no meaning. Parse already refused such a file; a Portfolio
+// built in code now gets the same error. A percentage withdrawal is
+// scale-free and still runs.
+func TestSimulateAmountNeedsCapital(t *testing.T) {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	asset := []Asset{{ID: "X", Symbol: "X", Weight: 1, Fees: -1, Series: flatSeries("X", start, 95, 50)}}
+	for _, p := range []*Portfolio{
+		{Name: "dca", Assets: asset, Contribute: Flow{Amount: 100, Period: Monthly}},
+		{Name: "rent", Assets: asset, Withdraw: Flow{Amount: 10, Period: Monthly}},
+	} {
+		if _, err := Simulate(p, 0); err == nil || !strings.Contains(err.Error(), "Capital") {
+			t.Errorf("%s: err = %v, want a missing-Capital error", p.Name, err)
+		}
+	}
+	pct := &Portfolio{Name: "pct", Assets: asset, Withdraw: Flow{Amount: 4, Percent: true, Period: Monthly}}
+	if _, err := Simulate(pct, 0); err != nil {
+		t.Errorf("percentage withdrawal without capital: %v", err)
+	}
+}

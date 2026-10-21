@@ -67,7 +67,10 @@ type Portfolio struct {
 	Cash *marketdata.Series
 
 	// Capital is the starting amount (0 or negative: the simulation runs
-	// on a relative base of 100). Required for external flows.
+	// on a relative base of 100). Required for external flows in currency
+	// units: Simulate refuses a contribution or an absolute withdrawal
+	// without it, as Parse refuses the file (a percentage withdrawal is
+	// scale-free and runs either way).
 	Capital float64
 
 	// Contribute and Withdraw are periodic external flows, applied on the
@@ -167,6 +170,14 @@ func periodKey(t time.Time, p Period) int {
 func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 	if len(p.Assets) == 0 {
 		return nil, fmt.Errorf("empty portfolio")
+	}
+	// An amount is money, and money needs a capital to be measured against:
+	// without one the simulation runs on a relative base of 100, where a
+	// 500-a-month contribution would quintuple the "portfolio" every month.
+	// Parse refuses such a file; a Portfolio built by hand is held to the
+	// same rule. A percentage withdrawal is scale-free and needs none.
+	if p.Capital <= 0 && (p.Contribute.Active() || (p.Withdraw.Active() && !p.Withdraw.Percent)) {
+		return nil, fmt.Errorf("portfolio %s: an external flow in currency units needs a starting Capital", p.Name)
 	}
 	for _, a := range p.Assets {
 		if len(a.Series.Points) == 0 {
