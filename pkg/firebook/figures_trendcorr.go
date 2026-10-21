@@ -52,7 +52,7 @@ const (
 // trendCorrPoints is the rolling correlation of the daily returns of a
 // diversified trend programme and of the S&P 500, over a trailing window of 252
 // common trading days (twelve months), one reading per month end from January
-// 2001 to August 2026 (308 windows), each dated by the month that CLOSES it.
+// 2001 to September 2026 (309 windows), each dated by the month that CLOSES it.
 //
 // Reproduce: read the bundled CTA (Simplify CTA, a diversified trend programme:
 // real net asset values of trend programmes over the whole plotted window, the
@@ -61,7 +61,7 @@ const (
 // both series quote; take simple daily returns; then at every month end from
 // January 2001, excluding the final incomplete month, compute the Pearson
 // correlation of the last 252 returns of each. figures_trendcorr_test.go
-// recomputes all 308 values from pkg/datasets and fails if the plate and the
+// recomputes all 309 values from pkg/datasets and fails if the plate and the
 // record disagree.
 //
 // The trend leg is made of REAL net asset values across the whole plotted
@@ -78,7 +78,7 @@ var trendCorrPoints = []float64{-0.25, -0.25, -0.30, -0.35, -0.39, -0.38, -0.38,
 	0.35, 0.27, 0.19, 0.12, 0.08, 0.04, -0.09, -0.20, -0.29, -0.38, -0.42, -0.42,
 	-0.45, -0.47, -0.52, -0.53, -0.52, -0.47, -0.46, -0.41, -0.35, -0.19, -0.07, -0.02,
 	0.09, 0.19, 0.46, 0.58, 0.62, 0.52, 0.49, 0.43, 0.38, 0.36, 0.36, 0.37,
-	0.34, 0.34, 0.36, 0.35, 0.34, 0.41, 0.45, 0.32, 0.23, 0.12, 0.01, -0.01,
+	0.34, 0.34, 0.36, 0.35, 0.34, 0.41, 0.45, 0.32, 0.23, 0.11, 0.01, -0.01,
 	-0.04, -0.08, -0.10, -0.11, -0.16, -0.22, -0.25, -0.30, -0.22, -0.10, -0.05, 0.02,
 	0.08, 0.12, 0.08, 0.06, 0.06, 0.19, 0.37, 0.44, 0.43, 0.46, 0.45, 0.48,
 	0.49, 0.50, 0.51, 0.52, 0.54, 0.57, 0.61, 0.59, 0.57, 0.48, 0.46, 0.44,
@@ -89,11 +89,11 @@ var trendCorrPoints = []float64{-0.25, -0.25, -0.30, -0.35, -0.39, -0.38, -0.38,
 	0.19, 0.08, 0.02, -0.01, -0.00, 0.00, 0.00, -0.03, -0.06, -0.15, -0.08, -0.06,
 	0.10, 0.23, -0.01, -0.08, -0.13, -0.16, -0.16, -0.14, -0.09, -0.07, -0.07, -0.07,
 	-0.06, -0.10, 0.04, 0.19, 0.28, 0.39, 0.42, 0.43, 0.42, 0.43, 0.50, 0.50,
-	0.45, 0.33, 0.18, 0.12, 0.08, 0.03, -0.03, -0.05, -0.13, -0.17, -0.29, -0.30,
+	0.45, 0.33, 0.18, 0.12, 0.08, 0.03, -0.02, -0.05, -0.12, -0.16, -0.28, -0.30,
 	-0.33, -0.31, -0.19, -0.17, -0.17, -0.16, -0.16, -0.16, -0.12, -0.10, -0.09, -0.08,
 	-0.07, -0.03, -0.15, -0.17, -0.17, -0.18, -0.17, -0.15, -0.16, -0.11, -0.07, -0.09,
 	-0.07, -0.07, -0.10, -0.01, -0.03, -0.01, -0.01, 0.03, 0.04, 0.03, 0.06, 0.08,
-	0.09, 0.08, 0.03, -0.12, -0.16, -0.15, -0.18, -0.24,
+	0.09, 0.08, 0.03, -0.12, -0.16, -0.15, -0.18, -0.24, -0.28,
 }
 
 // trendCorrMean is the mean of the plotted readings, the "zero" of the article.
