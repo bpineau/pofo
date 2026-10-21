@@ -2,12 +2,31 @@ package main
 
 import (
 	"math"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
+
+// A browser download handed to -src as a path is read from disk, the way
+// round the gate that refuses plain clients the live URL.
+func TestReadLocalCopy(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "gold_pm.json")
+	want := `[{"d":"1968-04-01","v":[37.7,15.68,null]}]`
+	if err := os.WriteFile(path, []byte(want), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, err := read(path)
+	if err != nil || string(got) != want {
+		t.Fatalf("read(%s) = %q, %v", path, got, err)
+	}
+	if _, err := read(filepath.Join(t.TempDir(), "missing.json")); err == nil {
+		t.Error("a missing local copy was accepted")
+	}
+}
 
 func TestParse(t *testing.T) {
 	raw := `[{"is_cms_locked":0,"d":"1968-04-01","v":[37.7,15.68,null]},

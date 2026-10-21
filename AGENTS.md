@@ -238,6 +238,12 @@ ECOICOP 2) in 2026 and left the old `prc_hicp_midx` answering at 2025-12, so
 offline snapshots (`pkg/marketdata/data/`) are now held to their own
 `# generated:` stamp by `TestSnapshotsCurrentWhenGenerated` and by
 `cmd/gen-snapshots`' `stale` check (`docs/specs/inflation-deflators.md`).
+A SOURCE can lock plain clients out, too: since 2026-10 prices.lbma.org.uk
+answers curl and Go alike with a Cloudflare challenge (HTTP 403), so
+`XAUUSD-LBMA` holds at 2026-09-25 and `make refresh` stops at
+`gold-refdata` (run the targets after it by hand). No key-less mirror of the
+daily PM fix since 1968 was found; the godoc of `cmd/gen-gold-refdata` lists
+what was tried, and its `-src` takes a browser download as a local path.
 The shared plumbing (FRED, OECD and Ken French
 readers, the history-reproduction (`SameHistory`, `CompareSteps`), cadence and
 flat-run checks, the header writer) is `cmd/internal/refgen`. A

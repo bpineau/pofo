@@ -15,7 +15,24 @@
 // the source changed), stay inside a band no gold price has left, pass three
 // eras an outside reader knows, carry no frozen run, and be fresh.
 //
-// Usage: gen-gold-refdata [-src URL] [-dir path] [-dry]
+// BLOCKED SINCE 2026-10. prices.lbma.org.uk now answers every non-browser
+// client (curl with browser headers and Go's own client alike, from two
+// networks) with a Cloudflare challenge, HTTP 403 "Attention Required", so the
+// generator stops at the download and XAUUSD-LBMA stays at its last fix,
+// 2026-09-25. A bounded search for another key-less source of the daily PM fix
+// since 1968 found none, each checked live on 2026-10-21: the same host's
+// other paths (the AM and silver files) sit behind the same gate; FRED dropped
+// GOLDPMGBD228NLBM in 2022 (HTTP 404 today); Nasdaq Data Link's LBMA/GOLD is
+// behind an Incapsula gate and a key; the Bundesbank publishes only the
+// Frankfurt fixing in marks, to 1998; the Wayback Machine's last good capture
+// of this file is 2026-09-28 and its capture of 2026-10-04 is the same 403;
+// the World Bank and IMF series are monthly. Until the LBMA lets a plain
+// client back in (or a mirror republishes the full daily record), the file is
+// refreshed from a browser download of that URL handed to -src as a local
+// path, so every check below still runs on it. Note that `make refresh` stops
+// at this step: run the targets after it by hand.
+//
+// Usage: gen-gold-refdata [-src URL|path] [-dir path] [-dry]
 package main
 
 import (
@@ -24,7 +41,9 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/bpineau/pofo/cmd/internal/refgen"
@@ -62,12 +81,12 @@ const source = "LBMA daily PM fix (USD), " + defaultSrc + " (freely published); 
 	"refuses a refresh that does not reproduce this file's history."
 
 func main() {
-	src := flag.String("src", defaultSrc, "LBMA gold PM JSON history")
+	src := flag.String("src", defaultSrc, "LBMA gold PM JSON history: a URL, or a local path to a downloaded copy")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output directory")
 	dry := flag.Bool("dry", false, "download and validate, write nothing")
 	flag.Parse()
 
-	raw, err := refgen.Get(*src)
+	raw, err := read(*src)
 	if err != nil {
 		log.Fatalf("download: %v", err)
 	}
@@ -102,6 +121,15 @@ func main() {
 		log.Fatalf("write: %v", err)
 	}
 	log.Printf("wrote %s (%d fixes)", filepath.Join(*dir, outID+".csv"), len(pts))
+}
+
+// read fetches src when it is an http(s) URL and reads it from disk otherwise:
+// a copy downloaded in a browser, while the LBMA gates plain clients out.
+func read(src string) ([]byte, error) {
+	if strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://") {
+		return refgen.Get(src)
+	}
+	return os.ReadFile(src)
 }
 
 // parse reads the LBMA history: an array of fixing days, each with its date
