@@ -644,3 +644,60 @@ func TestCashRecipesChargeTheirTER(t *testing.T) {
 		}
 	}
 }
+
+// A cat bond class's fee uplift is a wrapper difference, so it survives the
+// volatility match at its full size: the index is rescaled to the class's own
+// risk first and lifted afterwards. The other order scales the uplift with the
+// risk, and a class at 0.6 of the index's volatility would get 0.6 of its
+// fee difference back. Zero cash rates, so the hedge is the identity and every
+// month's return is the index's, rescaled.
+func TestCatBondUpliftSurvivesTheVolatilityMatch(t *testing.T) {
+	const months, live = 150, 50
+	idx := &marketdata.Series{Symbol: ilsAnchorID}
+	fund := &marketdata.Series{Symbol: "LI0049587301"}
+	ret := func(m int) float64 { return 0.004 + 0.01*math.Sin(float64(m)) }
+	v, w := 100.0, 100.0
+	for m := 0; m < months; m++ {
+		if m > 0 {
+			v *= 1 + ret(m)
+			if m > live {
+				w *= 1 + 0.6*ret(m)
+			}
+		}
+		idx.Points = append(idx.Points, marketdata.Point{Date: day(30 * m), Close: v})
+		if m >= live {
+			fund.Points = append(fund.Points, marketdata.Point{Date: day(30 * m), Close: w})
+		}
+	}
+	n := 30*months + 10
+	f := fakeFetcher{ilsAnchorID: idx, "LI0049587301": fund, "^IRX": mkLevels("^IRX", n, 0), "^ESTR": mkLevels("^ESTR", n, 0)}
+
+	donor, err := ilsHedgedLocal(f, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	m, _, err := monthly(fund, donor, time.Time{}, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	k, up := m.VolRatio, ilsUplift("LI0049587301", "ILSFUNDE")
+	if up <= 0 || math.Abs(k-0.6) > 0.01 {
+		t.Fatalf("setup: uplift %v, volatility ratio %v, want a positive uplift and about 0.6", up, k)
+	}
+	got, err := catBondBuild("LI0049587301")(f, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	at := map[time.Time]float64{}
+	for _, p := range got.Points {
+		at[p.Date] = p.Close
+	}
+	a, b := day(30*5), day(30*(live-5))
+	want := math.Pow(1+up, b.Sub(a).Hours()/24/365.25)
+	for mm := 6; mm <= live-5; mm++ {
+		want *= 1 + k*ret(mm)
+	}
+	if ratio := at[b] / at[a]; math.Abs(ratio/want-1) > 1e-9 {
+		t.Errorf("months 5-%d grow %.6f, want %.6f (the index at %.2f of its risk, lifted %.2f %%/yr)", live-5, ratio, want, k, up*100)
+	}
+}

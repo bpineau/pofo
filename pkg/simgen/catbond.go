@@ -183,8 +183,8 @@ func ilsUplift(target, donor string) float64 {
 }
 
 // catBondBuild is the Build shared by the cat bond share classes: the
-// EUR-hedged index, lifted to the target's fee load and rescaled to the
-// target's own monthly volatility, spliced behind the fund's real NAVs.
+// EUR-hedged index, rescaled to the target's own monthly volatility and then
+// lifted to the target's fee load, spliced behind the fund's real NAVs.
 //
 // The volatility match is what separates a fund file from the index benchmark.
 // These classes are not all the same risk: a "defensive" mandate holding the
@@ -200,9 +200,6 @@ func catBondBuild(target string) func(Fetcher, time.Time) (*marketdata.Series, e
 		if err != nil {
 			return nil, err
 		}
-		if up := ilsUplift(target, "ILSFUNDE"); up > 0 {
-			donor = afterAnnualFee(donor.Name+" (fee-aligned)", donor, -up)
-		}
 		fund, err := f.Fetch(target, from)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", target, err)
@@ -217,6 +214,13 @@ func catBondBuild(target string) func(Fetcher, time.Time) (*marketdata.Series, e
 		scaled, err := monthlyVolMatch(fund, donor, cash)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", target, err)
+		}
+		// The uplift is a wrapper difference, not a return of the trade, so it
+		// goes on AFTER the rescale, as DonorChain lifts its donors: lifted
+		// first, it was scaled by the volatility ratio with everything else
+		// (Solidum got 0.95 of its 0.30 %/yr, GAM 0.77 of its 0.09).
+		if up := ilsUplift(target, "ILSFUNDE"); up > 0 {
+			scaled = afterAnnualFee(scaled.Name+" (fee-aligned)", scaled, -up)
 		}
 		return scaled, nil
 	}
@@ -280,7 +284,7 @@ func gamCatBondRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B3Q8M574",
 		Name:   "GAM Star Cat Bond EUR hedged (backcast)",
-		Method: "the EUR-hedged ILS fund composite (see ILSFUNDE), lifted to the class's ongoing charge and rescaled to its own monthly volatility, spliced behind the fund's real NAVs; monthly before 2011-10, the fund's own weekly cadence after",
+		Method: "the EUR-hedged ILS fund composite (see ILSFUNDE), rescaled to the class's own monthly volatility and then lifted to its ongoing charge, spliced behind the fund's real NAVs; monthly before 2011-10, the fund's own weekly cadence after",
 		Build:  catBondBuild("IE00B3Q8M574"),
 
 		ValidateAgainst: "IE00B3Q8M574",
@@ -298,7 +302,7 @@ func plenumCatBondRecipe() Recipe {
 	return Recipe{
 		ID:     "LI0115208543",
 		Name:   "Plenum CAT Bond Defensive R EUR (backcast)",
-		Method: "the EUR-hedged ILS fund composite (see ILSFUNDE), lifted to the class's ongoing charge and rescaled to its own monthly volatility, spliced behind the fund's real NAVs; monthly before 2010-09, the fund's own weekly cadence after",
+		Method: "the EUR-hedged ILS fund composite (see ILSFUNDE), rescaled to the class's own monthly volatility and then lifted to its ongoing charge, spliced behind the fund's real NAVs; monthly before 2010-09, the fund's own weekly cadence after",
 		Build:  catBondBuild("LI0115208543"),
 
 		ValidateAgainst: "LI0115208543",
@@ -316,7 +320,7 @@ func solidumCatBondRecipe() Recipe {
 	return Recipe{
 		ID:     "LI0049587301",
 		Name:   "Solidum Cat Bond Fund R EUR hedged (backcast)",
-		Method: "the EUR-hedged ILS fund composite (see ILSFUNDE), lifted to the class's ongoing charge and rescaled to its own monthly volatility, spliced behind the fund's real NAVs; monthly before 2009-09, the fund's own semi-monthly cadence after",
+		Method: "the EUR-hedged ILS fund composite (see ILSFUNDE), rescaled to the class's own monthly volatility and then lifted to its ongoing charge, spliced behind the fund's real NAVs; monthly before 2009-09, the fund's own semi-monthly cadence after",
 		Build:  catBondBuild("LI0049587301"),
 
 		ValidateAgainst: "LI0049587301",

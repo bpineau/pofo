@@ -183,7 +183,11 @@ gap, exactly as `feeAligned` does for the trend family. The index's own load is
 the single ESTIMATE of the table (1.50 %/yr: an index of funds levies nothing
 itself, but every return in it arrives net of a constituent's charge, and those
 constituents publish no schedule). Since the retail classes here run 1.20 to
-1.75 %, the resulting uplift is small by construction.
+1.75 %, the resulting uplift is small by construction. It is applied AFTER
+the volatility match, as `DonorChain` lifts its donors: a wrapper difference is
+not a return of the trade, and until 2026-10, applied before it, it was scaled
+by the volatility ratio with the index (Solidum got 0.95 of its 0.30 %/yr, GAM
+0.77 of its 0.09 %/yr, Plenum owes none).
 
 Measured against the funds' own live windows by `pofo -verify-simdata`
 (2026-09-27, windows ending 2026-09-18 for Solidum and 2026-09-24 for the two
