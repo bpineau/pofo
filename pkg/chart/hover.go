@@ -38,6 +38,12 @@ type hoverMeta struct {
 	// Marks is the pixel anchor of each discrete mark, index for index with
 	// Rows and with every series' Ys.
 	Marks []hoverMark `json:"marks,omitempty"`
+	// Picks are the individual lines a reader may pick on a fan (its sample
+	// paths): Picks[k][i] is line k's pixel y at x index i, as drawn (clamped
+	// to the axis). Line k is the element carrying data-pick="k", so a front
+	// end can find the line nearest the pointer and highlight or open it
+	// without re-deriving the y scale. They are never tooltip rows.
+	Picks [][]float64 `json:"picks,omitempty"`
 }
 
 // hoverMark is one discrete mark's anchor in viewBox pixels: the centre of a

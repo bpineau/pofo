@@ -46,6 +46,9 @@ func (pr Params) bounded() Params {
 	pr.PensionYear = clamp(pr.PensionYear, 0, maxYears)
 	pr.SideUntilYear = clamp(pr.SideUntilYear, 0, maxYears)
 	pr.BufferStopYear = clamp(pr.BufferStopYear, 0, maxYears)
+	// The opened future's path index can only name a path of the run; past
+	// the path count, OpenFuture says so rather than draw a path nobody saw.
+	pr.PathIndex = clamp(pr.PathIndex, -1, maxPaths)
 	pr.Age = clamp(pr.Age, 0, 110)
 	// The tax book: a fraction is a fraction, and each envelope is a pocket
 	// carved out of the growth sleeve, so neither can exceed it. A GainFrac

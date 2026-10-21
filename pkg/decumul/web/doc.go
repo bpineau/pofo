@@ -72,6 +72,17 @@
 // household's own end. The same draws are replayed with mortality off to
 // carry the headline "ignoring mortality" figure beside it.
 //
+// Any thin line on a wealth fan opens as a ledger. /api/paths hands out, per
+// fan, the path index of every sample it drew (Fan.Samples, from
+// decumul.SamplePath.Index: the stable key, where a rank ties among the
+// futures that end at zero), and /api/path (OpenFuture) replays that one path
+// from its own draw (decumul.Plan.DrawPath, fanSeed) through
+// decumul.Plan.RunLedger on the very plan the fan ran (fanPlan), so the table
+// is the drawn line year by year, never a re-simulation that merely
+// resembles it. PathModel and PathIndex are the only Params fields no other
+// endpoint reads, and an index past the run's path count is answered with a
+// note, never drawn.
+//
 // The annuity block (AnnuityShare/AnnuityYear/AnnuityLoad, see annuity.go)
 // belongs to that same endpoint and to no other. An annuity is longevity
 // insurance: under the fixed horizon every other view runs, the household is

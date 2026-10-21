@@ -388,6 +388,22 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
   letter-spacing:.06em;text-transform:uppercase;text-align:right;padding:.45rem .8rem}
 .dtable-box td{border-top:1px solid var(--line);color:var(--ink);text-align:right;padding:.3rem .8rem}
 .dtable-box th:first-child,.dtable-box td:first-child{text-align:left;color:var(--ink-soft)}
+/* one opened future: the ledger of a sample path (openFuture) */
+.dtable-box.future{max-width:min(96vw,72rem)}
+.fut-h{position:sticky;left:0;padding:.8rem .9rem .6rem;border-bottom:1px solid var(--line-strong);max-width:min(92vw,68rem)}
+.fut-t{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft)}
+.fut-t b{color:var(--ink);font-weight:600}
+.fut-t .bad{color:var(--bad-ink)}
+.fut-t .good{color:var(--good-ink)}
+.fut-s{margin-top:.35rem;font-size:.74rem;line-height:1.45;color:var(--muted)}
+.fut-s .cutk{color:var(--warn-ink)}
+.fut-s .brokek{color:var(--bad-ink)}
+.future td,.future th{padding:.26rem .62rem;white-space:nowrap}
+.future tr.cut td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+.future tr.broke td{color:var(--muted)}
+.future tr.broke td:first-child{box-shadow:inset 3px 0 0 var(--bad);color:var(--bad-ink)}
+.future tr.total td{border-top:1px solid var(--line-strong);color:var(--ink-soft);font-weight:600}
+#xtip .xr.xpick{margin-top:.35rem;padding-top:.3rem;border-top:1px solid var(--line)}
 
 /* KPI cards */
 .cardcol{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;align-content:start}

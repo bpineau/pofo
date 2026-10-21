@@ -19,7 +19,12 @@
 //     ([WithdrawalAxis], [CapitalAxis]...): the spending, or the capital,
 //     that meets a target ruin. [Plan.Sweep1D] and [Plan.Sweep2D] map ruin
 //     across parameters.
-//   - [Plan.RunPath] runs the kernel on one given return path.
+//   - [Plan.RunPath] runs the kernel on one given return path, and
+//     [Plan.RunLedger] runs it keeping the accounts: one [LedgerYear] per
+//     year (market, income, what was paid and from where, sales, tax,
+//     buffer, wealth). [Plan.DrawPath] replays path i of an ensemble alone,
+//     and a fan's [SamplePath].Index names the path behind each sample, so
+//     any line on a fan opens as its own ledger.
 //   - Several questions about one plan: [Plan.Draw] the paths once, then ask
 //     each On them ([Plan.SimulateOn], [Plan.RuinProbOn], [Plan.SolveOn]).
 //     When only the ruin is read, [Plan.RuinProb] and [Plan.RuinProbOn] skip

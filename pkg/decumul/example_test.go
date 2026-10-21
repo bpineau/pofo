@@ -275,3 +275,32 @@ func ExampleEnsemble_LifeBands() {
 	// age 82: gone 10%, broke  8%, funded 60% / 18% /  5%
 	// age 92: gone 50%, broke 20%, funded 21% /  6% /  4%
 }
+
+// Opening one simulated future. A fan's samples name their path (Index), and
+// DrawPath replays that path alone from the seed the ensemble used, so the
+// ledger below is the very line the chart drew, read year by year in real
+// thousands: the market, the income, what the portfolio paid and from where,
+// the sales with the tax they cost, and the wealth at both ends.
+func ExamplePlan_RunLedger() {
+	p := decumul.Plan{
+		Capital: 1_000_000, NeedAnnual: 45_000, Years: 30,
+		Buffer:    decumul.BufferSleeve{Years: 2},
+		Cashflows: []decumul.Cashflow{{FromYear: 3, Annual: 15_000}},
+		Envelopes: []decumul.Envelope{{Name: "CTO", Amount: 910_000, GainFrac: 0.5, Tax: decumul.CTOFlatTax{Rate: 0.314}}},
+		Source:    scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 30},
+	}
+	worst := p.Simulate(2_000, 4, 7).Fan([]float64{0.5}, 8).Samples[0]
+	returns, lives := p.DrawPath(7, worst.Index)
+	path, ledger := p.RunLedger(returns, lives)
+	fmt.Printf("path %d ruined %v in year %d\n", worst.Index, path.Ruined, path.RuinYear)
+	for _, y := range ledger[:4] {
+		fmt.Printf("year %d: market %+5.1f%%, income %4.1f, paid %4.1f (buffer %4.1f), sold %4.1f, tax %3.1f, wealth %5.1f -> %5.1f\n",
+			y.Year, y.Return*100, y.Income/1e3, y.Spent/1e3, y.FromBuffer/1e3, y.Sold/1e3, y.Tax/1e3, y.Open/1e3, y.Close/1e3)
+	}
+	// Output:
+	// path 1 ruined true in year 29
+	// year 0: market -12.7%, income  0.0, paid 45.0 (buffer  0.0), sold 53.4, tax 8.4, wealth 1000.0 -> 838.1
+	// year 1: market  -9.3%, income  0.0, paid 45.0 (buffer 45.0), sold  0.0, tax 0.0, wealth 838.1 -> 723.4
+	// year 2: market  +8.9%, income  0.0, paid 45.0 (buffer 45.0), sold  0.0, tax 0.0, wealth 723.4 -> 739.0
+	// year 3: market -26.0%, income 15.0, paid 30.0 (buffer  0.0), sold 86.4, tax 11.4, wealth 739.0 -> 528.0
+}

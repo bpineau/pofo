@@ -909,7 +909,11 @@ function chartTip(svg, hd, clientX, clientY) {
   if (!["line", "fan", "stack"].includes(hd.kind)) return false;
   if (px < hd.x0 - 10 || px > hd.x1 + 10) return false;
   const xdom = hd.xmin + (Math.min(Math.max(px, hd.x0), hd.x1) - hd.x0) / (hd.x1 - hd.x0) * (hd.xmax - hd.xmin);
-  return showCrosshair(svg, hd, xdom, clientX, clientY);
+  if (!showCrosshair(svg, hd, xdom, clientX, clientY)) return false;
+  const p = pickAt(svg, hd, Math.round(xdom), py);
+  setPick(p);
+  if (p) { pickRow(p); place(xtip, clientX, clientY); }
+  return true;
 }
 
 // markTip answers a discrete chart (bars, category rows, scatter): it finds
@@ -1035,6 +1039,134 @@ function fmtHV(v) {
 function hideCrosshair() {
   xtip.style.display = "none";
   if (xline) { xline.remove(); xline = null; }
+  setPick(null);
+}
+
+// ---------------------------------------------------------------------------
+// Open one future. The thin lines of the wealth fans are individual simulated
+// retirements: a pointer within reach of one picks it (the line thickens and
+// the tooltip says so), and a click opens it year by year, replayed by the
+// server from its own draw (/api/path), so the table is the line on the chart.
+// A fan's lines are located through its hover payload's picks (pixel y per
+// year per line, the line being the element with that data-pick), and the
+// fan's own Samples, kept on the frame by renderPaths, name the path behind
+// each one.
+// ---------------------------------------------------------------------------
+const PICK_REACH = 12; // viewBox pixels: a hit area wider than the 1px line
+let pick = null;        // {svg, k}: the line the pointer is on, if any
+
+function setPick(p) {
+  if (pick && (!p || p.svg !== pick.svg || p.k !== pick.k)) {
+    const old = pick.svg.querySelector(`path[data-pick="${pick.k}"]`);
+    if (old) { old.style.strokeWidth = ""; old.style.strokeOpacity = ""; old.style.stroke = ""; }
+  }
+  pick = p;
+  if (!p) return;
+  const el = p.svg.querySelector(`path[data-pick="${p.k}"]`);
+  if (!el) return;
+  el.style.strokeWidth = "3";
+  el.style.strokeOpacity = "1";
+  // A survivor is drawn in the faint context grey; lifted, it takes the
+  // secondary ink so the picked line stands out. A failure keeps its red.
+  const s = p.fan && p.fan.samples[p.k];
+  if (s && !s.ruined) el.style.stroke = "#B4A991";
+}
+
+// pickAt finds the sample line nearest the pointer at the snapped year of a
+// fan whose frame knows its samples, within PICK_REACH; null otherwise.
+function pickAt(svg, hd, i, py) {
+  const frame = svg.closest(".fan");
+  if (!hd.picks || !frame || !frame.__fan) return null;
+  let best = -1, bestD = PICK_REACH;
+  hd.picks.forEach((ys, k) => {
+    if (!ys || i >= ys.length) return;
+    const d = Math.abs(ys[i] - py);
+    if (d <= bestD) { bestD = d; best = k; }
+  });
+  return best < 0 ? null : {svg, k: best, fan: frame.__fan};
+}
+
+// pickFromEvent locates the future line under a pointer event, or null.
+function pickFromEvent(e) {
+  const svg = e.target && e.target.closest ? e.target.closest("svg") : null;
+  const hd = svg ? hoverData(svg) : null;
+  if (!hd || !hd.picks || hd.kind !== "fan") return null;
+  const rect = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+  if (!rect.width || !vb.width) return null;
+  const px = (e.clientX - rect.left) * vb.width / rect.width;
+  const py = (e.clientY - rect.top) * vb.height / rect.height;
+  if (px < hd.x0 - 10 || px > hd.x1 + 10) return null;
+  const xdom = hd.xmin + (Math.min(Math.max(px, hd.x0), hd.x1) - hd.x0) / (hd.x1 - hd.x0) * (hd.xmax - hd.xmin);
+  return pickAt(svg, hd, Math.round(xdom), py);
+}
+
+// pickRow appends the picked future to the open tooltip: what it came to, and
+// that a click opens it.
+function pickRow(p) {
+  const s = p.fan.samples[p.k];
+  if (!s) return;
+  const row = document.createElement("div");
+  row.className = "xr xpick";
+  const key = document.createElement("i");
+  key.style.background = s.ruined ? "var(--bad)" : "var(--ink-soft)";
+  const val = document.createElement("b");
+  val.textContent = s.ruined ? "runs out" : "ends " + fmtW(s.final);
+  const name = document.createElement("span");
+  name.textContent = `future ${p.k + 1} of ${p.fan.samples.length} · click to open it year by year`;
+  row.append(key, val, name);
+  xtip.appendChild(row);
+}
+
+async function openFuture(p) {
+  const s = p.fan.samples[p.k];
+  if (!s) return;
+  let r;
+  try { r = await post("/api/path", {...body(), pathModel: p.fan.name, pathIndex: s.index}); }
+  catch (e) { return; }
+  if (r.note) return;
+  dtable.textContent = "";
+  const box = document.createElement("div");
+  box.className = "dtable-box future";
+  // Thousands with one decimal; a rounding residue never reads "-0.0".
+  const k = v => (Math.abs(v) < 50 ? 0 : v / 1000).toFixed(1);
+  const head = document.createElement("div");
+  head.className = "fut-h";
+  const last = r.years[r.years.length - 1];
+  const fate = r.ruined
+    ? `runs out in year ${r.ruinYear}, at ${r.years[0].age + r.ruinYear}`
+    : `ends with ${fmtW(last.close)}`;
+  head.innerHTML = `<div class="fut-t"><b>${esc(r.model)}</b> · future ${p.k + 1} of ${p.fan.samples.length}, ` +
+    `ranked by final wealth · <span class="${r.ruined ? "bad" : "good"}">${esc(fate)}</span></div>` +
+    `<div class="fut-s">Real euros of year 0, in thousands. Market is the growth sleeve's real return. ` +
+    `From portfolio is the net it delivered toward the ${k(r.need)}k planned (income first, then the portfolio), ` +
+    `the buffer column the untaxed part of it; Sold is what left the growth sleeve, its tax included. ` +
+    `<span class="cutk">Amber</span>: a year lived below plan. <span class="brokek">Red</span>: the money has run out.</div>`;
+  box.appendChild(head);
+  const table = document.createElement("table");
+  const cols = ["Year", "Age", "Market", "Opening", "Income", "From portfolio", "of which buffer", "Sold", "Tax", "Buffer", "Closing"];
+  const tr0 = document.createElement("tr");
+  for (const c of cols) { const th = document.createElement("th"); th.textContent = c; tr0.appendChild(th); }
+  table.appendChild(tr0);
+  const sum = {income: 0, spent: 0, fromBuffer: 0, sold: 0, tax: 0};
+  for (const y of r.years) {
+    const tr = document.createElement("tr");
+    if (y.broke) tr.className = "broke"; else if (y.cut) tr.className = "cut";
+    const cells = [String(y.year), String(y.age), (y.ret >= 0 ? "+" : "") + (y.ret * 100).toFixed(1) + "%",
+      k(y.open), k(y.income), k(y.spent), k(y.fromBuffer), k(y.sold), k(y.tax), k(y.buffer), k(y.close)];
+    for (const c of cells) { const td = document.createElement("td"); td.textContent = c; tr.appendChild(td); }
+    table.appendChild(tr);
+    for (const key of Object.keys(sum)) sum[key] += y[key];
+  }
+  const tot = document.createElement("tr");
+  tot.className = "total";
+  for (const c of ["Total", "", "", "", k(sum.income), k(sum.spent), k(sum.fromBuffer), k(sum.sold), k(sum.tax), "", ""]) {
+    const td = document.createElement("td"); td.textContent = c; tot.appendChild(td);
+  }
+  table.appendChild(tot);
+  box.appendChild(table);
+  dtable.appendChild(box);
+  dtable.hidden = false;
+  document.body.classList.add("noscroll");
 }
 
 // showCrosshair snaps the hairline to the nearest x and fills the tooltip:
@@ -1102,6 +1234,15 @@ function closeLightbox() {
 }
 document.addEventListener("click", e => {
   if (!lightbox.hidden) { closeLightbox(); return; }
+  // A future line within reach opens its ledger instead of the enlarged
+  // chart. It is located from the click itself, so a tap on a touch screen,
+  // where no pointer hovered first, opens it too.
+  const p = pickFromEvent(e);
+  if (p) {
+    hideCrosshair();
+    openFuture(p);
+    return;
+  }
   const frame = e.target.closest(".chart-frame, .fan");
   if (!frame || !frame.querySelector("svg")) return;
   lightbox.innerHTML = frame.innerHTML;
@@ -1216,7 +1357,12 @@ async function renderPaths(b, id) {
     if (!fresh(id)) return;
     document.getElementById("fansGrid").innerHTML =
       (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
-    for (const el of document.querySelectorAll("#fansGrid .fan")) enhanceChart(el);
+    // Each frame keeps its fan's model and samples, which is what lets a
+    // picked line be opened as a future (openFuture).
+    document.querySelectorAll("#fansGrid .fan").forEach((el, i) => {
+      el.__fan = {name: r.fans[i].name, samples: r.fans[i].samples || []};
+      enhanceChart(el);
+    });
   } catch (e) { /* keep the previous charts */ }
 }
 

@@ -114,6 +114,12 @@ type Params struct {
 	AnnuityShare float64 `json:"annuityShare"` // share of the growth sleeve annuitized
 	AnnuityYear  int     `json:"annuityYear"`  // plan year of the purchase
 	AnnuityLoad  float64 `json:"annuityLoad"`  // insurer's margin; 0 = the honest default
+
+	// PathModel and PathIndex name the one future /api/path opens: a wealth
+	// fan's model and the path index its Fan.Samples handed out. Every other
+	// endpoint ignores them, and the page never puts them in its URL.
+	PathModel string `json:"pathModel"`
+	PathIndex int    `json:"pathIndex"`
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).

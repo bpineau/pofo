@@ -427,7 +427,7 @@ func (p *Plan) runPath(seq scenario.Sequence, lives Lives, buf []float64) PathRe
 	if p.Monthly && p.Percent <= 0 && !p.Amortize && !p.Bounded.active() {
 		return p.runPathMonthly(seq, lives, buf)
 	}
-	return p.runPathAnnual(seq, lives, buf)
+	return p.runPathAnnual(seq, lives, buf, nil)
 }
 
 // RiskGuardrails is the risk-based guardrail (Kitces & Tharp, industrialised

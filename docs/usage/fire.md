@@ -30,7 +30,9 @@ The page reads top to bottom as one argument:
    sequence stress, a broad sample of developed-market history, a lost
    decade;
 2. today's **valuation** (the Shiller CAPE) and what it implies;
-3. the simulated **wealth fans**;
+3. the simulated **wealth fans**, whose thin lines are single futures: click
+   one to open it year by year (market return, income, what the portfolio
+   paid, the sales and their tax, the buffer, the wealth);
 4. the plan replayed through the **worst retirements on record** (USA 1929,
    1966 and 2000, Japan 1990);
 5. ruin split by the **first decade's return**, which is where sequence risk
@@ -129,7 +131,15 @@ real revaluation per year from the first payment: a zero drift is a pension
 indexed on prices, `-0.005` one that loses half a point a year, which on a
 1 M plan spending 52 000 a year with a 24 000 pension raises ruin from 21 %
 to 27 % and lowers the spending at 5 % ruin from 43 500 to 41 500 a year
-(`decumul.ExampleCashflow_drift`). Taxes bite nominal gains while the plan runs in
+(`decumul.ExampleCashflow_drift`).
+
+One simulated future can be read as a household would keep its accounts:
+`Plan.RunLedger` runs a path and returns one `LedgerYear` per year (market
+return, income, what the portfolio paid and how much of it came from the
+buffer, the gross sales and their tax, the wealth at both ends), and
+`Plan.DrawPath(seed, i)` replays path `i` of an ensemble alone. A fan's
+samples carry their path `Index`, so the worst line of a fan opens as its own
+ledger (`decumul.ExamplePlan_RunLedger`). Taxes bite nominal gains while the plan runs in
 real euros: set `Inflation` (`0.02` for 2 %/yr) and every cost basis erodes
 at that rate, so even a flat real path pays tax on its sales; the simulator's
 Taxes group carries the same control, at 2 % by default.

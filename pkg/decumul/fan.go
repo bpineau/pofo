@@ -12,6 +12,12 @@ import (
 type SamplePath struct {
 	Wealth []float64 // year-end real wealth, as PathResult.Wealth
 	Ruined bool      // the path ran out
+	// Index is the path's position in the Ensemble, which is also its draw
+	// index: Plan.DrawPath(seed, Index) replays exactly this future, and
+	// Plan.RunLedger reads it year by year. It is the stable key of a
+	// sample, where its rank among tied terminal wealths (every ruined path
+	// ends at zero) is not.
+	Index int
 }
 
 // WealthFan summarises an Ensemble's wealth paths over time: percentile bands
@@ -70,7 +76,15 @@ func sampleByTerminal(paths []PathResult, n int) []SamplePath {
 		order[i] = i
 	}
 	terminal := func(p PathResult) float64 { return p.Wealth[p.end()] }
-	sort.Slice(order, func(a, b int) bool { return terminal(paths[order[a]]) < terminal(paths[order[b]]) })
+	// Ties (every ruined path ends at zero) go to the lower path index, so
+	// the pick is a function of the paths alone, not of the sort algorithm.
+	sort.Slice(order, func(a, b int) bool {
+		ta, tb := terminal(paths[order[a]]), terminal(paths[order[b]])
+		if ta != tb {
+			return ta < tb
+		}
+		return order[a] < order[b]
+	})
 
 	if n > len(order) {
 		n = len(order)
@@ -82,7 +96,7 @@ func sampleByTerminal(paths []PathResult, n int) []SamplePath {
 			rank = k * (len(order) - 1) / (n - 1)
 		}
 		p := paths[order[rank]]
-		out[k] = SamplePath{Wealth: p.Wealth, Ruined: p.Ruined}
+		out[k] = SamplePath{Wealth: p.Wealth, Ruined: p.Ruined, Index: order[rank]}
 	}
 	return out
 }

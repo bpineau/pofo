@@ -10,6 +10,18 @@ import (
 type Fan struct {
 	Name string `json:"name"` // the planning model
 	SVG  string `json:"svg"`  // its wealth fan chart
+	// Samples name the futures drawn as thin lines, in the order of the
+	// chart's data-pick indices: what the page posts back to /api/path to
+	// open one of them year by year.
+	Samples []SampleRef `json:"samples"`
+}
+
+// SampleRef identifies one sample future of a fan: its path index in the
+// ensemble (decumul.SamplePath.Index, the stable key) and what it came to.
+type SampleRef struct {
+	Index  int     `json:"index"`  // path index, the decumul.Plan.DrawPath key
+	Ruined bool    `json:"ruined"` // it ran out
+	Final  float64 `json:"final"`  // real wealth at the horizon, euros
 }
 
 // PathsResult is the set of wealth fan charts, one per planning model: the
@@ -39,13 +51,11 @@ func Paths(pr Params, panel *scenario.Panel) PathsResult {
 		pr.NPaths = 2000
 	}
 	sources := modelSources(pr, panel)
-	base := pr.plan()
-	base.Monthly = false
-
-	var picked []namedSource
+	base := pr.plan() // once: a risk-guardrail plan solves its safe-rate table here
+	var picked []string
 	for _, name := range fanModels {
-		if ns, ok := pickModel(sources, name); ok {
-			picked = append(picked, ns)
+		if _, ok := pickModel(sources, name); ok {
+			picked = append(picked, name)
 		}
 	}
 	var res PathsResult
@@ -53,14 +63,17 @@ func Paths(pr Params, panel *scenario.Panel) PathsResult {
 		res.Fans = make([]Fan, len(picked))
 	}
 	concurrently(len(picked), func(i int) {
-		ns := picked[i]
-		p := base
-		p.Source = ns.source
-		fan := p.Simulate(pr.NPaths, simWorkers, 7).Fan(fanPercentiles, 8)
+		name := picked[i]
+		p, _ := fanPlan(base, sources, name)
+		fan := p.Simulate(pr.NPaths, simWorkers, fanSeed).Fan(fanPercentiles, 8)
 		svg := darkFan(
-			chart.Options{Title: "Simulated wealth, real € (" + ns.name + ")", Width: 640, Height: 360},
+			chart.Options{Title: "Simulated wealth, real € (" + name + ")", Width: 640, Height: 360},
 			"Year", fan.Bands, sampleLines(fan.Samples))
-		res.Fans[i] = Fan{Name: ns.name, SVG: svg}
+		refs := make([]SampleRef, len(fan.Samples))
+		for k, s := range fan.Samples {
+			refs[k] = SampleRef{Index: s.Index, Ruined: s.Ruined, Final: s.Wealth[len(s.Wealth)-1]}
+		}
+		res.Fans[i] = Fan{Name: name, SVG: svg, Samples: refs}
 	})
 	if len(res.Fans) == 0 {
 		res.Note = "no return model available"

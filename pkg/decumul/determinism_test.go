@@ -95,7 +95,7 @@ func (d *digest) ensemble(e Ensemble) *digest {
 		d.fs(band)
 	}
 	for _, s := range fan.Samples {
-		d.fs(s.Wealth).b(s.Ruined)
+		d.fs(s.Wealth).b(s.Ruined).i(s.Index)
 	}
 	for _, pt := range e.LifeStates() {
 		d.f(pt.Dead).f(pt.Broke).f(pt.Funded)
@@ -234,21 +234,21 @@ func determinismPlans() []struct {
 // every envelope arrangement and the lifetime kernel.
 func TestDeterminismPlans(t *testing.T) {
 	want := map[string]string{
-		"fixed":             "0b31e728f9c9eb16dc831fe25b06de3606dd59ccd8d53b58b0690913179393d4",
-		"ratchet":           "a03d07fe1f6777edac5ef91cff7a2380d0c206bacba80402b83115610d6f89d3",
-		"guardrails":        "e30a21710b0eb910b72221ef9bd6e45441c60002832ada58268692f7e87b609d",
-		"riskguard":         "b6c3a58d5f12960d07eb774d7b75fabde7285600ea2bdca4720240c1e48fa19b",
-		"percent":           "aa30a73b7b36856b41a912c723745e6d10a9383b453a382df3ab9696ec0c77ea",
-		"bounded":           "a6b911e006c2a646d27e36cf9bc1f7db0ac158b9ff9e1477344278be6f450f9f",
-		"amortize":          "c12e0633a4de93cc52e86b3f8d0d9ac3ad10980069b4f092b90558c5886c06c5",
-		"envelopes":         "e3ae5eee59783e2bb52c9e3545bc1c1146846dbef04cb00ed5745f2a85370dd7",
-		"monthly":           "68b9057f474a340237053dca5b71201cce95f0bcb175bbf15abd0b8ae0dd4810",
-		"monthly-riskguard": "25e89620ecfa206714a5e1e18d5bbafd6088915f07d1e0cc199676cd23839462",
-		"schedule":          "191403b4a8a7a98d822c4adf2e08bfcee0bb001643a0cd013c4c44449076ee99",
-		"lifetime-single":   "1efc210a3057f890383c24d578856e96b9d10df0a07df90d7d80b2b8244aa10e",
-		"lifetime-couple":   "2cf960500d5badfcec7183a87f626b843efd9412dff0ff568e7ca027f5a0fa02",
-		"lifetime-annuity":  "7679b5d04e35b2032d08718ceeada16f168c47ba520b46f01924e0ba8ece46c3",
-		"lifetime-amortize": "28f7b631871bcadb0618c6d5e025c2a23da4d611cf68018bcc41d03143fdfed9",
+		"fixed":             "f58ac5e3b3c959a247d1a165d86ab91e2a52b10261ff94bd5f7dc854b4c34426",
+		"ratchet":           "0f27951e9f595ac0dc3840778b8b2b4c560648816d91a5144211e36ffc385336",
+		"guardrails":        "93b31335846e45439a1d271950b6d2a7f18ee390e811dc27fe5c3efa26ffd26c",
+		"riskguard":         "acb97cfcb0ffacd70899547e7d43f590b658e65e760dd2d7f4309b9748d2f73b",
+		"percent":           "5448cda43b23f4eed132a9a0c0e4139d482666140ed49bce5ccf3d9155225035",
+		"bounded":           "2c00e8ef61dc6d87b4d4847cf261ccc76a570f15699a06da89f13d504a553787",
+		"amortize":          "27210a0dc1d5ef61ca084d5a627b66105f0e08cc823b51066e04d2e595366705",
+		"envelopes":         "d54cd6866ea27bee6badd5f7ab6fbb325596a9e28f355c91375b376a28a22823",
+		"monthly":           "48bccaf40fff4600158b62d08e0b60313a59b21394e32b2e559ddc9b40895e36",
+		"monthly-riskguard": "7922f357ecadd534f995f3504db142a3d66a38ae4aaf83b31f7eb34c65ab85f4",
+		"schedule":          "3e69680a0b55cc03af710298875df2567017750cee54a2cb196359b944324696",
+		"lifetime-single":   "31c13663bcc458274e1e51a4590f52c9bb2789c982aecfdbe1e35e6e62a847b1",
+		"lifetime-couple":   "e5c4fbd0998b74f73c459efc146cade656dff0bf66b434a190482ef677c2e28c",
+		"lifetime-annuity":  "25a9eebd5101561f4dd0deb6658ea5ef40d9eea479d50943894c1c3f2b1b7d0b",
+		"lifetime-amortize": "36bda999b1b35a153524e292ab0f88f1006aa03be87dc1c879c6eba06247ae08",
 	}
 	for _, c := range determinismPlans() {
 		d := newDigest()
@@ -306,15 +306,15 @@ func determinismSources() []struct {
 // full plan run on each of them.
 func TestDeterminismSources(t *testing.T) {
 	want := map[string]string{
-		"parametric":           "c0c178500f3b3352878cab0764c8974001a6b3337684543fb9dbb1653fe7e4ca",
-		"parametric-normal":    "09d59446a9c8e7aae5040152a0c66b6c1471d66afe3f2b422fb3949aaaa0159a",
-		"markov-regime":        "7a69e9e1224ace60649d00ed4c90c20c04cd50f399cb7df40689e1c4694a6141",
-		"lost-decade":          "f76326baaa9051af0f942a096c9a03a47538ff8bdb985caeada38bd4c802211b",
-		"glidepath":            "da17ad8a8f48b43a501be01b1c04b6e09afdf63c798d8097f8c5ef2baf9757fc",
-		"block-bootstrap":      "2df39aadb2c641bd3f6bd7cbc8f2b0882946042c6aabb6c214146dde0087f152",
-		"stationary-bootstrap": "a89d11ca213c913763c696f9485fa35a1072042e8aadf74d0ce2910a850d7d11",
-		"historical-cohorts":   "069c1f12bda419e1a0f39a2fd7b7ee495df52b8633cc6f6ad1bcae41dff21e20",
-		"pooled-bootstrap":     "a0cb67c721eba05cf3214d222e9a29e5a80a54bba8ef396499bc5b4851175ff6",
+		"parametric":           "ac5ce475001a10c6a17c599856f09fab1e7bee9040861fbd4ec106548851e51f",
+		"parametric-normal":    "69c99a8d1492c216fd7d3c30947416a8ca95d6ef0dc79b9a430dc328ccc4f6da",
+		"markov-regime":        "cd4e81e0ad04472ec90529609bc1e4dedc4eb865e61db075001da7fde3c713cf",
+		"lost-decade":          "1367d7ca168a4b29dc56634dfc8bdbadde0b241a79d02aa7307087fdbb9ef0cb",
+		"glidepath":            "b4fa490323f4ad16fdb02eab0df4909dc7be323b9355bea6074d5d682564743c",
+		"block-bootstrap":      "77652b7162cd09d1acde72aa6fa86e86a309f40f0086b2bb6aa420cc3464b13b",
+		"stationary-bootstrap": "3668128bc14b7ae2189086302e0a9dfc89e72b5c5589dc7e7135c4c8e9ee8694",
+		"historical-cohorts":   "efba101dbadc7611bb1093fab34c7911f88f19b29291a66ae80234399926fef6",
+		"pooled-bootstrap":     "42ad8a25aac7d2337b82f152403991919e937e429958347ced5279acd5b7c416",
 	}
 	for _, c := range determinismSources() {
 		d := newDigest()

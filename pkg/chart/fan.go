@@ -129,6 +129,17 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64, mar
 		}
 		hm.Series = append(hm.Series, hoverSeries{Name: names[i], Color: color, Ys: bands[i]})
 	}
+	for _, s := range samples {
+		ys := make([]float64, len(s))
+		for i, v := range s {
+			ys[i] = math.Round(yAt(clamp(v))*10) / 10
+			if math.IsNaN(ys[i]) || math.IsInf(ys[i], 0) {
+				ys = nil // a line with no position cannot be picked; JSON has no NaN
+				break
+			}
+		}
+		hm.Picks = append(hm.Picks, ys)
+	}
 	b.WriteString(hoverBlock(hm))
 
 	// Shaded bands, outermost first so inner pairs paint on top, values
@@ -143,13 +154,14 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64, mar
 	// Individual sample paths (clipped to the axis range). Ruin paths (ending
 	// at or below 0) are drawn thicker and saturated so failures stand out;
 	// the rest are faint grey context.
-	for _, s := range samples {
+	// Each carries data-pick="k", its index in the hover payload's Picks.
+	for k, s := range samples {
 		color, width, op := themeFaint, "1", "0.55"
 		if len(s) > 0 && s[len(s)-1] <= 0 {
 			color, width, op = themeBad, "1.8", "0.9"
 		}
-		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s" stroke-linejoin="round" stroke-linecap="round"/>`+"\n",
-			linePath(clampAll(s), xAt, yAt), color, width, op)
+		fmt.Fprintf(&b, `<path data-pick="%d" d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s" stroke-linejoin="round" stroke-linecap="round"/>`+"\n",
+			k, linePath(clampAll(s), xAt, yAt), color, width, op)
 	}
 
 	// Median line: the central band when the percentile count is odd, finished

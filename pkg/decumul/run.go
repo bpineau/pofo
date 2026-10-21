@@ -141,12 +141,14 @@ func seriesLen(years int) int { return 2*years + 1 }
 // is what a plan without a Lifetime always does, and it is how a caller asks
 // for the horizon kernel explicitly. Simulate draws the lifespans for you.
 func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
-	return p.runPathAnnual(returns, lives, nil)
+	return p.runPathAnnual(returns, lives, nil, nil)
 }
 
 // runPathAnnual is RunPath over an optional caller-owned arena window for the
-// path's two series (nil = allocate them here).
-func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
+// path's two series (nil = allocate them here). led, when not nil, receives
+// one LedgerYear per lived year (RunLedger); the ensemble drivers pass nil,
+// and the kernel then records nothing.
+func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float64, led *[]LedgerYear) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
@@ -200,9 +202,17 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		return take
 	}
 
+	// row is the ledger's current year, declared once, outside the loop, so
+	// the ledger-free kernel never zeroes it.
+	var row LedgerYear
 	for k := 0; k < end; k++ {
 		if yearlyTax {
 			pks.newYear()
+		}
+		// The ledger's opening reading, before anything is sold this year.
+		if led != nil {
+			row = LedgerYear{Year: k, Return: ret(returns, k), Open: res.Wealth[k]}
+			row.Sold, row.Tax = pks.total(), res.TaxPaid // turned into the year's flows below
 		}
 		if k == annuityYear {
 			p.buyAnnuity(k, pks, &res, &lf)
@@ -225,6 +235,12 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			// stop being simulated. The spending series stays at 0: what the
 			// portfolio delivers from here is nothing.
 			res.collectIncome(p, k+1, end, lf)
+			if led != nil {
+				for j := k; j < end; j++ {
+					*led = append(*led, LedgerYear{Year: j, Return: ret(returns, j),
+						Income: p.income(j, lf), Broke: true})
+				}
+			}
 			break
 		}
 		if total > peak {
@@ -291,13 +307,14 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		// Deliver the net need, each source falling back to the other: the
 		// buffer first while underwater (it sells nothing, hence no tax),
 		// otherwise growth first with a refill of the buffer from any surplus.
-		var delivered float64
+		var delivered, fromBuffer float64
 		if dd > drawTh && buffer > 0 {
-			delivered = drawBuffer(need)
-			delivered += pks.sell(need-delivered, &res.TaxPaid)
+			fromBuffer = drawBuffer(need)
+			delivered = fromBuffer + pks.sell(need-fromBuffer, &res.TaxPaid)
 		} else {
 			delivered = pks.sell(need, &res.TaxPaid)
-			delivered += drawBuffer(need - delivered)
+			fromBuffer = drawBuffer(need - delivered)
+			delivered += fromBuffer
 			if refill := target - buffer; refill > 0 && p.Buffer.refillsAt(k) {
 				if avail := pks.total(); avail > 0 { // one total() for both the test and the cap
 					if cap := avail * refillCap; refill > cap {
@@ -331,12 +348,25 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			res.ruinAt(k)
 		}
 
+		if led != nil {
+			// Everything that left the growth sleeve this year (the spending,
+			// the buffer refill, an annuity premium) was sold, and the tax is
+			// what those sales paid on top of the net they delivered.
+			row.Sold, row.Tax = row.Sold-pks.total(), res.TaxPaid-row.Tax
+			row.Income, row.Need, row.Spent, row.FromBuffer = inc, need, delivered, fromBuffer
+			row.Cut, row.Broke = delivered < uncut-1e-6, res.Ruined
+		}
+
 		pks.grow(ret(returns, k))
 		if erode != 1 {
 			pks.erode(erode)
 		}
 		buffer *= 1 + p.Buffer.RealReturn
 		res.Wealth[k+1] = pks.total() + buffer
+		if led != nil {
+			row.Buffer, row.Close = buffer, res.Wealth[k+1]
+			*led = append(*led, row)
+		}
 	}
 	res.close(lf)
 	return res

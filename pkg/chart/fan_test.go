@@ -1,8 +1,12 @@
 package chart
 
-import "strings"
-
-import "testing"
+import (
+	"encoding/json"
+	"math"
+	"regexp"
+	"strings"
+	"testing"
+)
 
 func TestFanRendersBandsAndMedian(t *testing.T) {
 	bands := [][]float64{
@@ -66,5 +70,36 @@ func TestFanYAxisCap(t *testing.T) {
 		[][]float64{mk(0.5), mk(2), mk(4)}, nil)
 	if strings.Contains(svg, "upside clipped") {
 		t.Errorf("cap marker drawn on an uncapped fan")
+	}
+}
+
+// A fan publishes its sample lines as picks: one pixel row per line, each
+// line carrying the data-pick index the payload uses, and a line with no
+// finite position is published empty rather than breaking the JSON.
+func TestFanPublishesPicks(t *testing.T) {
+	bands := [][]float64{{100, 80, 60}, {100, 100, 100}, {100, 120, 150}}
+	svg := Fan(Options{Width: 400, Height: 300}, "year", bands,
+		[][]float64{{100, 50, 0}, {100, 130, 170}, {100, math.NaN(), 90}})
+	for _, k := range []string{`data-pick="0"`, `data-pick="1"`, `data-pick="2"`} {
+		if !strings.Contains(svg, k) {
+			t.Errorf("missing %s", k)
+		}
+	}
+	m := regexp.MustCompile(`<metadata class="hover">(.*?)</metadata>`).FindStringSubmatch(svg)
+	if m == nil {
+		t.Fatal("no hover payload")
+	}
+	var hd struct {
+		Picks [][]float64 `json:"picks"`
+	}
+	if err := json.Unmarshal([]byte(m[1]), &hd); err != nil {
+		t.Fatal(err)
+	}
+	if len(hd.Picks) != 3 || len(hd.Picks[0]) != 3 || hd.Picks[2] != nil {
+		t.Fatalf("picks = %v", hd.Picks)
+	}
+	// Pixel y grows downward: the ruined line ends below the rich one.
+	if hd.Picks[0][2] <= hd.Picks[1][2] {
+		t.Errorf("the ruined line ends above the rich one: %v", hd.Picks)
 	}
 }

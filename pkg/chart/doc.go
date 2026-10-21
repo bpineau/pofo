@@ -69,7 +69,11 @@
 // answer the pointer ANYWHERE over the plot rather than only where ink was
 // painted, which is the difference between a chart that reads out at its
 // centre and one that stays mute there. Discrete marks also carry a native
-// <title> as a fallback for consumers with no hover layer of their own.
+// <title> as a fallback for consumers with no hover layer of their own. A
+// stack may name each x position for the tooltip header (rows: an age over a
+// year index), and a fan publishes its sample lines as picks, the pixel y of
+// each line at each x, the line itself carrying data-pick="k", so a front end
+// can find, highlight and open the line nearest the pointer.
 //
 // The "chrome" colors and fonts every chart draws with (grids, axes, labels,
 // backgrounds, the semantic good/warn/bad/accent hues) live in one place,
