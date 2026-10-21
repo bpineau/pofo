@@ -221,3 +221,19 @@ func TestFlowReturnsFoldsWeekendMoves(t *testing.T) {
 		t.Fatalf("returns = %v, want the Friday-to-Monday +21 %%", got)
 	}
 }
+
+// TestTWRBooksAFlowOnTheNextPoint: a flow dated on a day the series does not
+// quote (a weekend deposit on a trading-day series) shows in the next point's
+// value, so it is booked there. Matched by exact date only, it was never
+// neutralized, and a 50 deposit on a flat 100 read as +50 %.
+func TestTWRBooksAFlowOnTheNextPoint(t *testing.T) {
+	dates := []time.Time{fday(4), fday(7)} // Friday, Monday
+	values := []float64{100, 150}
+	flows := []Flow{{Date: fday(5), Amount: 50}, {Date: fday(9), Amount: 1000}} // Saturday; after the last point
+	if got, _ := TWR(dates, values, flows); math.Abs(got) > 1e-12 {
+		t.Fatalf("TWR = %v, want 0 (the Saturday deposit is not performance)", got)
+	}
+	if got, _ := FlowReturns(dates, values, flows); len(got) != 1 || math.Abs(got[0]) > 1e-12 {
+		t.Fatalf("FlowReturns = %v, want one flat Monday", got)
+	}
+}

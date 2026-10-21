@@ -116,3 +116,27 @@ func TestReportDrawdownIgnoresWithdrawals(t *testing.T) {
 		t.Fatalf("MaxDrawdown = %v, want -10 %% (the market move, not the withdrawal)", sum.MaxDrawdown.Depth)
 	}
 }
+
+// TestReportWindowBaseIsTheLastCloseAtFrom: on a trading-day series a window
+// whose From is not a session (2022-12-31 is a Saturday) is measured from the
+// last close at or before it, the Friday, so the first session of the year
+// counts. It used to start from the first point AFTER From and drop that
+// session's +10 % from the ytd row.
+func TestReportWindowBaseIsTheLastCloseAtFrom(t *testing.T) {
+	day := func(m time.Month, d int, y int) time.Time { return time.Date(y, m, d, 0, 0, 0, 0, time.UTC) }
+	dates := []time.Time{day(12, 29, 2022), day(12, 30, 2022), day(1, 3, 2023), day(1, 4, 2023)}
+	values := []float64{100, 100, 110, 110}
+	ytd := Window{Name: "ytd", From: day(12, 31, 2022), To: day(1, 4, 2023)}
+	rows, _ := Report(dates, values, nil, ReportOptions{Windows: []Window{ytd}})
+	if len(rows) != 1 || !rows[0].OK || math.Abs(rows[0].TWR-0.10) > 1e-12 || rows[0].Gain != 10 {
+		t.Fatalf("ytd = %+v, want +10 %% and a gain of 10 from the 2022-12-30 close", rows)
+	}
+	// A deposit on the Saturday shows in the Tuesday value: it is in the
+	// window, not in its base, and must be neutralized.
+	values = []float64{100, 100, 160, 160}
+	flows := []Flow{{Date: day(12, 31, 2022), Amount: 50}}
+	rows, _ = Report(dates, values, flows, ReportOptions{Windows: []Window{ytd}})
+	if want := 160.0/150 - 1; math.Abs(rows[0].TWR-want) > 1e-12 || rows[0].Gain != 10 {
+		t.Fatalf("ytd with a weekend deposit = %+v, want TWR %v and a gain of 10", rows[0], want)
+	}
+}

@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"math"
+	"sort"
 	"time"
 )
 
@@ -9,22 +10,30 @@ import (
 // measured scope. The flows of a day are netted, and the net is booked by its
 // direction: money coming in at the start of the day (it earns that day),
 // money going out at its close (what leaves is valued at the day's close, so
-// it earned the day before leaving); see FlowIndex. Dates must carry the same
-// normalization as the value series they accompany (pofo series use
-// 00:00 UTC): flows are matched to days by exact time.Time equality.
+// it earned the day before leaving); see FlowIndex. A flow is booked on the
+// first point of the value series dated at or after it: on its own day when
+// the series quotes that day, else on the next point, the first value it can
+// show in (a weekend deposit on a trading-day series lands on Monday). A flow
+// at or before the first point is part of that first value, and one after the
+// last point is outside the series. Dates must carry the same normalization
+// as the value series they accompany (pofo series use 00:00 UTC).
 type Flow struct {
-	Date   time.Time // the day the flow is booked (00:00 UTC for pofo series)
+	Date   time.Time // the day the flow is made (00:00 UTC for pofo series)
 	Amount float64   // in the value series' unit: positive in, negative out
 }
 
-// flowsByDay sums flow amounts per exact date.
-func flowsByDay(flows []Flow) map[time.Time]float64 {
+// flowsByDay sums flow amounts per point of dates (ascending), each flow on
+// the first point at or after it; flows past the last point are dropped.
+func flowsByDay(dates []time.Time, flows []Flow) map[time.Time]float64 {
 	if len(flows) == 0 {
 		return nil
 	}
 	byDay := make(map[time.Time]float64, len(flows))
 	for _, f := range flows {
-		byDay[f.Date] += f.Amount
+		k := sort.Search(len(dates), func(i int) bool { return !dates[i].Before(f.Date) })
+		if k < len(dates) {
+			byDay[dates[k]] += f.Amount
+		}
 	}
 	return byDay
 }
@@ -64,7 +73,7 @@ func flowGrowth(dates []time.Time, values []float64, flows []Flow) (index []floa
 	if len(dates) != len(values) || len(values) == 0 {
 		return nil, nil
 	}
-	byDay := flowsByDay(flows)
+	byDay := flowsByDay(dates, flows)
 	index = make([]float64, len(values))
 	live = make([]bool, len(values))
 	index[0] = 1

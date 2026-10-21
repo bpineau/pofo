@@ -2,12 +2,15 @@ package metrics
 
 import (
 	"math"
+	"sort"
 	"time"
 )
 
 // Window is one named window of a period report; To is inclusive. The
 // value at From is the comparison base of the window, so a "ytd" window
-// starts on Dec 31 of the previous year.
+// starts on Dec 31 of the previous year; on a day the series does not quote
+// (a weekend, a holiday) the base is the last value before it, the close the
+// window's first session moves from.
 type Window struct {
 	Name     string    // label, such as "ytd" or "1y"
 	From, To time.Time // the comparison base and the inclusive end
@@ -150,22 +153,23 @@ func reportRow(w Window, dates []time.Time, values []float64, flows []Flow) Repo
 	return row
 }
 
-// windowSlice keeps the points dated in [from, to] and the flows strictly
-// after from and at or before to: a flow on the base day is already part
-// of V0 and must not be neutralized a second time.
+// windowSlice keeps the points from the base, the last point at or before
+// from (the value the window is measured against: a Friday close for a ytd
+// window opening on a Saturday), to the last point at or before to, and the
+// flows strictly after the base point and at or before to: a flow on or
+// before the base point is already part of V0 and must not be neutralized a
+// second time. Report has dropped every window whose from precedes the first
+// point, so the base exists.
 func windowSlice(dates []time.Time, values []float64, flows []Flow, from, to time.Time) ([]time.Time, []float64, []Flow) {
-	var d []time.Time
-	var v []float64
-	for i, t := range dates {
-		if t.Before(from) || t.After(to) {
-			continue
-		}
-		d = append(d, t)
-		v = append(v, values[i])
+	lo := sort.Search(len(dates), func(i int) bool { return dates[i].After(from) }) - 1
+	hi := sort.Search(len(dates), func(i int) bool { return dates[i].After(to) })
+	if lo < 0 || lo >= hi {
+		return nil, nil, nil
 	}
+	d, v := dates[lo:hi], values[lo:hi]
 	var f []Flow
 	for _, fl := range flows {
-		if fl.Date.After(to) || !fl.Date.After(from) {
+		if fl.Date.After(to) || !fl.Date.After(d[0]) {
 			continue
 		}
 		f = append(f, fl)
