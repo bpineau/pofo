@@ -213,9 +213,20 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		if led != nil {
 			row = LedgerYear{Year: k, Return: ret(returns, k), Open: res.Wealth[k]}
 			row.Sold, row.Tax = pks.total(), res.TaxPaid // turned into the year's flows below
+			for _, l := range p.Lumps {
+				if l.Year == k {
+					row.Lump += l.Amount
+					// A lump coming in is money the sleeve gained without a
+					// sale: it must not read as a negative sale.
+					row.Sold += max(l.Amount, 0)
+				}
+			}
 		}
 		if k == annuityYear {
 			p.buyAnnuity(k, pks, &res, &lf)
+		}
+		if len(p.Lumps) > 0 {
+			buffer = p.applyLumps(k, pks, buffer, &res)
 		}
 		res.Annuity += lf.annuityAt(k)
 		// The year's income from outside the portfolio, read ONCE: every

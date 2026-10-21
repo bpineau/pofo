@@ -68,7 +68,7 @@ func Paths(pr Params, panel *scenario.Panel) PathsResult {
 		fan := p.Simulate(pr.NPaths, simWorkers, fanSeed).Fan(fanPercentiles, 8)
 		svg := darkFan(
 			chart.Options{Title: "Simulated wealth, real € (" + name + ")", Width: 640, Height: 360},
-			"Year", fan.Bands, sampleLines(fan.Samples))
+			"Year", fan.Bands, sampleLines(fan.Samples), pr.lumpMarkers(pr.Years)...)
 		refs := make([]SampleRef, len(fan.Samples))
 		for k, s := range fan.Samples {
 			refs[k] = SampleRef{Index: s.Index, Ruined: s.Ruined, Final: s.Wealth[len(s.Wealth)-1]}

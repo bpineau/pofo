@@ -88,6 +88,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 		if k == annuityYear {
 			p.buyAnnuity(k, pks, &res, &lf)
 		}
+		if len(p.Lumps) > 0 {
+			buffer = p.applyLumps(k, pks, buffer, &res)
+		}
 		res.Annuity += lf.annuityAt(k)
 		// The year's outside income, read once for the year and netted off
 		// every month's budget below (the monthly kernel would otherwise

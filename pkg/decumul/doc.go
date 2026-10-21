@@ -8,7 +8,8 @@
 //
 //   - A [Plan] is the question: Capital, NeedAnnual (real spending per
 //     year), Years, a return [scenario.Source], optional Tax ([CTOFlatTax],
-//     [AVTax]), Cashflows (pensions), a Buffer, and optional spending rules
+//     [AVTax]), Cashflows (pensions, rents, dated expenses), Lumps (one-off
+//     capital in or out, see [Lump]), a Buffer, and optional spending rules
 //     (Flex, Guard, RiskGuard, Percent, Bounded, Amortize: see "Spending
 //     rules" below for which one wins).
 //   - [Plan.Simulate] draws the paths into an [Ensemble];

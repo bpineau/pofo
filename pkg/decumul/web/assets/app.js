@@ -39,6 +39,7 @@ const GROUPS = [
       "Temporary net real income (rental, activity…) subtracted from the need while it lasts. Income covering the early years is the best sequence-risk insurance there is."),
     r("sideUntilYear", "Side income until year", 0, 40, 1, 0, "int",
       "The side income runs from year 0 up to (excluding) this year."),
+    {kind: "flows", key: "flows"},
   ]},
   {title: "Spending policy", col: 2, items: [
     r("flexCut", "Cut in downturns (0 = fixed rule)", 0, 0.40, 0.05, 0, "pct",
@@ -205,7 +206,114 @@ function buildFold(name) {
   return d;
 }
 
+// ---------------------------------------------------------------------------
+// Dated flows: the long form of the two income sliders, which stay the simple
+// path. A short list (MAXFLOWS rows, the server's own cap) of one-off capital
+// events (an inheritance in, a purchase out) and yearly incomes or expenses
+// over a span of years, each with its own drift against prices. It lives in
+// state.flows, posts as "flows" and rides in the URL as repeated f= entries
+// (kind,amount,from,to,drift,label; the label last, so it may hold commas).
+// ---------------------------------------------------------------------------
+const MAXFLOWS = 12;
+const FLOWHELP = "Events the two sliders above cannot say, in today's euros, positive coming in and negative going out. " +
+  "Once: capital that arrives at the start of that year (an inheritance, the sale of a house) and is invested, " +
+  "or that leaves (a purchase, a gift) and is sold out of the portfolio, taxed like any sale; it moves the wealth, never the spending. " +
+  "Each year: an income or an expense from its first year up to, not including, the last (0 runs to the horizon), " +
+  "drifting against prices by the % given. At most " + MAXFLOWS + " rows.";
+state.flows = [];
+let flowsEl = null;
+
+function flowClamp(f) {
+  const lim = f.once ? 10e6 : 1e6;
+  const int = (v, lo, hi) => Math.min(Math.max(Math.round(Number(v) || 0), lo), hi);
+  return {
+    label: String(f.label || "").slice(0, 40), once: !!f.once,
+    amount: Math.min(Math.max(Number(f.amount) || 0, -lim), lim),
+    from: int(f.from, 0, 100), to: f.once ? 0 : int(f.to, 0, 100),
+    drift: f.once ? 0 : Math.min(Math.max(Number(f.drift) || 0, -0.05), 0.05),
+  };
+}
+const encodeFlow = f => [f.once ? "o" : "y", f.amount, f.from, f.to, f.drift, f.label].join(",");
+function decodeFlow(s) {
+  const p = s.split(",");
+  if (p.length < 5) return null;
+  return flowClamp({once: p[0] === "o", amount: p[1], from: p[2], to: p[3], drift: p[4], label: p.slice(5).join(",")});
+}
+
+function buildFlows() {
+  const d = document.createElement("details");
+  d.className = "pickfold flows";
+  d.innerHTML = `<summary>dated flows<span class="fcount"></span><span class="chev">▾</span></summary>` +
+    `<div class="pickfold-body"><p class="fhelp"></p><div class="flist"></div>` +
+    `<button type="button" class="pickload fadd">+ add a flow</button></div>`;
+  d.querySelector(".fhelp").textContent = FLOWHELP;
+  d.querySelector(".fadd").addEventListener("click", () => {
+    if (state.flows.length >= MAXFLOWS) return;
+    state.flows.push({label: "", once: true, amount: 100000, from: 10, to: 0, drift: 0});
+    renderFlows();
+    schedule();
+  });
+  flowsEl = d;
+  return d;
+}
+
+// renderFlows redraws the list from state.flows. Values are set through the
+// DOM (never interpolated), since a label comes from a shared URL.
+function renderFlows() {
+  if (!flowsEl) return;
+  const list = flowsEl.querySelector(".flist");
+  list.textContent = "";
+  state.flows.forEach((f, i) => {
+    const row = document.createElement("div");
+    row.className = "frow" + (f.once ? " once" : "");
+    row.innerHTML =
+      `<div class="fline"><input type="text" class="flabel" maxlength="40" placeholder="label: inheritance, studies…">` +
+      `<button type="button" class="fdel" aria-label="Remove this flow">×</button></div>` +
+      `<div class="fline"><select class="fkind"><option value="o">once</option><option value="y">each year</option></select>` +
+      `<input type="number" class="famt" step="1000"><span class="funit">€</span></div>` +
+      `<div class="fline"><label>year <input type="number" class="ffrom" min="0" max="100"></label>` +
+      `<label class="fy">to <input type="number" class="fto" min="0" max="100"></label>` +
+      `<label class="fy">drift <input type="number" class="fdrift" step="0.1" min="-5" max="5">%</label></div>` +
+      `<div class="fage"></div>`;
+    const q = s => row.querySelector(s);
+    q(".flabel").value = f.label;
+    q(".fkind").value = f.once ? "o" : "y";
+    q(".famt").value = f.amount;
+    q(".ffrom").value = f.from;
+    q(".fto").value = f.to;
+    q(".fdrift").value = +(f.drift * 100).toFixed(2);
+    const update = () => {
+      state.flows[i] = flowClamp({
+        label: q(".flabel").value, once: q(".fkind").value === "o", amount: q(".famt").value,
+        from: q(".ffrom").value, to: q(".fto").value, drift: (Number(q(".fdrift").value) || 0) / 100,
+      });
+      row.classList.toggle("once", state.flows[i].once);
+      flowAge(row, state.flows[i]);
+      schedule();
+    };
+    for (const el of row.querySelectorAll("input,select")) el.addEventListener("change", update);
+    q(".fdel").addEventListener("click", () => { state.flows.splice(i, 1); renderFlows(); schedule(); });
+    flowAge(row, f);
+    list.appendChild(row);
+  });
+  flowsEl.querySelector(".fcount").textContent = state.flows.length ? ` (${state.flows.length})` : "";
+  flowsEl.querySelector(".fadd").disabled = state.flows.length >= MAXFLOWS;
+}
+
+// flowAge writes when a row happens in the household's own terms.
+function flowAge(row, f) {
+  const a = y => Math.round(state.age + y);
+  const el = row.querySelector(".fage");
+  if (!el) return;
+  el.textContent = f.once ? `at ${a(f.from)}` : `from ${a(f.from)} ` + (f.to > f.from ? `to ${a(f.to - 1)}` : `to the horizon`);
+}
+function refreshFlowAges() {
+  if (!flowsEl) return;
+  flowsEl.querySelectorAll(".frow").forEach((row, i) => state.flows[i] && flowAge(row, state.flows[i]));
+}
+
 function buildControl(it, ruler) {
+  if (it.kind === "flows") return buildFlows();
   if (it.kind === "check") {
     state[it.key] = false;
     const d = document.createElement("label");
@@ -271,7 +379,7 @@ function refreshVal(k) {
   el.textContent = text;
   if (k === "pensionYear" || k === "years") refreshVal("pensionDrift");
 }
-function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); refreshVal("annuityYear"); }
+function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); refreshVal("annuityYear"); refreshFlowAges(); }
 
 function setSliderVal(k, v) {
   state[k] = v;
@@ -432,6 +540,11 @@ applySharedSliders();  // ...then a shared #hash overrides everything it names
 for (const k of CHECKKEYS) {
   if (shared.get(k) === "1") { state[k] = true; checkEls[k].checked = true; }
 }
+// A shared link's dated flows, read back through the same clamp the rail
+// applies, and shown open so the reader sees the events behind the figures.
+state.flows = shared.getAll("f").map(decodeFlow).filter(Boolean).slice(0, MAXFLOWS);
+renderFlows();
+if (state.flows.length && flowsEl) flowsEl.open = true;
 if (state.conservative) applyReturns(PRIOR);
 capEnvelopes(); // a cookie or a shared link may over-fill the tax book
 syncPolicy();
@@ -441,6 +554,7 @@ function syncURL() {
   for (const k of Object.keys(UNIT)) p.set(k, state[k]);
   if (state.central) p.set("central", state.central);
   for (const k of CHECKKEYS) if (state[k]) p.set(k, "1");
+  for (const f of state.flows) p.append("f", encodeFlow(f));
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
@@ -1138,12 +1252,13 @@ async function openFuture(p) {
   head.innerHTML = `<div class="fut-t"><b>${esc(r.model)}</b> · future ${p.k + 1} of ${p.fan.samples.length}, ` +
     `ranked by final wealth · <span class="${r.ruined ? "bad" : "good"}">${esc(fate)}</span></div>` +
     `<div class="fut-s">Real euros of year 0, in thousands. Market is the growth sleeve's real return. ` +
+    `Income is the pension and the dated flows, an expense counting negative; One-off is a lump in or out. ` +
     `From portfolio is the net it delivered toward the ${k(r.need)}k planned (income first, then the portfolio), ` +
     `the buffer column the untaxed part of it; Sold is what left the growth sleeve, its tax included. ` +
     `<span class="cutk">Amber</span>: a year lived below plan. <span class="brokek">Red</span>: the money has run out.</div>`;
   box.appendChild(head);
   const table = document.createElement("table");
-  const cols = ["Year", "Age", "Market", "Opening", "Income", "From portfolio", "of which buffer", "Sold", "Tax", "Buffer", "Closing"];
+  const cols = ["Year", "Age", "Market", "Opening", "One-off", "Income", "From portfolio", "of which buffer", "Sold", "Tax", "Buffer", "Closing"];
   const tr0 = document.createElement("tr");
   for (const c of cols) { const th = document.createElement("th"); th.textContent = c; tr0.appendChild(th); }
   table.appendChild(tr0);
@@ -1152,14 +1267,14 @@ async function openFuture(p) {
     const tr = document.createElement("tr");
     if (y.broke) tr.className = "broke"; else if (y.cut) tr.className = "cut";
     const cells = [String(y.year), String(y.age), (y.ret >= 0 ? "+" : "") + (y.ret * 100).toFixed(1) + "%",
-      k(y.open), k(y.income), k(y.spent), k(y.fromBuffer), k(y.sold), k(y.tax), k(y.buffer), k(y.close)];
+      k(y.open), y.lump ? (y.lump > 0 ? "+" : "") + k(y.lump) : "", k(y.income), k(y.spent), k(y.fromBuffer), k(y.sold), k(y.tax), k(y.buffer), k(y.close)];
     for (const c of cells) { const td = document.createElement("td"); td.textContent = c; tr.appendChild(td); }
     table.appendChild(tr);
     for (const key of Object.keys(sum)) sum[key] += y[key];
   }
   const tot = document.createElement("tr");
   tot.className = "total";
-  for (const c of ["Total", "", "", "", k(sum.income), k(sum.spent), k(sum.fromBuffer), k(sum.sold), k(sum.tax), "", ""]) {
+  for (const c of ["Total", "", "", "", "", k(sum.income), k(sum.spent), k(sum.fromBuffer), k(sum.sold), k(sum.tax), "", ""]) {
     const td = document.createElement("td"); td.textContent = c; tot.appendChild(td);
   }
   table.appendChild(tot);

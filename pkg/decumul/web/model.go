@@ -115,6 +115,11 @@ type Params struct {
 	AnnuityYear  int     `json:"annuityYear"`  // plan year of the purchase
 	AnnuityLoad  float64 `json:"annuityLoad"`  // insurer's margin; 0 = the honest default
 
+	// Flows is the dated-flows list (flows.go): yearly incomes or expenses
+	// and one-off capital events beyond the two income sliders, which stay
+	// the simple path. At most maxFlows rows.
+	Flows []Flow `json:"flows"`
+
 	// PathModel and PathIndex name the one future /api/path opens: a wealth
 	// fan's model and the path index its Fan.Samples handed out. Every other
 	// endpoint ignores them, and the page never puts them in its URL.
@@ -164,7 +169,8 @@ func (pr Params) plan() decumul.Plan {
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
 		Monthly:    pr.Monthly && pr.monthlyCapable(), // regime/pooled sources are annual
 	}
-	p.Cashflows = append(pr.pension(), pr.side()...)
+	p.Cashflows = append(append(pr.pension(), pr.side()...), pr.flowCashflows()...)
+	p.Lumps = pr.lumps()
 	// Guardrails band centred on the initial withdrawal rate (±20%), with an
 	// optional incompressible floor bounding the cut spiral.
 	if pr.Guardrails && pr.Capital > 0 {

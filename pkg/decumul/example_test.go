@@ -304,3 +304,27 @@ func ExamplePlan_RunLedger() {
 	// year 2: market  +8.9%, income  0.0, paid 45.0 (buffer 45.0), sold  0.0, tax 0.0, wealth 723.4 -> 739.0
 	// year 3: market -26.0%, income 15.0, paid 30.0 (buffer  0.0), sold 86.4, tax 11.4, wealth 739.0 -> 528.0
 }
+
+// An inheritance expected in year 12, and a house bought in year 5. A lump is
+// capital: coming in, it is invested and compounds; going out, it is a sale
+// that pays its tax. Entered as a one-year income instead, the same
+// inheritance would only cover that year's spending and the rest would be
+// lost, which is why the two are different types.
+func ExampleLump() {
+	base := decumul.Plan{
+		Capital: 800_000, NeedAnnual: 26_000, Years: 40,
+		Tax:    decumul.CTOFlatTax{Rate: 0.314},
+		Source: scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 40},
+	}
+	ruin := func(p decumul.Plan) float64 { return p.RuinProb(20_000, 4, 7) * 100 }
+	inherit := base
+	inherit.Lumps = []decumul.Lump{{Year: 12, Amount: 250_000}}
+	asIncome := base
+	asIncome.Cashflows = []decumul.Cashflow{{FromYear: 12, ToYear: 13, Annual: 250_000}}
+	house := inherit
+	house.Lumps = append(house.Lumps, decumul.Lump{Year: 5, Amount: -150_000})
+	fmt.Printf("no event %.0f%%, inheritance %.0f%%, the same as one year of income %.0f%%, inheritance and a house %.0f%%\n",
+		ruin(base), ruin(inherit), ruin(asIncome), ruin(house))
+	// Output:
+	// no event 36%, inheritance 12%, the same as one year of income 33%, inheritance and a house 26%
+}

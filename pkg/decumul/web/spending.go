@@ -67,12 +67,16 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 	return SpendingResult{SVG: svg, Cards: cards}
 }
 
-// cashflowAt is the deterministic income (pension, side income) active in a
-// year, mirroring the plan's cashflow construction. An annuity is not among
-// them: it is priced and paid in the mortality kernel alone (see annuity.go),
-// so this fixed-horizon fan neither spends its premium nor collects its income.
+// cashflowAt is the deterministic income (pension, side income, the dated
+// list's yearly rows, an expense counting negative) active in a year,
+// mirroring the plan's cashflow construction. Added to what the portfolio
+// delivered, it gives the standard of living: a dated expense is paid by the
+// portfolio and taken back out here, since it funds no lifestyle. An annuity
+// is not among them: it is priced and paid in the mortality kernel alone (see
+// annuity.go), so this fixed-horizon fan neither spends its premium nor
+// collects its income.
 func (pr Params) cashflowAt(year int) float64 {
-	return flowAt(pr.pension(), year) + flowAt(pr.side(), year)
+	return flowAt(pr.pension(), year) + flowAt(pr.side(), year) + flowAt(pr.flowCashflows(), year)
 }
 
 // firstCutText formats the median first-cut year, or a dash when no path cut.

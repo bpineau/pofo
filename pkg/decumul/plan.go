@@ -279,15 +279,18 @@ func (t CTOFlatTax) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid 
 
 // Plan is a full decumulation scenario.
 type Plan struct {
-	Capital    float64         // starting wealth, any currency unit (the buffer comes out of it)
-	NeedAnnual float64         // real net spending per year, same unit, before Cashflows
-	Cashflows  []Cashflow      // real incomes (pensions, rents) that reduce what is sold
-	Years      int             // horizon in years; Source must draw at least as many periods
-	Buffer     BufferSleeve    // optional low-volatility pocket drawn in drawdowns
-	Flex       FlexRule        // optional drawdown spending cut
-	Tax        Tax             // taxes a sale from the growth sleeve; nil = untaxed
-	Source     scenario.Source // draws the growth sleeve's REAL yearly returns
-	Guard      Guardrails      // optional Guyton-Klinger spending rule (replaces Flex when active)
+	Capital    float64    // starting wealth, any currency unit (the buffer comes out of it)
+	NeedAnnual float64    // real net spending per year, same unit, before Cashflows
+	Cashflows  []Cashflow // real incomes (pensions, rents) that reduce what is sold
+	// Lumps are one-off capital events (an inheritance in, a purchase out),
+	// applied at the start of their year: see Lump. nil = none.
+	Lumps  []Lump
+	Years  int             // horizon in years; Source must draw at least as many periods
+	Buffer BufferSleeve    // optional low-volatility pocket drawn in drawdowns
+	Flex   FlexRule        // optional drawdown spending cut
+	Tax    Tax             // taxes a sale from the growth sleeve; nil = untaxed
+	Source scenario.Source // draws the growth sleeve's REAL yearly returns
+	Guard  Guardrails      // optional Guyton-Klinger spending rule (replaces Flex when active)
 	// RiskGuard is the risk-based guardrail (Kitces/Morningstar). It is the
 	// same architecture as Guard with a horizon-aware sensor, and it takes
 	// precedence over Guard, Flex and Ratchet when active.
@@ -379,10 +382,10 @@ type yearTables struct {
 }
 
 // withTables returns the plan with its yearTables filled when its paths share
-// them (no Lifetime, some Cashflows), unchanged otherwise.
+// them (no Lifetime, some Cashflows or Lumps), unchanged otherwise.
 func (p Plan) withTables() Plan {
 	p.tables = nil // recomputed from the fields as they are now
-	if p.Lifetime != nil || len(p.Cashflows) == 0 {
+	if p.Lifetime != nil || (len(p.Cashflows) == 0 && len(p.Lumps) == 0) {
 		return p
 	}
 	lf := p.life(Lives{})
@@ -596,7 +599,7 @@ func (p *Plan) cashflowPV(from int, r float64, l life) float64 {
 	if t := p.tables; t != nil && t.pv != nil && r == t.pvRate && from < len(t.pv) {
 		return t.pv[from]
 	}
-	if len(p.Cashflows) == 0 && l.annuity == 0 {
+	if len(p.Cashflows) == 0 && len(p.Lumps) == 0 && l.annuity == 0 {
 		return 0 // no income to discount; skip the whole horizon scan
 	}
 	// The discount factor is (1+r)^-(j-from): it starts at 1 for j==from and is
@@ -610,7 +613,15 @@ func (p *Plan) cashflowPV(from int, r float64, l life) float64 {
 		for _, c := range p.Cashflows {
 			cf += c.AmountAt(j)
 		}
-		if cf > 0 {
+		// A lump of year from is already in the portfolio when that year's
+		// budget is set (the kernels apply it first): only later ones are
+		// still to come.
+		if j > from && len(p.Lumps) > 0 {
+			cf += p.lumpAt(j)
+		}
+		// A dated expense (a negative flow or lump) lowers the forecast as
+		// surely as a pension raises it.
+		if cf != 0 {
 			pv += cf * disc
 		}
 		disc *= inv

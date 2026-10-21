@@ -41,9 +41,19 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	years := pr.Years
 	pension := make([]float64, years)
 	side := make([]float64, years)
+	dated := make([]float64, years)
+	anyDated := false
 	for k := range years {
 		pension[k] = flowAt(pr.pension(), k) / 1000
 		side[k] = flowAt(pr.side(), k) / 1000
+		// Only the dated INCOME is a funding layer: a dated expense is paid
+		// by the portfolio and already sits in its withdrawals.
+		for _, c := range pr.flowCashflows() {
+			if v := c.AmountAt(k); v > 0 {
+				dated[k] += v / 1000
+				anyDated = true
+			}
+		}
 	}
 	pf := make([]float64, years)
 	for k := range years {
@@ -60,6 +70,9 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	}
 	if pr.SideAnnual > 0 {
 		series = append(series, chart.AreaSeries{Name: "Side income", Values: side, Color: chart.PaletteColor(3)})
+	}
+	if anyDated {
+		series = append(series, chart.AreaSeries{Name: "Dated income", Values: dated, Color: chart.PaletteColor(5)})
 	}
 	series = append(series, chart.AreaSeries{Name: "Portfolio withdrawals", Values: pf, Color: chart.PaletteColor(0)})
 

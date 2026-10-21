@@ -19,6 +19,7 @@ type FutureYear struct {
 	Age        int     `json:"age"`        // the first member's age that year
 	Return     float64 `json:"ret"`        // the growth sleeve's real return
 	Open       float64 `json:"open"`       // wealth at the start of the year, buffer included
+	Lump       float64 `json:"lump"`       // the year's one-off capital event, signed
 	Income     float64 `json:"income"`     // pension and side income received
 	Spent      float64 `json:"spent"`      // net delivered by the portfolio
 	FromBuffer float64 `json:"fromBuffer"` // the part of Spent drawn from the cash buffer
@@ -87,7 +88,7 @@ func OpenFuture(pr Params, panel *scenario.Panel) FutureResult {
 	res.Years = make([]FutureYear, len(led))
 	for i, y := range led {
 		res.Years[i] = FutureYear{
-			Year: y.Year, Age: age + y.Year, Return: y.Return, Open: y.Open, Income: y.Income,
+			Year: y.Year, Age: age + y.Year, Return: y.Return, Open: y.Open, Lump: y.Lump, Income: y.Income,
 			Spent: y.Spent, FromBuffer: y.FromBuffer, Sold: y.Sold, Tax: y.Tax,
 			Buffer: y.Buffer, Close: y.Close, Cut: y.Cut, Broke: y.Broke,
 		}

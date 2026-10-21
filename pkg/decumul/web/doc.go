@@ -42,6 +42,19 @@
 // amortization rule and the risk-based guardrail fold into wealth, the
 // funding layers and the spending fan alike.
 //
+// Beyond the two income sliders, which stay the simple path, the Pension group
+// folds away a list of dated flows (Params.Flows, flows.go): yearly incomes
+// or expenses over a span of years, each with its own drift (more
+// decumul.Cashflows), and one-off capital events (decumul.Lumps: an
+// inheritance or a house sale invested, a purchase sold out of the portfolio
+// and taxed). A large inflow has to be a lump, since income above a year's
+// need is never reinvested. The list rides in the page URL as repeated
+// f=kind,amount,from,to,drift,label entries, and it is bounded like
+// everything a visitor can post: at most maxFlows rows (a longer list is
+// refused, not truncated), a yearly amount within a million euros either
+// way, a one-off within ten, the years within the horizon cap, the drift
+// within 5 %/yr, a label within 40 runes.
+//
 // The tax book is three controls in the Taxes group, over the kernel's
 // per-envelope model (decumul.Envelope). GainFrac is the share of today's
 // capital that is unrealised GAIN rather than cost basis, which is what the

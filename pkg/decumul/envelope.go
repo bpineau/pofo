@@ -252,3 +252,13 @@ func (ps pocketOps) newYear() {
 		}
 	}
 }
+
+// deposit invests a real amount into the first pocket at a cost basis equal
+// to itself: new money carries no gain on arrival.
+func (ps pocketOps) deposit(amount float64) {
+	if len(ps) == 0 {
+		return
+	}
+	ps[0].value += amount
+	ps[0].cost += amount
+}

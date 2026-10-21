@@ -21,7 +21,11 @@ purchasing power after forty years.
 It opens in your browser, and every slider recomputes the plan: capital,
 spending floor, cash-buffer years, expected real return and volatility, tail
 thickness, horizon, pension (its amount, start year and indexation against
-prices), spending rules and French taxes. The engine runs
+prices), spending rules and French taxes. Under the pension group, a "dated
+flows" list takes what two sliders cannot: an inheritance or a house sale
+(once, invested), a purchase (once, sold and taxed), children's studies over
+a few years (a yearly expense), a rent (a yearly income with its own drift);
+up to twelve rows, all carried in the page's URL. The engine runs
 in Go, in parallel; the page only draws.
 
 The page reads top to bottom as one argument:
@@ -132,6 +136,13 @@ indexed on prices, `-0.005` one that loses half a point a year, which on a
 1 M plan spending 52 000 a year with a 24 000 pension raises ruin from 21 %
 to 27 % and lowers the spending at 5 % ruin from 43 500 to 41 500 a year
 (`decumul.ExampleCashflow_drift`).
+
+Money that arrives or leaves once is a `Lump`, not a one-year `Cashflow`:
+a lump coming in is invested and compounds, a lump going out is a sale that
+pays its tax, while income above a year's need is received and never
+reinvested. On an 800 000 plan spending 26 000 a year, a 250 000
+inheritance in year 12 takes ruin from 36 % to 12 % as a lump, and only to
+33 % entered as a year of income (`decumul.ExampleLump`).
 
 One simulated future can be read as a household would keep its accounts:
 `Plan.RunLedger` runs a path and returns one `LedgerYear` per year (market

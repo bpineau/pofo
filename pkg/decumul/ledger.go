@@ -15,7 +15,8 @@ import (
 // The identities a reader can check by hand: Spent is the net the portfolio
 // delivered (PathResult.Spend), FromBuffer of it out of the cash buffer and the
 // rest out of sales; Sold is the gross that left the growth sleeve (that net
-// part of the spending, any buffer refill, any annuity premium) and Tax is
+// part of the spending, any buffer refill, any annuity premium, any lump paid
+// out; a lump coming in is not a sale and never offsets one) and Tax is
 // what those sales paid on top of the net they delivered, so Sold - Tax is
 // the net the sleeve gave up; Close is Open after the year's flows and returns
 // (PathResult.Wealth[Year+1]).
@@ -23,6 +24,9 @@ type LedgerYear struct {
 	Year   int     // plan year, 0-based
 	Return float64 // the growth sleeve's real return that year, a FRACTION
 	Open   float64 // total real wealth at the start of the year, buffer included
+	// Lump is the year's one-off capital event (Plan.Lumps), signed: in
+	// before anything else happens, out as a sale counted in Sold.
+	Lump   float64
 	Income float64 // cashflows and annuity received from outside the portfolio
 	// Need is the net amount the year's spending rule asked of the
 	// portfolio, after Income and after any cut.

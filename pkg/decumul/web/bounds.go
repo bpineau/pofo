@@ -62,6 +62,7 @@ func (pr Params) bounded() Params {
 	// different instrument, and an unbounded drift would compound into an
 	// overflow over a long horizon.
 	pr.PensionDrift = clamp(pr.PensionDrift, -0.05, 0.05)
+	pr.Flows = boundedFlows(pr.Flows)
 	g := pr.growthSleeve()
 	pr.PEACapital = clamp(pr.PEACapital, 0, g)
 	pr.AVCapital = clamp(pr.AVCapital, 0, g)
@@ -76,6 +77,9 @@ func (pr Params) bounded() Params {
 // holdings would be given a weight nobody chose), so the caller is told
 // instead. Called on the bounded params, before any slot is taken.
 func (pr Params) validate(panel *scenario.Panel) error {
+	if err := validateFlows(pr.Flows); err != nil {
+		return err
+	}
 	if g := pr.growthSleeve(); pr.PEACapital+pr.AVCapital > g+0.5 {
 		return fmt.Errorf("envelope amounts add up to more than the invested capital: "+
 			"PEA %.0f + assurance-vie %.0f > %.0f (capital %.0f minus %.0f of cash buffer)",
