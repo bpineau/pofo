@@ -713,7 +713,7 @@ var figureDict = map[string]string{
 	"moy. 19,2 · pire 17,5":   "avg 19.2 · worst 17.5",
 	"moy. 19,2 · pire 14,8":   "avg 19.2 · worst 14.8",
 	"moy. 19,5 · pire 17,0":   "avg 19.5 · worst 17.0",
-	"moy. 19,6 · pire 15,7":   "avg 19.6 · worst 15.7",
+	"moy. 19,4 · pire 15,7":   "avg 19.4 · worst 15.7",
 	"moy. 21,3 · pire 16,0":   "avg 21.3 · worst 16.0",
 	"moy. 21,9 · pire 21,6":   "avg 21.9 · worst 21.6",
 	"moy. 22,0 · pire 21,6":   "avg 22.0 · worst 21.6",
