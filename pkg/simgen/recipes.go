@@ -3039,9 +3039,12 @@ var trendFeeLoad = map[string]float64{
 // flat-fee classes and every US ETF here pay none.
 var trendPerfFee = map[string]float64{"LU1103257975": 0.0158}
 
-// feeAligned pairs each donor with the uplift that makes it carry the target's
-// fee load instead of its own: the donor's management-and-expense load minus
-// the target's, floored at zero.
+// feeAligned pairs each donor with the charges that make it carry the target's
+// fee load instead of its own: the donor's management-and-expense load, and
+// what the target owes (its own load plus its performance fee). The chain lifts
+// the donor by the first, as its volatility match levers it, less the second,
+// floored at zero (Donor.Uplift); unlevered, that is the donor's load minus
+// the target's.
 //
 // The uplift is read off published fee schedules and NEVER off an observed
 // return gap. A gap between two managers contains their skill, and this family
@@ -3069,13 +3072,10 @@ var trendPerfFee = map[string]float64{"LU1103257975": 0.0158}
 // donor: the whole point is that no segment is spliced without a documented
 // price.
 func feeAligned(target string, donors []string) []Donor {
+	owed := feeLoad(target) + trendPerfFee[target]
 	out := make([]Donor, len(donors))
 	for i, id := range donors {
-		uplift := feeLoad(id) - feeLoad(target) - trendPerfFee[target]
-		if uplift < 0 {
-			uplift = 0
-		}
-		out[i] = Donor{ID: id, Uplift: uplift}
+		out[i] = Donor{ID: id, Load: feeLoad(id), Owed: owed}
 	}
 	return out
 }
@@ -3148,15 +3148,18 @@ func dbiChain(name string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.T
 // constituents' positions at 0.85 % flat where the index arrives net of those
 // constituents' 2-and-20, and the uplift only claims back the 2, so the
 // reconstruction is expected to sit under the fund by roughly what a
-// performance fee costs. It does, by about 1.3 points a year. Closing the rest
-// would mean granting DBi's own edge to the backcast.
+// performance fee costs. It did, by about 1.3 points a year, until 2026-10,
+// when the donor's own load started being levered with the donor (it stands at
+// 1.61 times the index's risk, see Donor.Uplift): the gap is now about a
+// quarter of a point. Closing the rest would mean granting DBi's own edge to
+// the backcast.
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMF",
 		Name: "iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction",
-		Method: "the published net all-styles managed-futures composite the fund replicates, half of it projected onto the ten futures contracts the fund holds (the fund's own published process, run on the index), spliced behind it from 2000-03, volatility-matched to it and lifted +0.15%/yr for the fee load it carries; " +
-			"the raw composite for the quarter before that (+1.15%/yr), " +
-			"then real NAVs of Man AHL Diversified (1996-03, +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019",
+		Method: "the published net all-styles managed-futures composite the fund replicates, half of it projected onto the ten futures contracts the fund holds (the fund's own published process, run on the index), spliced behind it from 2000-03, volatility-matched to it (1.61x) and lifted +0.76%/yr for the fee load it carries at that leverage; " +
+			"the raw composite for the quarter before that (1.42x, +1.99%/yr), " +
+			"then real NAVs of Man AHL Diversified (1996-03, 0.79x, +1.31%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019",
 		Donors:          dbiDonors,
 		Build:           dbiChain("DBMF (donor chain)", feeAligned("DBMF", dbiDonors), mfConfig(0.115, 0.0085)),
 		ValidateAgainst: "DBMF",
@@ -3175,7 +3178,7 @@ func dbmfpaRecipe() Recipe {
 		ID:   "LU2951555585",
 		Name: "iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain",
 		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, lifted 0.10%/yr for the cheaper UCITS fee load, " +
-			"then the net all-styles composite half-projected onto the fund's own ten futures (2000-03, +0.25%/yr), the raw composite for the quarter before it (+1.25%/yr) and Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
+			"then the net all-styles composite half-projected onto the fund's own ten futures (2000-03, +0.86%/yr), the raw composite for the quarter before it (+2.09%/yr) and Man AHL Diversified (1996-03, +1.41%/yr), each uplift the donor's load at its volatility-match leverage less the class's, the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
 		Donors:          append([]string{"DBMF"}, dbiDonors...),
 		Build:           dbiChain("DBMF.PA (donor chain)", feeAligned("LU2951555585", append([]string{"DBMF"}, dbiDonors...)), mfConfig(0.115, 0.0075)),
 		ValidateAgainst: "LU2951555585",
@@ -3320,8 +3323,9 @@ const campbellB = "IE00BKYBHJ61"
 // Reliability bounds length: the file starts where its own evidence starts.
 //
 // FEES. The donor is fee-aligned on published price lists only: the composite
-// carries its constituents' estimated 2.00 %/yr, the class's ongoing charge is
-// 1.48 %/yr, so the donor is lifted by 0.52 %/yr and by nothing else. What is
+// carries its constituents' estimated 2.00 %/yr, levered 1.01 times by the
+// volatility match, the class's ongoing charge is 1.48 %/yr, so the donor is
+// lifted by 0.55 %/yr and by nothing else. What is
 // deliberately NOT modelled, because no daily NAV can carry it honestly, is the
 // rest of this class's cost stack: a 15 % incentive fee on net profits with NO
 // hurdle against a perpetual high water mark, crystallised each 31 December
@@ -3365,7 +3369,7 @@ func campbellRecipe() Recipe {
 	return Recipe{
 		ID:   campbellB,
 		Name: "U Access (IRL) Campbell Absolute Return B EUR: the net all-styles composite, hedged to EUR",
-		Method: "the published net all-styles managed-futures composite (TREND-ALLSTYLES-NET-USD, 2000-01→, where the file starts), volatility-matched to the class and lifted 0.52%/yr from its constituents' estimated 2.00%/yr load to the class's 1.48%/yr ongoing charge, " +
+		Method: "the published net all-styles managed-futures composite (TREND-ALLSTYLES-NET-USD, 2000-01→, where the file starts), volatility-matched to the class (1.01x) and lifted 0.55%/yr from its constituents' estimated 2.00%/yr load, so levered, to the class's 1.48%/yr ongoing charge, " +
 			"hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); no pure-trend donor and nothing before the index, the fund being an absolute-return book and the deeper donors being shared with the two other trend legs; real IE00BKYBHJ61 grafted from its 2020-06 inception",
 		Donors:          campbellDonors,
 		Build:           campbellBuild,
@@ -3413,7 +3417,7 @@ func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
-		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.90%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.55%/yr, Guggenheim 2007-02→ +1.09%/yr, Man AHL Diversified 1996-03→ +1.84%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (14% vol target ~ the fund's realized 14.7%) supplies the daily texture the weekly-dealing donor is projected onto; real KMLM grafted from 2020",
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.90%/yr fee load from the donor's own, levered as the volatility match levers it (Virtus AlphaSimplex 2010-08→ 1.10x, +0.69%/yr, Guggenheim 2007-02→ 1.26x, +1.61%/yr, Man AHL Diversified 1996-03→ 0.93x, +1.66%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (14% vol target ~ the fund's realized 14.7%) supplies the daily texture the weekly-dealing donor is projected onto; real KMLM grafted from 2020",
 		Donors:          kmlmDonors,
 		Build:           chainedTrend("KMLM (donor chain)", "KMLM", feeAligned("KMLM", kmlmDonors), mfConfig(0.14, 0.0090)),
 		ValidateAgainst: "KMLM",
@@ -3449,7 +3453,7 @@ func aqrmfRecipe() Recipe {
 	return Recipe{
 		ID:   "LU1103257975",
 		Name: "AQR Managed Futures UCITS: TSMOM replication",
-		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap, no fee uplift since the class's own performance fee already covers the difference) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03 +0.37%/yr), " +
+		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap, no fee uplift since the class's own performance fee already covers the difference) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03, levered 0.54x and so carrying less fee than the class owes all in: no uplift), " +
 			"the file starting at that deepest donor's own first NAV, at a 9% vol target ~ the class's realized 9.3%, real AQR grafted from 2015",
 		Donors:          aqrmfDonors,
 		Build:           chainedTrend("AQR Managed Futures (donor chain)", "LU1103257975", feeAligned("LU1103257975", aqrmfDonors), mfConfig(0.09, 0.0079)),
@@ -3815,7 +3819,9 @@ func truncateAtGap(s *marketdata.Series, maxDays int) *marketdata.Series {
 // fund tracks a published trend index better than it tracks another manager's
 // fund. The four single funds that held these two decades until 2026-08 reached
 // 0.39 monthly against CTA's live window between them; the pure-trend composite
-// reaches 0.58, and closes the level gap from -3.4 to about -3.2 points a year.
+// reaches 0.58, and closes the level gap from -3.4 to about -3.2 points a year
+// (-0.9 since 2026-10, when the index's fee load started being levered 1.63
+// times with the index, see Donor.Uplift).
 //
 // This file is the loosest fit of the family and the reason is the fund, not
 // the engine: the engine's own monthly correlation with the real quotes (0.574)
@@ -3843,7 +3849,7 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "the published net pure-trend composite, the index closest to the fund's own volatility, spliced behind it from 2000-01 and lifted +1.25%/yr to put its constituents' 2%/yr management load on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
+		Method:          "the published net pure-trend composite, the index closest to the fund's own volatility, spliced behind it from 2000-01, levered 1.63x to the fund's risk and lifted +2.50%/yr to put its constituents' 2%/yr management load, levered with it, on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, 1.14x, +2.37%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
 		Donors:          ctaDonors,
 		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", ctaDonors), mfConfig(0.16, 0.0075)),
 		ValidateAgainst: "CTA",

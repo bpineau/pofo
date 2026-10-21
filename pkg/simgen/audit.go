@@ -211,9 +211,10 @@ var auditCaveats = map[string]string{
 		"only the 2019-2021 tail. Measured 2026-08; do not retune.",
 	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +
 		"its own target index reads 0.85 monthly, so no public donor can beat what the fund itself leaves " +
-		"observable, and the negative gap is the manager's replication alpha over the index (net of the " +
-		"constituents' performance fees, which the fee uplift deliberately does not claim back). Real quotes " +
-		"are grafted from 2019, so all of this governs only the pre-inception tail. Measured 2026-08; do not retune.",
+		"observable, and the small negative gap left (-0.24 pt/yr since the donor's fee load is levered with " +
+		"it, 2026-10) is the manager's replication alpha over the index (net of the constituents' performance " +
+		"fees, which the fee uplift deliberately does not claim back). Real quotes are grafted from 2019, so " +
+		"all of this governs only the pre-inception tail. Measured 2026-08; do not retune.",
 }
 
 // Audit measures one recipe's engine against reality. f must serve the

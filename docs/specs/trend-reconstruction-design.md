@@ -181,6 +181,33 @@ validation window):
 | Simplify CTA | pure-trend index +1.25 | | +1.99 |
 | AQR UCITS A, and the USD leg of RAEF | AQMIX 0 | RYMFX 0 | +0.37 |
 
+**Superseded in 2026-10: the load is levered with the donor.** The table above
+lifts each donor by the unlevered difference of the two price lists, but the
+chain applies the uplift AFTER `volMatch` has levered the donor's excess return
+by k to the target's risk, and the donor's own fees are inside that excess: a
+NAV net of 2.00 %/yr levered 1.63 times carries 3.26 %/yr of the donor's fees,
+while the fund running that book at that risk pays its own charge once. The
+unlevered uplift therefore left (k - 1) x the donor's load in every segment,
+cold where k > 1 and hot where k < 1. `Donor.Uplift` now lifts by k x the
+donor's load less what the target owes, floored at zero as before. At the
+2026-10 regeneration (k in brackets):
+
+| chain | nearest | then | deepest (Man AHL) |
+|---|---|---|---|
+| DBMF | DBi-projected index (1.61) +0.76, raw index (1.42) +1.99 | | (0.79) +1.31 |
+| DBMF UCITS USD and EUR, MFEH | DBMF (1.00) +0.10 | DBi-projected (1.61) +0.86, raw (1.42) +2.09 | (0.79) +1.41 |
+| KMLM | ASFYX (1.10) +0.69 | RYMFX (1.26) +1.61 | (0.93) +1.66 |
+| Simplify CTA | pure-trend index (1.63) +2.50 | | (1.14) +2.37 |
+| AQR UCITS A and its EUR classes | AQMIX (0.92) 0 | RYMFX (0.83) 0 | (0.54) 0 |
+| Campbell | all-styles index (1.01) +0.55 | | |
+
+The engine's CAGR gap on each fund's own live window moved toward zero
+wherever it moved: Simplify CTA -2.19 -> **-0.87** pt/yr, DBMF -0.90 ->
+**-0.24**, KMLM -1.20 -> **-1.05**, AQR UCITS A +0.05 unchanged, Campbell
++0.06 -> +0.09. Over the donor eras: CTA +1.11 pt/yr (1996-2022), the four
+DBi files +0.42 (1996-2019), KMLM +0.05, the AQR chain -0.37 (its Man AHL
+era, 1996-2007).
+
 What it moves, on each fund's own live overlap (CAGR gap, reconstruction minus
 fund):
 
@@ -460,7 +487,8 @@ incentive fee on net profits with NO hurdle against a perpetual high water mark
 1.23 %/yr as the KID's own five-year average), plus 1.44 %/yr of transaction
 costs. The donor is fee-aligned on published ongoing charges only (2.00 %
 estimated for the composite's constituents against the class's 1.48 %, so a
-0.52 %/yr lift and nothing else), which leaves the reconstruction optimistic by
+0.52 %/yr lift and nothing else; 0.55 since 2026-10, the load levered 1.01
+times with the donor), which leaves the reconstruction optimistic by
 roughly a point a year in a good trend year. The real NAVs grafted from 2020-06
 carry all of it, as they must.
 
@@ -2112,20 +2140,18 @@ match stays.
   anchor, a wedge on an already-lagging donor) is the single easiest way to
   quietly lose several points a year. Every fee decision here carries its
   measurement next to it; keep that discipline.
-  The rule for a donor segment is fixed and lives in `feeAligned`: lift it by
-  the donor's management-and-expense load minus the target's, floored at zero,
-  both read off published fee tables (`trendFeeLoad`) and never off an observed
-  return gap, which would bake a manager's alpha into a "fee". Performance fees
-  move the number in one direction only: the donor's are ignored, the target's
-  are subtracted (`trendPerfFee`), so the uplift errs small. Applied today:
-  the half-projected all-styles donor +0.15 into DBMF and +0.25 into its UCITS
-  classes (its load is 1.00 %, half the composite's estimated 2 % and half a
-  futures book that pays no manager), the raw all-styles index +1.15 and +1.25
-  behind it, the
-  pure-trend index +1.25 into Simplify CTA, ASFYX +0.55 and RYMFX +1.09 into
-  KMLM, DBMF +0.10 into its UCITS classes, Man AHL +1.84 to +1.99 everywhere
-  except the AQR chain (+0.37), and 0 for AQMIX into AQR UCITS A, whose own
-  performance fee already covers the gap.
+  The rule for a donor segment is fixed and lives in `feeAligned` and
+  `Donor.Uplift`: lift it by the donor's management-and-expense load, levered
+  as the volatility match levers the donor, minus the target's, floored at
+  zero, both read off published fee tables (`trendFeeLoad`) and never off an
+  observed return gap, which would bake a manager's alpha into a "fee".
+  Performance fees move the number in one direction only: the donor's are
+  ignored, the target's are subtracted (`trendPerfFee`), so the uplift errs
+  small. The values applied at the 2026-10 regeneration are in the table of
+  "Superseded in 2026-10" above (the DBi-projected donor's load is 1.00 %,
+  half the composite's estimated 2 % and half a futures book that pays no
+  manager); until then the load was not levered, which left (k - 1) x the
+  donor's load in every segment.
   The RAEF B EUR donor is corrected by its own measured wedge and takes no
   uplift, or it would be corrected twice.
 - A share class's headline management charge is NOT necessarily inside its

@@ -9,20 +9,38 @@ import (
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
-// Donor is one real fund NAV offered to a chain, with the annualized return
-// that must be added back to it before it may stand in for the target.
+// Donor is one real fund NAV offered to a chain, with the charges that decide
+// what must be added back to it before it may stand in for the target.
 //
 // A donor is spliced for its returns, and those returns are net of ITS price
 // list, not the target's. Where the two differ, the difference is a wrapper
-// cost, not a strategy result, and Uplift removes it: a constant fraction per
-// year added to that donor's segment and to no other. Zero leaves the donor
-// exactly as its manager published it. The uplift belongs to the caller,
-// which is the only layer that knows what either vehicle charges; see
-// feeAligned in the recipes for how this family derives it, and why it is
-// derived from published fee schedules rather than from observed return gaps.
+// cost, not a strategy result, and the chain removes it: a constant fraction
+// per year added to that donor's segment and to no other (Uplift). The charges
+// belong to the caller, which is the only layer that knows what either vehicle
+// charges; see feeAligned in the recipes for how this family reads them, and
+// why from published fee schedules rather than from observed return gaps.
 type Donor struct {
-	ID     string  // the donor's identifier, as a Fetcher takes it
-	Uplift float64 // fraction per year, e.g. 0.006 = +0.60 %/yr
+	ID   string  // the donor's identifier, as a Fetcher takes it
+	Load float64 // the charge inside the donor's own NAV, fraction per year (0.0274 = 2.74 %/yr)
+	Owed float64 // the target's own all-in charge (ongoing plus any performance fee), fraction per year
+}
+
+// Uplift is what the donor is lifted by once its excess return has been
+// rescaled by k to the target's volatility: the donor's load as the rescaled
+// segment carries it, k × Load, less what the target owes, floored at zero (a
+// donor cheaper than its target is left as its manager published it, never
+// pushed down). Zero for k = 0.
+//
+// The load is scaled because it is inside the returns the volatility match
+// levers: a donor NAV net of 2.00 %/yr, levered 1.6 times to a fund's risk,
+// carries 3.20 %/yr of the donor's fees, and the fund that runs that book at
+// that risk pays its own charge once. Lifting by the unscaled difference, as
+// the chain did until 2026-10, left (k - 1) × Load in every segment: about a
+// point and a quarter a year COLD behind Simplify CTA (the pure-trend index
+// levered 1.63 times) and half a point HOT behind the DBi chain's 1996 donor
+// (levered 0.79 times).
+func (d Donor) Uplift(k float64) float64 {
+	return max(0, k*d.Load-d.Owed)
 }
 
 // DonorChain assembles a fund's history out of real quotes for as long as real
@@ -79,12 +97,12 @@ func DonorChain(f Fetcher, cashID, calibrate string, donors []Donor, from time.T
 		if err != nil || d == nil || len(d.Points) < 30 {
 			continue
 		}
-		scaled, ok := volMatch(ref, d, cash)
+		scaled, k, ok := volMatch(ref, d, cash)
 		if !ok {
 			continue
 		}
-		if donor.Uplift != 0 {
-			scaled = afterAnnualFee(scaled.Name+" (fee-aligned)", scaled, -donor.Uplift)
+		if up := donor.Uplift(k); up != 0 {
+			scaled = afterAnnualFee(scaled.Name+" (fee-aligned)", scaled, -up)
 		}
 		if out == nil {
 			out = densify(scaled, texture, time.Time{})
@@ -194,7 +212,10 @@ func pointDates(points []marketdata.Point) []time.Time {
 // moves where the reference contributes day-sized ones, and the ratio measures
 // the cadence rather than the volatility (about sqrt(5) too small, measured).
 // Such a pair is refused rather than scaled: see cadenceMismatch.
-func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
+//
+// It also returns the scale k, which the chain needs to size the donor's fee
+// uplift (Donor.Uplift).
+func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, float64, bool) {
 	byDate := make(map[time.Time]float64, len(ref.Points))
 	for i := 1; i < len(ref.Points); i++ {
 		if ref.Points[i-1].Close > 0 {
@@ -216,18 +237,18 @@ func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
 		fitted = append(fitted, donor.Points[i].Date)
 	}
 	if len(a) < 120 { // under six months of common days, the ratio is noise
-		return nil, false
+		return nil, 0, false
 	}
 	if cadenceMismatch(fitted, ref) {
-		return nil, false
+		return nil, 0, false
 	}
 	sa, sb := stdev(a), stdev(b)
 	if sa <= 0 || sb <= 0 {
-		return nil, false
+		return nil, 0, false
 	}
 	k := sa / sb
 	if k < 0.5 || k > 2 { // too far apart to be the same trade
-		return nil, false
+		return nil, 0, false
 	}
 
 	out := &marketdata.Series{Symbol: donor.Symbol, Name: donor.Name, Source: donor.Source}
@@ -242,7 +263,7 @@ func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
 		v *= 1 + k*(r-c) + c
 		out.Points = append(out.Points, marketdata.Point{Date: donor.Points[i].Date, Close: v})
 	}
-	return out, len(out.Points) > 30
+	return out, k, len(out.Points) > 30
 }
 
 // cadenceMismatch reports whether the observations volMatch fitted on are
