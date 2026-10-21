@@ -51,7 +51,9 @@ Hover any chart for the exact figures.
 ### In the terminal
 
 `-cli` prints the curves and the statistics table instead of writing HTML.
-`-width` sets the chart width.
+`-width` sets the chart width. Several portfolios plot their time-weighted
+indexes from 100; a lone portfolio with `#meta capital:` plots its value,
+flows included, and its title says so.
 
 ```sh
 ./pofo -cli -assets VOO,IWDA

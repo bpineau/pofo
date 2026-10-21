@@ -10,6 +10,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/chart"
+	"github.com/bpineau/pofo/pkg/compare"
 )
 
 // captureOutput runs fn with both standard streams redirected to a pipe and
@@ -228,5 +231,22 @@ func TestGeneratorAge(t *testing.T) {
 		if got := generatorAge(fs, age); got != want {
 			t.Errorf("-cache-age %s: generator age = %v, want %v", pinned, got, want)
 		}
+	}
+}
+
+// TestCLIChartTitleNamesTheScale: a lone column plots its money value, so a
+// portfolio started at a declared capital is not labelled "base 100".
+func TestCLIChartTitleNamesTheScale(t *testing.T) {
+	d0 := time.Date(1962, 1, 1, 0, 0, 0, 0, time.UTC)
+	one := []compare.Column{{Name: "plan"}}
+	if got := cliChartTitle(one, chart.Series{Dates: []time.Time{d0}, Values: []float64{1_000_000}}); got != "plan (value from 1000000 at 1962-01-01, flows included)" {
+		t.Errorf("capital column: %q", got)
+	}
+	if got := cliChartTitle(one, chart.Series{Dates: []time.Time{d0}, Values: []float64{100}}); got != "plan (base 100 at 1962-01-01)" {
+		t.Errorf("relative column: %q", got)
+	}
+	two := []compare.Column{{Name: "a"}, {Name: "b"}}
+	if got := cliChartTitle(two, chart.Series{Dates: []time.Time{d0}, Values: []float64{100}}); got != "Comparison (base 100 at 1962-01-01)" {
+		t.Errorf("comparison: %q", got)
 	}
 }

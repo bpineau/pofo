@@ -537,6 +537,23 @@ func renderComparison(ctx context.Context, client *marketdata.Client, opt *optio
 	return buf.Bytes(), nil
 }
 
+// cliChartTitle names the scale of the terminal chart. Several columns plot
+// their time-weighted indexes rebased to 100; a lone column plots its money
+// value (SimValues), which is base 100 only without "#meta capital:", and
+// with it starts at the capital and moves with the flows: calling that curve
+// "base 100" read a decumulation plan's millions as an index and its
+// withdrawals as losses. first is the plotted series of the first column.
+func cliChartTitle(cols []compare.Column, first chart.Series) string {
+	at := first.Dates[0].Format("2006-01-02")
+	if len(cols) > 1 {
+		return "Comparison (base 100 at " + at + ")"
+	}
+	if v0 := first.Values[0]; v0 != 100 {
+		return fmt.Sprintf("%s (value from %.0f at %s, flows included)", cols[0].Name, v0, at)
+	}
+	return cols[0].Name + " (base 100 at " + at + ")"
+}
+
 // renderCLI prints the comparison curves and the summary table straight to
 // the terminal, for quick checks without opening a browser. Per-portfolio
 // details are intentionally omitted.
@@ -553,11 +570,7 @@ func renderCLI(cmp *compare.Comparison, opt *options) error {
 			series[i] = chart.Series{Name: col.Name, Dates: col.WinDates, Values: col.WinValues}
 		}
 	}
-	title := "Comparison (base 100"
-	if len(cols) == 1 {
-		title = cols[0].Name + " (base 100"
-	}
-	title += " at " + series[0].Dates[0].Format("2006-01-02") + ")"
+	title := cliChartTitle(cols, series[0])
 	fmt.Print(chart.Term(chart.TermOptions{Title: title, Width: termWidth(opt.width), Color: color}, series))
 	fmt.Println()
 
