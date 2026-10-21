@@ -60,9 +60,9 @@ type douleurAsset struct {
 // the bad years.
 var douleurAssets = []douleurAsset{
 	{"Actions US (S&amp;P 500)", -20.55, 5.85, true, -8, 17, "end", false},
-	{"Portefeuille 60/40", -12.21, 4.82, true, 8, -16, "start", false},
-	{"Treasuries 7-10 ans", 0.32, 2.23, true, 8, -22, "start", false},
-	{"Treasuries 20 ans et +", -0.66, 1.97, true, -8, 22, "end", false},
+	{"Portefeuille 60/40", -12.24, 4.79, true, 8, -16, "start", false},
+	{"Treasuries 7-10 ans", 0.22, 2.16, true, 8, -22, "start", false},
+	{"Treasuries 20 ans et +", -0.73, 1.92, true, -8, 22, "end", false},
 	{"Cash (bons du Trésor 3 mois)", 0.07, 0, true, 0, 0, "middle", true},
 	{"Or", 7.56, 3.76, false, -8, -18, "end", false},
 }
@@ -72,9 +72,9 @@ var douleurAssets = []douleurAsset{
 // their premiums it accounts for. The slope is NEGATIVE, which is the whole
 // argument: the more an asset loses in the bad years, the more it is paid.
 const (
-	douleurFitA  = 1.4526
-	douleurFitB  = -0.2302
-	douleurFitR2 = 0.8488
+	douleurFitA  = 1.3954
+	douleurFitB  = -0.2328
+	douleurFitR2 = 0.8606
 )
 
 // douleurPredict is the premium the fitted line expects at a given pain.
@@ -141,7 +141,9 @@ func figDouleurPrime() string {
 		{x.Map(solidTo), y.Map(douleurPredict(solidTo))},
 		{x.Map(8.2), y.Map(douleurPredict(8.2))},
 	}, figSoft, 1.8, "5 4"))
-	b.WriteString(sTxt(x.Map(-7)+8, y.Map(douleurPredict(-7))+22, 10, figSoft, "start", "600",
+	// The name rides just above the line: the line falls away under it to the
+	// right, where a name hung below it would be crossed by it.
+	b.WriteString(sTxt(x.Map(-9)+4, y.Map(douleurPredict(-9))-7, 10, figSoft, "start", "600",
 		"la droite des salaires"))
 
 	// What the line does not explain: gold, and the drop from it to the line.
