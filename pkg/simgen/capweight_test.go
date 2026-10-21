@@ -77,12 +77,12 @@ func TestCapWeightedFeeAndRenormalization(t *testing.T) {
 	if want := 100 * math.Pow(1.0004, 299); math.Abs(free[299]/want-1) > 1e-9 {
 		t.Errorf("unnormalized weights changed the level: %.4f, want %.4f", free[299], want)
 	}
-	charged, err := CapWeighted(fr, legs, fr.Dates[0], 0.0252) // 0.0001/day
+	charged, err := CapWeighted(fr, legs, fr.Dates[0], 0.036525) // 0.0001 per calendar day
 	if err != nil {
 		t.Fatalf("CapWeighted: %v", err)
 	}
 	if want := 100 * math.Pow(1.0003, 299); math.Abs(charged[299]/want-1) > 1e-9 {
-		t.Errorf("after fee %.4f, want %.4f (0.0252/252 a day)", charged[299], want)
+		t.Errorf("after fee %.4f, want %.4f (0.036525/365.25 a calendar day)", charged[299], want)
 	}
 }
 

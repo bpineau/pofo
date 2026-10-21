@@ -103,6 +103,18 @@ func TestBuildFrameRateAccruesOnTheCalendar(t *testing.T) {
 		sum += r
 	}
 	near(t, "one year of simple accrual at 5 %", sum, 0.05*365/365.25, 1e-12)
+
+	// The same calendar holds for a composite's fee: a flat leg charged 1 %
+	// a year loses 1 % over the year, not 261/252 of it.
+	values, err := Composite(fr, []Leg{{ID: "EQ", Weight: 1}}, "", 0.01)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var lost float64
+	for k := 1; k < len(values); k++ {
+		lost += 1 - values[k]/values[k-1]
+	}
+	near(t, "one year of a 1 % fee", lost, 0.01*365/365.25, 1e-12)
 }
 
 func TestCompositeNinetySixty(t *testing.T) {

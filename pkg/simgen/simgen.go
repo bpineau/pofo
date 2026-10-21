@@ -150,6 +150,13 @@ func rateAccrual(level float64, from, to time.Time) float64 {
 	return level / 100 * to.Sub(from).Hours() / 24 / 365.25
 }
 
+// feeAccrual is what a charge of annual (a FRACTION per year) costs between
+// two dates: simple, over the calendar days between them, in 365.25-day
+// years, the convention of rateAccrual and afterFeeSteps alike.
+func feeAccrual(annual float64, from, to time.Time) float64 {
+	return annual * to.Sub(from).Hours() / 24 / 365.25
+}
+
 // isRate reports whether an identifier is a yield series quoted in
 // annualized percent (Yahoo's ^IRX, ^TNX, …) rather than a price. The policy
 // and money-market symbols answer through marketdata's own registry rather
@@ -173,15 +180,11 @@ type Leg struct {
 // cashID (e.g. "^IRX") backs both the Excess financing and an optional
 // collateral leg.
 //
-// annualFee is charged PER FRAME STEP at a 252-step year (unlike the rate legs,
-// which accrue on the calendar, see rateAccrual), so it is only a yearly charge
-// on a frame whose steps are trading days; on an every-weekday union calendar it
-// runs 3.6 % over, a few thousandths of a point on a typical fee. Hand it a
-// weekly or monthly frame and the fee shrinks
-// with the step count: twelve monthly steps carry a twentieth of it. Every
-// caller here passes a daily frame, and the fee schedules that have to survive a
-// coarse era go through afterFeeSteps instead, which compounds on calendar days
-// and is exact at any cadence.
+// annualFee is a FRACTION per year, charged over the calendar days each frame
+// step spans (feeAccrual), so it is the yearly charge at any cadence. It was
+// annualFee/252 per step until 2026-10, which ran 3.6 % over on the
+// every-weekday union calendar a world-equity leg produces and charged a
+// twentieth of the fee on a monthly frame.
 func Composite(fr *Frame, legs []Leg, cashID string, annualFee float64) ([]float64, error) {
 	cash := fr.Returns[cashID]
 	for _, l := range legs {
@@ -194,9 +197,8 @@ func Composite(fr *Frame, legs []Leg, cashID string, annualFee float64) ([]float
 	}
 	values := make([]float64, len(fr.Dates))
 	values[0] = 100
-	feeDaily := annualFee / 252
 	for k := 1; k < len(fr.Dates); k++ {
-		r := -feeDaily
+		r := -feeAccrual(annualFee, fr.Dates[k-1], fr.Dates[k])
 		for _, l := range legs {
 			lr := fr.Returns[l.ID][k]
 			if l.Excess {

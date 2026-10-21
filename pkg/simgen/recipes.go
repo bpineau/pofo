@@ -1603,7 +1603,7 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	fin := fr.Returns[usdOvernight]
 	const (
 		wintonUS = 0.60
-		feeDaily = max(0, wintonTER-(wintonUS*vfinxTER+(1-wintonUS)*vtmgxTER)) / 252
+		fee      = max(0, wintonTER-(wintonUS*vfinxTER+(1-wintonUS)*vtmgxTER))
 	)
 	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
 	val := 100.0
@@ -1616,7 +1616,7 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		// that bill rate, so it gives back the difference. Same convention as
 		// stackedTrend, written on an excess rather than a funded record.
 		rTrend := trend[i]/trend[i-1] - 1 - (fin[k] - cash[i])
-		val *= 1 + rEq + wintonTrendNotional*rTrend - feeDaily
+		val *= 1 + rEq + wintonTrendNotional*rTrend - feeAccrual(fee, fr.Dates[k-1], fr.Dates[k])
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
 	}
 	return trimToAnchor(f, PureTrendAnchor, s)
@@ -1773,12 +1773,12 @@ func stackedTrend(name, coreID string, coreLoad float64, cfg TSMOMConfig, annual
 			overlay[i] = (trend[i]/trend[i-1] - 1) - fin[start+i]
 		}
 
-		feeDaily := max(0, annualFee-coreLoad) / 252
+		fee := max(0, annualFee-coreLoad)
 		values := make([]float64, len(trend))
 		values[0] = 100
 		for i := 1; i < len(trend); i++ {
 			k := start + i
-			r := core[k] + overlay[i] - feeDaily
+			r := core[k] + overlay[i] - feeAccrual(fee, fr.Dates[k-1], fr.Dates[k])
 			values[i] = values[i-1] * (1 + r)
 		}
 		s := &marketdata.Series{Name: name, Source: "simdata"}
@@ -2781,8 +2781,8 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 
 	const (
 		dtleTER  = 0.0010
-		twinFee  = max(0, dtleTER-dtlaTER) / 252 // the real accumulating twin's era
-		vustxFee = max(0, dtleTER-longTreasuryGearing*vustxTER) / 252
+		twinFee  = max(0, dtleTER-dtlaTER) // the real accumulating twin's era
+		vustxFee = max(0, dtleTER-longTreasuryGearing*vustxTER)
 	)
 	s := &marketdata.Series{
 		Name: "DTLE (EUR-hedged US long Treasury, total return)", Source: "simdata", Currency: "EUR",
@@ -2794,7 +2794,7 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		if r, ok := twin[fr.Dates[k]]; ok {
 			excess, fee = r-irx[k], twinFee
 		}
-		v *= 1 + excess + eur[k] - fee
+		v *= 1 + excess + eur[k] - feeAccrual(fee, fr.Dates[k-1], fr.Dates[k])
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: v})
 	}
 	return s, nil

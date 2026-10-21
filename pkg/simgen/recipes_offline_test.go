@@ -302,7 +302,7 @@ func TestAvantisBlendsSameManagerSleevesAtTheFundsGeography(t *testing.T) {
 	}
 	// A day inside the same-manager era: 0.70 of AVUV's move, less the
 	// 0.107 %/yr the pair's cheaper wrapper owes the fund's.
-	want := avwsUS*1e-3 - (avwsTER-(avwsUS*avuvTER+avwsIntl*avdvTER))/252
+	want := avwsUS*1e-3 - (avwsTER-(avwsUS*avuvTER+avwsIntl*avdvTER))/365.25 // one calendar day
 	a, b := byDate[day(live+100)], byDate[day(live+101)]
 	if a == 0 || math.Abs(b/a-1-want) > 1e-9 {
 		t.Errorf("same-manager era moves %.6f/day, want %.6f (0.70×AVUV, fee-aligned)", b/a-1, want)
