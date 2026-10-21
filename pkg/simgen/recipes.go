@@ -246,19 +246,28 @@ func dtlaRecipe() Recipe {
 // Those two months are the investment-grade ultrashort dislocation, real to the
 // day in both US-listed siblings (ICSH -1.5 %, NEAR -6.2 % on 2020-03-19
 // against this fund's -3.2 %), so they are neither a bad print nor anything a
-// hygiene rule should touch. They also net out: the level gap is -0.42 %/yr,
+// hygiene rule should touch. They also net out: the level gap is -0.47 %/yr
+// (the fund's TER charged, its credit spread not),
 // and real quotes are grafted from 2018, so the reconstruction only ever
 // governs a tail where no credit spread is observable anyway.
 func ernaRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BGCSB447",
 		Name:            "iShares USD Ultrashort Bond: USD cash (T-bill)",
-		Method:          "USD cash ^IRX (13-week T-bill, daily; extended TBILL-3M to the 1930s) compounded, IG credit spread omitted pre-inception; real ERNA grafted from 2018",
-		Build:           composite("ERNA (USD cash)", []Leg{{ID: "^IRX", Weight: 1}}, "^IRX", 0),
+		Method:          "USD cash ^IRX (13-week T-bill, daily; extended TBILL-3M to the 1930s) compounded less the fund's 0.09%/yr TER, IG credit spread omitted pre-inception; real ERNA grafted from 2018",
+		Build:           alignedComposite("ERNA (USD cash)", []pricedLeg{{ID: "^IRX", Weight: 1}}, "^IRX", ernaTER),
 		ValidateAgainst: "IE00BGCSB447",
 		SpliceReal:      "IE00BGCSB447",
 	}
 }
+
+// The two ultrashort funds' ongoing charges, FRACTIONS per year (the catalog's
+// fees). A rate charges nothing, so the whole of each is due on the cash path
+// that stands in for its fund; until 2026-10 neither recipe charged it.
+const (
+	ernaTER = 0.0009 // iShares USD Ultrashort Bond UCITS ETF
+	ernxTER = 0.0009 // iShares EUR Ultrashort Bond UCITS ETF
+)
 
 // ernxRecipe backcasts the iShares EUR Ultrashort Bond UCITS ETF
 // (IE000RHYOR04, EUR money-market) as EUR cash: the bundled EUR money-market
@@ -269,9 +278,13 @@ func ernxRecipe() Recipe {
 	return Recipe{
 		ID:     "IE000RHYOR04",
 		Name:   "iShares EUR Ultrashort Bond: EUR cash (money-market)",
-		Method: "EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->) interpolated to business days, IG credit spread omitted pre-inception; real ERNX grafted from inception",
+		Method: "EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->) interpolated to business days, less the fund's 0.09%/yr TER, IG credit spread omitted pre-inception; real ERNX grafted from inception",
 		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-			return eurCashDaily(f, from)
+			s, err := eurCashDaily(f, from)
+			if err != nil {
+				return nil, err
+			}
+			return afterFee(s, ernxTER)
 		},
 		ValidateAgainst: "IE000RHYOR04",
 		SpliceReal:      "IE000RHYOR04",

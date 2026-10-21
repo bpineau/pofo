@@ -487,6 +487,8 @@ func TestRecipeTargetChargesAreTheCatalogFees(t *testing.T) {
 		"DTLA":         dtlaTER,
 		"IE00BKM4GZ66": eimiTER,
 		"IE00BFMXXD54": vuaaTER,
+		"IE00BGCSB447": ernaTER,
+		"IE000RHYOR04": ernxTER,
 		"IE00BDFL4P12": icomFee,
 		"DBXG":         dbxgFee,
 		"MTH":          mthFee,
@@ -608,6 +610,37 @@ func TestSingleFundRecipesChargeTheReferenceEra(t *testing.T) {
 			if math.Abs(got-era.want) > 1e-6 {
 				t.Errorf("%s from day %d: charged %.5f %%/yr, want %.5f", c.r.ID, era.start, got*100, era.want*100)
 			}
+		}
+	}
+}
+
+// A cash fund rebuilt from a money-market rate owes its whole ongoing charge:
+// a rate charges nothing. At a zero rate the output moves by the charge alone.
+func TestCashRecipesChargeTheirTER(t *testing.T) {
+	const n = 800
+	universe := fakeFetcher{
+		"^IRX":        mkLevels("^IRX", n, 0),
+		"EURCASH-EUR": mkLevels("EURCASH-EUR", n, 100),
+	}
+	for _, c := range []struct {
+		r      Recipe
+		target float64
+	}{
+		{ernaRecipe(), ernaTER},
+		{ernxRecipe(), ernxTER},
+	} {
+		s, err := c.r.Build(universe, time.Time{})
+		if err != nil {
+			t.Fatalf("%s: %v", c.r.ID, err)
+		}
+		at := map[time.Time]float64{}
+		for _, p := range s.Points {
+			at[p.Date] = p.Close
+		}
+		a, b := day(30), day(730)
+		years := b.Sub(a).Hours() / 24 / 365.25
+		if got := 1 - math.Pow(at[b]/at[a], 1/years); math.Abs(got-c.target) > 1e-6 {
+			t.Errorf("%s: charged %.5f %%/yr, want %.5f", c.r.ID, got*100, c.target*100)
 		}
 	}
 }

@@ -194,7 +194,7 @@ var auditCaveats = map[string]string{
 		"and its April reversal (+3.54 %) are dropped, after which dropping further months changes nothing. " +
 		"Both siblings moved the same day (ICSH -1.5 %, NEAR -6.2 % on 2020-03-19 against this fund's -3.2 %), " +
 		"so nothing here is a bad print and no hygiene rule should remove it. The two months net out, the level " +
-		"gap is -0.42 %/yr, and real quotes are grafted from 2018, so this governs only the pre-inception tail. " +
+		"gap is -0.47 %/yr (the fund's 0.09 %/yr TER charged, its credit spread not modelled), and real quotes are grafted from 2018, so this governs only the pre-inception tail. " +
 		"Measured 2026-08; read the level verdict, not the path.",
 	"ERESMONDEM": "The path warning is a clock, not a defect: the fund strikes its NAV on the two ETFs' " +
 		"official NAVs, i.e. after New York closes, while the engine's donor years are Xetra closes struck at " +
