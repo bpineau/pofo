@@ -113,8 +113,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%s: %s over %d periods (%.0f a year), %s to %s, in %s\n\n", spec.Name, sp.Objective, p.Len(), ppy,
+	fmt.Printf("%s: %s over %d periods (%.0f a year), %s to %s, in %s\n", spec.Name, sp.Objective, p.Len(), ppy,
 		p.Starts[0].Format(time.DateOnly), p.Ends[p.Len()-1].Format(time.DateOnly), *currency)
+	if *daily && ppy < 200 {
+		// A member that quotes less than daily (a weekly NAV, a weekly deep
+		// history) thins the shared calendar; the panel annualizes at its
+		// density, but the monthly fit reads every member on one calendar.
+		fmt.Printf("note: the shared daily calendar is sparse (%.0f sessions a year): a line quotes less than daily; the monthly fit (without -daily) is the safer read\n", ppy)
+	}
+	fmt.Println()
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.AlignRight)
 	fmt.Fprintln(tw, "holding\twritten\toptimized\tCAGR\tvol\t")
 	for i, id := range p.IDs {

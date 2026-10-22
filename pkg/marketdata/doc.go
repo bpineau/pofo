@@ -466,7 +466,10 @@
 // error and difference, beta, alpha), the figures of a replica or a
 // reconstruction against what it follows; Compound(5) reads a daily panel
 // at a five-session horizon; and PeriodsPerYear is the count that
-// annualizes it all, 12 for a monthly panel.
+// annualizes it all, 12 for a monthly panel, and for a daily one the
+// density of the shared calendar when a member that quoted less than daily
+// (a weekly history continued daily) has thinned it, never the 252 of its
+// dense part alone.
 //
 // # Toolbox
 //

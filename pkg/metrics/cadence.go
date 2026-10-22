@@ -95,6 +95,13 @@ func cadence(gaps []float64) float64 {
 	return snap(float64(n[mode]) / days[mode] * daysPerYear)
 }
 
+// SnapCadence returns the canonical cadence (1, 2, 4, 12, 24, 26, 52, 252
+// or 365 observations a year) nearest to a measured one when it lies within
+// 10 % of it, and the measurement itself otherwise: the rounding
+// PeriodsPerYear applies to its own measurement, for a caller that counted
+// a cadence another way (a panel's density) and wants it read the same.
+func SnapCadence(measured float64) float64 { return snap(measured) }
+
 // snap returns the canonical cadence nearest to a measured one when it lies
 // within snapTolerance of it, and the measurement itself otherwise.
 func snap(measured float64) float64 {

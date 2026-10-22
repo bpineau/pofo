@@ -164,7 +164,7 @@ periods:
 		return nil, fmt.Errorf("marketdata: NewPanel: every shared period crosses a definition junction")
 	}
 	if f == Daily {
-		p.cadence = spanCadence(p.Starts, p.Ends)
+		p.cadence = dailyCadence(p.Starts, p.Ends)
 	}
 	return p, nil
 }
@@ -479,6 +479,20 @@ func (p *Panel) Compound(k int) (*Panel, error) {
 // keeps that count: a handful of picked sessions is a sample of the
 // calendar, not a calendar to measure. It is NaN for a daily panel built by
 // hand without a period.
+//
+// A daily panel is only as daily as its sparsest member, so the count is
+// held to the calendar's DENSITY, the shared periods per year of the whole
+// span: when a member quoted weekly for part of the window and daily for
+// the rest, the shared sessions are daily where they are dense and weekly
+// where they are not, no single regime describes them, and the regime
+// count metrics.PeriodsPerYear would give (252, from the daily part) would
+// annualize the compounded return as if the weekly years had not happened.
+// Whenever the density falls more than a fifth short of the regime count,
+// the density is returned instead, snapped to a canonical cadence when one
+// is within 10 %: a weekly history continued daily over 1 999 shared
+// sessions in 20.9 years reads 96 a year, not 252. A regular calendar of
+// two exchanges with different holidays loses a few sessions a year and
+// keeps 252.
 func (p *Panel) PeriodsPerYear() float64 {
 	switch {
 	case p.Freq > 0:
@@ -486,7 +500,34 @@ func (p *Panel) PeriodsPerYear() float64 {
 	case p.cadence > 0:
 		return p.cadence
 	}
-	return spanCadence(p.Starts, p.Ends)
+	return dailyCadence(p.Starts, p.Ends)
+}
+
+// sparseTolerance is how far, as a ratio, a daily calendar's density may
+// fall short of its prevailing regime's count before the panel is read at
+// its density: a fifth of the sessions missing, far more than two exchange
+// calendars ever differ by, far less than a weekly member leaves out.
+const sparseTolerance = 1.25
+
+// dailyCadence is the count that annualizes a daily panel's periods: the
+// prevailing regime's (spanCadence), unless the calendar is sparse enough
+// for that regime to misdescribe it, in which case the plain density,
+// periods per year over the whole span, which annualizes the compounded
+// return exactly and the variance in expectation.
+func dailyCadence(starts, ends []time.Time) float64 {
+	regime := spanCadence(starts, ends)
+	var days float64
+	for t := range ends {
+		days += ends[t].Sub(starts[t]).Hours() / 24
+	}
+	if !(days > 0) {
+		return regime
+	}
+	density := float64(len(ends)) / days * 365.25
+	if density*sparseTolerance < regime {
+		return metrics.SnapCadence(density)
+	}
+	return regime
 }
 
 // spanCadence is metrics.PeriodsPerYear over periods' own spans, laid end

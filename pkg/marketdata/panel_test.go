@@ -158,6 +158,56 @@ func TestPanelDailyCadence(t *testing.T) {
 	}
 }
 
+// A daily panel is only as daily as its sparsest member: a fund that dealt
+// weekly for fifteen years and daily for five leaves a shared calendar
+// that is weekly where it is sparse and daily where it is dense, and the
+// panel reads its density (periods per year over the whole span), not the
+// 252 of the daily part, which would annualize twenty years of compounded
+// return as if they were eight.
+func TestPanelDailyCadenceSparseMember(t *testing.T) {
+	var dDates, wDates []time.Time
+	var dValues, wValues []float64
+	for d := date(2006, 1, 2); d.Year() < 2026; d = d.AddDate(0, 0, 1) {
+		if d.Weekday() == time.Saturday || d.Weekday() == time.Sunday {
+			continue
+		}
+		dDates, dValues = append(dDates, d), append(dValues, 100+float64(len(dValues)%7))
+		if d.Weekday() == time.Friday || d.Year() >= 2021 {
+			wDates, wValues = append(wDates, d), append(wValues, 50+float64(len(wValues)%5))
+		}
+	}
+	daily, _ := NewSeries("D", dDates, dValues)
+	weeklyThenDaily, _ := NewSeries("W", wDates, wValues)
+	// Alone, the member reads the regime most of its returns belong to (the
+	// documented trade-off of metrics.PeriodsPerYear): 1 260 daily gaps
+	// outvote 780 weekly ones, so 252, which is the trap the panel avoids.
+	if got := metrics.PeriodsPerYear(wDates); got != 252 {
+		t.Fatalf("the sparse member alone reads %v a year, want 252 (its prevailing regime)", got)
+	}
+	p, err := NewPanel(Daily, daily, weeklyThenDaily)
+	if err != nil {
+		t.Fatal(err)
+	}
+	years := p.Ends[p.Len()-1].Sub(p.Starts[0]).Hours() / 24 / 365.25
+	density := float64(p.Len()) / years
+	if got := p.PeriodsPerYear(); math.Abs(got-density) > 1 || got > 200 {
+		t.Errorf("sparse daily panel PeriodsPerYear = %v, want its density %.1f (%d periods over %.1f years)", got, density, p.Len(), years)
+	}
+	// A regular calendar of two exchanges with different holidays stays daily.
+	var hDates []time.Time
+	var hValues []float64
+	for i, d := range dDates {
+		if d.Month() == time.July && d.Day() == 4 || d.Month() == time.November && d.Day() >= 22 && d.Day() <= 28 && d.Weekday() == time.Thursday {
+			continue // US holidays the European member quotes through
+		}
+		hDates, hValues = append(hDates, d), append(hValues, dValues[i])
+	}
+	us, _ := NewSeries("US", hDates, hValues)
+	if q := must(NewPanel(Daily, daily, us)); q.PeriodsPerYear() != 252 {
+		t.Errorf("two exchange calendars read %v a year, want 252", q.PeriodsPerYear())
+	}
+}
+
 func mustPanelSeries(t *testing.T, p *Panel, id string) *Series {
 	t.Helper()
 	s, err := p.Series(id)

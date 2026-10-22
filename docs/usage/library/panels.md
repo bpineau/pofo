@@ -96,7 +96,12 @@ Step by step:
 | select periods | `Panel.Pick`, `Panel.Between` | the other columns on exactly those periods |
 
 A regression's alpha is per period. Pass `Panel.PeriodsPerYear()` to
-`AnnualAlpha` rather than guessing 12 or 252.
+`AnnualAlpha` rather than guessing 12 or 252. A daily panel is only as
+daily as its sparsest member: a line that quoted weekly for part of the
+window thins the shared calendar, and the panel then annualizes at its
+density (so many shared sessions a year over the whole span), not at 252.
+When that count surprises you, the monthly panel reads every line on one
+calendar.
 
 ## One series: a fee, an episode
 
