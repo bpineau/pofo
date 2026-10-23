@@ -57,7 +57,9 @@ BTOP50E                  simdata  1986-12-31  2026-09-25  10339   Barclay BTOP50
 
 The command converts every series to one currency (`-currency`, euros by
 default) with daily exchange rates: Yahoo first, then Stooq and the ECB
-reference rates. The euro crosses reach back to 1971 through a bundled
+reference rates; a business day Yahoo or Stooq left out of a cross (Yahoo
+serves a null bar now and then) is filled with that day's ECB fixing, and the
+log says which days. The euro crosses reach back to 1971 through a bundled
 ECU and Deutsche Mark proxy; before an exchange rate exists, the first known
 rate is held flat, with a warning. The library keeps native currencies until
 you call `Client.ConvertCurrency`.

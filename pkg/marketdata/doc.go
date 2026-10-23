@@ -129,7 +129,10 @@
 //
 // Yahoo Finance (adjusted closes), Stooq (fallback for plain tickers,
 // major indices and major currency crosses), the ECB reference rates
-// (second fallback for the currency crosses, daily since 1999), CBOE
+// (second fallback for the currency crosses, daily since 1999, and the
+// source of every business day Yahoo or Stooq skipped in a cross: Yahoo
+// serves a null bar now and then, which would otherwise forward-fill the
+// day before's rate onto every asset of that currency), CBOE
 // (fallback for ^VIX, full official history since 1990), Financial
 // Times and Morningstar (NAVs of European funds), and the airfund.io delivery
 // API (the official daily NAV behind a French employee-savings fund's page,
@@ -498,8 +501,9 @@
 //     the disk cache, fresh and deep enough to answer without any upstream
 //     request, for callers that must ration those;
 //   - Client.ConvertCurrency reprices a whole Series into a target currency
-//     using daily Yahoo FX crosses; the earliest known rate is held flat
-//     before the FX history starts;
+//     using daily Yahoo FX crosses (a day Yahoo skipped taken from the ECB
+//     fixings); the earliest known rate is held flat before the FX history
+//     starts;
 //   - Client.Latest returns the freshest known price (a Quote) for an
 //     identifier, the live Yahoo market price when available, otherwise the
 //     last daily close; Client.LatestBatchExtended and

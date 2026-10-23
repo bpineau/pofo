@@ -80,6 +80,8 @@ type Client struct {
 	retryDelay time.Duration
 	mu         sync.Mutex
 	memo       map[string]memoEntry
+	ecbRows    [][]string           // the ECB eurofxref-hist file, see ecbTable
+	ecbRowsAt  time.Time            // when ecbRows was downloaded
 	fees       map[string]feesEntry // TER cache, lazily loaded from fees.json
 	authMu     sync.Mutex
 	auth       *yahooAuth // cached Yahoo cookie+crumb, nil until first use
@@ -901,6 +903,9 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 		return c.staleFallback(ctx, cacheID, symbol, from, markAbsent(fmt.Errorf("no quotes returned for %s", symbol)))
 	}
 	s.Points = cleanQuotes(symbol, s.Currency, s.Points)
+	if _, _, ok := fxCross(symbol); ok && s.Source != "ecb" {
+		c.fillFXHoles(ctx, symbol, s) // the days a market source skipped, from the ECB fixings
+	}
 	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil

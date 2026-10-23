@@ -237,3 +237,126 @@ func TestECBColumnAndCrossGuards(t *testing.T) {
 		t.Errorf("error = %v, want one naming the missing pair", err)
 	}
 }
+
+// TestHistoryFXHolesFilledFromECB: Yahoo answers a currency cross but skips
+// a business day (a null bar) and stops a day early; both days come from
+// the ECB fixings, the series stays ascending and nothing is added before
+// the first Yahoo point. A plain ticker never consults the ECB.
+func TestHistoryFXHolesFilledFromECB(t *testing.T) {
+	// Yahoo: Mon 6, Wed 8 (Tue 7 missing); ECB: Mon 6, Tue 7, Wed 8, Thu 9
+	// and Fri 3 (before Yahoo's first point: must stay out).
+	days := []time.Time{
+		time.Date(2020, 1, 6, 0, 0, 0, 0, time.UTC),
+		time.Date(2020, 1, 8, 0, 0, 0, 0, time.UTC),
+	}
+	const csv = "Date,USD,JPY,GBP,\n" +
+		"2020-01-09,1.1200,120.00,0.85000,\n" +
+		"2020-01-08,1.1150,120.10,0.85100,\n" +
+		"2020-01-07,1.1025,120.55,0.85005,\n" +
+		"2020-01-06,1.1194,121.60,0.85285,\n" +
+		"2020-01-03,1.1100,121.00,0.85200,\n"
+	ecbHits, yahooHits := 0, 0
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/", func(w http.ResponseWriter, r *http.Request) {
+		yahooHits++
+		sym := strings.TrimPrefix(r.URL.Path, "/v8/finance/chart/")
+		fmt.Fprint(w, chartJSON(sym, days, []float64{0.9000, 0.9100}))
+	})
+	zipBody := ecbZip(t, csv)
+	mux.HandleFunc("/stats/eurofxref/eurofxref-hist.zip", func(w http.ResponseWriter, r *http.Request) {
+		ecbHits++
+		w.Write(zipBody)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	ctx := context.Background()
+
+	s, err := c.History(ctx, "USDEUR=X", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Source == "ecb" {
+		t.Fatalf("the Yahoo series must stay the base, got source %q", s.Source)
+	}
+	// The bundled proxy extends the euro cross back to 1971 and past the
+	// first Yahoo day: look from that day on only.
+	var got []Point
+	for _, p := range s.Points {
+		if !p.Date.Before(days[0]) {
+			got = append(got, p)
+		}
+	}
+	want := []struct {
+		day   int
+		close float64
+	}{{6, 0.9000}, {7, 1 / 1.1025}, {8, 0.9100}, {9, 1 / 1.1200}}
+	if len(got) != len(want) {
+		t.Fatalf("2020 points = %+v, want days %v", got, want)
+	}
+	for i, w := range want {
+		if got[i].Date.Day() != w.day || math.Abs(got[i].Close-w.close) > 1e-9 {
+			t.Errorf("point %d = %s %v, want day %d close %v", i, got[i].Date.Format("01-02"), got[i].Close, w.day, w.close)
+		}
+	}
+	if ecbHits != 1 {
+		t.Errorf("ECB downloads = %d, want 1", ecbHits)
+	}
+
+	// A second cross in the same process reuses the downloaded table.
+	if _, err := c.History(ctx, "GBPUSD=X", time.Time{}); err != nil {
+		t.Fatal(err)
+	}
+	if ecbHits != 1 {
+		t.Errorf("ECB downloads after a second cross = %d, want 1 (memoized table)", ecbHits)
+	}
+
+	// A plain ticker with the same hole is not a currency: the ECB is not asked.
+	v, err := c.History(ctx, "VOO", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(v.Points) != 2 || ecbHits != 1 {
+		t.Errorf("VOO: %d points, %d ECB downloads; want 2 points and no new download", len(v.Points), ecbHits)
+	}
+}
+
+// TestHistoryFXHolesECBDown: when the ECB cannot be read, the market series
+// is served as it came, holes and all, with a warning and no error.
+func TestHistoryFXHolesECBDown(t *testing.T) {
+	days := []time.Time{
+		time.Date(2020, 1, 6, 0, 0, 0, 0, time.UTC),
+		time.Date(2020, 1, 8, 0, 0, 0, 0, time.UTC),
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("USDEUR=X", days, []float64{0.9000, 0.9100}))
+	})
+	mux.HandleFunc("/stats/eurofxref/eurofxref-hist.zip", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "ecb down", http.StatusInternalServerError)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	var warnings []string
+	c.Logf = func(format string, args ...any) {
+		if line := fmt.Sprintf(format, args...); strings.HasPrefix(line, "warning:") {
+			warnings = append(warnings, line)
+		}
+	}
+
+	s, err := c.History(context.Background(), "USDEUR=X", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	n := 0
+	for _, p := range s.Points {
+		if !p.Date.Before(days[0]) {
+			n++
+		}
+	}
+	if n != 2 {
+		t.Errorf("points from the first Yahoo day = %d, want the 2 Yahoo served", n)
+	}
+	if len(warnings) != 1 || !strings.Contains(warnings[0], "ECB reference rates") {
+		t.Errorf("warnings = %q, want one naming the ECB", warnings)
+	}
+}
