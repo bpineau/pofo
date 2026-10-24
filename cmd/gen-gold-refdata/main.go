@@ -5,8 +5,12 @@
 // PM since 2015), read from the association's freely published JSON history and
 // carried EXACTLY as published: one point per fixing day, the USD column, no
 // adjustment. It is the deep proxy behind gold futures and gold funds before
-// their own quotes begin (simgen's longBack of GC=F, and the gold recipes), so
-// a frozen file holds every gold backcast's tail at its last fix.
+// their own quotes begin (simgen's longBack of GC=F, and the gold recipes):
+// marketdata.ExtendBack only prepends it to the live XAUUSD or GC=F quotes,
+// which start about 2000, so what a backcast reads of it is the 1968-1999
+// stretch, which never moves. A frozen tail only shows when the live quote
+// cannot be fetched (xauusdBuild then serves the fix alone) and to a reader of
+// XAUUSD-LBMA itself.
 //
 // The file had no generator until 2026-09 and was last refreshed by hand at
 // 2026-07. Nothing is trusted for having downloaded: before anything is written
@@ -29,8 +33,8 @@
 // the World Bank and IMF series are monthly. Until the LBMA lets a plain
 // client back in (or a mirror republishes the full daily record), the file is
 // refreshed from a browser download of that URL handed to -src as a local
-// path, so every check below still runs on it. Note that `make refresh` stops
-// at this step: run the targets after it by hand.
+// path, so every check below still runs on it. For the same reason `make
+// gold-refdata` is no longer part of `make refresh`.
 //
 // Usage: gen-gold-refdata [-src URL|path] [-dir path] [-dry]
 package main

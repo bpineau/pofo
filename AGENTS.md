@@ -175,7 +175,7 @@ make usmkt-refdata # regenerate USMKT-USD, the CRSP total-market factor behind t
 make msci-refdata # extend MSCIWORLD-USD/DEVEXUS-USD/EM-USD past their manual Curvo export with a validated ETF proxy tail (network); run make simdata after
 make french-refdata # regenerate USSCV-USD (small-cap value, behind DFSVX/ZPRV) and DEVEXUS-DAILY (the DEVEXUS-USD daily shape) from the Ken French Data Library (network); run after make msci-refdata, then make simdata
 make wti-refdata # regenerate WTI-ER-USD, the rolled-futures EXCESS return of WTI crude, and refresh WTI-USD, the monthly spot (FRED WTISPLC as published) (network); run after make tyield-refdata
-make gold-refdata # regenerate XAUUSD-LBMA, the daily LBMA gold fix since 1968 (network); run make simdata after
+make gold-refdata # regenerate XAUUSD-LBMA, the daily LBMA gold fix since 1968 (network, NOT in make refresh: the LBMA gates plain clients); run make simdata after
 make bcom-refdata # regenerate BCOM-ER-USD, the daily Bloomberg Commodity Index (excess return) since 1991, from the FT, checked against BCOMTR less TBILL-3M (network); run after make tyield-refdata, then make simdata
 make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
@@ -240,8 +240,10 @@ offline snapshots (`pkg/marketdata/data/`) are now held to their own
 `cmd/gen-snapshots`' `stale` check (`docs/specs/inflation-deflators.md`).
 A SOURCE can lock plain clients out, too: since 2026-10 prices.lbma.org.uk
 answers curl and Go alike with a Cloudflare challenge (HTTP 403), so
-`XAUUSD-LBMA` holds at 2026-09-25 and `make refresh` stops at
-`gold-refdata` (run the targets after it by hand). No key-less mirror of the
+`XAUUSD-LBMA` holds at 2026-09-25 and `gold-refdata` left the `make refresh`
+chain, the one generator outside it: the file only backs gold before the live
+`XAUUSD`/`GC=F` quotes begin (~2000), where it never changes, so its frozen
+tail moves no backcast. No key-less mirror of the
 daily PM fix since 1968 was found; the godoc of `cmd/gen-gold-refdata` lists
 what was tried, and its `-src` takes a browser download as a local path.
 The shared plumbing (FRED, OECD and Ken French
