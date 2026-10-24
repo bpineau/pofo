@@ -3,7 +3,7 @@
 # name: iShares EUR Ultrashort Bond: EUR cash (money-market)
 # method: EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->) interpolated to business days, less the fund's 0.09%/yr TER, IG credit spread omitted pre-inception; real ERNX grafted from inception
 # validation: corr=0.028 (weekly 0.488) beta=0.01 TE=0.7%/yr CAGR sim 2.55% vs real 2.69% (overlap 1102 d from 2022-04-29 to 2026-08-31) vs IE000RHYOR04
-# generated: 2026-10-21
+# generated: 2026-10-24
 date,close
 1993-12-31,2.729261
 1994-01-03,2.730808
@@ -8533,3 +8533,7 @@ date,close
 2026-10-15,5.625000
 2026-10-16,5.625000
 2026-10-19,5.626200
+2026-10-20,5.626200
+2026-10-21,5.623600
+2026-10-22,5.626600
+2026-10-23,5.628200

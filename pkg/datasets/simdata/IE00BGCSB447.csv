@@ -2,8 +2,8 @@
 # id: IE00BGCSB447
 # name: iShares USD Ultrashort Bond: USD cash (T-bill)
 # method: USD cash ^IRX (13-week T-bill, daily; extended TBILL-3M to the 1930s) compounded less the fund's 0.09%/yr TER, IG credit spread omitted pre-inception; real ERNA grafted from 2018
-# validation: corr=0.021 (weekly 0.167) beta=0.00 TE=1.4%/yr CAGR sim 2.65% vs real 3.12% (overlap 2041 d from 2018-06-29 to 2026-10-20) vs IE00BGCSB447
-# generated: 2026-10-21
+# validation: corr=0.021 (weekly 0.167) beta=0.00 TE=1.4%/yr CAGR sim 2.65% vs real 3.12% (overlap 2044 d from 2018-06-29 to 2026-10-23) vs IE00BGCSB447
+# generated: 2026-10-24
 date,close
 1962-01-01,0.378305
 1962-01-02,0.378332
@@ -16206,3 +16206,6 @@ date,close
 2026-10-16,6.454000
 2026-10-19,6.454000
 2026-10-20,6.453000
+2026-10-21,6.450000
+2026-10-22,6.459000
+2026-10-23,6.455000

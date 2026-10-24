@@ -2,8 +2,8 @@
 # id: ERES_DATADOG
 # name: Actions Datadog C (FCPE): the DDOG share in EUR, wrapper charge 0.61 %/yr
 # method: DDOG (NASDAQ, no dividend) converted USD->EUR at the EURUSD spot from the 2019-09-19 IPO, less the FCPE's 0.61 %/yr charge; real weekly NAVs grafted from 2021-07-22; nothing before the IPO
-# validation: corr=0.860 (weekly 0.974) beta=0.87 TE=26.5%/yr CAGR sim 17.84% vs real 17.91% (overlap 333 d from 2021-07-22 to 2026-10-20) vs ERES_DATADOG
-# generated: 2026-10-21
+# validation: corr=0.858 (weekly 0.974) beta=0.87 TE=26.6%/yr CAGR sim 18.96% vs real 19.12% (overlap 336 d from 2021-07-22 to 2026-10-23) vs ERES_DATADOG
+# generated: 2026-10-24
 date,close
 2019-09-19,36.719050
 2019-09-20,35.443954
@@ -801,3 +801,6 @@ date,close
 2026-10-14,263.070000
 2026-10-15,242.270000
 2026-10-16,245.470000
+2026-10-19,239.220000
+2026-10-20,237.950000
+2026-10-21,240.860000

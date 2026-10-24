@@ -2,7 +2,7 @@
 # id: EUROGOV-DAILY
 # name: Euro-area government bond total return (10-year benchmark, EUR, daily)
 # source: ECB daily euro-area 10y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y (~2004) run through TreasuryTR (10y); via DBnomics. Daily shape for EUROGOV-EUR.
-# generated: 2026-10-20
+# generated: 2026-10-24
 date,close
 2004-09-06,100.000000
 2004-09-07,100.008266
