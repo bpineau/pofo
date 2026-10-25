@@ -97,7 +97,8 @@
 //     far back, mapped the same way.
 //
 // The map is affine, y30 = a + b·y20, fitted by least squares on the ten
-// thousand-odd days the two points overlap, then shifted so the mapped series
+// thousand-odd days the two points overlap up to a stated day (fitTo, so a
+// refresh reproduces the mapped years exactly), then shifted so the mapped series
 // MEETS the spine exactly at the junction (the same construction the euro-area long
 // sleeve uses for its pre-2004 years). It is not a cosmetic adjustment: the
 // long end of the curve is not parallel to the 20-year point, it was INVERTED
@@ -230,7 +231,7 @@ func main() {
 	bill := fetchBill(*fred)
 
 	a, b, resid, n := fitAffine(daily20, spine)
-	log.Printf("30y on 20y: y30 = %+.4f %+.4f*y20  (n=%d days, residual sd %.3f pt)", a, b, n, resid)
+	log.Printf("30y on 20y: y30 = %+.4f %+.4f*y20  (n=%d days to %s, residual sd %.3f pt)", a, b, n, fitTo, resid)
 
 	junctions := []time.Time{mustDate(defBreak20)}
 	long := assemble(spine, daily20, monthly20, a, b)
@@ -271,8 +272,8 @@ func main() {
 		return
 	}
 	write(*dir, refgen.Header{ID: outID, Name: "US long Treasury constant-maturity par yield (annualized percent, daily from 1962, monthly before)", Junctions: junctions,
-		Source: fmt.Sprintf("Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, via DBnomics: the 30-year business-daily point (%s, 1977-02-15->, its row carrying the long-term 25-years-and-above average over the %s..%s suspension of the 30-year issue), extended back by the 20-year business-daily point (%s, 1962-01-02->) and the 20-year monthly point (%s, 1953-04->), both mapped onto the 30-year curve point by the affine fit y30 = %+.4f %+.4f*y20 (least squares over the %d overlapping days, residual sd %.3f pt) and shifted to meet the spine at the junction. RATE levels (annualized percent), NOT a price: read as a yield by simgen.TreasuryZeroTR (the 25+ STRIPS reconstruction behind ZROZ) and by TreasuryTR. DEFINITIONAL BREAK at %s, declared in the junctions header: the 20-year point steps %+.2f pt that day while the 10-year point does not move, and the term spread to the 10-year flips sign (-0.13 pt on average over 1962-1972, +0.13 over 1973-1986). Both published levels are kept; the RETURN across that one step is not a rate move and every consumer skips it.",
-			spine30D, substFrom, substTo, head20D, head20M, a, b, n, resid, defBreak20, breakSize(long, junctions[0]))}, long)
+		Source: fmt.Sprintf("Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, via DBnomics: the 30-year business-daily point (%s, 1977-02-15->, its row carrying the long-term 25-years-and-above average over the %s..%s suspension of the 30-year issue), extended back by the 20-year business-daily point (%s, 1962-01-02->) and the 20-year monthly point (%s, 1953-04->), both mapped onto the 30-year curve point by the affine fit y30 = %+.4f %+.4f*y20 (least squares over the %d overlapping days to %s, a window closed on purpose so a refresh reproduces the mapped years; residual sd %.3f pt) and shifted to meet the spine at the junction. RATE levels (annualized percent), NOT a price: read as a yield by simgen.TreasuryZeroTR (the 25+ STRIPS reconstruction behind ZROZ) and by TreasuryTR. DEFINITIONAL BREAK at %s, declared in the junctions header: the 20-year point steps %+.2f pt that day while the 10-year point does not move, and the term spread to the 10-year flips sign (-0.13 pt on average over 1962-1972, +0.13 over 1973-1986). Both published levels are kept; the RETURN across that one step is not a rate move and every consumer skips it.",
+			spine30D, substFrom, substTo, head20D, head20M, a, b, n, fitTo, resid, defBreak20, breakSize(long, junctions[0]))}, long)
 	write(*dir, refgen.Header{ID: outLong, Name: fmt.Sprintf("US long-term Treasury total return (%.0f-year par bond on the long constant-maturity yield, month-end)", longMaturity),
 		Source: fmt.Sprintf("month-end samples of the bundled %s run through simgen.TreasuryTR (%.0f-year par bond, %.2f%%/yr). GAP-FREE from 1953-04: H.15 suspended the 20-year constant maturity between 1987-01 and 1993-09 and the 30-year point publishes straight through, so the long yield this is priced off has no hole and neither does this series. The BOND is 20-year throughout (the maturity of the published long-term government bond record, and the neighbourhood of what VUSTX holds); the CURVE POINT it is discounted at is the long one, i.e. the 30-year par yield from 1977-02 and the 20-year point mapped onto it before, which differs from the published 20-year point by %+.4f %+.4f*y20 (about +0.07 pt at a 4%%/yr yield, -0.22 pt at 12%%) and whose moves are %.3f as large. Month-end, one point per calendar month; the pre-1962 head is a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then. January 1973 is compounded in two pieces around the %s definitional break of the 20-year point, so it carries the real moves on each side of it and not the break itself. Proxy behind VUSTX.",
 			outID, longMaturity, reconFee*100, a, b-1, b, defBreak20)}, longTR.Points)
@@ -466,18 +467,32 @@ func parsePeriod(p string) (time.Time, error) {
 	return time.Parse("2006-01-02", p)
 }
 
+// fitTo closes the window the affine map is fitted on. The fit used to run to
+// the last day fetched, so every refresh re-estimated the coefficients on a
+// few more days and rewrote all the mapped years (1953-1977) by a millionth
+// of a point: a diff of sixteen thousand rows of noise in which a real change
+// to that history would be invisible. The window now ends on a stated day and
+// a refresh reproduces the mapped years exactly; move this date on purpose
+// (the fit is a measurement, kept reproducible, not a pinned constant) and
+// say so in the commit.
+const fitTo = "2026-09-30"
+
 // fitAffine fits y30 = a + b*y20 by least squares over the days both points
-// quote, and returns the coefficients, the residual standard deviation (in
-// percentage points) and the number of days fitted. The whole overlap is used
-// rather than a window: the fit has to hold at 14 % yields and at 2 %, and
-// those eras are decades apart.
+// quote up to fitTo, and returns the coefficients, the residual standard
+// deviation (in percentage points) and the number of days fitted. The whole
+// overlap is used rather than a recent window: the fit has to hold at 14 %
+// yields and at 2 %, and those eras are decades apart.
 func fitAffine(y20, y30 []obs) (a, b, resid float64, n int) {
+	to := mustDate(fitTo)
 	by30 := make(map[time.Time]float64, len(y30))
 	for _, p := range y30 {
 		by30[p.date] = p.val
 	}
 	var xs, ys []float64
 	for _, p := range y20 {
+		if p.date.After(to) {
+			continue
+		}
 		if v, ok := by30[p.date]; ok {
 			xs = append(xs, p.val)
 			ys = append(ys, v)

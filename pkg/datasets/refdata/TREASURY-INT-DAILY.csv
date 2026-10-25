@@ -2,7 +2,7 @@
 # id: TREASURY-INT-DAILY
 # name: US intermediate-term Treasury total return (5-year CMT, daily), DAILY SHAPE series
 # source: Federal Reserve H.15 5-year constant maturity, nominal, business-daily (FED/H15/RIFLGFCY05_N.B), via DBnomics, run through simgen.TreasuryTR (5-year par bond, no fee), 1962-01-02 onwards. LEVELS ARE NOT AUTHORITATIVE: used as the intra-month daily shape behind the TREASURY-INT-USD monthly anchors (simgen dailyShape/anchorShape) and as the same-index reference the Vanguard intermediate-Treasury donor is graded against (simgen trackIndex), which is why it runs to the present rather than stopping at that donor's inception.
-# generated: 2026-10-24
+# generated: 2026-10-25
 date,close
 1962-01-02,100.000000
 1962-01-03,100.055282

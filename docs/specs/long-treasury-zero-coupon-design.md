@@ -85,6 +85,15 @@ years (the 30-year ran 0.15 pt BELOW the 20-year when the 20-year was above 9 %,
 and 0.11 pt above it below 5 %), so a constant spread would have the sign
 backwards in the era the series exists to cover.
 
+Since 2026-10-25 the fit window is closed on a stated day (`fitTo` in
+`cmd/gen-tyield-refdata`, 2026-09-30 at the time of writing). Until then it ran
+to the last day fetched, so every refresh re-estimated the map on a few more
+days and rewrote all the mapped years by a millionth of a point (0.2125 to
+0.2124 between two refreshes three days apart): sixteen thousand rows of noise
+in every data commit, in which a real change to the 1953-1977 history would
+have been invisible. A refresh now reproduces those years exactly; moving the
+date is a deliberate re-measurement, said in the commit.
+
 **`simgen.TreasuryZeroTR`**: the constant-maturity zero-coupon engine, the
 sibling of `TreasuryTR` and sharing its loop (`constantMaturityTR`). Each step
 holds a fresh T-year zero priced at `(1+y/2)^(-2T)`, ages it by the step's
