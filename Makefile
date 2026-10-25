@@ -88,7 +88,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata french-refdata wti-refdata bcom-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata french-refdata wti-refdata bcom-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh every bundled series from its live source, except the gated gold fix (gold-refdata, by hand) (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 

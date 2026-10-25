@@ -220,7 +220,7 @@ From Go, `simgen.Find` and `simgen.Validate` do the same (see the
 For maintainers. These targets need the network and move bundled files.
 
 ```sh
-make refresh          # every bundled series from its live source, in dependency order
+make refresh          # every bundled series from its live source, in dependency order (all but the gated gold fix, see below)
 make check golden     # both must stay green: refreshing data never requires a code change
 make verify-catalog   # the data doctor over the whole catalog
 make figure-drift     # which of the book's frozen figures the refresh made stale
@@ -243,7 +243,14 @@ go run examples/code/scanbundle.go -stale 45
 
 A file that stops on purpose (its source was discontinued, like EIA's WTI
 futures settlements after 2024-04-05, or it is only kept until real quotes take
-over) carries an `# ends:` header and is never reported stale.
+over) carries an `# ends:` header and is never reported stale. The daily LBMA
+gold fix (`XAUUSD-LBMA`) is the one such file whose source is still alive: the
+LBMA site answers plain clients with a browser challenge since 2026-10, so
+`make refresh` leaves it out and it ends at its last fix. That costs nothing
+downstream, because the fix only extends the live gold quote back to 1968 and
+the live quote carries everything after 2000. `make gold-refdata` still works
+on a browser download of the LBMA's JSON handed to `-src`, and a successful run
+drops the `# ends:` header.
 
 To work on one reconstruction:
 

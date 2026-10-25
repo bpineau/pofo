@@ -34,7 +34,12 @@
 // client back in (or a mirror republishes the full daily record), the file is
 // refreshed from a browser download of that URL handed to -src as a local
 // path, so every check below still runs on it. For the same reason `make
-// gold-refdata` is no longer part of `make refresh`.
+// gold-refdata` is no longer part of `make refresh`, and the bundled file
+// carries an "# ends:" header at its last fix so the staleness tools do not
+// report it: a successful run writes the file afresh, without that header.
+// The recipes that read the file (simgen's xauusdBuild and the GC=F
+// extension) only ever prepend it to the live quote and fail when that quote
+// cannot be read, so the frozen tail is never served as the live series.
 //
 // Usage: gen-gold-refdata [-src URL|path] [-dir path] [-dry]
 package main

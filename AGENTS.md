@@ -213,15 +213,23 @@ first, then the simdata built on them, then the offline snapshots); the
 individual targets are for touching one series. Follow it with `make check` and
 `make golden`, both of which must stay green (refreshing data must never require
 a code change), then `make verify-catalog`, which says what the new quotes look
-like. The generator modes fetch fresh (`-gen-simdata` and `-verify-simdata`
+like. Neither gate compares a rebuilt file with the one it replaced: the goldens
+pin a reconstruction to its external reference, inside bands wide enough for a
+donor to move a third of a point a year and nine points of level unseen (the DBi
+donor did, on 2026-10-24, when the FX fill of 2026-10-23 changed its currency
+legs). So when a code change touched an input since the last refresh (a fetch
+path, a cleaner, an alignment), run `go run examples/code/oldnew.go -rev <last
+refresh> ID` on the reconstructions that read it, and name every move and its
+cause in the refresh commit. The generator modes fetch fresh (`-gen-simdata` and `-verify-simdata`
 re-download any quote older than a day, since what they write ships in the
 binary), but the doctor does not: `-cache-age` defaults to 30 days, so
 `make verify-catalog` on a cache left warm for weeks reports the cache's age as
 stale market data; pass `-cache-age 6h` after a pause.
 
-EVERY bundled series that tracks a live source has a generator in that chain:
-a file refreshed by hand freezes unseen (`TBILL-3M`, `WTI-USD`, `XAUUSD-LBMA`,
-`USSCV-USD` and `DEVEXUS-DAILY` all did, at 2026-05, until 2026-09-27). A
+EVERY bundled series that tracks a live source has a generator in that chain,
+with one declared exception (`XAUUSD-LBMA`, below): a file refreshed by hand
+freezes unseen (`TBILL-3M`, `WTI-USD`, `XAUUSD-LBMA`, `USSCV-USD` and
+`DEVEXUS-DAILY` all did, at 2026-05, until 2026-09-27). A
 MIRROR can freeze too, behind a generator that runs fine: DBnomics stopped
 indexing the Bundesbank curve at 2026-07-03 (`BUND-DAILY` now reads the
 Bundesbank's own SDMX service, with a freshness check), and its OECD mirror
@@ -243,7 +251,9 @@ answers curl and Go alike with a Cloudflare challenge (HTTP 403), so
 `XAUUSD-LBMA` holds at 2026-09-25 and `gold-refdata` left the `make refresh`
 chain, the one generator outside it: the file only backs gold before the live
 `XAUUSD`/`GC=F` quotes begin (~2000), where it never changes, so its frozen
-tail moves no backcast. No key-less mirror of the
+tail moves no backcast; it carries an `# ends:` header at its last fix so the
+staleness sweep stays quiet, and `xauusdBuild` fails rather than serve the fix
+alone when the live quote cannot be read. No key-less mirror of the
 daily PM fix since 1968 was found; the godoc of `cmd/gen-gold-refdata` lists
 what was tried, and its `-src` takes a browser download as a local path.
 The shared plumbing (FRED, OECD and Ken French

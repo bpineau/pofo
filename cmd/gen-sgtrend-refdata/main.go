@@ -118,13 +118,13 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"os"
 	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/cmd/internal/xls"
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -313,24 +313,20 @@ func build(s series, src string, dashboard []byte, cash []point, dir string, dry
 		return fmt.Errorf("sanity: %w", err)
 	}
 
-	var b bytes.Buffer
-	fmt.Fprintf(&b, "# pofo simdata v1\n# id: %s\n", s.outID)
-	fmt.Fprintf(&b, "# name: %s\n", s.name)
-	fmt.Fprintf(&b, "# source: %s\n", s.source)
-	fmt.Fprintf(&b, "date,close\n")
-	for _, p := range days {
-		fmt.Fprintf(&b, "%s,%.6f\n", p.date.Format("2006-01-02"), p.level)
+	pts := make([]marketdata.Point, len(days))
+	for i, p := range days {
+		pts[i] = marketdata.Point{Date: p.date, Close: p.level}
 	}
 	if dry {
-		log.Printf("%s: dry run: %d bytes, %d points, final level %.2f",
-			s.outID, b.Len(), len(days), days[len(days)-1].level)
+		log.Printf("%s: dry run: %d points, final level %.2f",
+			s.outID, len(days), days[len(days)-1].level)
 		return nil
 	}
-	out := filepath.Join(dir, s.outID+".csv")
-	if err := os.WriteFile(out, b.Bytes(), 0o644); err != nil {
+	h := refgen.Header{ID: s.outID, Name: s.name, Source: s.source}
+	if err := refgen.Write(dir, h, pts); err != nil {
 		return fmt.Errorf("write: %w", err)
 	}
-	log.Printf("wrote %s (%d points)", out, len(days))
+	log.Printf("wrote %s (%d points)", filepath.Join(dir, s.outID+".csv"), len(days))
 	return nil
 }
 

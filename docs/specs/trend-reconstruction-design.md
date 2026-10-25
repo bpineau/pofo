@@ -2087,6 +2087,28 @@ match stays.
 
 ## Traps
 
+- The DBi donor moves when `marketdata` does, not only when its inputs
+  publish. Between the refreshes of 2026-10-21 and 2026-10-24, with the
+  composite byte-identical and every other leg's backcast unchanged, the
+  shipped `TREND-ALLSTYLES-DBI-USD` came out +0.33 pts/yr and +8.6 % in level
+  over 2000-2026 (daily correlation 0.981 between the two versions, monthly
+  divergences up to 2 pts), and `DBMF`/`DBMFE` with it (+9.6 % of level over
+  1996-2026, worst drawdown -22.1 % to -20.4 %). The cause was the FX fill of
+  2026-10-23 (`fillFXHoles`: a currency cross takes the days Yahoo skipped from
+  the ECB): `dbiExcess` reads each leg with `Series.At`, which forward-fills,
+  so every skipped day used to hand the EUR and JPY legs a zero move and a
+  doubled one the day after, and the 60-day regression learned on that. The new
+  donor is the better one (DBMF's validation line: monthly correlation 0.781 to
+  0.800, tracking error 8.2 to 7.8 %/yr, CAGR 9.48 to 9.83 % against the fund's
+  9.72), but the move passed `make golden` unseen, because the golden pins the
+  donor to the composite (within 1.0 pt/yr and 0.90 monthly) and not to its
+  own previous version. `cmd/gen-dbi-refdata` now prints how far its output
+  reproduces the bundled file (the worst daily step in basis points, the CAGR
+  and level gaps over the common window); a rerun on unchanged inputs reads
+  about 0.1 bp and 0.00 % there (Yahoo re-rounds its adjusted closes at every
+  dividend), so anything in points is a move to name. Read that line on every
+  refresh, and `oldnew` the DBi family whenever a `marketdata` change touched
+  a leg's fetch or alignment.
 - The shipped `simdata` files graft the real quotes wherever they exist
   (100 % identical from each fund's inception), so a portfolio simulation
   only ever runs the chain and the reconstruction BEFORE inception. A

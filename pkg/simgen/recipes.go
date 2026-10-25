@@ -2853,17 +2853,19 @@ func xauusdRecipe() Recipe {
 // xauusdBuild returns the gold spot series: the fetchable daily XAU/USD quote
 // (~2000→) with the bundled daily London/LBMA PM gold fix (XAUUSD-LBMA, 1968→)
 // spliced behind it, so a gold sleeve covers the whole post-Bretton-Woods
-// floating era. If the daily quote is unavailable the monthly fix stands alone.
+// floating era. The live quote is required: the bundled fix is a frozen file
+// (its source gates plain clients since 2026-10), so serving it alone would
+// ship a series that stops months before today under a live id, and a
+// generator run that cannot read the live quote must fail instead.
 func xauusdBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	long, _ := f.Fetch("XAUUSD-LBMA", from)
 	s, err := f.Fetch("XAUUSD", from)
-	if err != nil || s == nil || len(s.Points) == 0 {
-		if long != nil && len(long.Points) > 0 {
-			return long, nil
-		}
-		return s, err
+	if err != nil {
+		return nil, fmt.Errorf("XAUUSD: live quote: %w", err)
 	}
-	if long != nil {
+	if s == nil || len(s.Points) == 0 {
+		return nil, fmt.Errorf("XAUUSD: live quote is empty")
+	}
+	if long, _ := f.Fetch("XAUUSD-LBMA", from); long != nil {
 		marketdata.ExtendBack(s, long)
 	}
 	return s, nil

@@ -18,7 +18,10 @@
 // Every series it writes is validated first, and a failing gate refuses to
 // write rather than shipping a degraded file: the composite must be fresh and
 // long, the projection must track it at the level and the path, and the blend
-// must sit between the two.
+// must sit between the two. It then prints how far the result reproduces the
+// bundled file it replaces (steps kept, CAGR and level gaps): that line is not
+// a gate, since a leg fetched or aligned differently moves the projection by
+// right, but it is what the refresh commit must quote when the file moved.
 package main
 
 import (
@@ -27,16 +30,19 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/simgen"
 )
 
 const outID = simgen.DBiDonorID
+
+// name is the CSV's display name.
+const name = "net all-styles managed-futures composite, half projected on the replicating fund's ten futures (USD, daily)"
 
 // source is the provenance the CSV carries.
 const source = "the net all-styles managed-futures composite (TREND-ALLSTYLES-NET-USD, the SG CTA Index, " +
@@ -88,24 +94,59 @@ func run(dir string, dry bool) error {
 	if err := validate(ref, proj, blend); err != nil {
 		return err
 	}
+	drift(blend)
 
-	var b []byte
-	b = append(b, []byte("# pofo simdata v1\n# id: "+outID+"\n")...)
-	b = append(b, []byte("# name: net all-styles managed-futures composite, half projected on the replicating fund's ten futures (USD, daily)\n")...)
-	b = append(b, []byte("# source: "+source+"\ndate,close\n")...)
-	for _, p := range blend.Points {
-		b = append(b, []byte(fmt.Sprintf("%s,%.6f\n", day(p.Date), p.Close))...)
-	}
 	if dry {
-		log.Printf("dry run: %d bytes, %d points, final level %.2f", len(b), len(blend.Points), last(blend).Close)
+		log.Printf("dry run: %d points, final level %.2f", len(blend.Points), last(blend).Close)
 		return nil
 	}
-	path := filepath.Join(dir, outID+".csv")
-	if err := os.WriteFile(path, b, 0o644); err != nil {
+	h := refgen.Header{ID: outID, Name: name, Source: source}
+	if err := refgen.Write(dir, h, blend.Points); err != nil {
 		return err
 	}
-	log.Printf("wrote %s (%d points)", path, len(blend.Points))
+	log.Printf("wrote %s (%d points)", filepath.Join(dir, outID+".csv"), len(blend.Points))
 	return nil
+}
+
+// drift says how far the rebuilt blend reproduces the bundled file it is about
+// to replace: the worst daily step between the two and the CAGR and level gaps
+// over the common window. It reports rather than refuses, because the
+// projection legitimately moves whenever one of its ten legs is fetched,
+// cleaned or aligned differently (the FX fill of 2026-10-23 moved it a third
+// of a point a year with the composite unchanged); what it must never do is
+// move unseen, so this line is what a refresh commit quotes. A rerun on the
+// same inputs is not identical either: Yahoo re-rounds every adjusted close
+// when a dividend posts, which moves every step by a hundredth of a basis
+// point or so, so the count of steps reproduced to the file's own rounding is
+// not printed, it would read as a rewrite every time.
+func drift(blend *marketdata.Series) {
+	old, err := marketdata.Bundled(outID)
+	if err != nil || len(old.Points) < 2 {
+		log.Printf("vs bundled: no previous %s to compare with (%v)", outID, err)
+		return
+	}
+	from := old.First().Date
+	if f := blend.First().Date; f.After(from) {
+		from = f
+	}
+	to := last(old).Date
+	if l := last(blend).Date; l.Before(to) {
+		to = l
+	}
+	if !to.After(from) {
+		log.Printf("vs bundled: no common window")
+		return
+	}
+	o := refgen.CompareSteps(old.Points, blend.Points)
+	gap := cagrOver(blend, from, to) - cagrOver(old, from, to)
+	level := math.Pow(1+cagrOver(blend, from, to), to.Sub(from).Hours()/24/365.25) /
+		math.Pow(1+cagrOver(old, from, to), to.Sub(from).Hours()/24/365.25)
+	worst := "every step reproduced"
+	if !o.WorstAt.IsZero() {
+		worst = fmt.Sprintf("worst step %.2f bp on %s", 1e4*o.Worst, day(o.WorstAt))
+	}
+	log.Printf("vs bundled %s to %s (%d steps): %s; CAGR %+.3f pts/yr, level %+.2f %%",
+		day(from), day(to), o.Steps, worst, 100*gap, 100*(level-1))
 }
 
 // validate refuses to ship a series that is stale, short, or no longer the

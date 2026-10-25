@@ -122,17 +122,15 @@ func TestExtendVFITXWithBundledTreasury(t *testing.T) {
 	}
 }
 
-// Without a fetchable daily quote, xauusdBuild returns the bundled monthly fix
-// on its own rather than failing.
-func TestXAUUSDBuildFallsBackToBundledLBMA(t *testing.T) {
+// Without a fetchable daily quote, xauusdBuild fails rather than serving the
+// bundled fix alone: that file is frozen where its source gated it, and a
+// generator must not ship it as the live series.
+func TestXAUUSDBuildRefusesTheFrozenFixAlone(t *testing.T) {
 	f := WithRefData(datasets.Refdata(), fakeFetcher{}) // no daily XAUUSD
 
 	got, err := xauusdBuild(f, time.Time{})
-	if err != nil || got == nil {
-		t.Fatalf("got %v, err %v; want the bundled monthly fix", got, err)
-	}
-	if !got.First().Date.Before(gold1968) {
-		t.Errorf("fallback gold starts %s, want ≤1968", got.First().Date.Format("2006-01"))
+	if err == nil || got != nil {
+		t.Fatalf("got %v, err %v; want an error and no series", got, err)
 	}
 }
 

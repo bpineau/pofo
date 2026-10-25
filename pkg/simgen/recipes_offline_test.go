@@ -87,6 +87,10 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	tip := mkWave("TIP", n, 2e-4, 0.004, 1.15, 2.8)
 	stip := mkWave("STIP", n, 1e-4, 0.002, 1.25, 2.5)
 	gold := mkWave("GC=F", n, 3e-4, 0.011, 0.5, 0.8)
+	// The spot quote the XAUUSD recipe requires (it refuses to serve the
+	// bundled LBMA fix alone), quoting over the recent part of the window
+	// like the real one, so the splice onto the fix is exercised.
+	xauusd := from(mkWave("XAUUSD", n, 3e-4, 0.011, 0.5, 0.8), n/2)
 	crude := mkWave("CL=F", n, 2e-4, 0.020, 1.9, 2.2)
 	bcom := mkWave("BCOM-ER-USD", n, 2e-4, 0.012, 1.6, 0.9)
 	dfsvx := mkWave("DFSVX", n, 4e-4, 0.013, 0.8, 1.4)
@@ -159,7 +163,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"VFINX":   vfinx, "VTSMX": vtsmx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"TIP": tip, "STIP": stip,
-		"GC=F": gold, "CL=F": crude, "BCOM-ER-USD": bcom,
+		"GC=F": gold, "XAUUSD": xauusd, "CL=F": crude, "BCOM-ER-USD": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "AVUV": avuv, "AVDV": avdv, "IBCI": ibci,
 		chsnDonor:      chsnTwin,
 		"LU0131510165": indepFr,

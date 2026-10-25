@@ -2,6 +2,7 @@
 # id: TREND-ALLSTYLES-DBI-USD
 # name: net all-styles managed-futures composite, half projected on the replicating fund's ten futures (USD, daily)
 # source: the net all-styles managed-futures composite (TREND-ALLSTYLES-NET-USD, the SG CTA Index, see cmd/gen-sgtrend-refdata for its own provenance), half of it re-expressed through the ten futures contracts the iMGP DBi Managed Futures Strategy ETF holds. The projection regresses the composite's trailing 60 days of daily excess returns on those ten contracts' excess returns, refits weekly, discards the intercept and holds the resulting portfolio funded at the T-bill rate: the fund's own published process (60-day window on the target's performance, US-traded contracts only, no manager discretion) run on the public index with public price series, never fitted to the fund. The ten contracts and their proxies are listed in pkg/simgen/dbireplica.go, each given back its proxy's own ongoing charge because a futures contract levies none. The shipped series is the equal-weight average of the composite's and the projection's daily returns, which measures better against the fund than either side alone; it starts 60 trading days after the composite, the regression's warm-up. Regenerate with cmd/gen-dbi-refdata.
+# generated: 2026-10-24
 date,close
 2000-03-28,100.000000
 2000-03-29,100.044418

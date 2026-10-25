@@ -350,3 +350,16 @@ move the file carries.
 Nothing in the REAL NAV era (2024-03-05 onwards) is touched: `trackIndex` runs
 on the donors, and the real NAVs are grafted on top of the whole chain
 afterwards.
+
+### The 2008 path moved with the FX calendar, 2026-10-24
+
+The refresh of 2026-10-24 reshuffled the 2008 segment with no new donor data:
+returns swapped between adjacent sessions (2008-08-15 -0.30 % to +0.90 %,
+2008-08-26 +2.56 % to +0.64 %, the 2008-10-08/09 and 12-08/09 pairs), leaving
+the level up to 2.5 % off on 2008-08-19 before the year end re-converges. The
+cause is the FX fill of 2026-10-23 (`fillFXHoles`): the EUR/USD cross gained
+the ECB business days Yahoo had skipped, and `trackIndex`'s one-session
+lead/lag allowance against the MSCI World EUR path gives different
+session-by-session verdicts on a denser calendar. Monthly figures and the audit
+verdict do not move; a 2008 worst-days reading does. Recorded here because the
+refresh commit did not say so.
