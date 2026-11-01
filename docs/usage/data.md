@@ -146,8 +146,8 @@ rest sits in euro overnight cash (`XEON`). It reaches back to 1972 and goes in
 a portfolio file like any line:
 
 ```text
-58 IWDA
-42 IWDA-VM12SIM
+50 IWDA
+50 IWDA-VM12SIM
 ```
 
 The two funds' charges are inside the series; the monthly trades' costs and
