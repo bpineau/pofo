@@ -139,6 +139,13 @@ var ErrWrongCurrency = errors.New("no native quote line in the requested currenc
 // cached or bundled answers the request. Detect it with errors.Is.
 var ErrOffline = errors.New("offline, and nothing cached or bundled answers")
 
+// ErrUnknownCurrency reports that a conversion was asked of a series that
+// states no currency (a bundled reference series whose identifier names
+// none, a CSV file without a "# currency:" header): converting it would be a
+// guess, and passing it through would be a silent wrong number. Detect it
+// with errors.Is.
+var ErrUnknownCurrency = errors.New("the series states no currency to convert from")
+
 // fetchSpec carries the per-request constraints threaded through the
 // internal fetch path (fetch, fetchISIN/fetchTicker, resolveBest). The
 // public option surface stays FetchOptions; this is its internal shadow,

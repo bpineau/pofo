@@ -40,7 +40,7 @@ func main() {
 	log.SetFlags(0)
 	offline := flag.Bool("offline", false, "never touch the network: the bundle and the quote cache only")
 	target := flag.String("in", "EUR", "the currency to convert into")
-	native := flag.String("native", "", "the series' currency when it states none (a bundled reference series)")
+	native := flag.String("native", "", "the series' currency when it states none (a file without a currency header, a reference series whose identifier names none)")
 	from := flag.String("from", "", "first date kept, YYYY-MM-DD")
 	to := flag.String("to", "", "last date kept, YYYY-MM-DD")
 	years := flag.Int("years", 15, "calendar years listed, most recent last (0: all)")

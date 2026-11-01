@@ -213,7 +213,9 @@ From Go, `simgen.Find` and `simgen.Validate` do the same (see the
 - A reconstruction is not the fund. Managed-futures ones follow their
   strategy's monthly path, not its daily positions.
 - An identifier outside the catalog whose source reports no currency is left
-  unconverted, and the report says so.
+  unconverted, and a warning says so. A bundled reference series takes the
+  currency its identifier names (`EM-USD`, `EURCASH-EUR`); asking to convert
+  one whose identifier names none (`TREASURY-LONG-DAILY`) is an error.
 
 ## Refreshing the bundled data
 

@@ -89,16 +89,13 @@ func TestLoadCurrency(t *testing.T) {
 		t.Errorf("conversion moved nothing: %.4f in both currencies", ru)
 	}
 
-	// A reference series states no currency: it passes through unchanged,
-	// as FetchExtended passes one, and the log says so.
+	// A reference series takes the currency its identifier names: the euro
+	// cash index is already in euros, and nothing is logged.
 	var logged []string
 	c.Logf = func(format string, args ...any) { logged = append(logged, fmt.Sprintf(format, args...)) }
 	cash, err := c.Load(ctx, "EURCASH-EUR", FetchOptions{Currency: "EUR"})
-	if err != nil || cash.Currency != "" {
-		t.Errorf("reference series: %v, currency %q", err, cash.Currency)
-	}
-	if len(logged) != 1 || !strings.Contains(logged[0], "EURCASH-EUR") {
-		t.Errorf("log = %q, want one line naming the series", logged)
+	if err != nil || cash.Currency != "EUR" || len(logged) != 0 {
+		t.Errorf("reference series: %v, currency %q, log %q", err, cash.Currency, logged)
 	}
 	// NoConvert demands the native line.
 	if _, err := c.Load(ctx, "SP500", FetchOptions{Currency: "EUR", NoConvert: true}); !errors.Is(err, ErrWrongCurrency) {
@@ -112,4 +109,45 @@ func sourceOf(s *Series) string {
 		return ""
 	}
 	return s.Source
+}
+
+// Regression: a reference series in dollars asked for in euros used to come
+// back in dollars, unconverted and without an error. It is converted now,
+// since its identifier names its currency, and one whose identifier names
+// none is refused rather than passed through.
+func TestLoadNeverPassesAnUnconvertedReferenceSeries(t *testing.T) {
+	ctx := context.Background()
+	c := offlineClient(t)
+	usd, err := c.Load(ctx, "EM-USD", FetchOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	eur, err := c.Load(ctx, "EM-USD", FetchOptions{Currency: "EUR"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if usd.Currency != "USD" || eur.Currency != "EUR" || eur.Len() != usd.Len() {
+		t.Fatalf("EM-USD: %q then %q, %d points against %d", usd.Currency, eur.Currency, eur.Len(), usd.Len())
+	}
+	if ru, re := usd.Last().Close/usd.First().Close, eur.Last().Close/eur.First().Close; ru == re {
+		t.Errorf("EM-USD in EUR moved like EM-USD in USD: %.4f in both", ru)
+	}
+
+	if _, err := c.Load(ctx, "TREASURY-LONG-DAILY", FetchOptions{Currency: "EUR"}); !errors.Is(err, ErrUnknownCurrency) {
+		t.Errorf("a reference series naming no currency: %v, want ErrUnknownCurrency", err)
+	}
+	if s, err := c.Load(ctx, "TREASURY-LONG-DAILY", FetchOptions{}); err != nil || s.Currency != "" {
+		t.Errorf("read as it is: %v, currency %q", err, s.Currency)
+	}
+}
+
+func TestRefdataCurrency(t *testing.T) {
+	for id, want := range map[string]string{
+		"EM-USD": "USD", "eurcash-eur": "EUR", "GILT-GBP": "GBP", "JGB-JPY": "JPY", "ILS-NET-USD": "USD",
+		"TREASURY-LONG-DAILY": "", "TBILL-3M": "", "ERESMONDEM-NAV": "", "XAUUSD-LBMA": "", "USD": "",
+	} {
+		if got := refdataCurrency(id); got != want {
+			t.Errorf("refdataCurrency(%q) = %q, want %q", id, got, want)
+		}
+	}
 }

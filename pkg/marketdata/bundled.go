@@ -32,8 +32,10 @@ import (
 //   - "refdata", a REFERENCE series (pkg/datasets/refdata): an index, a
 //     yield, a cash rate, a fund's NAV snapshot, the series the recipes are
 //     built on and the goldens validate against. None is a catalog asset,
-//     none carries a SIM form, and none states its currency, which the
-//     identifier's suffix usually names (TREASURY-LONG-USD, EUROGOV-EUR); a
+//     none carries a SIM form, and none states its currency in the file:
+//     Series.Currency is the one the identifier's last segment names
+//     (TREASURY-LONG-USD, EUROGOV-EUR, GILT-GBP), and empty for those whose
+//     identifier names none (TREASURY-LONG-DAILY, ERESMONDEM-NAV); a
 //     few are rate LEVELS in annualized percent (TREASURY-LONG-YIELD,
 //     TBILL-3M), which the file's Name says and which never belong in a
 //     return computation.
@@ -72,13 +74,34 @@ func Bundled(id string) (*Series, error) {
 			return nil, fmt.Errorf("marketdata: bundled %s: %w", CanonicalID(id), err)
 		}
 		if found {
-			s.Symbol, s.Source = CanonicalID(id), "refdata"
+			s.Symbol, s.Source, s.Currency = CanonicalID(id), "refdata", refdataCurrency(id)
 			return s, nil
 		}
 	}
 	return nil, fmt.Errorf("marketdata: nothing bundled under %s (a catalog asset's SIM history lives in "+
 		"pkg/datasets/simdata, a reference series in pkg/datasets/refdata; BundledIDs lists what is): %w",
 		strings.ToUpper(strings.TrimSpace(id)), fs.ErrNotExist)
+}
+
+// refdataCurrency is the currency a reference series' identifier names in
+// its last hyphenated segment (EM-USD, EURCASH-EUR, GILT-GBP), when that
+// segment is one the FX layer converts; "" otherwise (TREASURY-LONG-DAILY,
+// TBILL-3M, ERESMONDEM-NAV), the files themselves stating none.
+func refdataCurrency(id string) string {
+	id = strings.ToUpper(strings.TrimSpace(id))
+	ccy := id[strings.LastIndexByte(id, '-')+1:]
+	if ccy == id || len(ccy) != 3 {
+		return ""
+	}
+	if ccy == "USD" {
+		return ccy
+	}
+	for _, x := range longFXProxies {
+		if x.ccy == ccy {
+			return ccy
+		}
+	}
+	return ""
 }
 
 // bundledID is the identifier Bundled answers a catalog asset's simdata file

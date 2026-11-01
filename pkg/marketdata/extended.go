@@ -48,8 +48,10 @@ type FetchOptions struct {
 
 	// Currency converts the series into this quote currency using daily FX
 	// crosses (see Client.ConvertCurrency); empty keeps the native
-	// currency. A series whose currency is unknown passes through
-	// unchanged.
+	// currency. A fetched series whose source states no currency passes
+	// through unchanged with a Client.Logf warning naming it; Client.Load
+	// refuses the same request on a bundled or file series whose currency
+	// is unknown (ErrUnknownCurrency).
 	Currency string
 
 	// Raw asks for unadjusted closes: split-adjusted but with dividends
@@ -201,11 +203,16 @@ func (c *Client) proxyHistory(ctx context.Context, sym, currency string, from ti
 }
 
 // convertTo reprices s into currency via ConvertCurrency. It is a no-op
-// when currency is empty, already the series' own, or when the series does
-// not report one (the caller may warn about the mix); FX rates missing at
-// the start of the window are held flat with a Logf warning.
+// when currency is empty or already the series' own. A series that reports
+// no currency (a quote source that states none) is returned unconverted with
+// a Logf warning naming it, never in silence; FX rates missing at the start
+// of the window are held flat with a Logf warning.
 func (c *Client) convertTo(ctx context.Context, s *Series, currency string, from time.Time) (*Series, error) {
-	if currency == "" || s.Currency == "" || s.Currency == currency {
+	if currency == "" || s.Currency == currency {
+		return s, nil
+	}
+	if s.Currency == "" {
+		c.Logf("warning: %s states no currency, left unconverted rather than converted into %s", s.Symbol, currency)
 		return s, nil
 	}
 	out, extrapolated, err := c.ConvertCurrency(ctx, s, currency, from)

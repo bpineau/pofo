@@ -60,7 +60,10 @@ true
 ```
 
 `FetchOptions` shapes the result: `From` and `To` trim it, `Currency`
-converts it. `pofo -dump list` (or `marketdata.BundledIDs`) names everything
+converts it. A bundled reference series is in the currency its identifier
+names (`EM-USD` is in dollars, so `Currency: "EUR"` converts it); one whose
+identifier names none (`TREASURY-LONG-DAILY`) is refused with
+`marketdata.ErrUnknownCurrency` rather than returned unconverted. `pofo -dump list` (or `marketdata.BundledIDs`) names everything
 the bundle holds.
 
 ## Real quotes and their raw data

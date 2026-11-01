@@ -34,12 +34,13 @@ import (
 //
 // opt applies to every step: From and To trim the series, and Currency
 // converts it through Client.ConvertCurrency (the euro crosses are bundled,
-// so converting to or from the euro works offline). A series whose currency
-// is unknown passes through unchanged, as FetchExtended passes one: a bundled
-// reference series states none (its identifier usually names it, as
-// EURCASH-EUR does), nor may a file's header, and Client.Logf says which
-// series was taken as it is. NoConvert with a Currency that is not the
-// series' own is ErrWrongCurrency, as for a fetch.
+// so converting to or from the euro works offline). A bundled reference
+// series takes the currency its identifier names (EM-USD is in dollars, see
+// Bundled); one whose identifier names none (TREASURY-LONG-DAILY), like a
+// file without a "# currency:" header, cannot be converted, and asking to is
+// an error wrapping ErrUnknownCurrency rather than the series passed through
+// unconverted. NoConvert with a Currency that is not the series' own is
+// ErrWrongCurrency, as for a fetch.
 // Raw asks for unadjusted closes, which no bundled series holds (they are
 // total returns), so Raw skips the bundle.
 //
@@ -96,8 +97,8 @@ func (c *Client) localTo(ctx context.Context, s *Series, origin string, opt Fetc
 		return s, nil
 	}
 	if s.Currency == "" {
-		c.Logf("%s: %s states no currency, taken as it is rather than converted into %s", s.Symbol, origin, opt.Currency)
-		return s, nil
+		return nil, fmt.Errorf("%s: %s states no currency, so it cannot be converted into %s (convert it with Client.ConvertCurrency once its currency is set, or drop the Currency option): %w",
+			s.Symbol, origin, opt.Currency, ErrUnknownCurrency)
 	}
 	if opt.NoConvert {
 		return nil, fmt.Errorf("%s is quoted in %s, not %s: %w", s.Symbol, s.Currency, opt.Currency, ErrWrongCurrency)

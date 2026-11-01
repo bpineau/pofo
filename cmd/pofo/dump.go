@@ -62,16 +62,19 @@ func runDump(ctx context.Context, c *marketdata.Client, w io.Writer, ids []strin
 //
 // A reference series bundled in the binary (TREASURY-LONG-USD, TBILL-3M, the
 // MSCI anchors) is no catalog asset and no quote source knows it, so it is
-// read from the bundle rather than searched for online. It states no currency
-// (see marketdata.Bundled), so asking to convert it is an error rather than a
-// silent pass-through. Everything else goes through Client.FetchExtended.
+// read from the bundle rather than searched for online, through Client.Load:
+// its currency is the one its identifier names (EM-USD, see
+// marketdata.Bundled), so -currency converts it, and one whose identifier
+// names none (TREASURY-LONG-DAILY) is an error rather than a silent
+// pass-through. Everything else goes through Client.FetchExtended.
 func dumpSeries(ctx context.Context, c *marketdata.Client, id string, opt *options, d dumpOptions) (*marketdata.Series, error) {
 	var s *marketdata.Series
 	if ref, err := marketdata.Bundled(id); err == nil && ref.Source == "refdata" && !marketdata.KnownLocal(id) {
-		if d.currency != "" {
-			return nil, fmt.Errorf("%s: a bundled reference series states no currency to convert from; drop -currency", id)
+		if d.currency == "" || d.currency == ref.Currency {
+			s = ref
+		} else if s, err = c.Load(ctx, id, marketdata.FetchOptions{Currency: d.currency}); err != nil {
+			return nil, err
 		}
-		s = ref
 	} else {
 		fetched, err := c.FetchExtended(ctx, portfolio.SimFetchID(id, d.simAll), marketdata.FetchOptions{
 			From:     opt.start,
