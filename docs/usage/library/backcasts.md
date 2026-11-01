@@ -81,6 +81,67 @@ right and the level is wrong, and every backtest built on it inherits the
 gap. That is why the full audit, `pofo -verify-simdata`, grades **level** and
 **path** separately.
 
+## A strategy instead of a backcast
+
+`simgen.VolManaged` rebuilds no fund: it applies a rule to one. The asset is
+held at the target volatility over its own realized volatility of the last
+`Lookback` sessions, between `Floor` and `Cap`, refreshed at every month end
+and held in between, the rest in cash (Moreira and Muir, 2017). Above a cap
+of 1 the excess is financed at the cash rate plus an optional
+`LeverageCosts` (a fee, a spread, a leveraged ETF's reset drag).
+`simgen.NewVolManagedBuilder` runs the same engine on a fetcher, as a
+`Recipe.Build`; the bundled `IWDA-VM12` line is one, and a strategy recipe
+sets `Recipe.Ungraded`, since no real series can grade a rule.
+
+```go
+// from simgen.ExampleVolManaged (synthetic)
+var dates []time.Time
+var fund, cash []float64
+f, c := 100.0, 100.0
+for d := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC); d.Year() < 2022; d = d.AddDate(0, 0, 1) {
+	if d.Weekday() == time.Saturday || d.Weekday() == time.Sunday {
+		continue
+	}
+	drift, amp := 0.0003, 0.008
+	if d.Year() == 2021 {
+		drift, amp = -0.0008, 0.024
+	}
+	f *= 1 + drift + amp*math.Sin(1.7*float64(len(dates)))
+	c *= 1 + 0.0001
+	dates, fund, cash = append(dates, d), append(fund, f), append(cash, c)
+}
+fundS, _ := marketdata.NewSeries("FUND", dates, fund)
+cashS, _ := marketdata.NewSeries("CASH", dates, cash)
+
+fr, err := simgen.BuildFrame(held{"FUND": fundS, "CASH": cashS}, []string{"CASH", "FUND"}, time.Time{})
+if err != nil {
+	panic(err)
+}
+p, err := simgen.VolManaged(fr, simgen.VolManagedConfig{
+	AssetID: "FUND", CashID: "CASH",
+	TargetVol: 0.12, Lookback: 63, Floor: 0.5, Cap: 1,
+})
+if err != nil {
+	panic(err)
+}
+for _, month := range []string{"2020-09", "2021-09"} {
+	for i, m := range p.Multiplier {
+		if fr.Dates[p.Start+i].Format("2006-01") == month {
+			fmt.Printf("%s: multiplier %.2f\n", month, m)
+			break
+		}
+	}
+}
+fmt.Printf("from %s: managed %.1f, fund %.1f\n", fr.Dates[p.Start].Format(time.DateOnly),
+	p.Values[len(p.Values)-1], 100*fund[len(fund)-1]/fund[p.Start])
+```
+
+```text
+2020-09: multiplier 1.00
+2021-09: multiplier 0.50
+from 2020-03-31: managed 93.6, fund 83.1
+```
+
 ## Building blocks
 
 | Engine | Use |
@@ -89,6 +150,7 @@ gap. That is why the full audit, `pofo -verify-simdata`, grades **level** and
 | `simgen.CapWeighted` | blends whose weights drift with their legs, from a published split (world equity) |
 | `simgen.TreasuryZeroTR` | a zero-coupon Treasury priced off a yield series |
 | the TSMOM engine (`simgen.Example_tsmom`) | a time-series momentum (trend) strategy |
+| `simgen.VolManaged` | one asset at a volatility-managed exposure, the rest in cash (a strategy, not a backcast) |
 
 Each has a runnable example in `go doc github.com/bpineau/pofo/pkg/simgen`.
 The exports listed under "Generator plumbing" at the end of that page

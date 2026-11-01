@@ -135,6 +135,26 @@ first real quote, or else keeps its real quotes.
 
 `pofo -dump list` gives the exact list and dates.
 
+### Strategy lines
+
+One bundled line is not a fund at all but a RULE applied to one:
+`IWDA-VM12` is the iShares Core MSCI World, in euros, held at a
+volatility-managed exposure (Moreira and Muir, 2017). At every month end the
+equity weight is set to 12 % over the fund's realized volatility of the last
+63 sessions, kept between 50 and 100 %, and held until the next month end; the
+rest sits in euro overnight cash (`XEON`). It reaches back to 1972 and goes in
+a portfolio file like any line:
+
+```text
+58 IWDA
+42 IWDA-VM12SIM
+```
+
+The two funds' charges are inside the series; the monthly trades' costs and
+taxes are not. Its equity weight averages below 100 %, so judge it against
+IWDA held at the same average weight before crediting the timing. No real
+series quotes it, so `pofo -verify-simdata` does not grade it.
+
 ### How they are built
 
 Each recipe combines real series: the fund's own older share classes, the
