@@ -17,8 +17,8 @@
 //   - [Validate] grades a reconstruction on its overlap with the real quotes
 //     ([Validation]); [Audit] and [AuditAll] run the full audit behind
 //     "pofo -verify-simdata" ([AuditResult]).
-//   - The engines ([Composite], [CapWeighted], [TSMOM], [DonorChain],
-//     [TreasuryTR], [TreasuryZeroTR]) are listed below.
+//   - The engines ([Composite], [CapWeighted], [TSMOM], [VolManaged],
+//     [DonorChain], [TreasuryTR], [TreasuryZeroTR]) are listed below.
 //
 // Every fee, volatility target and weight here is a FRACTION (0.0085 =
 // 0.85 %/yr), unlike the PERCENT per year of pkg/portfolio.
@@ -39,6 +39,15 @@
 //     lookback, vol target, leverage) for replicating trend strategies: the
 //     signal is refreshed every Rebalance days, risk is rescaled every day
 //     against an exponentially weighted covariance (CovHalfLife);
+//   - VolManaged holds ONE asset at a multiplier of its capital, the rest in
+//     cash: the target volatility over the asset's trailing realized one
+//     (Lookback daily returns), bounded by a floor and a cap, refreshed at
+//     every month end (or every Rebalance steps) and held in between, the
+//     construction of Moreira and Muir (JF 2017). Above a cap of 1 the excess
+//     is financed at the cash rate and pays an optional cost model
+//     (LeverageCosts: fee, financing spread, the reset drag of a daily
+//     leveraged ETF). NewVolManagedBuilder wraps it as a Recipe.Build over a
+//     Fetcher;
 //   - anchorTrend puts a trend reconstruction's month-to-month path back on a
 //     bundled record while the engine keeps supplying the daily texture, which
 //     lifts the monthly agreement with the real funds from ~0.4 to ~0.7. Three
