@@ -76,6 +76,7 @@ func All() []Recipe {
 		vwraRecipe(),
 		vtiRecipe(),
 		icomRecipe(),
+		iwdaVM12Recipe(),
 	}
 }
 
@@ -1158,6 +1159,15 @@ func wpeaRecipe() Recipe {
 // avantisBuild/dbmfeBuild: a EUR-denominated NAV equals the USD NAV divided by
 // the USD-per-EUR rate, so r_eur = (1+r_usd)/(1+r_fx)-1.
 func wpeaBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	return iwdaInEUR("WPEA (MSCI World net TR expressed in EUR)", f, from)
+}
+
+// iwdaInEUR is the iShares Core MSCI World net total return re-expressed in
+// EUR, the series wpeaBuild describes: real IWDA where it quotes, its
+// reconstruction before, converted at the EUR/USD spot. Several recipes hold
+// it: WPEA, which tracks the same index in EUR, and the volatility-managed
+// world equity line (iwdaVM12Recipe).
+func iwdaInEUR(name string, f Fetcher, from time.Time) (*marketdata.Series, error) {
 	recon, err := msciWorld(0.0020, composite("WPEA (MSCI World replication)", []Leg{
 		{ID: "VFINX", Weight: 0.60},
 		{ID: "VTMGX", Weight: 0.40},
@@ -1178,8 +1188,7 @@ func wpeaBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	for i, p := range usd.Points {
 		dates[i], lvl[i] = p.Date, p.Close
 	}
-	return convertDaily("WPEA (MSCI World net TR expressed in EUR)",
-		extend(f), "EURUSD=X", from, dates, lvl)
+	return convertDaily(name, extend(f), "EURUSD=X", from, dates, lvl)
 }
 
 // eresMondeCharge is what the FCPE wrapper costs on top of the two ETFs it

@@ -262,3 +262,97 @@ func (b *VolManagedBuilder) Build(f Fetcher, from time.Time) (*marketdata.Series
 	}
 	return s, nil
 }
+
+// iwdaVM12 is the volatility-managed world equity line's rule: a 12 %/yr
+// target on the trailing 63 sessions (about three months), refreshed at
+// every month end, exposure between 50 and 100 % (no leverage, so no cost
+// model), the rest in euro overnight cash.
+var iwdaVM12 = VolManagedConfig{
+	AssetID: "world-eur", CashID: "cash-eur",
+	TargetVol: 0.12, Lookback: 63, Floor: 0.5, Cap: 1,
+}
+
+// iwdaVM12Recipe ships a STRATEGY rather than a backcast: the iShares Core
+// MSCI World held in EUR at a volatility-managed exposure (VolManaged with
+// iwdaVM12), served as the catalog index IWDA-VM12 so a portfolio file can
+// hold it like any other line. Its two legs are the series a euro investor
+// in that pair holds:
+//
+//   - the world equity leg is iwdaInEUR, real IWDA from 2009 and its MSCI
+//     World reconstruction before, converted at the EUR/USD spot, from the
+//     first day it quotes DAILY (dailyStretch): before 1972 the reconstruction
+//     is month-end only, and a daily volatility read on month-end returns is
+//     not one;
+//   - the cash leg is XEON, the euro overnight swap fund: its real NAV from
+//     2007, the euro overnight chain less its 0.10 %/yr charge before
+//     (xeonHistory).
+//
+// The legs' charges are in their prices, so nothing is deducted on top. The
+// file starts a lookback after the equity leg's daily start and is rebuilt by
+// "pofo -gen-simdata IWDA-VM12" (make simdata). No real series exists to
+// grade it against, so the audit leaves it out (Ungraded).
+func iwdaVM12Recipe() Recipe {
+	return Recipe{
+		ID:   "IWDA-VM12",
+		Name: "iShares Core MSCI World in EUR, volatility-managed, 12 % target (strategy)",
+		Method: "IWDA in EUR (real from 2009, MSCI World reconstruction before, EURUSD spot, daily from 1972) held at " +
+			"m = 12% / realized vol of the last 63 sessions, bounded to [0.5, 1], refreshed at month ends and held in between, " +
+			"the rest in XEON (real from 2007, euro overnight chain less 0.10%/yr before); Moreira-Muir (JF 2017)",
+		Build:    iwdaVM12Build,
+		Ungraded: "a volatility-managed strategy on IWDA in EUR, not a fund: no real series quotes it",
+	}
+}
+
+// iwdaVM12Build assembles the two legs and runs the engine on them.
+func iwdaVM12Build(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	world, err := iwdaInEUR("MSCI World in EUR (IWDA)", f, from)
+	if err != nil {
+		return nil, err
+	}
+	cash, err := xeonHistory(f, from)
+	if err != nil {
+		return nil, err
+	}
+	b, err := NewVolManagedBuilder("IWDA in EUR, volatility-managed 12 %", iwdaVM12)
+	if err != nil {
+		return nil, err
+	}
+	return b.Build(seriesFetcher{own: map[string]*marketdata.Series{
+		iwdaVM12.AssetID: dailyStretch(world),
+		iwdaVM12.CashID:  cash,
+	}, fallback: f}, from)
+}
+
+// xeonHistory is XEON as a SIM consumer reads it: the fund's real NAV where it
+// quotes, its recipe's reconstruction before. The reconstruction alone stands
+// when the real NAV cannot be fetched.
+func xeonHistory(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	r := xeonRecipe()
+	recon, err := r.Build(f, from)
+	if err != nil {
+		return nil, err
+	}
+	if real, err := f.Fetch(r.SpliceReal, from); err == nil && real != nil && len(real.Points) > 300 {
+		return Splice(real.WithoutEstimates(), recon), nil
+	}
+	return recon, nil
+}
+
+// dailyStretch drops the front of s up to its last gap of more than ten calendar
+// days, which leaves the stretch that quotes daily (a reconstruction that is
+// month-end before its daily shape begins). A series with no such gap is
+// returned as it is.
+func dailyStretch(s *marketdata.Series) *marketdata.Series {
+	cut := 0
+	for i := 1; i < len(s.Points); i++ {
+		if s.Points[i].Date.Sub(s.Points[i-1].Date) > 10*24*time.Hour {
+			cut = i
+		}
+	}
+	if cut == 0 {
+		return s
+	}
+	out := *s
+	out.Points = s.Points[cut:]
+	return &out
+}

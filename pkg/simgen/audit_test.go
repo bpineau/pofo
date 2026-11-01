@@ -356,3 +356,21 @@ func TestAuditMachineOutput(t *testing.T) {
 		t.Errorf("text summary has %d lines, want a title, a header and one row per recipe:\n%s", rows, out)
 	}
 }
+
+// A strategy has no real series to be graded on: Audit reports it unmeasured
+// without building it, and AuditAll leaves it out.
+func TestAuditLeavesUngradedRecipesOut(t *testing.T) {
+	built := false
+	r := Recipe{ID: "RULE", Name: "a rule", Method: "canned", Ungraded: "a strategy",
+		Build: func(Fetcher, time.Time) (*marketdata.Series, error) { built = true; return nil, nil }}
+	a := Audit(fakeFetcher{}, r)
+	if a.Measured() || a.Level != VerdictUnknown || !strings.Contains(a.Err, "a strategy") || built {
+		t.Errorf("Audit = %+v, built %v; want unmeasured, the reason in Err, nothing built", a, built)
+	}
+	if groups := AuditAll(fakeFetcher{}, []Recipe{r}, nil); len(groups) != 0 {
+		t.Errorf("AuditAll kept an ungraded recipe: %+v", groups)
+	}
+	if v, ok := Find("IWDA-VM12"); !ok || v.Ungraded == "" {
+		t.Errorf("the shipped volatility-managed recipe must be Ungraded: %+v", v)
+	}
+}

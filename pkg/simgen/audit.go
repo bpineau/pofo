@@ -221,9 +221,15 @@ var auditCaveats = map[string]string{
 // components the recipe needs (wrap it with WithRefData for the bundled
 // reference series); a reference candidate that f answers with a pofo
 // reconstruction rather than a quote is rejected rather than believed, since
-// a series the engine already contains cannot arbitrate it.
+// a series the engine already contains cannot arbitrate it. A recipe that
+// declares itself Ungraded is returned unmeasured, with its reason in Err.
 func Audit(f Fetcher, r Recipe) AuditResult {
 	a := AuditResult{ID: r.ID, Name: r.Name, Method: r.Method, Group: groupOf(r.ID), Caveat: auditCaveats[r.ID]}
+	if r.Ungraded != "" {
+		a.Err = "not graded: " + r.Ungraded
+		a.Level, a.Path, a.Score = VerdictUnknown, VerdictUnknown, -1
+		return a
+	}
 
 	engine, err := r.Build(f, ComponentsFrom)
 	if err != nil {
@@ -293,9 +299,14 @@ func Audit(f Fetcher, r Recipe) AuditResult {
 // AuditAll audits every recipe in rs and lays them out in reading order,
 // worst first inside each family. progress, when non-nil, is called with each
 // identifier before it is measured: the whole pass fetches a lot and is slow.
+// The Ungraded recipes (strategies, which no real series can arbitrate) are
+// left out.
 func AuditAll(f Fetcher, rs []Recipe, progress func(id string)) []AuditGroup {
 	byGroup := map[string][]AuditResult{}
 	for _, r := range rs {
+		if r.Ungraded != "" {
+			continue
+		}
 		if progress != nil {
 			progress(r.ID)
 		}

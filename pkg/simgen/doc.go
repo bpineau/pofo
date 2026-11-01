@@ -47,7 +47,9 @@
 //     is financed at the cash rate and pays an optional cost model
 //     (LeverageCosts: fee, financing spread, the reset drag of a daily
 //     leveraged ETF). NewVolManagedBuilder wraps it as a Recipe.Build over a
-//     Fetcher;
+//     Fetcher. It is a STRATEGY applied to an asset, not a backcast of one:
+//     its recipe (IWDA-VM12, IWDA in EUR at a 12 % target, served as a
+//     catalog index) sets Recipe.Ungraded, and the audit leaves it out;
 //   - anchorTrend puts a trend reconstruction's month-to-month path back on a
 //     bundled record while the engine keeps supplying the daily texture, which
 //     lifts the monthly agreement with the real funds from ~0.4 to ~0.7. Three

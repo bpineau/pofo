@@ -65,6 +65,14 @@ type Recipe struct {
 	// its own overlap; a recipe passes the same slice to its Build, so the two
 	// cannot drift apart. Empty for the recipes that are not chains.
 	Donors []string
+
+	// Ungraded, when non-empty, says why the recipe has no real series to be
+	// graded against: a STRATEGY applied to an asset (VolManaged) is a rule,
+	// not the past of something that quotes, so Validate has nothing to
+	// compare it with. Audit then reports it unmeasured with this reason,
+	// building and fetching nothing, and AuditAll leaves it out. Empty for
+	// every backcast.
+	Ungraded string
 }
 
 // Frame holds daily returns of several components aligned on the dates where

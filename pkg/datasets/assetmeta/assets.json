@@ -2759,6 +2759,57 @@
     "since": "2009-09-25"
   },
   {
+    "id": "IWDA-VM12",
+    "isin": "",
+    "aliases": [],
+    "name": "iShares Core MSCI World in EUR, volatility-managed, 12 % target (strategy)",
+    "ucits": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "EUR",
+    "fees": 0,
+    "asset_class": "equity",
+    "underlying": "iShares Core MSCI World (IE00B4L5Y983) held in EUR at 12 % over its realized volatility of the last 63 sessions, bounded to 50-100 %, refreshed monthly, the rest in euro overnight cash (XEON)",
+    "benchmark_index": "MSCI World Index (Net TR), volatility-managed",
+    "strategy": "volatility-managed",
+    "geography": {
+      "Australia": 2,
+      "Canada": 3,
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other developed": 3,
+      "Other eurozone": 3,
+      "Switzerland": 2,
+      "UK": 3,
+      "US": 73
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 11,
+      "Information Technology": 32,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
+    "distribution": "accumulating",
+    "leverage": 1,
+    "notes": "A STRATEGY, not a fund: the Moreira-Muir volatility-managed rule (JF 2017) applied to IWDA in EUR, what a holder of IWDA and XEON who follows it month by month would have had. The two funds' charges are inside the series (fees 0 here), trading costs and taxes on the monthly trades are not. Its equity weight averages below 100 %, so compare it with IWDA at the same average exposure before crediting the timing. No real series quotes it, so -verify-simdata does not grade it.",
+    "confidence": "high",
+    "sources": [
+      "https://doi.org/10.1111/jofi.12513",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4L5Y983"
+    ],
+    "as_of": "2026-09",
+    "since": "1972-03-31"
+  },
+  {
     "id": "IE00B4NCWG09",
     "isin": "IE00B4NCWG09",
     "aliases": [],

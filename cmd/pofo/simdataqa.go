@@ -31,7 +31,8 @@ import (
 // to w as plain text (simgen.WriteAuditText), one row per recipe. Under
 // asJSON it prints the whole audit to w as JSON (the []simgen.AuditGroup,
 // in reading order) and writes no HTML: that is the form a program reads,
-// never the page.
+// never the page. A recipe that is a strategy (simgen.Recipe.Ungraded) has
+// nothing to be graded against: it is left out, with a log line when named.
 func runVerifySimdata(ctx context.Context, client *marketdata.Client, w io.Writer, opt *options, ids []string, asJSON bool) error {
 	recipes := simgen.All()
 	if len(ids) > 0 {
@@ -40,6 +41,10 @@ func runVerifySimdata(ctx context.Context, client *marketdata.Client, w io.Write
 			r, ok := simgen.Find(id)
 			if !ok {
 				return fmt.Errorf("no recipe for %q", id)
+			}
+			if r.Ungraded != "" {
+				log.Printf("%s: not graded: %s", r.ID, r.Ungraded)
+				continue
 			}
 			recipes = append(recipes, r)
 		}
