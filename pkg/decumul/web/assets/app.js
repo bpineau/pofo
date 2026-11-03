@@ -147,6 +147,23 @@ const MODELKEY = {
   "Sequence stress": "stress", "Broad-sample": "broad", "Lost decade": "lost",
 };
 
+// MODELGROUPS frames the strip's columns by what they are built from, so a
+// stress column is never read as a forecast for the reader's own portfolio.
+// Each group's models are contiguous in the order the server returns them.
+const MODELGROUPS = [
+  {
+    label: "your portfolio",
+    models: ["Historical windows", "Block bootstrap", "Student-t", "Sequence stress"],
+    help: "Built from your own portfolio: its replayed history, its resampled returns, or the three sliders fitted to it (blended toward the broad-sample prior when the history is shorter than the horizon). These are the columns to plan on.",
+  },
+  {
+    label: "stress tests · not forecasts",
+    models: ["Broad-sample", "Lost decade"],
+    help: "Deliberate crash tests, not probabilities for your plan. Broad-sample replays a generic domestic 60/40 across 16 countries since 1870 and ignores your portfolio and sliders. Lost decade forces a sticky, decade-long bear onto your own parameters, deeper the higher your volatility.",
+  },
+];
+const modelGroup = name => MODELGROUPS.findIndex(g => g.models.includes(name));
+
 // ---------------------------------------------------------------------------
 // Build the rail.
 // ---------------------------------------------------------------------------
@@ -1398,14 +1415,41 @@ async function renderModels(b, id) {
   renderReadout(central >= 0 ? ms[central].ruin : NaN, r.targetRuin || 0.05);
   const eyebrow = document.querySelector(".hero-verdict .eyebrow");
   if (eyebrow && central >= 0) eyebrow.textContent = "Ruin probability · " + ms[central].name;
-  const sel = i => (i === central ? ` class="sel"` : "");
+  // Columns are framed by group (MODELGROUPS): a group's first and last
+  // columns carry the frame's sides, and a narrow spacer separates frames.
+  const grp = ms.map(m => modelGroup(m.name));
+  const first = i => i === 0 || grp[i] !== grp[i - 1];
+  const last = i => i === ms.length - 1 || grp[i] !== grp[i + 1];
+  const sel = i => {
+    const c = [];
+    if (i === central) c.push("sel");
+    if (grp[i] >= 0 && first(i)) c.push("gl");
+    if (grp[i] >= 0 && last(i)) c.push("gr");
+    return c.length ? ` class="${c.join(" ")}"` : "";
+  };
+  const gap = (i, tag) => (i > 0 && first(i) ? `<${tag} class="gsp"></${tag}>` : "");
   // Every CELL carries its own explanation, not just the row and column
   // headers: a reading of this table is "which model, which statistic", and
   // a cell is where the pointer actually lands.
   const row = (label, help, fn) => `<tr><th data-help="${esc(help)}">${label}</th>` +
-    ms.map((m, i) => `<td${sel(i)} data-help="${esc(m.name + " · " + help)}">${fn(m)}</td>`).join("") + `</tr>`;
-  const head = `<tr><th></th>${ms.map((m, i) =>
+    ms.map((m, i) => gap(i, "td") + `<td${sel(i)} data-help="${esc(m.name + " · " + help)}">${fn(m)}</td>`).join("") + `</tr>`;
+  const head = `<tr><th></th>${ms.map((m, i) => gap(i, "th") +
     `<th${sel(i)} data-model="${esc(m.name)}" data-help="${esc(m.help)}. CLICK to run every detail section of the page (spending, lifecycle, risk, buffer…) under this model.">${m.name}</th>`).join("")}</tr>`;
+  // Each group's caption closes its frame at the bottom.
+  let foot = "<tr><th></th>";
+  for (let i = 0; i < ms.length;) {
+    let j = i;
+    while (!last(j)) j++;
+    const g = MODELGROUPS[grp[i]];
+    // Without a loaded portfolio (no data-driven column), the first group
+    // is built from the sliders alone, and says so.
+    const label = g && grp[i] === 0 && !ms.some(m => m.name === "Block bootstrap") ? "your sliders" : g && g.label;
+    foot += gap(i, "td") + (g
+      ? `<td class="gcap" colspan="${j - i + 1}" data-help="${esc(g.help)}">${esc(label)}</td>`
+      : `<td colspan="${j - i + 1}"></td>`);
+    i = j + 1;
+  }
+  foot += "</tr>";
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = row("Ruin",
     "Share of simulated retirements that run out of money, at your planned spend AND under the spending rule you selected (flex cut, guardrails, % of portfolio, ABW, bounded percent). An adaptive rule buys this number down by lowering the income you actually live on, so it is not comparable to the fixed rule's: read section 04 before reading it as safety.",
@@ -1417,7 +1461,7 @@ async function renderModels(b, id) {
     "Median real wealth left at the end of the horizon, at your planned spend.",
     m => fmtW(m.medianWealth));
   document.getElementById("modelstrip").innerHTML =
-    `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
+    `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody><tfoot>${foot}</tfoot></table>`;
   for (const th of document.querySelectorAll(".modeltab th[data-model]")) {
     th.addEventListener("click", () => {
       const key = MODELKEY[th.getAttribute("data-model")];
