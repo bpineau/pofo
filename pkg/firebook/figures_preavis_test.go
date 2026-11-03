@@ -127,7 +127,7 @@ func TestPreavisQuotesTheDashboardThresholds(t *testing.T) {
 	host := bookArticle(t, "ruine-et-probabilites")
 	for _, want := range []string{
 		"::: figure preavis-1966",
-		"et vingt ans sur le pire millésime connu",
+		"et vingt ans sur le pire millésime américain connu",
 		"Le rouge du millésime 1966 se confirme en 1974-1975 ; le capital ne s'épuise qu'en 1994.",
 	} {
 		if !strings.Contains(host, want) {

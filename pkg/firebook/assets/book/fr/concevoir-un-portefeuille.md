@@ -54,7 +54,7 @@ La carte est celle de l'article lui-même, les risques nommés à la question 1 
 
 Une conception est une hypothèse. On la teste sur les queues de distribution, pas sur la moyenne. La moyenne a toujours l'air acceptable, tandis que le plan meurt dans les pires chemins. Dans un simulateur ([[utiliser-la-page-fire]], [[lire-un-fan-chart]]), lisez trois choses. Les millésimes tristement célèbres, 1966 et 2000, pour voir si la conception survit aux départs qui ont brisé le plan naïf ([[valorisations-et-cape]]). Les modèles de stress et l'échantillon large, pas seulement le scénario central ([[pieges-des-simulateurs]]). Enfin le percentile 5 et le taux de retrait sûr à **votre** tolérance de ruine, pas la médiane ([[ruine-et-probabilites]]).
 
-Le verdict à lire est l'arbitrage. Une bonne brique défensive relève les pires chemins tout en coûtant un peu sur la médiane. Si une brique ne bouge pas les pires chemins, elle ne défend rien. Si elle abîme la médiane, elle est trop grosse. Testez la conception, puis dimensionnez chaque brique selon l'arbitrage que vous acceptez.
+Le verdict à lire est l'arbitrage. Une bonne brique défensive relève les pires chemins tout en coûtant un peu sur la médiane. Si une brique ne bouge pas les pires chemins, elle ne défend rien (vérifiez tout de même que le modèle l'utilise : le broad-sample, par exemple, ignore vos poids). Si elle coûte sur la médiane plus que vous ne l'acceptez, elle est trop grosse. Testez la conception, puis dimensionnez chaque brique selon l'arbitrage que vous acceptez.
 
 ## 7. Quand changer ?
 

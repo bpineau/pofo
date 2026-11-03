@@ -1,5 +1,5 @@
 # Inflation-linked bonds: the only contract written in real terms
-<!-- source: obligations-indexees @ 57dbb454f96e -->
+<!-- source: obligations-indexees @ 2b829c6ea36b -->
 
 This whole book thinks in constant money. A retiree's spending is real, the floor is real, and ruin happens in real terms ([[inflation-and-withdrawal-rates]]). Yet nearly everything a retiree owns promises nominal. A conventional bond paying 3% while inflation runs at 5% makes its owner poorer on a schedule, by contract.
 
@@ -15,7 +15,7 @@ An inflation-linked bond promises this: your principal × (the price index at ma
 
 **How it works.** The principal is re-indexed continuously to a reference price index, CPI-U for TIPS, the domestic consumer price index for their equivalents elsewhere. The coupon rate is fixed and applies to that re-indexed principal, so both legs follow prices. At maturity most issues, TIPS included, repay at least the original principal: a free deflation floor.
 
-**The breakeven, the way to read them.** At any moment, put the nominal yield of a conventional bond of the same maturity next to the real yield of the linker. The difference is the inflation breakeven, the average inflation rate that would make the two investments equivalent. Nominal 10-year at 3.1%, real 10-year at 1.0%, and the breakeven is 2.1%. The decision rule follows. If you expect (or fear) inflation above the breakeven, the linker wins; below it, the nominal does. For a retiree the insurance reading is the truer one. At a breakeven near 2%, protection against any inflation above that costs no premium at all against the nominal, as long as inflation comes in at 2%. That is historically cheap insurance against the plan's first enemy ([[inflation-and-withdrawal-rates]]). The market sells it at the price of its central scenario, with no surcharge for the tail.
+**The breakeven, the way to read them.** At any moment, put the nominal yield of a conventional bond of the same maturity next to the real yield of the linker. The difference is the inflation breakeven, the average inflation rate that would make the two investments equivalent. Nominal 10-year at 3.1%, real 10-year at 1.0%, and the breakeven is 2.1%. The decision rule follows. If you expect (or fear) inflation above the breakeven, the linker wins; below it, the nominal does. For a retiree the insurance reading is the truer one. At a breakeven near 2%, protection against any inflation above that costs no premium at all against the nominal, as long as inflation comes in at 2%. That is historically cheap insurance against the plan's first enemy ([[inflation-and-withdrawal-rates]]). The market sells it at roughly the price of the inflation it expects, with no big surcharge for the extreme scenarios.
 
 **So why does almost nobody hold them?** Three historical reasons. Real yields were negative from 2015 to 2021. The linker then guaranteed a real loss, and "inflation minus 1%" excited no one, even though it was already the best contract available in real terms. They are also nobody's default: no plan menu pushes them, and a quoted real yield reads like a typo to an investor raised on nominal ones. And then 2022, the great misunderstanding. Since 2023-24 real yields have been clearly positive again, around 2% on TIPS, and the asset class is back to being what it should be, the building block a retiree's floor is made of.
 
@@ -68,7 +68,7 @@ The same example, seen from both sides. On the left what the couple buys, on the
 ## The essentials
 
 - The linker is the only asset whose contract is written in real terms, "inflation plus the real yield on the label, guaranteed". Conceptually it is the retiree's risk-free asset, the yardstick every risky portfolio has to justify its premium against.
-- You read it through the breakeven, real against nominal: holding it is a bet on inflation running above that number (~2%). Inflation insurance sells with no surcharge for the tail, which is what makes it historically cheap.
+- You read it through the breakeven, real against nominal: holding it is a bet on inflation running above that number (~2%). Inflation insurance sells at roughly the price of expected inflation, which makes it reasonably cheap.
 - 2022 is an instruction manual, not a refutation. Before maturity a linker carries real-rate risk times duration. Hence short durations in the portfolio sleeve, and hold-to-maturity for matching the floor.
 - The result worth knowing: a ladder of linkers guarantees in real terms what the 4% rule only hopes for when real yields sit at 1 to 2% (about 4.5% at 2% real in 2023-24, about 3.9% at 1%). A US investor can build that ladder rung by rung, at auction or on the secondary market.
 - Dose: 25 to 50% of the bond sleeve (5 to 15% of the total), plus the partial ladder of the floor for rigid plans. On tax, put the sleeve in a tax-advantaged account: the accretion is taxed as it accrues, and phantom income eats the protection in a taxable one.

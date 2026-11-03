@@ -1,7 +1,7 @@
 # The ten mistakes that wreck a FIRE plan
-<!-- source: erreurs-classiques-fire @ 6095978c4216 -->
+<!-- source: erreurs-classiques-fire @ 8f07a8af01b7 -->
 
-FIRE plans rarely fail from plain bad luck. Hostile markets are already in the models, and a well-built plan absorbs them. They fail from construction errors, almost always the same ones, documented by twenty years of forums, post-mortem blog posts and research.
+FIRE plans rarely fail from plain bad luck. Hostile markets are already in the models, and a well-built plan absorbs most of them. What derails a plan, most of the time, is a construction error, almost always the same ones, documented by twenty years of forums, post-mortem blog posts and research.
 
 This page lists the ten deadliest, in the order you meet them while building a plan, each with its mechanism, its warning sign and its fix. Six of them can be measured, and the ranking by cost is not the order of the list. The chart below does that ranking. Read the page twice: once before you build your plan, and again while you are running it ([[the-annual-review]]).
 
@@ -45,13 +45,13 @@ A portfolio that "averages 7%" does not hand 7% to a retiree who is withdrawing:
 
 ## 6. The one-regime portfolio
 
-All equities because "over the long run it always goes up", or the mirror image, 60% parked in cash and stable-value holdings because "that is safe". Both ignore that market regimes exist ([[market-regimes]]). All-equity swallows lost decades in real terms (Japan 1990, the world 2000 to 2009) at the worst possible moment. Over fifty years it does not fail more often than a 60/40, but it forces three more years of living on a cut budget, and those are years you actually live through. The all-bond portfolio, meanwhile, gets eaten alive by a decade of inflation (the 1970s, 2022). Measured on the reference plan, that is the most expensive mistake on this page. The portfolio that "lives off its dividends" is the same trap in disguise, and no safer: a dividend gets cut in a crisis, and it is a forced withdrawal from your own capital anyway ([[false-defensive-assets]]). A withdrawal portfolio has to survive all **four** growth and inflation regimes, not the most likely one ([[all-weather-portfolios]], [[defensive-assets]]).
+All equities because "over the long run it always goes up", or the mirror image, 60% parked in cash and stable-value holdings because "that is safe". Both ignore that market regimes exist ([[market-regimes]]). All-equity swallows lost decades in real terms (Japan 1990, the world 2000 to 2009) at the worst possible moment. In our reference plan, over fifty years, it does not fail more often than a 60/40, but it forces three more years of living on a cut budget, and those are years you actually live through. The all-bond portfolio, meanwhile, gets eaten alive by a decade of inflation (the 1970s, 2022). Measured on the reference plan, that is the most expensive mistake on this page. The portfolio that "lives off its dividends" is the same trap in disguise, and no safer: a dividend gets cut in a crisis, and it is a forced withdrawal from your own capital anyway ([[false-defensive-assets]]). A withdrawal portfolio has to survive all **four** growth and inflation regimes, not the most likely one ([[all-weather-portfolios]], [[defensive-assets]]).
 
 **Fix**: diversify by regime (global equities, duration, gold and/or linkers, possibly some [[managed-futures|managed futures]]), and run an explicit test against persistent inflation and against a lost decade.
 
 ## 7. Betting everything on flexibility
 
-"If things go badly, we will spend less." True, useful, and bounded. The research ([[flexibility-in-practice]], ERN parts 23 to 25) puts realistic flexibility, a 10 to 20% cut you can hold for a few years, at roughly 0.3 to 0.5 points of withdrawal rate, and no more, because bad sequences sometimes run past ten years. A 40% cut "on paper" does not exist if the real floor sits at 90% of the budget. Measured, this is one of the two most expensive mistakes on the page, because it gets used to justify a higher withdrawal rate, and that rate is entirely real.
+"If things go badly, we will spend less." True, useful, and bounded. The research ([[flexibility-in-practice]], ERN parts 23 to 25) puts realistic flexibility, a 10 to 20% cut you can hold for a few years, at roughly 0.3 to 0.5 points of withdrawal rate in those tests, not much more, because bad sequences sometimes run past ten years. A 40% cut "on paper" does not exist if the real floor sits at 90% of the budget. Measured, this is one of the two most expensive mistakes on the page, because it gets used to justify a higher withdrawal rate, and that rate is entirely real.
 
 **Fix**: put a number on the real floor, the one you can hold for **five** years, morale included, and write it into a rule decided in advance ([[floor-and-ceiling]], [[morningstar-guardrails]]) rather than into an intention.
 
@@ -59,7 +59,7 @@ All equities because "over the long run it always goes up", or the mirror image,
 
 Every variant of the same bias: picking the model that gives the answer you want, usually the most optimistic one (a historical backtest of your own portfolio), raising the return assumption "because the S&P did 10%", rounding an 8% failure probability down to "about zero", rerunning until a good number turns up. The simulator stops being an instrument and becomes a machine for proving yourself right ([[monte-carlo-strengths-and-limits]], [[reading-a-fan-chart]]).
 
-**Fix**: read several models side by side, starting with the ones you do not like. One model on its own is an opinion; the spread between several is the information ([[historical-vs-parametric]]). Plan somewhere between the central case and the broad sample, and treat the lost decade as a scenario to hold up under, not an unlikely one.
+**Fix**: read several models side by side, starting with the ones you do not like. One model on its own is an opinion; the spread between several is the information ([[historical-vs-parametric]]). Plan on the central case, then run the broad sample (a domestic 60/40 from the past century, which ignores your portfolio) and the lost decade (a long synthetic bear market) as crash tests to hold up under, not as unlikely scenarios nor as a range for your risk.
 
 ## 9. Neglecting the human factor
 
@@ -83,13 +83,13 @@ Run through it before you leave, then once a year:
 - [ ] Withdrawal rate consistent with the horizon (3 to 3.5% rigid beyond a 40-year horizon, or explicit margins)
 - [ ] Portfolio tested against the four regimes, not only the central scenario
 - [ ] Spending floor quantified and realistic; adjustment rule written down
-- [ ] Failure probability acceptable even in the broad-sample model; lost decade survivable
+- [ ] Failure probability acceptable in the central model; Broad-sample and Lost decade crash tests passed at a price you accept
 - [ ] Cash buffer sized, with the rules for drawing on it and refilling it decided ([[cash-buffer]], [[refilling-the-buffer]])
 - [ ] Life project prototyped; partner agreed on the budget and on the life
 - [ ] Exit criteria written down, with a review date
 
 ::: terrain What the post-mortems say
-The failure stories posted on FIRE forums share one striking constant: almost none of them says "the markets ruined me". They say "I had underestimated my spending by 30%", "the divorce cut the capital in half" ([[couples-and-family]]), "I got bored and burned cash on projects", "I never saw the tax coming". The markets were in the models. It was the inputs and the life that were not. That is good news: mistakes like those can all be fixed before you leave.
+The failure stories posted on FIRE forums share one striking constant: they rarely say "the markets ruined me". They say "I had underestimated my spending by 30%", "the divorce cut the capital in half" ([[couples-and-family]]), "I got bored and burned cash on projects", "I never saw the tax coming". The markets were in the models. It was the inputs and the life that were not. That is good news: mistakes like those can all be fixed before you leave.
 :::
 
 ---

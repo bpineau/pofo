@@ -71,7 +71,7 @@
 //
 // Spending rules. The kernel takes one policy per plan and applies them in a
 // fixed precedence: Amortize (ABW/TPAW), Bounded (Vanguard dynamic spending),
-// Percent (VPW), RiskGuard (risk-based guardrails), Guard (Guyton-Klinger),
+// Percent (percentage of portfolio), RiskGuard (risk-based guardrails), Guard (Guyton-Klinger),
 // then the plain fixed rule with its optional Flex cut and Ratchet. The two
 // guardrail flavours share one architecture, +-10 % moves when the withdrawal
 // rate leaves a band, and differ only in the sensor: Guard bands the rate the

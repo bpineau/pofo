@@ -70,7 +70,7 @@ var Categories = []Category{
 			{Slug: "queues-epaisses", Title: "Queues épaisses, crises et Student-t", Blurb: "Pourquoi les marchés produisent dix fois trop de catastrophes pour la courbe en cloche, et ce que le curseur df décide vraiment."},
 			{Slug: "lire-un-fan-chart", Title: "Lire un fan chart et des percentiles sans se tromper", Blurb: "L'anatomie du cône de richesse, sa géométrie qui parle, les cinq erreurs de lecture classiques et les autres éventails de la page."},
 			{Slug: "pieges-des-simulateurs", Title: "Les pièges des simulateurs", Blurb: "Pourquoi cinq outils rendent cinq verdicts pour le même plan : les dix pièges hiérarchisés, et la grille d'audit en dix questions."},
-			{Slug: "rendre-monte-carlo-pertinent", Title: "Rendre un Monte-Carlo pertinent (blending, régimes, stress)", Blurb: "Les six corrections qui transforment le générateur de nombres en instrument : du blending vers le prior mondial au plan réel simulé."},
+			{Slug: "rendre-monte-carlo-pertinent", Title: "Rendre un Monte-Carlo pertinent (blending, régimes, stress)", Blurb: "Les six corrections qui transforment le générateur de nombres en instrument : du blending vers le prior broad-sample au plan réel simulé."},
 			{Slug: "regimes-de-marche", Title: "Les régimes de marché : croissance × inflation, sticky bears", Blurb: "Les saisons des marchés, la grille à quatre quadrants, le cauchemar stagflationniste du rentier, et l'audit de portefeuille par régime."},
 		},
 	},

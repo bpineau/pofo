@@ -1,6 +1,6 @@
 # La bibliothèque : sites, papiers, livres, outils
 
-Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), l'ensemble classé par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent). Et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
+Les références sur lesquelles le livre s'appuie, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), l'ensemble classé par nature, avec le chapitre du livre qui s'appuie dessus. Les références sont données par auteurs, année et titre complet, de quoi retrouver le document (les URL changent, les noms restent ; pour un working paper mis à jour, lisez la dernière version). Et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
 
 ## Les séries et blogs de référence
 
@@ -42,7 +42,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Bengen (1994), « Determining Withdrawal Rates Using Historical Data » ; Cooley-Hubbard-Walz (1998, l'étude Trinity)** : les fondations. Courtes, lisibles, en libre accès. [[etude-trinity]]
 
-**Anarkulova, Cederburg, O'Doherty & Sias (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions. Les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
+**Anarkulova, Cederburg, O'Doherty & Sias (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets »  ; Anarkulova, Cederburg & O'Doherty (2023), « Beyond the Status Quo: A Critical Assessment of Lifecycle Investment Advice »** : le premier recalcule le taux de retrait sur l'échantillon mondial de 38 pays, la référence prudente moderne ; le second applique le même échantillon au cycle de vie, d'où le débat 100 % actions (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
 
 **Jorda, Knoll, Kuvshinov, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays. La matière première du broad-sample. [[historique-vs-parametrique]]
 
@@ -60,7 +60,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Reinhart & Sbrancia (2011), « The Liquidation of Government Debt »** : la répression financière documentée. [[inflation-histoire]]
 
-**Redington (1952), « Review of the Principles of Life-Office Valuations » ; Fisher & Weil (1971), « Coping with the Risk of Interest-Rate Fluctuations » ; Leibowitz (1986), « The Dedicated Bond Portfolio in Pension Funds »** : l'immunisation et l'appariement des flux, des actuaires de l'assurance-vie aux fonds de pension. La source de l'échelle obligataire. [[echelle-obligataire]]
+**Redington (1952), « Review of the Principles of Life-Office Valuations » ; Fisher & Weil (1971), « Coping with the Risk of Interest-Rate Fluctuations » ; Leibowitz (1986), « The Dedicated Bond Portfolio in Pension Funds », parties I et II** : l'immunisation et l'appariement des flux, des actuaires de l'assurance-vie aux fonds de pension. La source de l'échelle obligataire. [[echelle-obligataire]]
 
 **Dimson, Marsh & Staunton, *Global Investment Returns Yearbook* (annuel, UBS)** : le siècle mondial en chiffres, pays par pays, mis à jour chaque année. Le rapport annuel à lire. [[diversification-internationale]]
 
@@ -82,7 +82,7 @@ Cette section n'est pas une liste de liens, c'est le calendrier de votre revue a
 
 Chaque source a son chapitre d'usage, [[rendements-attendus|le μ prospectif]], [[guardrails-morningstar|les guardrails]], [[diversification-internationale|les primes par pays]], [[valorisations-et-cape|le CAPE]], [[suivre-inflation|l'inflation]] et [[retraite-legale|la pension]]. Le SG Trend Index, lui, n'entre pas dans ce tableau, car il ne rafraîchit aucun paramètre du plan. Il reste l'étalon auquel comparer tout véhicule de trend ([[managed-futures]]).
 
-Une seule règle de discipline accompagne le calendrier. Relevez ces valeurs une fois par an, à date fixe, et surtout pas au fil des titres de presse. Un μ recalibré en pleine baisse n'est plus une prévision, c'est une décision de marché déguisée ([[psychologie-du-retrait]]).
+Une seule règle de discipline accompagne le calendrier. Relevez ces valeurs une fois par an, à date fixe, et surtout pas au fil des titres de presse. Et ne les recopiez pas telles quelles dans le μ du simulateur : ces maisons publient le plus souvent des rendements nominaux, géométriques, dans leur devise, quand le μ du livre est réel et arithmétique ([[rendements-attendus]]). Un μ recalibré en pleine baisse n'est plus une prévision, c'est une décision de marché déguisée ([[psychologie-du-retrait]]).
 
 ## Les sources officielles françaises
 

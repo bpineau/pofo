@@ -1,5 +1,5 @@
 # Building it with US-listed ETFs: the retiree's shopping list
-<!-- source: etf-ucits-europeens @ 50c1ffeede1d -->
+<!-- source: etf-ucits-europeens @ f81a152b6833 -->
 
 The withdrawal literature is written in dollars, and the plumbing it assumes is already sitting in your brokerage account. Every block in this part of the book has a US-listed fund behind it, and most of them cost between three and twenty-five basis points a year. Access is not the problem. The problem is that the American fund industry will sell you an expensive version of a cheap idea in every aisle, and that the tax code cares a great deal about which account each block goes in.
 

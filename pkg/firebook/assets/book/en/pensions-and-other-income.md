@@ -1,5 +1,5 @@
 # Pensions and other income in the plan
-<!-- source: revenus-complementaires @ 42b0059e0f40 -->
+<!-- source: revenus-complementaires @ a0edcce49785 -->
 
 Almost no real plan is a portfolio alone against the world. There is Social Security, and a pension if you have one, arriving one day. Sometimes rent ([[real-estate-in-retirement]]). Work in small doses ([[going-back-to-work]]). An annuity, and maybe a distant inheritance. How you **count** those flows matters more to the plan than most portfolio choices do. Sensitivity work ranks the pension second among the variables of a plan, right behind spending.
 
@@ -23,7 +23,7 @@ $15k a year of income in a plan that spends $50k does not "cut withdrawals by 30
 
 **1. It cuts net withdrawals, but only once it starts.** That much is obvious, and the timing is the subtle part. A pension that starts in year 17 cuts **nothing** during the bridge. That is why an early retirement runs in two regimes: an uncovered phase, the bridge years, then a covered phase ([[horizon-and-life-expectancy]]). And that is what sets up the next mechanism.
 
-**2. It shortens the horizon at risk.** This is what a pension really buys you. The "50-year plan" becomes a 17-year bridge with the rest already covered. Sequence risk and the cliff of the fixed rule then bear on the bridge alone ([[sequence-of-returns]]). That is why adding the pension to the model often divides failure by two to four, and why leaving it out is the most expensive omission there is ([[ten-plan-wrecking-mistakes]]). The pension shows up **precisely** in the long scenarios, the ones where the portfolio is running out of breath.
+**2. It shortens the horizon at risk.** This is what a pension really buys you. The "50-year plan" becomes a 17-year bridge with the rest already covered. Sequence risk and the cliff of the fixed rule then bear mostly on the bridge, without vanishing afterwards when the pension covers only part of the budget ([[sequence-of-returns]]). That is why adding the pension to the model often divides failure by two to four, and why leaving it out is the most expensive omission there is ([[ten-plan-wrecking-mistakes]]). The pension shows up **precisely** in the long scenarios, the ones where the portfolio is running out of breath.
 
 **3. It crushes the longevity tail.** A **lifelong** flow (a pension, an annuity) covers the one risk capital covers badly: living a very long time ([[annuities-and-safety-first]], [[horizon-and-life-expectancy]]). Look at mortality-weighted failure. The scenarios that read "alive, broke, 95" become "alive, down to the pension floor, 95". That is a completely different event.
 
@@ -31,7 +31,7 @@ $15k a year of income in a plan that spends $50k does not "cut withdrawals by 30
 
 ## Modeling a flow: three numbers and their traps
 
-Three numbers describe any outside income. An annual amount, a start year, an end year. Enter the amount **net** and in constant dollars, so after tax and assumed to follow inflation, like everything else in a withdrawal plan ([[inflation-and-withdrawal-rates]]). The arithmetic that follows is disarmingly simple. Each year the flow comes off the need, and the portfolio funds only the difference. Two shapes cover everything. The **lifelong** flow has no end year: that is a pension or an annuity. The **dated** flow has one: rent on a property you will sell, a stretch of work, unemployment benefits. Any serious simulator offers both, and running without them means running a plan that is not yours.
+Three numbers describe any outside income. An annual amount, a start year, an end year. Enter the amount **net** and in constant dollars, so after tax and assuming it follows inflation (a fixed nominal amount loses a third of its value over twenty years at 2%), like everything else in a withdrawal plan ([[inflation-and-withdrawal-rates]]). The arithmetic that follows is disarmingly simple. Each year the flow comes off the need, and the portfolio funds only the difference. Two shapes cover everything. The **lifelong** flow has no end year: that is a pension or an annuity. The **dated** flow has one: rent on a property you will sell, a stretch of work, unemployment benefits. Any serious simulator offers both, and running without them means running a plan that is not yours.
 
 **Enter the pension three ways, never one.** In go the public pension with its haircut, any annuity already paying, and a weighted survivor benefit, each on the date it starts. The amount stays uncertain twenty years out, so good practice is to run the plan under three sets of assumptions. One stressed: the pension shaved by 20% to 30% and the age pushed back. One made only of what you have already earned, the floor you would get if your career stopped today. One taken from the official estimate on your own statement. A public pension is indexed and most private ones are not, so read each for what it actually promises ([[us-healthcare-and-social-security]]). Three entries, three failure probabilities, one range. What informs you is the spread between the three, not the middle number.
 
@@ -50,7 +50,7 @@ And then read the output properly. Sensitivity gets **tested**: move the pension
 
 **A spouse who still works** is a different case ([[couples-and-family]]). Their salary is a dated flow, running to their own exit date, with their willingness as its own risk, to be marked down if the gap is imposed rather than chosen. Their future pension, on the other hand, joins the household's lifelong flow.
 
-**Transition benefits** (unemployment after a negotiated exit) are a dated flow, short and certain. Those 18 to 24 months cushion exactly the start of the fragile window. Count them without a second thought.
+**Transition benefits** (unemployment after a negotiated exit) are a dated flow and a short one, to count once the entitlement is notified. How long they last depends on your age and on the rules in force when the job ends, which change: start from the official estimate for your case rather than a typical duration. They then cushion exactly the start of the fragile window.
 :::
 
 ## The counter-check: the over-backed plan

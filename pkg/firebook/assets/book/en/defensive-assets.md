@@ -1,5 +1,5 @@
 # Defensive assets: the map and the roles
-<!-- source: actifs-defensifs @ 1290d3f94e94 -->
+<!-- source: actifs-defensifs @ 4b57f888ad80 -->
 
 Everything in the portfolio that is not the equity engine has one job: defense. But defense against **what**?
 
@@ -31,13 +31,13 @@ What each candidate returned, in real dollars, through four crises of different 
 
 **Gold.** Regimes served: inflation in episodes (spectacular in the 1970s, respectable in 2022), and above all crises of **confidence**, monetary, geopolitical or banking, where it has no equal. It is the anti-political-tail asset, the only one that is nobody's liability. Killer regime: disinflationary prosperity with positive real rates (1980-2000, −70% real, twenty years of purgatory). Carry cost: a long-run real expectation near zero, volatility of 15 to 18%, and the chance of two decades in the wilderness. Verdict: the defender of the regimes **nothing** else covers, in a dose of 5 to 10% and never more. And a test of temperament more than an asset ([[gold-in-retirement]]).
 
-**Managed futures (trend following).** Regimes served: **long** regimes, up or down. The strategy buys what is rising and sells what is falling, across every asset class. It wins in anything that **lasts**, and above all in the great slow destructions (2008, +21% for pure trend; 2022, +27%, its best year since 2000, while **everything** else was losing). Killer regime: trendless markets and V-shaped reversals, like the too-fast crash of 2020. It is the only defensive asset whose **long-run** expectation is positive (an estimated 2 to 4% real gross, to be marked down for fees). The price you pay: complexity, real fees, and mediocre years in a row. Verdict: the most valuable defensive block for the modern inflationary regimes, in a dose of 5 to 15% for anyone willing to own a managed product ([[managed-futures]]).
+**Managed futures (trend following).** Regimes served: **long** regimes, up or down. The strategy buys what is rising and sells what is falling, across every asset class. It wins in anything that **lasts**, and above all in the great slow destructions (2008, +21% for pure trend; 2022, +27%, its best year since 2000, while **everything** else was losing). Killer regime: trendless markets and V-shaped reversals, like the too-fast crash of 2020. It is one of the few defensive assets whose **long-run** expectation is clearly positive (an estimated 2 to 4% real gross, to be marked down for fees), along with bonds whose real yield is positive too. The price you pay: complexity, real fees, and mediocre years in a row. Verdict: the most valuable defensive block for the modern inflationary regimes, in a dose of 5 to 15% for anyone willing to own a managed product ([[managed-futures]]).
 
 **The others, faster.** Broad **commodities** offer a genuine inflation hedge. They charge for it in chronic negative carry (the roll, taken apart in [[global-macro]]) and in brutal volatility. For an individual they are dominated by gold plus trend.
 
 **Direct real estate** is a real asset in the literal sense, but illiquid, concentrated and expensive to run. It is supplementary income, not a portfolio defense ([[real-estate-in-retirement]]). Listed property (REITs) correlates with stocks in a crash (−60% in 2008-2009): diversifying in normal times, not defensive in a crisis.
 
-**Safe-haven currencies** (USD, CHF, JPY) really do cushion crashes, the dollar rising when everything else falls. Whether that helps you depends on where you live. If your home currency is not the dollar, an unhedged world equity fund already carries a dollar position, free, in every global portfolio: one good reason not to hedge the currency of your stocks ([[international-diversification]]). If your home currency is the dollar, the cushion is already under you, and buying the others adds little.
+**Safe-haven currencies** (USD, CHF, JPY) really do cushion crashes, the dollar rising when everything else falls. Whether that helps you depends on where you live. If your home currency is not the dollar, an unhedged world equity fund already carries a dollar position, with no hedging cost but no guarantee either (US stocks down 40% while the dollar gains 20% leave you down 28%; with the dollar down 20%, down 52%): one good reason not to hedge the currency of your stocks ([[international-diversification]]). If your home currency is the dollar, the cushion is already under you, and buying the others adds little.
 
 **Option strategies** (puts, tail hedging) offer the only true crash convexity. But their premium eats the expectation (−2 to −5% a year, carried for years on end). They belong to disciplined institutions. For an individual they can mostly be replicated with duration plus gold plus trend. The full case, toxic vehicles included, is in [[long-volatility]].
 
@@ -51,7 +51,7 @@ Four products **sell** themselves as defensive without meeting the spec.
 - "Principal protected" **structured products** buy their protection by selling the upside and paying opaque margins. Almost always, the plain bonds-plus-stocks mix you assemble yourself does better.
 - **Min-vol** or "low volatility" funds are real stocks that wobble a little less. A legitimate style choice inside the equity sleeve, not a defense.
 
-The infallible test: ask "what did this product do in 2008 and in 2022?". A real defensive asset shows a good report card in **at least** one of the two, and no disaster in the other. The full case, covered calls, dividend aristocrats, REITs, private equity and crypto included, is in [[false-defensive-assets]].
+The simplest test: ask "what did this product do in 2008 and in 2022?". A real defensive asset shows a good report card in **at least** one of the two, and no disaster in the other. The full case, covered calls, dividend aristocrats, REITs, private equity and crypto included, is in [[false-defensive-assets]].
 :::
 
 ## Putting it together: diversify the defense itself
@@ -78,7 +78,7 @@ The starting portfolio: 65% global stocks, 35% in a stable value fund. Audit aga
 ## The essentials
 
 - "Defensive" does not exist in the abstract. Each asset defends against one enemy (crash, long regime, inflation, deflation, confidence) at a given carry cost. The spec: holding up through a hostile **regime**, a decorrelation that survives a crisis, liquidity, and a premium you know.
-- The starters, enemy by enemy: long bonds (deflation), linkers and gold (inflation and confidence), managed futures (long regimes), cash (liquidity and optionality), short duration (the generalist bedrock). And for anyone whose home currency is not the dollar, the currency exposure of an unhedged global equity fund is a free shock absorber.
+- The starters, enemy by enemy: long bonds (deflation), linkers and gold (inflation and confidence), managed futures (long regimes), cash (liquidity and optionality), short duration (the generalist bedrock). And for anyone whose home currency is not the dollar, the currency exposure of an unhedged global equity fund is a shock absorber with no fees, but no guarantee.
 - The false defensives to leave alone: dividend stocks, high yield, structured products, min-vol. The test is one question: "what did they do in 2008 and in 2022?".
 - Defense gets diversified like everything else: every row of the table covered, no starter massive and alone, a total dose of 25 to 40% during the fragile window. And always the reverse check in simulation, because the median must not pay more than the tails bring in.
 - The major blocks each have their article ([[bonds-in-retirement]], [[inflation-linked-bonds]], [[gold-in-retirement]], [[managed-futures]]), and so do the exotic defenses ([[long-volatility]], [[global-macro]], [[return-stacking]]). The full assembly job is in [[all-weather-portfolios]].

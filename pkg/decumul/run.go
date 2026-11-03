@@ -287,7 +287,7 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			need = netAfter(bounded, inc)
 			uncut = p.needAtWith(k, lf, inc)
 		} else if p.Percent > 0 {
-			// Percentage-of-portfolio (VPW): spend a fixed share of current
+			// Percentage-of-portfolio: spend a fixed share of current
 			// wealth. uncut stays the fixed reference standard, so years where the
 			// rule delivers less than that count as a lived cut.
 			need = netAfter(p.Percent*total, inc)

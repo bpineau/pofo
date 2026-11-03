@@ -1,5 +1,5 @@
 # The FIRE and withdrawal glossary
-<!-- source: lexique @ ca730b2ed6a3 -->
+<!-- source: lexique @ 04a9c42f70b7 -->
 
 Every term in this book, and the forum jargon around it, defined in a few sentences, with a pointer to the chapter that covers it. A glossary is something you look things up in, but this one is also meant to be **read**. Straight through, it works as a summary of the book in alphabetical order. The last section pulls the thirteen numbers that turn up everywhere into one table, so you can check your ballpark at a glance.
 
@@ -40,7 +40,9 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Bridge (the uncovered phase)**: the years between your exit and your pensions, when the portfolio funds everything. The real horizon at risk in a FIRE plan. Its length governs how complicated the plan has to be. [[horizon-and-life-expectancy]]
 
-**Broad sample**: the model that replays a century of 16 developed countries (the JST panel, 1870-2020) in a domestic 60/40. The empirical bound on long-horizon risk. [[anarkulova-cederburg]], [[under-the-hood]]
+**Broad sample**: the model that replays a century of 16 developed countries (the JST panel, 1870-2020) in a domestic 60/40, in blocks drawn from one country to the next. It ignores your weights and sliders: an external yardstick, not a measure of your portfolio. [[anarkulova-cederburg]], [[under-the-hood]]
+
+**Broad-sample prior**: the simulator's default return parameters (µ 4.5%, σ 13%, fat tails, a global equity portfolio, not your funds), toward which it pulls your sliders when the history is shorter than the horizon, and which the "Broad-sample prior" button imposes at once (nothing to do with the Broad-sample column). [[under-the-hood]]
 
 **Buckets**: cutting wealth into horizons (cash, bonds, stocks). An allocation in disguise, plus a set of flows you still have to write down. Good language, no mechanical value of its own. [[the-bucket-strategy]]
 
@@ -66,7 +68,7 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **CPI-U**: the US consumer price index, the standard deflator for real returns and the reference for indexed spending. The euro-area equivalent is the HICP. [[tracking-inflation]]
 
-**Current withdrawal rate**: annual spending divided by the portfolio as it stands today. The main warning light on the dashboard, graded green, amber, red. [[when-to-worry]]
+**Current withdrawal rate**: the annual withdrawal net of pensions and other income, divided by the portfolio as it stands today. The main warning light on the dashboard, graded green, amber, red. [[when-to-worry]]
 
 **Decumulation**: the phase where you live off capital. What this book is about, and a different problem from accumulation, because the order of returns starts to matter. [[the-three-phases]]
 
@@ -78,17 +80,17 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Drawdown**: the decline from the last peak, measured in real terms for a retiree. The standard trigger for drawing on the buffer (10 to 20%). [[refilling-the-buffer]]
 
-**Duration**: a bond's sensitivity to rates (roughly the percentage it loses per point of rate rise), and the horizon over which its yield is locked in. [[bonds-in-retirement]]
+**Duration**: a bond's sensitivity to rates (roughly the percentage it loses per point of rate rise). It guarantees neither a return nor a capital at any given date. [[bonds-in-retirement]]
 
 ## E-G
 
-**Embedded gain fraction**: the share of a taxable account that is gain rather than the basis you already paid tax on, and therefore the share of any sale that is taxed at all. It starts near zero and climbs with the years, because the gain compounds and the basis does not. It is the friction a plan grosses its spending up by, and since it grows on its own the annual review re-estimates it rather than setting it once. [[us-taxes-in-the-withdrawal-phase]], [[how-much-you-need]]
+**Embedded gain fraction**: the share of a taxable account that is gain rather than the basis you already paid tax on, and therefore the share of any sale that is taxed at all. It reflects the account's history (shares bought at 40 and sold at 100 carry 60% gain from the first withdrawal), and tends to climb with the years, because the gain compounds and the basis does not. It is the friction a plan grosses its spending up by, and since it grows on its own the annual review re-estimates it rather than setting it once. [[us-taxes-in-the-withdrawal-phase]], [[how-much-you-need]]
 
 **ERN (Early Retirement Now)**: Karsten Jeske's blog and its Safe Withdrawal Rate series, more than 60 parts. The modern quantitative reference on the subject. [[the-ern-series]]
 
-**Expected utility**: the criterion that weighs each level of wealth by what it is really worth to you, rather than in raw dollars. Its concavity is where risk aversion comes from, and why a plan gets judged on its 5th percentile plus its median. [[deciding-under-uncertainty]]
+**Expected utility**: the criterion that weighs each level of wealth by what it is really worth to you, rather than in raw dollars. Its concavity is where risk aversion comes from. The pair 5th percentile and median is a practical shortcut for it, not an equivalent. [[deciding-under-uncertainty]]
 
-**Failure probability**: the share of simulated futures where the portfolio runs dry before the horizon, under a mechanical rule. A property of the plan and the model together. Read it as a range, and as a ranking. [[failure-probability]]
+**Failure probability**: the share of simulated futures where the portfolio can no longer fund the planned withdrawal before the horizon, under a mechanical rule. A property of the plan and the model together. Read it model by model, as an order of magnitude and as a ranking. [[failure-probability]]
 
 **Fan chart**: the distribution of simulated wealth by date, in percentile bands. A stack of cross-sections, not a bundle of paths. [[reading-a-fan-chart]]
 
@@ -128,13 +130,15 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Kelly criterion**: the fraction of capital that maximizes the geometric growth of a repeated bet. Brilliant at the casino, unusable as it stands for a retirement (finite horizon, consumption, unknown parameters). What survives is the half-Kelly reflex. [[deciding-under-uncertainty]]
 
-**Ladder (bonds, linkers)**: one rung held to maturity per year of liability. The matching that cancels interest-rate risk, and the contractual version of the bridge to your pensions. [[bond-ladders]], [[inflation-linked-bonds]]
+**Ladder (bonds, linkers)**: one rung held to maturity per year of liability. The matching that spares you selling before maturity, and so neutralizes rate risk for the planned spending, and the contractual version of the bridge to your pensions. [[bond-ladders]], [[inflation-linked-bonds]]
 
 **Lean / Fat FIRE**: the frugal variant ($15,000 to $25,000 a year) and the comfortable one ($60,000 and well beyond). The difficulty between the two is not linear. [[what-is-fire]]
 
 **Linkers (inflation-linked bonds)**: TIPS and their foreign cousins. The only contract written in real terms: inflation, plus a guaranteed real yield. The retiree's conceptual risk-free asset. [[inflation-linked-bonds]]
 
 **Long volatility, tail hedging**: holding convexity (puts) that pays off in a fast crash, against a premium paid all the time. Negative expectancy by construction, the theoretical complement to trend, and almost impossible to buy cleanly in a fund. [[long-volatility]]
+
+**Lost decade**: the stress model with a sticky bear regime, whose depth grows with the volatility you enter. An endurance test, not a likely scenario. [[making-monte-carlo-relevant]], [[under-the-hood]]
 
 **Managed futures, trend**: systematic trend-following strategies, long and short, across asset classes. The only defensive holding with a positive expectancy, and the winner of long regimes (2008, 2022). [[managed-futures]]
 
@@ -168,7 +172,7 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Return stacking**: putting moderate leverage inside funds built for it (90/60, stocks plus trend) so you hold the diversifiers on top of the core instead of in its place. Every stacked layer earns its own return minus cash. [[return-stacking]]
 
-**Risk premium**: the wage of risk carried, and the reason any return exists at all. Assets that hurt at the worst moment (stocks) pay. Assets that transfer no risk to anyone (gold, cash) earn nothing in real terms, by construction. [[risk-premia]]
+**Risk premium**: the wage of risk carried, and the reason any return exists at all. Assets that hurt at the worst moment (stocks) pay. Assets that transfer no risk to anyone (gold, cash) have no lasting real premium to expect. [[risk-premia]]
 
 **RMD (required minimum distribution)**: the forced annual payout from the pre-tax accounts, from the applicable age of 73 today and 75 for anyone who reaches 74 after 2032. Every dollar is ordinary income, it arrives whether or not you want the money, and it pushes whatever gains you realize that year up the stack. Roth IRAs are exempt during the owner's lifetime, and since 2024 so are designated Roth accounts in a workplace plan. It is the deadline that makes the quiet years before pensions worth spending on conversions. [[us-accounts-and-account-order]]
 
@@ -184,7 +188,7 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Sequence risk**: once you are withdrawing, the order of returns matters as much as their average. Early losses become permanent. The central concept of this book. [[sequence-of-returns]]
 
-**Sequence stress**: the sticky-bears model (Markov, mean-preserving). The gap between it and the central case measures what a bad sequence costs in your plan. [[making-monte-carlo-relevant]], [[under-the-hood]]
+**Sequence stress**: the sticky-bears model (Markov, mean-preserving, but with higher volatility in the bear regime). The gap between it and the central case measures mostly what a bad sequence costs in your plan. [[making-monte-carlo-relevant]], [[under-the-hood]]
 
 **sigma (σ)**: the annualized volatility of the engine, the standard deviation of its returns. Its σ²/2 drag is what separates the arithmetic mean from the geometric one (the volatility drag). Lower than the one-year vol quoted in brochures. [[arithmetic-vs-geometric-returns]], [[fat-tails]]
 
@@ -218,13 +222,13 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 ## The numbers to keep in your head
 
-Thirteen numbers run through the whole book. Here they are in one place, with the term that carries each one and the chapter that establishes it. Not one of them is new here, and that is exactly the service this table renders. A number in your own plan that looks like none of these deserves an explanation before you keep it.
+Thirteen numbers run through the whole book. Here they are in one place, with the term that carries each one and the chapter that establishes it. Not one of them is new here, and that is exactly the service this table renders. A number in your own plan that looks like none of these calls for checking its conventions (real or nominal, gross or net, period) before you keep it.
 
 | Number | What it measures | Term | Chapter |
 |---|---|---|---|
 | ~4% over 30 years | The rigid rate that survives the worst American vintage | SAFEMAX | Trinity |
 | 3.25 to 3.5% | The same rate at a FIRE horizon of 45 to 55 years | SAFEMAX | ERN |
-| ~17% | The failure rate of a rigid 4% on the world sample | Broad sample | Anarkulova-Cederburg |
+| ~17% | The failure rate of a rigid 4% on the world sample (38 countries) | Anarkulova-Cederburg | Anarkulova-Cederburg |
 | 0.5 to 1.5 points | What each step of the cascade costs | Cascade | The two means |
 | 50 to 80% stocks | The width of the allocation plateau | Asset allocation | Allocation |
 | 4 to 6 points | The historical equity premium over cash | Risk premium | Risk premia |

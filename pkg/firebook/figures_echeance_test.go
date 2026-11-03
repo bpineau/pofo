@@ -117,7 +117,7 @@ func TestTenirAgreesWithItsArticle(t *testing.T) {
 		"::: figure tenir-echeance",
 		"Tenir à échéance verrouille le rendement nominal promis.",
 		"Vous touchez 2 % quand le marché en sert 4, au lieu d'une baisse de prix affichée.",
-		"La richesse finale est identique, seule la comptabilité mentale change.",
+		"Pour une même position, la richesse finale est identique, seule la comptabilité change.",
 		"sous forme de coût d'opportunité",
 		"environ 7 pour l'aggregate standard",
 		"la duration de la poche doit rester inférieure ou égale à l'horizon",

@@ -1,5 +1,5 @@
 # Gold in a retirement portfolio
-<!-- source: or-en-retrait @ dddaab9f6617 -->
+<!-- source: or-en-retrait @ 3f3edf9db7ce -->
 
 No asset splits a room like gold. To one camp it is a barbarous relic, with no cash flow and nothing productive behind it. To the other it is the only honest money and the ultimate insurance. Each camp is right about its own half of the picture, and that is exactly what makes gold so hard to size.
 
@@ -35,7 +35,7 @@ Then comes the sample warning, always the same one. Half the measured benefit co
 
 Confusing the roles is what produces the bad sizes. Keep them apart.
 
-**Role 1: the anti-regime block of the portfolio (5 to 10%).** This is the central role in this book. The job is to cover the "persistent inflation" and "crisis of confidence" rows of the table of defenses ([[defensive-assets]]), the two rows a typical retail portfolio leaves wide open. The useful size the simulations measure is 5 to 10%. Below 5% the effect is cosmetic. Above 10% you are no longer hedging, you are betting. The Golden Butterfly and Browne go to 20 to 25%, the historical upper limit, with the epistemic dependence already criticized ([[all-weather-portfolios]]). The modern way to split the inflation row is half gold, half linkers, the inflation-linked bonds ([[inflation-linked-bonds]]). Two different mechanisms, confidence and contract, against the same enemy.
+**Role 1: the anti-regime block of the portfolio (5 to 10%).** This is the central role in this book. The job is to cover the "persistent inflation" and "crisis of confidence" rows of the table of defenses ([[defensive-assets]]), the two rows a typical retail portfolio leaves wide open. This book settles on 5 to 10% as the useful size. ERN finds more in some tests (up to 15%), above all when gold replaces stocks rather than bonds. Below 5% the effect is cosmetic. Above 10% you are no longer hedging, you are betting. The Golden Butterfly and Browne go to 20 to 25%, the historical upper limit, with the epistemic dependence already criticized ([[all-weather-portfolios]]). The modern way to split the inflation row is half gold, half linkers, the inflation-linked bonds ([[inflation-linked-bonds]]). Two different mechanisms, confidence and contract, against the same enemy.
 
 **Role 2: the political tail reserve (2 to 5%, outside the portfolio).** This is physical gold you hold yourself, in coins, as insurance against the scenarios that live outside the model: a major monetary crisis, a break in the financial system ([[hyperinflation-and-extremes]], [[simulator-traps]], "what is not in the model does not exist"). It is a matter of temperament more than of optimization. It cannot be simulated, it gets capped at a few percent, and it carries costs of its own: storage, insurance, the premium on coins.
 

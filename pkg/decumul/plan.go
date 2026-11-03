@@ -296,8 +296,8 @@ type Plan struct {
 	// precedence over Guard, Flex and Ratchet when active.
 	RiskGuard RiskGuardrails
 	Ratchet   Ratchet // optional only-up spending rule (ignored while Guard is active)
-	// Percent, when > 0, switches to a percentage-of-portfolio (VPW-style)
-	// withdrawal: each year the household spends Percent of current total real
+	// Percent, when > 0, switches to a percentage-of-portfolio withdrawal (a
+	// constant share, not the age-based VPW): each year the household spends Percent of current total real
 	// wealth instead of a fixed real need. It cannot ruin (spending is always a
 	// fraction of what remains) but the standard of living swings with the
 	// market, so it trades ruin risk for spending volatility, the other end of
@@ -312,15 +312,15 @@ type Plan struct {
 	// (spending is always the sustainable share of what remains) and it
 	// cannot die rich by accident (the payment rises as the horizon
 	// shortens); the cost is that income tracks the market, though more
-	// smoothly than VPW because the shortening horizon lifts the payout rate
+	// smoothly than the constant percentage because the shortening horizon lifts the payout rate
 	// over time. Overrides every other spending rule; annual.
 	Amortize    bool
 	AmortReturn float64 // expected real return the amortization assumes, a FRACTION; GeoMean(Source) is the honest value
 	// Bounded, when active, is the bounded percent-of-portfolio rule
 	// (Vanguard's "dynamic spending"): each year target Pct of current
 	// wealth, but never move more than Up above or Down below last year's
-	// real spending. The bounds smooth VPW's swings into small yearly steps;
-	// unlike VPW it CAN ruin (in a deep bear the floor-bounded spending can
+	// real spending. The bounds smooth the percentage's swings into small yearly steps;
+	// unlike the plain percentage it CAN ruin (in a deep bear the floor-bounded spending can
 	// outrun the portfolio). Overrides Flex, Guard and Ratchet; annual.
 	Bounded BoundedPct
 	// Envelopes optionally splits the growth sleeve across tax wrappers
@@ -422,7 +422,7 @@ func (p *Plan) planYears() int {
 // runPath dispatches to the monthly or the annual kernel; Simulate and the
 // sweeps go through it so a monthly plan is simulated end to end, while the
 // annual RunPath stays the validated reference (and its golden tests). The
-// wealth-based rules (VPW, ABW, bounded %) are yearly rebalancing decisions
+// wealth-based rules (percent of portfolio, ABW, bounded %) are yearly rebalancing decisions
 // and always run on the annual kernel.
 // buf, when long enough, backs the path's two series (see newPathResult); nil
 // lets the kernel allocate them itself.

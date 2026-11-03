@@ -1,5 +1,5 @@
 # FIRE as a couple, and as a family
-<!-- source: couple-et-famille @ 86ff93222aa1 -->
+<!-- source: couple-et-famille @ 14e0d6a06987 -->
 
 Simulators plan for individuals. Life hands those plans to families. The corpus of accounts, the wins and the wrecks alike, is blunt about it: **FIRE is a team sport**. The biggest financial risk to a plan is not the sequence, and it is not inflation. It is divorce. It cuts the capital in half and nearly doubles the costs, which no crash does. And what the happy stories have in common is a project genuinely **shared**, not one half endured by the other.
 

@@ -812,9 +812,9 @@ func figCapeDepuis1881() string {
 func figRichesseTotale() string {
 	const (
 		portfolio = 1550.0 // k EUR, the article's worked household
-		pension   = 310.0  // discounted value of the future pension
-		bequest   = 90.0   // discounted value of the bequest aimed at
-		rate      = 0.0405 // the annuity rate over the remaining horizon
+		pension   = 221.0  // discounted value of the future pension (3.2 % real, paid 67 to 99)
+		bequest   = 41.0   // discounted value of the bequest aimed at, fifty years out
+		rate      = 0.0391 // the annuity rate over the remaining horizon, paid at the start of each year
 		x0, x1    = 120.0, 480.0
 		vMax      = 1900.0
 		barH      = 40.0
@@ -838,7 +838,7 @@ func figRichesseTotale() string {
 	b.WriteString(sTxt(24, t1-12, 11, figInk, "start", "600", "Ce que la plupart des règles amortissent"))
 	b.WriteString(seg(0, portfolio, t1, figWash))
 	b.WriteString(mTxt(x(portfolio/2), t1+barH/2+4, 11.5, figSoft, "middle", "600", "1 550"))
-	b.WriteString(mTxt(x(portfolio)+14, t1+barH/2+4, 12.5, figMuted, "start", "600", "62,8 k€"))
+	b.WriteString(mTxt(x(portfolio)+14, t1+barH/2+4, 12.5, figMuted, "start", "600", "60,6 k€"))
 
 	// Row two: total wealth, the pension added and the bequest carved out of it.
 	const t2 = 226.0
@@ -847,24 +847,24 @@ func figRichesseTotale() string {
 	b.WriteString(seg(portfolio, portfolio+pension, t2, figBlueWash))
 	b.WriteString(line(x(portfolio), t2, x(portfolio), t2+barH, figRule, 1))
 	b.WriteString(mTxt(x(portfolio/2), t2+barH/2+4, 11.5, figSoft, "middle", "600", "1 550"))
-	b.WriteString(mTxt(x(portfolio+(pension-bequest)/2), t2+barH/2+4, 10.5, figBlue, "middle", "600", "+310"))
-	b.WriteString(mTxt(x(portfolio+pension)+14, t2+barH/2+4, 12.5, figDeep, "start", "600", "71,7 k€"))
+	b.WriteString(mTxt(x(portfolio+(pension-bequest)/2), t2+barH/2+4, 10.5, figBlue, "middle", "600", "+221"))
+	b.WriteString(mTxt(x(portfolio+pension)+14, t2+barH/2+4, 12.5, figDeep, "start", "600", "67,6 k€"))
 
 	// The bequest is the slice of that wealth already spoken for.
 	bq := x(portfolio + pension - bequest)
 	b.WriteString(dashLine(bq, t2-6, bq, t2+barH+22, figDeep, 1.4, "4 3"))
 	b.WriteString(line(bq, t2+barH+16, x(portfolio+pension), t2+barH+16, figDeep, 1.2))
-	b.WriteString(sTxt(x(portfolio+pension)+8, t2+barH+20, 10, figDeep, "start", "400", "−90, le legs visé"))
-	b.WriteString(mTxt(bq, t2-14, 10.5, figDeep, "middle", "600", "1 770 amortis"))
+	b.WriteString(sTxt(x(portfolio+pension)+8, t2+barH+20, 10, figDeep, "start", "400", "−41, le legs visé"))
+	b.WriteString(mTxt(bq, t2-14, 10.5, figDeep, "middle", "600", "1 730 amortis"))
 
 	// The two legends, aligned under the numbers they explain.
 	b.WriteString(sTxt(x(portfolio)+14, t1+barH/2+20, 10, figMuted, "start", "400", "par an"))
-	b.WriteString(sTxt(x(portfolio+pension)+14, t2+barH/2+20, 10, figDeep, "start", "400", "par an, soit +14 %"))
+	b.WriteString(sTxt(x(portfolio+pension)+14, t2+barH/2+20, 10, figDeep, "start", "400", "par an, soit +12 %"))
 
 	b.WriteString(sTxt(24, 320, 10.5, figMuted, "start", "400",
-		"La pension n'arrive que dans dix-huit ans, mais elle est certaine : la consommer par anticipation est"))
+		"La pension n'arrive que dans dix-huit ans, mais elle est quasi certaine : en tenir compte dès"))
 	b.WriteString(sTxt(24, 336, 10.5, figMuted, "start", "400",
-		"le lissage que les économistes prescrivent depuis Modigliani. Et le legs cesse d'être un résidu."))
+		"aujourd'hui, le pont financé, c'est le lissage de Modigliani. Et le legs cesse d'être un résidu."))
 	return svg(640, 350, b.String())
 }
 

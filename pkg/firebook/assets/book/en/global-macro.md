@@ -1,5 +1,5 @@
 # Global macro and alternative risk premia: how the big institutions diversify
-<!-- source: global-macro @ cdb1cfaf7107 -->
+<!-- source: global-macro @ e144a927087c -->
 
 After trend following ([[managed-futures]]) and buying volatility ([[long-volatility]]), one continent of the alternative world is still unexplored: **global macro**. These funds bet on the big economic forces, interest rates, currencies, inflation, commodities, equity indexes, instead of on individual securities. This is the family of legends: Soros against the pound in 1992, Druckenmiller. It is also a modern industry, largely systematic, that came through 2000-2002, 2008 and 2022 in positive territory while ordinary portfolios were being punished.
 
@@ -67,8 +67,8 @@ It comes down to a simple hierarchy, three tiers deep.
 
 Screening an "alternative" brochure comes down to five questions.
 
-1. What does the fund do when stocks rise three years running? If it makes money too, that is disguised beta.
-2. What is its worst drawdown, and in which year? If it lands on top of the equity drawdown, the diversification is decorative.
+1. What does the fund do when stocks rise three years running? If it makes money too, check that it is not disguised beta: winning at the same time proves nothing, but tracking stocks closely does.
+2. What is its worst drawdown, and in which year? If it lands on top of the equity drawdown, the diversification may well be decorative.
 3. What are the total fees, performance fee included?
 4. Which public index does it measure itself against? No benchmark, no purchase.
 5. And the killer: why does this strategy earn anything, who is paying, and why will they keep paying ([[risk-premia]])?

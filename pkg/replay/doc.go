@@ -37,9 +37,10 @@
 // wealth-proportional: the fixed real withdrawal (Bengen), the same with a flex
 // cut, Guyton-Klinger guardrails, risk-based guardrails (Kitces/Morningstar),
 // Vanguard's bounded percentage, amortisation-based withdrawal (ABW/TPAW) and
-// the pure percentage of portfolio (VPW). Each carries its English and French
-// names, a narrow-column tag, a plain-language explanation and a colour, so a
-// rule looks and reads the same in every surface that draws it.
+// the pure percentage of portfolio (a constant share, not the age-based
+// VPW). Each carries its English and French names, a narrow-column tag, a
+// plain-language explanation and a colour, so a rule looks and reads the same
+// in every surface that draws it.
 //
 // # The horizon
 //

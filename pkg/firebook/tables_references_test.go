@@ -72,7 +72,7 @@ type memoAnchor struct {
 var memoAnchors = []memoAnchor{
 	{"~4 % sur 30 ans", "SAFEMAX", "Trinity", "etude-trinity", []string{"~4,15 % pour 30 ans", "~4,15 % sur 30 ans"}},
 	{"3,25-3,5 %", "SAFEMAX", "ERN", "serie-ern", []string{"3,25-3,5 %"}},
-	{"~17 %", "Broad sample", "Échantillon mondial", "anarkulova-cederburg", []string{"environ 17 % des cas", "~17 % du temps"}},
+	{"~17 %", "Anarkulova-Cederburg", "Échantillon mondial", "anarkulova-cederburg", []string{"environ 17 % des cas", "~17 % du temps"}},
 	{"0,5-1,5 point", "Cascade", "Les deux moyennes", "rendements-arithmetiques-geometriques", []string{"0,5 à 1,5 point"}},
 	{"50-80 % d'actions", "Allocation d'actifs", "Allocation", "allocation-actions-obligations", []string{"entre environ 50 et 80 % d'actions"}},
 	{"4-6 points", "Prime de risque", "Primes de risque", "primes-de-risque", []string{"4 à 6 points", "4-6 points"}},
@@ -82,7 +82,7 @@ var memoAnchors = []memoAnchor{
 	{"2-4 % réels bruts", "Managed futures", "Trend", "managed-futures", []string{"2-4 % réels bruts"}},
 	{"18-36 mois", "Buffer", "Matelas", "cash-buffer", []string{"18-36 mois"}},
 	{"±20 %, coupes de 10 %", "Guardrails", "Guyton-Klinger", "guyton-klinger", []string{"corridor ±20 %, coupes 10 %"}},
-	{"10-20 %", "Sourire", "Dépenses", "depenses-en-retraite", []string{"de 10-20 %"}},
+	{"10-20 %", "Sourire", "Dépenses", "depenses-en-retraite", []string{"d'environ 10 à 20 %"}},
 	{"~6,5 % au-delà de ~24 k€", "CSM", "Taxe PUMa", "taxe-puma", []string{"~6,5 % des revenus du capital au-delà d'une franchise (0,5 PASS ≈ 24 k€)"}},
 	{"~7,2 k€ puis ~9,6 k€", "Quadruplé", "Barista", "retour-au-travail", []string{"4 trimestres validés par an dès ~7 200 €"}},
 }

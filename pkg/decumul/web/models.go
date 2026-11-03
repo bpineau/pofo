@@ -115,7 +115,7 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 			"The central case to plan on: synthetic i.i.d. annual real returns generated from the three sliders (mu, sigma, tail df), which in portfolio mode are seeded from your holdings' fitted statistics, never their actual sequence of years. When the history is shorter than the horizon the values are blended toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
 			centralSource(pr, cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Sequence stress",
-			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged; only the ordering is stressed. Read it as the downside if the sequence is unlucky.",
+			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged, but bear years are also 1.5× more volatile, so this column stresses mostly the ordering, not the ordering alone. Read it as the downside if the sequence is unlucky.",
 			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Broad-sample",
 			"The empirical century: a 60/40 domestic stock/bond portfolio (the broad-sample SWR literature's baseline, Anarkulova et al.) block-bootstrapped from the actual 1870-2020 record of 16 developed markets (Jorda-Schularick-Taylor), resampling runs of single countries. Fully data-driven and fully external: it ignores both your portfolio and the sliders, and it carries the real disasters (1929-32, the inflationary 1970s, Japan post-1990) that cause ruin, on bonds as well as stocks.",
@@ -231,7 +231,7 @@ func evalModel(base decumul.Plan, ns namedSource, capital, target float64, nPath
 }
 
 // fixedRule strips every adaptive spending rule (flex cut, guardrails both
-// flavours, ratchet, VPW, ABW, bounded percent) so the plan withdraws a fixed real
+// flavours, ratchet, percent of portfolio, ABW, bounded percent) so the plan withdraws a fixed real
 // amount. A safe-withdrawal solve must run on the fixed rule: the adaptive
 // rules rebase spending on wealth or on the initial withdrawal rate, which
 // makes ruin non-monotonic (or identically zero) in the withdrawal and the

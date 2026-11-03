@@ -30,7 +30,7 @@ const replayTarget = 24.0
 // replayRuleNames labels the seven panels, in the order pkg/replay returns them.
 var replayRuleNames = []string{
 	"Retrait fixe", "Flex −10 %", "Guardrails (GK)", "Guardrails par risque",
-	"% borné", "Amortissement (ABW)", "% du portefeuille (VPW)",
+	"% borné", "Amortissement (ABW)", "% du portefeuille",
 }
 
 // --- 1973: the crisis arrives first ---

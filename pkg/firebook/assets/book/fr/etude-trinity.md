@@ -7,7 +7,7 @@ William Bengen, puis l'étude Trinity, ont démontré pourquoi cette réponse ru
 C'est un article d'histoire des idées autant que de technique : les concepts introduits ici (millésime, SAFEMAX, taux de succès) servent dans tout le reste du livre.
 
 ::: cle Le renversement fondateur
-L'apport de Bengen n'est pas le chiffre « 4 % ». C'est d'avoir montré que le taux de retrait soutenable ne dépend **pas** du rendement moyen, mais du pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. Le millésime américain moyen supportait plus de 6 % ; celui de 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).
+L'apport de Bengen n'est pas le chiffre « 4 % ». C'est d'avoir montré que le taux de retrait soutenable ne se lit **pas** dans le rendement moyen : il se joue sur le pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. Le millésime américain moyen supportait plus de 6 % ; celui de 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).
 :::
 
 ## Le contexte : pourquoi la réponse « rendement moyen » ruine
@@ -16,7 +16,7 @@ L'intuition « les actions font 10 %, je peux retirer 8 % » commet deux fautes 
 
 La première : confondre moyenne arithmétique et croissance réellement composée. La volatilité fait que le portefeuille croît moins vite que sa moyenne annuelle ([[rendements-arithmetiques-geometriques]]), et l'inflation retranche encore 2 à 3 points. Le vrai moteur d'un portefeuille équilibré est un rendement **réel** géométrique de l'ordre de 3 à 5 %, pas 10.
 
-La seconde, plus meurtrière : un retraité qui retire un montant fixe vend davantage de parts quand les cours sont bas. Deux séquences de rendements de **même** moyenne donnent alors des fortunes opposées selon que les mauvaises années arrivent au début ou à la fin ([[sequence-des-rendements]]). La moyenne ne dit presque rien ; l'ordre dit presque tout.
+La seconde, plus meurtrière : un retraité qui retire un montant fixe vend davantage de parts quand les cours sont bas. Deux séquences de rendements de **même** moyenne donnent alors des fortunes opposées selon que les mauvaises années arrivent au début ou à la fin ([[sequence-des-rendements]]). La moyenne ne suffit pas ; l'ordre compte autant qu'elle.
 
 Au début des années 1990, Bengen, ingénieur du MIT reconverti en conseiller financier, voit arriver des clients à qui l'on a servi le « 8 % ». Plutôt que d'opposer une autre opinion, il fait ce que personne n'avait publié. Il teste.
 
@@ -75,7 +75,7 @@ Aucun de ces points n'est une réfutation. La méthode des millésimes est toujo
 C'est l'un des grands mérites pédagogiques de la méthode. Elle se refait. Les simulateurs historiques classiques, FICalc et cFIREsim en tête, rejouent la logique des millésimes sur les indices américains longs, taux de retrait par taux de retrait. Les outils qui savent lire un portefeuille réel, comme pofo, la rejouent sur l'historique de **vos** propres lignes et rendent le verdict départ par départ. Dans les deux cas, l'exercice vaut la peine. Voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
 
 ::: exemple Lire un millésime
-Plan : 1 M€, 60/40, retrait 4 % indexé. Rejoué millésime par millésime, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et un capital toujours sous la moitié de sa valeur initiale un quart de siècle plus tard, essoufflé mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
+Plan : 1 M€, 60/40, retrait 4 % indexé. Rejoué millésime par millésime, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et un capital toujours sous la moitié de sa valeur initiale un quart de siècle plus tard, essoufflé mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille : seule la **date** de départ diffère, et avec elle les marchés traversés. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
 :::
 
 ## L'essentiel à retenir

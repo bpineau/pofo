@@ -1,5 +1,5 @@
 # Beyond the United States: Anarkulova, Cederburg and the world sample
-<!-- source: anarkulova-cederburg @ 15d151dec43a -->
+<!-- source: anarkulova-cederburg @ a19aaa63e8b4 -->
 
 The whole safe withdrawal rate tradition, from Bengen to Trinity and on to nearly every online simulator, rests on one data set: US markets since 1926 ([[the-trinity-study]]). The twentieth-century United States is not a neutral sample. It is the country that won the last century.
 
@@ -64,26 +64,26 @@ This work has serious opponents, ERN first among them, who has devoted several a
 
 **Overlapping blocks and the real sample size.** Two thousand five hundred country-years sounds like a lot. But the draw pulls ten-year blocks out of overlapping windows, so the same German or Japanese decade shows up in a great many simulated retirements, and a single disaster weighs on thousands of paths. Crises are global and correlated on top of that: 1929, 1973 and 2008 hit everyone. The sample of **independent** disasters stays small, and the uncertainty around these numbers is itself wide.
 
-The reasonable synthesis: the true risk facing a globally diversified investor today sits somewhere between US history and the domestic world sample, and nobody knows where. So here is the rule to work by, whatever tool you use. Keep both bounds on screen, side by side, all the time, and distrust any verdict that shows only one.
+The reasonable synthesis: a globally diversified investor today is neither in US history nor in the domestic world sample, and nothing guarantees that the two bracket their risk. So here is the rule to work by, whatever tool you use. Keep both reference points on screen, side by side, all the time, and distrust any verdict that shows only one.
 
 ## What it changes for your plan
 
-**The rigid rate you size with.** If you size with no margins ([[how-much-you-need]]), the world bound argues for 3 to 3.5% rather than 4%. What it really rules out is calling 4% "scientifically safe" over 45 years. But aiming at 2.3% (43 times your spending!) out of pure literalism would be an overreaction. That is the domestic worst-case bound, and your real margins, a pension, flexibility, diversification, dominate it comfortably.
+**The rigid rate you size with.** If you size with no margins ([[how-much-you-need]]), the world bound argues for 3 to 3.5% rather than 4%. What it really rules out is calling 4% "scientifically safe" over 45 years. Aiming at 2.3% (43 times your spending!) can be defended for a rigid budget with thin margins. This book prefers to measure first what your real margins are worth, a pension, flexibility, diversification, and to lower the withdrawal only if they fall short.
 
-**How to read a broad-sample model.** That model is **not** your portfolio, and your return assumptions change nothing in it, since it draws only from real data. If your plan holds there, it holds in the harshest developed world on record. That is the best robustness label available. If it does not hold, look at **where** the scenarios fail, usually in inflationary blocks ([[inflation-and-withdrawal-rates]]), and at what your portfolio lacks for those regimes ([[all-weather-portfolios]], [[defensive-assets]]).
+**How to read a broad-sample model.** That model is **not** your portfolio, and your return assumptions change nothing in it, since it draws only from real data. If your plan holds there, your cash flows would have come through the worst national histories of the century, invested in a domestic 60/40: a demanding crash test, not a certificate for your own portfolio. If it does not hold, look at **where** the scenarios fail, usually in inflationary blocks ([[inflation-and-withdrawal-rates]]). They tell you which regimes threaten the plan; then check, on your own portfolio, what protects you against them ([[all-weather-portfolios]], [[defensive-assets]]).
 
 **The portfolio.** Two direct lessons. International equity diversification is not a refinement: it is the defense against the dominant risk of the sample, one country falling behind, yours included. And domestic nominal bonds are not the safe asset of a long horizon, because their worst enemy, sustained inflation, is the retiree's worst enemy too ([[inflation-linked-bonds]], [[gold-in-retirement]]).
 
 ::: exemple The same plan under both bounds
-The plan: $1.4M, $45,000 a year rigid (3.2%), 45 years, a pension of $15,000 a year from age 67, 70% world equities and 30% bonds. Historical windows of the portfolio give about 1% ruin. The calibrated central case gives about 4%. The broad sample gives about 9%, with the failures concentrated in blocks of persistent inflation, three quarters of them past age 80, pension already in hand. Reading: the plan is solid, because 3.2% with a pension is cautious to begin with. The broad-sample tail is handled with 10 to 15% of written flexibility ([[flexibility-in-practice]]) rather than with more capital. Without the broad sample, nobody would have known the residual failure mode was inflation and not a crash.
+The plan: $1.4M, $45,000 a year rigid (3.2%), 45 years, a pension of $15,000 a year from age 67, 70% world equities and 30% bonds. Historical windows of the portfolio give about 1% ruin. The calibrated central case gives about 4%. The broad sample gives about 9%, with the failures concentrated in blocks of persistent inflation, three quarters of them past age 80, pension already in hand. Reading: the plan is solid, because 3.2% with a pension is cautious to begin with. The broad-sample tail is tested with 10 to 15% of written flexibility ([[flexibility-in-practice]]) rather than with more capital: after the pension, the portfolio still funds $30,000, which a 15% cut of the budget brings to about $23,000, provided the capital can still carry that amount to the end. Above all, the broad sample showed which regime threatens this plan, persistent inflation rather than the crash; what real assets change in it still has to be checked on the portfolio itself.
 :::
 
 ## The essentials
 
 - US history is the century's winning lottery ticket: calibrate a plan on it and you inherit its optimism; the full developed world tells a harder story.
 - Anarkulova-Cederburg-O'Doherty (38 countries, block bootstrap, real mortality): the rigid 4% rule fails about 17% of the time, and the rate carrying a 5% failure probability comes out near 2.3% for a domestic 60/40 couple; domestic bonds protect less than international equity diversification does.
-- The criticisms (wars, Argentina, the domestic investor, correlated crises) are serious: the truth for a globally diversified investor lies between the two bounds, and nobody knows where.
-- In practice: 3 to 3.5% rigid for sizing, the broad sample as a robustness label, international diversification and inflation-resistant assets as the answers to the failure modes it reveals.
+- The criticisms (wars, Argentina, the domestic investor, correlated crises) are serious: neither experiment measures a globally diversified investor's portfolio, and nothing guarantees that they bracket it.
+- In practice: 3 to 3.5% rigid for sizing, the broad sample as a crash test, international diversification and inflation-resistant assets as answers to test against the regimes it reveals.
 - You can run this evidence on your own plan: a broad-sample model replays the JST panel (16 countries, 1870 to 2020). How it is built is spelled out in [[under-the-hood]].
 
 ---

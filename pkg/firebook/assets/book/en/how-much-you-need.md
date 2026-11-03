@@ -1,12 +1,12 @@
 # How much you need
-<!-- source: combien-il-vous-faut @ 3c0207c058d3 -->
+<!-- source: combien-il-vous-faut @ 86cb1dd22c45 -->
 
 "You need 25 times your annual spending." The formula fits on one line. Almost everyone still gets it wrong. The mistake is never in the multiplication: it is in the two numbers being multiplied. Which spending, exactly? And which multiple, for your horizon, your portfolio, your taxes and your other income?
 
 This page walks the whole calculation, from bank statement to capital target, and adds the corrections the barstool version leaves out. By the end you will be able to produce **your** number, with an honest range around it instead of false precision.
 
 ::: cle The real formula
-Target capital = (the gross annual spending of the life you are aiming at, tax on the withdrawals included, minus the discounted value of your non-portfolio income) × a multiple between 25 and 33, chosen to fit your horizon, your portfolio and your flexibility. Every term in that sentence gets a section below.
+Target capital = (the gross annual spending of the life you are aiming at, tax on the withdrawals included, minus the income you already receive each year) × a multiple between 25 and 33, chosen to fit your horizon, your portfolio and your flexibility. Future income, such as a pension, is not subtracted from today's budget: it enters the plan at its date (step 3). Every term in that sentence gets a section below.
 :::
 
 ## Step 1: what you actually spend
@@ -55,11 +55,11 @@ The multiple is the inverse of the withdrawal rate ([[the-4-percent-rule]]). Cho
 |---|---|---|
 | 25 (4%) | 4.0% | A horizon of 30 years or less, or a long horizon with big margins: real flexibility, a state pension coming later, likely part-time income |
 | 28-29 (3.5%) | ~3.5% | The working compromise for an early exit with a globally diversified portfolio and ordinary flexibility |
-| 33 (3%) | 3.0% | A very long horizon with no margin at all, a budget already at the floor, strong risk aversion, or faith in the pessimistic global sample |
-| > 33 | < 3% | Rarely rational: past this point the dominant risk is no longer ruin, it is dying rich after years of work nobody needed ([[one-more-year]]) |
+| 33 (3%) | 3.0% | A very long horizon with no margin at all, a budget already at the floor, strong risk aversion, or weight given to the harshest global sample |
+| > 33 | < 3% | Rarely justified in our view: past this point the dominant risk is no longer ruin, it is dying rich after years of work nobody needed ([[one-more-year]]) |
 
 ::: figure cible-convexite
-The three rows of the table, placed on the curve that links them. Because the multiple is the exact inverse of the rate, every extra half point of caution costs more than the one before, and the "> 33" row is a property of that curve rather than an opinion.
+The three rows of the table, placed on the curve that links them. Because the multiple is the exact inverse of the rate, every extra half point of caution costs more than the one before. That is what makes the "> 33" row so expensive.
 :::
 
 Two forces pull the choice in opposite directions, and naming them is what makes the trade honest. Pulling the rate down, the multiple up: a long horizon, expensive starting valuations ([[valuations-and-cape]]), a world wider than the American sample, fees and taxes. Pulling the rate up, the multiple down: genuine spending flexibility, future income (that pension again), the ability to go back to work, an adaptive withdrawal rule ([[choosing-your-strategy]]). One more fact belongs on that list and usually gets left off. The simulator's binary "success" is too blunt a measure. Most of the historical "failures" at 3.5% are paths where the trouble was visible ten years ahead ([[when-to-worry]]).
@@ -83,7 +83,7 @@ Nadia and Marc, 41 and 43, are aiming to stop at 48.
 
 **Target: 54,100 × 28.6, about $1,547,000.**
 
-Check it in a simulation, at $1,550,000 and $54,100 a year with pensions from 66: central-case failure probability around 5%, below the 10 to 20% working zone ([[failure-probability]]) by construction, since the pension is counted and the multiple is already cautious. The same plan **without** the pensions shows about 12%, and would have needed roughly $200,000 more. The state pension is "worth" four years of work here. That is why it never gets left out.
+Check it in a simulation, at $1,550,000 and $54,100 a year with pensions from 66: central-case failure probability around 5% under the book's cautious assumptions, below the 10 to 20% working zone ([[failure-probability]]), since the pension is counted and the multiple is already cautious. Yet the pension does nothing before 66: it then covers $25,200 of the $54,100 a year, and those later years are the ones it lightens. The same plan **without** the pensions shows about 12%, and would have needed roughly $200,000 more. For a couple saving about $50,000 a year, the state pension is "worth" four years of work here. That is why it never gets left out.
 :::
 
 ::: figure cible-cascade

@@ -1,5 +1,5 @@
 # Inflation and the withdrawal rate: the exact link
-<!-- source: inflation-et-taux-de-retrait @ fa7b9fcccff9 -->
+<!-- source: inflation-et-taux-de-retrait @ 0b818926669e -->
 
 Everyone knows inflation is bad for retirees. Almost nobody can say **where** it attacks a withdrawal plan. Five years at 8% do incomparably more damage than thirty years running a point above plan, even though the cumulative loss of purchasing power is the same.
 
@@ -17,7 +17,7 @@ A plan simulated **in real terms** already carries average inflation. Working in
 
 Take the fixed inflation-adjusted rule ([[fixed-inflation-adjusted-withdrawal]]) through an episode. Inflation at 8% raises the withdrawal by 8% a year: that is the contract, and purchasing power holds. The nominal portfolio does not keep up, because bonds lose price and equity multiples compress. The current withdrawal rate, the withdrawal divided by the portfolio, then climbs at both ends: the numerator rises mechanically, the denominator falls in real terms. That is the squeeze, and its violence is pure arithmetic. Three years at 9% inflation with a flat nominal portfolio take a current rate of 4% to about 5.2%, the equivalent of a 23% crash, without a single day of crash.
 
-This is why 1966 is a worse vintage than 1929 in every study ([[the-trinity-study]]). The 1929 crash is brutal, then it gives back: deflation pulls nominal withdrawals down with prices, and indexation starts working in your favor. The 1966 to 1981 episode never gives anything back. Fifteen years of squeeze.
+This is why 1966 is a worse vintage than 1929 in most studies ([[the-trinity-study]]). The 1929 crash is brutal, then it gives back: deflation pulls nominal withdrawals down with prices, and indexation starts working in your favor. The 1966 to 1981 episode never gives anything back. Fifteen years of squeeze.
 
 ::: figure voyants-1929-1966
 The plan's warning light, year after year, for the same indexed 4% withdrawal starting in 1929 and then in 1966. The 1929 one rings for three years, tops out at 6.3% in 1932, then comes back down: real capital rebuilds while deflation pulls the nominal withdrawal down with it. The 1966 one crosses 8% in 1975 and never comes back, leaves the scale in 1988 and empties the account in 1991. A detail that confirms the thesis: the 1929 vintage's true maximum is not its crash, it is the post-war inflation of 1949.
@@ -54,7 +54,7 @@ Here is the article's central practical tool. Since the enemy attacks through th
 | Gold, real assets | Episodically | The crisis hedge, not the one for normal times ([[gold-in-retirement]]) |
 | A fixed-rate mortgage still outstanding | **Negative indexation** | Inflation pays it down for you: the one line that **likes** an episode ([[real-estate-in-retirement]]) |
 
-Your net exposure is right there in the table. The typical plan (a deferred, indexed Social Security check, a nominal 60/40, some cash) is **long** inflation in its later years, thanks to Social Security. It is badly **short** during the uncovered phase, the bridge years, when everything else pulls the other way, and that is exactly the stretch where the sequence decides the outcome ([[horizon-and-life-expectancy]]). The allocation conclusion writes itself. The uncovered phase is the one to index, with TIPS, held both as a sleeve and as a floor ladder, a slice of real assets, and a budgeted drift. The covered phase is already indexed, by the pension.
+Your net exposure is right there in the table. The typical plan (a deferred, indexed Social Security check, a nominal 60/40, some cash) is partly protected from inflation in its later years, thanks to the indexed Social Security check, without becoming a net winner from it. It is badly **short** during the uncovered phase, the bridge years, when everything else pulls the other way, and that is exactly the stretch where the sequence decides the outcome ([[horizon-and-life-expectancy]]). The allocation conclusion writes itself. The uncovered phase is the one to index, with TIPS, held both as a sleeve and as a floor ladder, a slice of real assets, and a budgeted drift. The covered phase is already partly indexed by the pension, for the share of the budget it covers.
 
 ## What a simulation tests, and the checklist
 
@@ -62,12 +62,12 @@ Every idea in this chapter can go on a test bench, so here is the tooling. Runni
 
 Start with the resampled multi-country century, Anarkulova and Cederburg's data, what simulators call the **broad sample** ([[anarkulova-cederburg]]). Its blocks contain the real stagflations: Britain and Italy in the 1970s, France after the war. It is the only model where this chapter's enemy exists natively ([[historical-vs-parametric]]). Next comes the **sequence stress**, with its clusters of negative real years, agnostic about what caused them. Vintage replay closes the set: 1966 and 1973 are your two named inflation tests, and every US historical replay tool runs them cohort by cohort (cFIREsim and FICalc, for instance).
 
-The checklist is four questions. Does the plan hold under the multi-country century? If the failures are inflation blocks, the answer is in the indexation inventory, not in more capital. Does it get through the 1966 vintage? Is your personal drift budgeted? And is the floor of the uncovered phase actually indexed, with TIPS and a ladder, or only hoped to be?
+The checklist is four questions. Does the plan hold under the multi-country century? If the failures are inflation blocks, the lead to test first is the indexation inventory rather than more capital, on the models that use your weights. Does it get through the 1966 vintage? Is your personal drift budgeted? And is the floor of the uncovered phase actually indexed, with TIPS and a ladder, or only hoped to be?
 
 ::: exemple The same plan, before and after the indexation audit
 The starting plan: $1.6M, $52,000 a year, 45 years, with an indexed pension of $21,000 arriving in year 16. The portfolio starts at 65% stocks and 35% nominal (stable value and the aggregate). The read is 4.3% failure in the central case and 11.2% in the broad sample. Two thirds of the broad sample's failed paths are inflation blocks, and the 1973 vintage replay breaks in year 24. The audit is not close: the uncovered phase is 100% short inflation.
 
-Apply the inventory. Take 8% in short TIPS, an approximately indexed ladder covering six years of floor, and 5% in gold, all of it out of the nominal sleeve. Budget a spending drift of 0.4 points a year above the index. Write the indexation freeze after a red year into the rule. New read: 4.1% in the central case (no better, insurance does not pay in normal times), 7.8% in the broad sample, and 1973 survived. No capital was added. The plan simply stopped being short its main enemy.
+Apply the inventory. Take 8% in short TIPS, an approximately indexed ladder covering six years of floor, and 5% in gold, all of it out of the nominal sleeve. Budget a spending drift of 0.4 points a year above the index. Write the indexation freeze after a red year into the rule. New read: 4.1% in the central case (no better, insurance does not pay in normal times), and 1973 survived in the historical replay. The broad sample moves to 7.8%, but it sees neither the linkers nor the gold (it keeps its 60/40): that gain comes from the indexation freeze, net of the budgeted drift. No capital was added. The plan simply stopped being short its main enemy.
 :::
 
 ## The essentials

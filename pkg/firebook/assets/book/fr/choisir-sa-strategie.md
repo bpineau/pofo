@@ -16,7 +16,7 @@ La procédure entière tient sur une page, et son ordre n'est pas décoratif. Ch
 
 ## Étape 1 : le socle, avant toute règle
 
-Aucune règle ne se choisit sans trois chiffres établis ([[combien-il-vous-faut]]) : le **plancher** (les dépenses tenables cinq ans, moral compris), le **confort** (la vie visée) et la **couverture externe** du plancher (pension actualisée à sa date, rentes, revenus quasi sûrs, [[retraite-legale]], [[rentes-et-annuites]]). Le ratio décisif tient en une question. Quelle part du plancher le portefeuille doit-il financer, et pendant combien d'années (la phase à découvert, [[horizon-et-esperance-de-vie]]) ? Toute la suite en découle. Un plancher couvert à 80 % par des revenus garantis ouvre **toutes** les règles, même les plus variables. Un plancher financé à 100 % par le portefeuille pendant vingt ans en ferme la moitié.
+Aucune règle ne se choisit sans trois chiffres établis ([[combien-il-vous-faut]]) : le **plancher** (les dépenses tenables durablement, moral compris), le **confort** (la vie visée) et la **couverture externe** du plancher (pension actualisée à sa date, rentes, revenus quasi sûrs, [[retraite-legale]], [[rentes-et-annuites]]). Le ratio décisif tient en une question. Quelle part du plancher le portefeuille doit-il financer, et pendant combien d'années (la phase à découvert, [[horizon-et-esperance-de-vie]]) ? Toute la suite en découle. Plus les revenus garantis couvrent le plancher, plus les règles variables deviennent jouables. Mais la part non couverte reste à financer par le portefeuille, et c'est elle qu'il faut tester. Un plancher financé à 100 % par le portefeuille pendant vingt ans en ferme la moitié.
 
 ## Étape 2 : le test d'admissibilité, famille par famille
 
@@ -24,7 +24,7 @@ Chaque famille a son test éliminatoire. Vous les avez tous déjà rencontrés. 
 
 - **Fixe (Bengen amendé)** : le taux initial est-il ≤ 3,5 % (horizon long, marché cher) ou compensé par des marges chiffrées ? Sinon, éliminé : la falaise est trop probable ([[retrait-fixe-bengen]]).
 - **Pourcentage / VPW / règles CAPE** : le revenu sous « actions −50 % » couvre-t-il le plancher (le test de tolérance à la perte, [[vpw]]) ? Sinon, éliminé, sauf pont de pension ou rente qui l'y ramène.
-- **Corridor borné (Vanguard)** : la borne basse composée six ans (≈ −14 % en réel) reste-t-elle au-dessus du plancher ([[plancher-plafond]]) ?
+- **Corridor borné (Vanguard)** : la borne basse composée jusqu'à l'arrivée de la pension (≈ −14 % en six ans, −22 % en dix) reste-t-elle au-dessus du plancher, ou un plancher écrit prend-il le relais ([[plancher-plafond]]) ?
 - **Guardrails** : le plancher de coupe (75-80 % du retrait initial) est-il aligné sur le plancher réel, et l'exécutant appliquera-t-il **vraiment** une coupe de 10 % après trois années rouges ([[guyton-klinger]], [[guardrails-morningstar]]) ?
 - **ABW/TPAW** : y a-t-il un outil, quelqu'un pour le faire tourner à vie, et l'acceptation d'un revenu qui respire de ±3-8 % chaque année ([[amortissement-abw]]) ?
 
@@ -44,7 +44,7 @@ Parmi les familles admissibles, le tempérament et la gouvernance tranchent. Les
 | « Transmettre est central » | Fixe prudent + cliquet, ou ABW avec legs paramétré | Le legs choisi plutôt que résiduel ([[succession-et-transmission]]) |
 | « Anxieux du grand âge plus que des marchés » | Safety-first : rente/rachats de trimestres au plancher + n'importe quelle règle sur le reste ([[rentes-et-annuites]]) | Le risque redouté est couvert par le bon instrument, pas par la règle |
 
-Deux lectures de cette matrice. D'abord, le **tempérament** à considérer est celui des mauvaises années, pas celui du questionnaire. Les gens se découvrent moins flexibles qu'annoncé quand la coupe devient réelle ([[flexibilite-realite]], [[psychologie-du-retrait]]). En cas de doute, prenez la plus stable des deux règles en lice. Ensuite, la **gouvernance** est un critère de premier rang, pas une note de bas de page. La meilleure règle est celle qui sera encore appliquée dans vingt ans, par la personne survivante, dans une mauvaise décennie ([[couple-et-famille]]). Une règle « sous-optimale » exécutée bat toujours une règle optimale abandonnée.
+Deux lectures de cette matrice. D'abord, le **tempérament** à considérer est celui des mauvaises années, pas celui du questionnaire. Les gens se découvrent moins flexibles qu'annoncé quand la coupe devient réelle ([[flexibilite-realite]], [[psychologie-du-retrait]]). En cas de doute, prenez la plus stable des deux règles en lice. Ensuite, la **gouvernance** est un critère de premier rang, pas une note de bas de page. La meilleure règle est celle qui sera encore appliquée dans vingt ans, par la personne survivante, dans une mauvaise décennie ([[couple-et-famille]]). Une règle « sous-optimale » exécutée bat presque toujours une règle optimale abandonnée, à condition de savoir quand la réviser.
 
 ## Étape 4 : les hybrides légitimes, à commencer par le grand oublié
 
@@ -52,12 +52,12 @@ Trois assemblages reviennent chez les praticiens sérieux, et le troisième est 
 
 **Le plancher garanti + la règle libre** (safety-first) : rente/pension/linkers au plancher, puis la règle qu'on veut sur le reste. Déjà traité ([[rentes-et-annuites]]), et compatible avec toutes les lignes de la matrice.
 
-**Le calcul actuariel + l'affichage lissé** : l'ABW comme calcul de référence annuel, un corridor de ±5-10 % autour pour le budget affiché. On garde l'optimalité de l'un et le confort de l'autre. C'est la pratique de beaucoup d'utilisateurs TPAW ([[amortissement-abw]]).
+**Le calcul actuariel + l'affichage lissé** : l'ABW comme calcul de référence annuel, un corridor de ±5-10 % autour pour le budget affiché. On garde l'essentiel de la logique de l'un et le confort de l'autre, à condition de simuler le revenu lissé comme une règle à part. C'est la pratique de beaucoup d'utilisateurs TPAW ([[amortissement-abw]]).
 
 **Des règles différentes par phase.** Le plan FIRE a deux vies ([[horizon-et-esperance-de-vie]], [[les-trois-phases]]). La phase à découvert appelle la prudence pilotée, un Bengen amendé à taux prudent ou des guardrails avec plancher. Le portefeuille y finance tout, la fenêtre fragile est ouverte. La phase adossée, une fois la pension au plancher, libère la main : VPW, règle CAPE ou ABW généreux sur le portefeuille résiduel. Écrire dès le départ « guardrails jusqu'à la pension, VPW ensuite » est plus intelligent que chercher la règle unique des deux phases. Les deux problèmes sont différents, les deux solutions aussi. La bascule elle-même se planifie à la revue annuelle de l'année de liquidation ([[revue-annuelle]]).
 
 ::: science Ce que pèsent vraiment les différences entre bonnes règles
-Remettons les ordres de grandeur en place, car ils dictent où investir votre attention. Entre deux bonnes règles bien calibrées (guardrails avec plancher contre ABW décoté, par exemple), l'écart typique est de 1 à 3 points de ruine et de ±5-8 % de consommation totale : réel, mais du second ordre. Contre cela : 10 % d'erreur sur les dépenses = ~3-6 points de ruine ; la pension oubliée = 3-8 points ; un taux initial de 4,5 % au lieu de 3,7 % en marché cher = 5-10 points ; l'abandon de la règle en pleine panique = incalculable. La hiérarchie de l'attention en découle : les **entrées** d'abord ([[combien-il-vous-faut]]), le taux initial ensuite ([[valorisations-et-cape]]), l'exécutabilité de la règle enfin. Et le choix fin entre finalistes en dernier, sereinement, car on ne peut plus beaucoup se tromper.
+Remettons les ordres de grandeur en place, car ils dictent où investir votre attention. Entre deux bonnes règles bien calibrées (guardrails avec plancher contre ABW décoté, par exemple), l'écart est souvent de l'ordre de quelques points de ruine et de quelques pour cent de consommation totale : réel, mais du second ordre. Contre cela, sur un plan typique : 10 % d'erreur sur les dépenses = plusieurs points de ruine ; la pension oubliée = 3-8 points ; un taux initial de 4,5 % au lieu de 3,7 % en marché cher = 5-10 points ; l'abandon de la règle en pleine panique = incalculable. La hiérarchie de l'attention en découle : les **entrées** d'abord ([[combien-il-vous-faut]]), le taux initial ensuite ([[valorisations-et-cape]]), l'exécutabilité de la règle enfin. Et le choix fin entre finalistes en dernier, sereinement, car on ne peut plus beaucoup se tromper.
 :::
 
 ::: figure hierarchie-attention
@@ -69,7 +69,7 @@ Les trois premières barres se règlent sur un coin de table, en une soirée de 
 | Règle | Ruine | Revenu | Consommation | Gouvernance | Article |
 |---|---|---|---|---|---|
 | Bengen amendé | Possible (falaise prévisible) | Parfaitement stable | La plus basse | Triviale | [[retrait-fixe-bengen]] |
-| Pourcentage fixe lissé | Impossible (capital) | Variable lissé | Bonne | Simple | [[pourcentage-fixe]] |
+| Pourcentage fixe lissé | Rare, mais possible avec le lissage | Variable lissé | Bonne | Simple | [[pourcentage-fixe]] |
 | Corridor Vanguard | Faible, honnête | Glissements ±2,5-5 %/an | Bonne | Triviale | [[plancher-plafond]] |
 | Guyton-Klinger + plancher | Faible, honnête | Stable avec marches −10 % | Bonne | Moyenne | [[guyton-klinger]] |
 | Guardrails par risque | Pilotée (cible écrite) | Stable avec marches rares | Très bonne | Exigeante (outil) | [[guardrails-morningstar]] |
@@ -80,7 +80,7 @@ Les trois premières barres se règlent sur un coin de table, en une soirée de 
 
 ## Étape 5 : calibrer, tester, écrire
 
-La séance finale tient en une heure devant un simulateur. Configurez la règle candidate avec **vos** paramètres, pas ceux d'un article américain. Validez la ruine dans le faisceau des modèles : acceptable au central, tolérable au broad-sample, soutenable en décennie perdue ([[historique-vs-parametrique]]). Lisez ensuite les dépenses servies dans le pire quartile des trajectoires, pour vérifier que la vie vécue reste au-dessus du plancher pendant des durées tenables. Comparez enfin en A/B avec la deuxième finaliste, mêmes entrées et même modèle de marché, la règle seule changeant d'une exécution à l'autre. Les deux candidates se placent ainsi côte à côte sur la frontière de décumulation ([[panorama-strategies-retrait]]). Puis **écrivez** l'essentiel : la règle, ses paramètres, ses seuils, la date de revue, la règle de la phase suivante et les conditions de changement. On ne change pas de règle en cours de krach ; on le décide à froid, à la revue annuelle, pour des raisons écrites. Ce document d'une page est le produit final de toute la partie IV, que [[construire-son-plan]] intègre au plan complet.
+La séance finale tient en une heure devant un simulateur. Configurez la règle candidate avec **vos** paramètres, pas ceux d'un article américain. Validez la ruine au central, puis passez les crash-tests, le broad-sample (un 60/40 domestique, pas votre portefeuille) et la décennie perdue ([[historique-vs-parametrique]]). Lisez ensuite les dépenses servies dans les mauvaises trajectoires, et pas seulement au pire quartile : quelle part des futurs passe sous le plancher, et pour combien d'années ? Comparez enfin en A/B avec la deuxième finaliste, mêmes entrées et même modèle de marché, la règle seule changeant d'une exécution à l'autre. Les deux candidates se placent ainsi côte à côte sur la frontière de décumulation ([[panorama-strategies-retrait]]). Puis **écrivez** l'essentiel : la règle, ses paramètres, ses seuils, la date de revue, la règle de la phase suivante et les conditions de changement. On ne change pas de règle en cours de krach ; on le décide à froid, à la revue annuelle, pour des raisons écrites. Ce document d'une page est le produit final de toute la partie IV, que [[construire-son-plan]] intègre au plan complet.
 
 ::: exemple Le processus complet, sur un vrai cas
 Claire (51 ans) et Idris (53 ans) : 1,7 M€, plancher 45 000 €, confort 58 000 €, pensions 24 000 €/an dans 13 ans.
@@ -88,8 +88,8 @@ Claire (51 ans) et Idris (53 ans) : 1,7 M€, plancher 45 000 €, confort 58 00
 1. **Étape 1** → phase à découvert de 13 ans, plancher financé à 100 % par le portefeuille puis à 53 % par les pensions.
 2. **Étape 2, admissibilité** → le fixe à 3,4 % passe (58 000/1,7 M) ; le VPW échoue au test de perte **avant** pension (revenu −50 % actions, 41 000 € < plancher) mais passerait après ; l'ABW passe (g décoté, revenu du pire quartile 47 500 €) ; le corridor passe de justesse.
 3. **Étape 3, tempérament** → Claire veut la stabilité, Idris la justesse ; côté gouvernance, c'est Claire qui exécutera.
-4. **Étape 4** → l'hybride par phases s'impose, guardrails par risque pendant le découvert (seuils dimensionnés au solveur, coupe si ruine centrale > 13 %, hausse si < 1 %, ajustements ±10 %, plancher de coupe 78 %), puis VPW sur le résiduel une fois les pensions au plancher.
-5. **Étape 5** → ruine centrale 4 %, broad-sample 9 % (échecs tardifs, adossés), pire quartile à deux coupes maximum, jamais sous 46 400 €. Signé, écrit, daté.
+4. **Étape 4** → l'hybride par phases s'impose, guardrails par risque pendant le découvert (seuils dimensionnés au solveur, coupe si ruine centrale > 13 %, hausse si < 1 %, ajustements ±10 %, plancher de coupe 78 %), puis VPW sur le résiduel une fois les pensions liquidées. Elles ne couvrent pourtant que 53 % du plancher : les 21 000 € restants, financés par le VPW, doivent passer le test de perte eux aussi.
+5. **Étape 5** → ruine centrale 4 %, broad-sample 9 % (le crash-test du 60/40 domestique, échecs tardifs), pire quartile à deux coupes maximum, autour de 47 000 € au plus bas. Signé, écrit, daté.
 
 Durée totale du processus : deux soirées, dont une de conversation, pas de calcul. C'est la bonne proportion.
 :::

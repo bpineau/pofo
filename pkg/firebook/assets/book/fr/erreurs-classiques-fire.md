@@ -1,6 +1,6 @@
 # Les dix erreurs qui ruinent un plan FIRE
 
-Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par des erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
+Les plans FIRE échouent rarement par malchance pure. Les marchés hostiles sont dans les modèles, et un plan bien construit en encaisse la plupart. Ce qui fait dérailler un plan, le plus souvent, ce sont des erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
 
 Cette page dresse la liste des dix plus meurtrières, dans l'ordre où on les rencontre en construisant un plan, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Six d'entre elles se chiffrent, et l'ordre du coût n'est pas celui de la liste. La figure ci-dessous les classe. Elle se lit deux fois : avant de construire son plan, et pendant sa mise en œuvre ([[revue-annuelle]]).
 
@@ -26,9 +26,9 @@ La règle des 4 % est calibrée sur 30 ans, aux États-Unis, sans frais ni impô
 
 ## 3. Ignorer la fiscalité et la PUMa
 
-Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe ([[flat-tax-et-imposition]]), et pour le rentier français sans activité, la cotisation subsidiaire maladie ([[taxe-puma]]), qui peut prélever ~6,5 % des revenus du capital. Friction totale typique : 8 à 20 %.
+Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe ([[flat-tax-et-imposition]]), et pour le rentier français sans activité, la cotisation subsidiaire maladie ([[taxe-puma]]), qui peut prélever ~6,5 % des revenus du capital. Friction totale courante : 8 à 20 % du retrait brut.
 
-**Correction** : majorer les dépenses cibles de 10-15 % par défaut, puis affiner. Attention à ne pas compter la friction deux fois, car un simulateur qui modélise la fiscalité majore déjà chaque vente du prélèvement dû. Organiser aussi les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
+**Correction** : diviser la dépense nette par (1 - friction). À 10 % de friction, il faut retirer 11 % de plus ; à 20 %, 25 % de plus. Attention à ne pas compter la friction deux fois, car un simulateur qui modélise la fiscalité majore déjà chaque vente du prélèvement dû. Organiser aussi les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
 
 ## 4. Oublier ses propres pensions
 
@@ -44,13 +44,13 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 6. Le portefeuille mono-régime
 
-100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues en termes réels (Japon 1990, monde 2000-2009) au pire moment. Sur cinquante ans il ne ruine pas plus souvent que le 60/40, mais il impose trois années de budget coupé de plus, et ces années-là se vivent. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Mesuré sur le plan de référence, c'est l'erreur la plus chère de la page. Variante déguisée du même piège, le portefeuille « qui vit de ses dividendes » n'est pas plus sûr, car un dividende se coupe en crise et reste de toute façon un retrait forcé sur votre propre capital ([[faux-actifs-defensifs]]). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
+100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues en termes réels (Japon 1990, monde 2000-2009) au pire moment. Dans notre plan de référence, sur cinquante ans, il ne ruine pas plus souvent que le 60/40, mais il impose trois années de budget coupé de plus, et ces années-là se vivent. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Mesuré sur le plan de référence, c'est l'erreur la plus chère de la page. Variante déguisée du même piège, le portefeuille « qui vit de ses dividendes » n'est pas plus sûr, car un dividende se coupe en crise et reste de toute façon un retrait forcé sur votre propre capital ([[faux-actifs-defensifs]]). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
 **Correction** : diversification par régime (actions mondiales, duration, or et/ou linkers, éventuellement des [[managed-futures|managed futures]]), et un test explicite contre inflation persistante et décennie perdue.
 
 ## 7. Tout miser sur la flexibilité
 
-« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné. La recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, car les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget. Mesurée, cette erreur est l'une des deux plus chères de la page, parce qu'elle sert à justifier un taux de retrait plus élevé, et que ce taux, lui, est bien réel.
+« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné. La recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait dans ces tests, guère davantage, car les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget. Mesurée, cette erreur est l'une des deux plus chères de la page, parce qu'elle sert à justifier un taux de retrait plus élevé, et que ce taux, lui, est bien réel.
 
 **Correction** : chiffrer le plancher réel (celui qu'on tient **cinq** ans, moral compris), et l'inscrire dans une règle décidée à l'avance ([[plancher-plafond]], [[guardrails-morningstar]]) plutôt que dans une intention.
 
@@ -58,7 +58,7 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée, souvent le plus optimiste (le backtest historique de son propre portefeuille), relever l'hypothèse de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur cesse alors d'être un instrument pour devenir une machine à se donner raison ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
 
-**Correction** : lire plusieurs modèles côte à côte, et d'abord ceux qui vous déplaisent. Un modèle seul n'est qu'une opinion, l'écart entre plusieurs est l'information ([[historique-vs-parametrique]]). Planifier entre le central et le broad-sample, et traiter la décennie perdue comme un scénario à tenir, pas comme un scénario improbable.
+**Correction** : lire plusieurs modèles côte à côte, et d'abord ceux qui vous déplaisent. Un modèle seul n'est qu'une opinion, l'écart entre plusieurs est l'information ([[historique-vs-parametrique]]). Planifier sur le central, puis passer le broad-sample (un 60/40 domestique du siècle, qui ignore votre portefeuille) et la décennie perdue (un long marché baissier synthétique) comme des crash-tests à tenir, pas comme des scénarios improbables ni comme une fourchette de votre risque.
 
 ## 9. Négliger le facteur humain
 
@@ -77,18 +77,18 @@ Deux erreurs symétriques. Partir trop tôt sur un plan tendu, au sommet d'un ma
 À parcourir avant le départ, puis chaque année :
 
 - [ ] Dépenses fondées sur 24 mois de relevés, irrégulier annualisé, mutuelle comprise
-- [ ] Fiscalité et PUMa intégrées (majoration 10-15 % ou calcul précis)
+- [ ] Fiscalité et PUMa intégrées (dépense nette divisée par 1 moins la friction, ou calcul précis)
 - [ ] Pensions légales estimées et données au simulateur en revenu différé
 - [ ] Taux de retrait cohérent avec l'horizon (3-3,5 % rigide au-delà de 40 ans d'horizon, ou marges explicites)
 - [ ] Portefeuille testé contre les quatre régimes, pas seulement le scénario central
 - [ ] Plancher de dépenses chiffré et réaliste ; règle d'ajustement écrite
-- [ ] Ruine acceptable même dans le modèle broad-sample ; décennie perdue tenable
+- [ ] Ruine acceptable dans le modèle central ; crash-tests broad-sample et décennie perdue passés à un prix accepté
 - [ ] Buffer de liquidités dimensionné et règles de consommation/recharge décidées ([[cash-buffer]], [[recharger-ou-pas]])
 - [ ] Projet de vie prototypé ; accord du conjoint sur le budget et sur la vie
 - [ ] Critères de départ écrits, avec date de revue
 
 ::: terrain Ce que disent les post-mortem
-Les récits d'échec publiés sur les forums FIRE ont une constante frappante : presque aucun ne dit « les marchés m'ont ruiné ». Ils disent « j'avais sous-estimé mes dépenses de 30 % », « le divorce a coupé le capital en deux » ([[couple-et-famille]]), « je me suis ennuyé et j'ai brûlé du cash en projets », « je n'avais pas vu la fiscalité ». Les marchés sont dans les modèles ; ce sont les entrées et la vie qui n'y étaient pas. C'est une bonne nouvelle : ces erreurs-là se corrigent avant de partir.
+Les récits d'échec publiés sur les forums FIRE ont une constante frappante : ils disent rarement « les marchés m'ont ruiné ». Ils disent « j'avais sous-estimé mes dépenses de 30 % », « le divorce a coupé le capital en deux » ([[couple-et-famille]]), « je me suis ennuyé et j'ai brûlé du cash en projets », « je n'avais pas vu la fiscalité ». Les marchés sont dans les modèles ; ce sont les entrées et la vie qui n'y étaient pas. C'est une bonne nouvelle : ces erreurs-là se corrigent avant de partir.
 :::
 
 ---

@@ -67,14 +67,14 @@ func Policies(c PolicyConfig) []Policy {
 					Band: 0.20, Cut: 0.10, Raise: 0.10, Cap: c.RaiseCap, PVRate: c.PVRate}
 			}},
 		{"Bounded %", "% borné", "Bnd %",
-			"Vanguard's dynamic spending: aim at a fixed percentage of current wealth, but never move more than +5% or -2.5% from last year's real spending. VPW's discipline, smoothed into small steps.",
+			"Vanguard's dynamic spending: aim at a fixed percentage of current wealth, but never move more than +5% or -2.5% from last year's real spending. The percent-of-portfolio discipline, smoothed into small steps.",
 			"#BE185D", func(p *decumul.Plan) {
 				p.Bounded = decumul.BoundedPct{Pct: c.WR, Up: 0.05, Down: 0.025}
 			}},
 		{"ABW", "Amortissement (ABW)", "ABW",
 			"Amortisation-based withdrawal (the ABW/TPAW family): every year, re-quote the payment that would exhaust what is left over the horizon that remains, like a mortgage run in reverse. Cannot run out before the horizon.",
 			"#6D28D9", func(p *decumul.Plan) { p.Amortize, p.AmortReturn = true, c.AmortReturn }},
-		{"VPW", "% du portefeuille (VPW)", "VPW",
+		{"% of portfolio", "% du portefeuille", "VPW",
 			"Pure percentage-of-portfolio: spend the same share of what you have each year. It can never run out, but the income follows the market all the way down.",
 			"#0B7285", func(p *decumul.Plan) { p.Percent = c.WR }},
 	}

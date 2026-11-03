@@ -15,8 +15,8 @@ func TestStack22ChainClosesOnTheArticlesNumbers(t *testing.T) {
 	for _, want := range []string{
 		"67 % en fonds 90/60",
 		"18 % trend, 10 % or, 5 % cash",
-		"Le cœur empilé y perd environ 21 % là où le 60/40 nu perd 17 %",
-		"le plan complet ne s'en tire à environ −10 % que parce que le trend a très bien travaillé cette année-là",
+		"Le cœur empilé y perd environ 25 % là où le 60/40 nu perd 17 %",
+		"qui ramène le plan complet à environ −10 %",
 		"::: figure stacking-2022",
 	} {
 		if !strings.Contains(art, want) {
@@ -29,14 +29,14 @@ func TestStack22ChainClosesOnTheArticlesNumbers(t *testing.T) {
 	}
 	// The two derived steps, to the tenth the plate prints: the leverage bill
 	// and what the core's 67 % weight gives back.
-	if got := stack22Lever(); math.Abs(got+4) > 1e-9 {
-		t.Errorf("the leverage bill is %.2f points, expected −4", got)
+	if got := stack22Lever(); math.Abs(got+8) > 1e-9 {
+		t.Errorf("the leverage bill is %.2f points, expected −8", got)
 	}
-	if got := stack22Dilution(); math.Abs(got-6.93) > 1e-9 {
-		t.Errorf("the core's weight gives back %.2f points, expected 6,93", got)
+	if got := stack22Dilution(); math.Abs(got-25.0/3) > 1e-9 {
+		t.Errorf("the core's weight gives back %.2f points, expected 8,33", got)
 	}
-	if got := stack22Sleeves(); math.Abs(got-4.07) > 1e-9 {
-		t.Errorf("the freed layer contributes %.2f points, expected 4,07", got)
+	if got := stack22Sleeves(); math.Abs(got-20.0/3) > 1e-9 {
+		t.Errorf("the freed layer contributes %.2f points, expected 6,67", got)
 	}
 	// Rounded to the tenth, as drawn, the chain still closes: no rounding of
 	// the plate's own labels may open a gap.
@@ -47,13 +47,17 @@ func TestStack22ChainClosesOnTheArticlesNumbers(t *testing.T) {
 	if math.Abs(rounded-stack22Plan) > 1e-9 {
 		t.Errorf("the drawn labels add up to %.2f %%, not to %.0f %%", rounded, stack22Plan)
 	}
-	// The shape of the argument: the leverage costs, and the freed layer more
-	// than pays for it.
+	// The shape of the argument: the leverage costs, the core's two-thirds
+	// weight gives that cost back (the core then roughly reproduces the naked
+	// 60/40), and the freed layer makes the gain.
 	if stack22Lever() >= 0 {
 		t.Error("the leverage step no longer costs anything")
 	}
-	if stack22Dilution()+stack22Sleeves() <= -stack22Lever() {
-		t.Error("the freed layer no longer pays the leverage bill")
+	if math.Abs(stack22Lever()+stack22Dilution()) > 1 {
+		t.Error("at two thirds of the plan, the core no longer reproduces the naked 60/40")
+	}
+	if stack22Sleeves() <= 0 {
+		t.Error("the freed layer no longer earns anything")
 	}
 	// The English edition carries the same three levels.
 	en, err := assets.ReadFile("assets/book/en/return-stacking.md")
@@ -61,8 +65,8 @@ func TestStack22ChainClosesOnTheArticlesNumbers(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, want := range []string{
-		"The stacked core loses about 21% there, where the naked 60/40 loses 17%",
-		"the whole plan gets away with about −10% only because trend worked very well that year",
+		"The stacked core loses about 25% there, where the naked 60/40 loses 17%",
+		"that brings the whole plan back to about −10%",
 		"::: figure stacking-2022",
 	} {
 		if !strings.Contains(string(en), want) {
@@ -88,9 +92,9 @@ func TestStack22PlateRenders(t *testing.T) {
 	}
 	for _, want := range []string{
 		">−17,0 %<", ">−10,0 %<", // the two states
-		">−4,0<", ">+6,9<", ">+4,1<", // the three steps
+		">−8,0<", ">+8,3<", ">+6,7<", // the three steps
 		">60/40 nu<", ">la facture<", ">le cœur ne pèse<", ">l'étage libéré<", ">le plan empilé<",
-		">Le levier pique, et c'est l'étage libéré qui paie la facture.<",
+		">Le poids de deux tiers efface le levier, et l'étage libéré fait le gain.<",
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate does not draw %q", want)

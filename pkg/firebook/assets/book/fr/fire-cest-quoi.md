@@ -7,7 +7,7 @@ Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffis
 À la fin, vous saurez situer votre propre projet sur cette carte et par quel article continuer.
 
 ::: cle Le principe en une phrase
-Quand votre patrimoine investi atteint environ 25 à 33 fois vos dépenses annuelles, son rendement réel (après inflation) peut, avec une forte probabilité mais jamais une certitude, financer votre vie indéfiniment. Tout le reste du sujet, et tout ce livre, consiste à comprendre, affiner, sécuriser et vivre cette phrase.
+Quand votre patrimoine investi atteint environ 25 à 33 fois vos dépenses annuelles, son rendement réel (après inflation) peut, avec une forte probabilité mais jamais une certitude, financer votre vie jusqu'au bout. Tout le reste du sujet, et tout ce livre, consiste à comprendre, affiner, sécuriser et vivre cette phrase.
 :::
 
 ## D'où ça vient
@@ -87,7 +87,7 @@ Tout projet FIRE, quelle que soit sa variante, se résume à trois nombres et à
 
 **2. Votre taux de retrait.** Le pont entre dépenses et capital. 4 % est le point de départ historique ([[la-regle-des-4-pourcents]]). Avec un départ précoce, un portefeuille mondial et des valorisations élevées, la fourchette de travail moderne est plutôt 3 à 3,5 % en retrait rigide, davantage avec une stratégie flexible ([[choisir-sa-strategie]]).
 
-**3. Votre horizon.** 30 ans (l'hypothèse des études fondatrices) et 50 ans (un départ à 40 ans) sont deux problèmes différents. L'horizon long réduit le taux sûr, mais moins qu'on ne l'imagine. Au-delà de 40 ans, la courbe s'aplatit. Un portefeuille qui survit 40 ans est presque toujours devenu si gros qu'il survit indéfiniment ([[horizon-et-esperance-de-vie]]).
+**3. Votre horizon.** 30 ans (l'hypothèse des études fondatrices) et 50 ans (un départ à 40 ans) sont deux problèmes différents. L'horizon long réduit le taux sûr, mais moins qu'on ne l'imagine. Au-delà de 40 ans, la courbe s'aplatit : viser 60 ans plutôt que 40 ne coûte plus qu'un peu de taux de retrait ([[horizon-et-esperance-de-vie]]).
 
 ::: astuce Commencez par l'inventaire, pas par le simulateur
 Avant tout calcul savant : douze mois de relevés bancaires, un tableur, et le vrai chiffre de vos dépenses annuelles, grosses dépenses irrégulières incluses (voiture, travaux, santé, cadeaux). La plupart des gens découvrent un écart de 15 à 25 % entre leurs dépenses perçues et réelles. Ce chiffre-là, multiplié par 25 ou 30, vaut tous les simulateurs du monde pour savoir où vous en êtes.

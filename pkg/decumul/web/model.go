@@ -103,7 +103,7 @@ type Params struct {
 	SpendDrift                   float64 `json:"spendDrift"`     // real spending drift per year (health costs)
 	Smile                        bool    `json:"smile"`          // Blanchett retirement-smile spending shape
 	CapeAdjust                   bool    `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
-	Percent                      float64 `json:"percent"`        // percentage-of-portfolio (VPW) rule; 0 = fixed real spending
+	Percent                      float64 `json:"percent"`        // percentage-of-portfolio rule; 0 = fixed real spending
 	Glidepath                    bool    `json:"glidepath"`      // rising-equity glidepath (bond tent) on the central model
 	// The annuity block (see annuity.go). Share is the fraction of the GROWTH
 	// sleeve converted into a joint-life, inflation-linked income, 0 = none and
@@ -198,7 +198,7 @@ func (pr Params) plan() decumul.Plan {
 			Cooldown: 2, MaxWR: 0.022,
 		}
 	}
-	// Percentage-of-portfolio (VPW): overrides the fixed-need policy with a
+	// Percentage-of-portfolio: overrides the fixed-need policy with a
 	// never-ruin variable-spending rule (annual). Set last so it takes priority.
 	if pr.Percent > 0 {
 		p.Percent = pr.Percent

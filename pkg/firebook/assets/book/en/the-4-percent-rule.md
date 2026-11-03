@@ -1,5 +1,5 @@
 # The 4% rule in ten minutes
-<!-- source: la-regle-des-4-pourcents @ 3cb31bf512e5 -->
+<!-- source: la-regle-des-4-pourcents @ 3cdb8b689a7f -->
 
 It is the most famous rule in personal finance: withdraw 4% of your capital in the first year of retirement, raise that amount with inflation every year after, and your portfolio will last thirty years. It is so famous that people call it "the rule" and leave it at that.
 
@@ -70,12 +70,12 @@ Thirty years of research have sharpened the picture, and the results converge on
 
 **2. Over a long horizon, 4% is too high for a rigid rule.** That is the central result of the Early Retirement Now series ([[the-ern-series]]): over 50 to 60 years, the rate that would have survived every US vintage falls toward 3.25 to 3.5%. The failure probability of a rigid 4% over 50 years, measured on American history, runs around 10 to 20% depending on the allocation. Too much for a life plan.
 
-**3. Outside the United States it is worse.** On the global sample, the broad sample of 16 developed countries since 1870 ([[anarkulova-cederburg]]), the "safe" rate of a domestic 60/40 sits well below 4%. Twentieth-century France, Japan, Germany and Italy handed their retirees sequences that American history simply does not contain. A globally diversified investor today sits somewhere between those two worlds.
+**3. Outside the United States it is worse.** On the global sample of Anarkulova and Cederburg (38 developed countries, [[anarkulova-cederburg]]), the "safe" rate of a domestic 60/40 sits well below 4%. Twentieth-century France, Japan, Germany and Italy handed their retirees sequences that American history simply does not contain. A globally diversified portfolio is neither of those two cases: neither number is directly its own.
 
 **4. Starting valuations move the rate.** Every one of the worst vintages began in an expensive market, with a high CAPE. Modern rules therefore condition the initial rate on valuations ([[valuations-and-cape]], [[cape-based-rules]]). It is one of the best established improvements in the field.
 
 ::: science Where the research puts the "real" number today
-For an early retirement, meaning a horizon of 45 years and up, with a globally diversified portfolio, no flexibility and no other income, the literature converges on 3.0 to 3.5% for a rigid rule (ERN, 3.25%; Morningstar 2025, over 30 years with forward-looking returns, 3.9%; Anarkulova-Cederburg, global sample, closer to 2.3 to 2.7% at the pessimistic end, a low bound that is disputed). Every protection you add lifts that number, sometimes past 4%: flexible spending ([[flexibility-in-practice]]), part-time income ([[going-back-to-work]]), a pension arriving later, guardrails ([[morningstar-guardrails]]). The safe rate is not a constant of nature. It is the output of a model, and a function of your assumptions and your margins.
+For an early retirement, meaning a horizon of 45 years and up, with a globally diversified portfolio, no flexibility and no other income, this book takes 3.0 to 3.5% as the starting zone for a rigid rule. The studies around it do not all measure the same thing: ERN finds 3.25% on US history over 50 years; Morningstar 2025, 3.9% over 30 years with forward-looking returns; Anarkulova and Cederburg, around 2.3% for a 65-year-old couple in a domestic 60/40, a disputed low bound. Every protection you add lifts that number, sometimes past 4%: flexible spending ([[flexibility-in-practice]]), part-time income ([[going-back-to-work]]), a pension arriving later, guardrails ([[morningstar-guardrails]]). The safe rate is not a constant of nature. It is the output of a model, and a function of your assumptions and your margins.
 :::
 
 ## So, keep it or toss it?
@@ -88,14 +88,14 @@ Keep it, in its place. The 4% rule is excellent in three roles and fails in a fo
 
 **Excellent as a sanity check on a sales pitch.** When someone promises "8% a year, risk free", the rule tells you instantly that this is twice what the best market in history sustained under a rigid rule over thirty years. A reflex worth having.
 
-**Bad as an actual withdrawal strategy.** Nobody should run a blind indexed withdrawal mechanically for forty years. Not because the rule is wrong, but because it ignores the information that keeps arriving: markets, health, real spending, valuations. The whole withdrawal-strategies part of this book ([[withdrawal-strategies-overview]]) is about what goes in its place, rules that listen to the portfolio ([[guyton-klinger]], [[morningstar-guardrails]], [[amortization-based-withdrawal]]). At equal capital they fund more spending, or protect the same standard of living far better.
+**Bad as an actual withdrawal strategy.** Nobody should run a blind indexed withdrawal mechanically for forty years. Not because the rule is wrong, but because it ignores the information that keeps arriving: markets, health, real spending, valuations. The whole withdrawal-strategies part of this book ([[withdrawal-strategies-overview]]) is about what goes in its place, rules that listen to the portfolio ([[guyton-klinger]], [[morningstar-guardrails]], [[amortization-based-withdrawal]]). At equal capital they let you spend more at the start or cut the risk of running dry sharply. The price is an income that moves, sometimes downward for a long time: check that your essential budget can take it.
 
 ::: attention The most common misreading
 "4%, so I can withdraw 4% of the portfolio every year." No. That is the fixed percentage strategy ([[fixed-percentage]]), which can never ruin you but swings your standard of living hard. Bengen's rule indexes the initial **amount** to inflation, and lets its share of the current capital drift wherever the market takes it. The two strategies carry neither the same risks nor the same comfort, and confusing them derails every conversation on the subject.
 :::
 
 ::: exemple The 4% rule against a real case
-Back to Camille: $1M, a global 60/40, retiring at 45, $40,000 a year indexed. Here is what the three families of models ([[historical-vs-parametric]]) say over 45 years. A calibrated central parametric model typically gives a failure probability around 10 to 15%, a replay of the global sample gives more, the portfolio's own historical windows give less. At 3.4%, that is $34,000 a year, the central-case failure probability drops below 5%. Keeping 4% but adding $800 a month of pension from 67 gets it below 5% as well. That is the rule used well: one starting point, three levers tested, one informed decision.
+Back to Camille: $1M, a global 60/40, retiring at 45, $40,000 a year indexed. Here is what the three families of models ([[historical-vs-parametric]]) say over 45 years. Under cautious assumptions, the central parametric model gives a failure probability around 10 to 15%, a replay of the global sample gives more, the portfolio's own historical windows give less (orders of magnitude that move with your parameters). At 3.4%, that is $34,000 a year, the central-case failure probability drops below 5%. Keeping 4% but adding $800 a month of pension from 67 gets it below 5% as well. Mind what the pension does not do: it cuts the need to $30,400 a year from 67, but the first 22 years still rest entirely on the portfolio. That is the rule used well: one starting point, three levers tested, one informed decision.
 :::
 
 ## The essentials
@@ -104,7 +104,7 @@ Back to Camille: $1M, a global 60/40, retiring at 45, $40,000 a year indexed. He
 - The "4" comes from the worst American vintage, 1966, and not from an average; it was already a cautious number... inside its own frame.
 - Outside that frame (a long horizon, the whole world, fees, taxes, high valuations), the equivalent rigid rate is closer to 3 to 3.5%.
 - Flipped into the "25x multiple", it is the best mental reflex in the field.
-- As an actual strategy it is beaten by the adaptive rules: read [[withdrawal-strategies-overview]] before you carve 4% into your plan.
+- As an actual strategy an adaptive rule usually does better, if your budget can live with a variable income: read [[withdrawal-strategies-overview]] before you carve 4% into your plan.
 
 ---
 

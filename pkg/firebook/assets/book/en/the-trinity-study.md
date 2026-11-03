@@ -1,5 +1,5 @@
 # Bengen, the Trinity study, and the birth of the safe withdrawal rate
-<!-- source: etude-trinity @ ede6aff6e29f -->
+<!-- source: etude-trinity @ 4582b4b9f2e6 -->
 
 Before 1994, one question got the same wrong answer with impressive consistency: how much can I take out of my portfolio every year? "The average return, obviously." Stocks returned 10% historically, so withdraw 8%, said professional advisers with a straight face.
 
@@ -8,7 +8,7 @@ William Bengen, and then the Trinity study, showed why that answer ruins people,
 It is a piece of intellectual history as much as a technical one: the concepts introduced here (vintage, SAFEMAX, success rate) run through the rest of the book.
 
 ::: cle The founding reversal
-Bengen's contribution is not the number "4%". It is the demonstration that the sustainable withdrawal rate does **not** depend on the average return, but on the worst run of returns and inflation the retiree lives through, above all in the first ten years. The average American vintage carried more than 6%; the 1966 vintage carried about 4%. Planning means planning for the tail, not for the mean. The whole modern subject flows from that reversal ([[sequence-of-returns]]).
+Bengen's contribution is not the number "4%". It is the demonstration that the sustainable withdrawal rate can**not** be read from the average return: it is decided by the worst run of returns and inflation the retiree lives through, above all in the first ten years. The average American vintage carried more than 6%; the 1966 vintage carried about 4%. Planning means planning for the tail, not for the mean. The whole modern subject flows from that reversal ([[sequence-of-returns]]).
 :::
 
 ## Why the "average return" answer ruins people
@@ -17,7 +17,7 @@ The intuition "stocks make 10%, so I can withdraw 8%" makes two mistakes, and th
 
 The first is confusing the arithmetic average with the growth that actually compounds. Volatility makes a portfolio grow more slowly than its annual average ([[arithmetic-vs-geometric-returns]]), and inflation takes another 2 to 3 points off. The engine of a balanced portfolio is a geometric **real** return of 3 to 5%, not 10.
 
-The second is deadlier. A retiree who withdraws a fixed amount sells more shares when prices are low. Two sequences with the **same** average then produce opposite fortunes, depending on whether the bad years land early or late ([[sequence-of-returns]]). The average tells you almost nothing; the order tells you almost everything.
+The second is deadlier. A retiree who withdraws a fixed amount sells more shares when prices are low. Two sequences with the **same** average then produce opposite fortunes, depending on whether the bad years land early or late ([[sequence-of-returns]]). The average is not enough; the order matters as much.
 
 In the early 1990s Bengen, an MIT-trained engineer turned financial adviser, kept meeting clients who had been sold the 8% number. Rather than answer one opinion with another, he did what nobody had published. He tested it.
 
@@ -82,7 +82,7 @@ None of this refutes them. The vintage method still stands; what widened is its 
 One of the method's great teaching virtues is that anyone can redo it. The classic historical simulators, FICalc and cFIREsim first among them, replay the vintage logic on the long US indexes, one withdrawal rate at a time. A simulator that reads a real portfolio replays it on the history of **your own** holdings and hands down a verdict start date by start date. Either exercise is worth the hour. Watching your plan go through 1966 or 2000 makes sequence risk concrete in a way no probability does.
 
 ::: exemple Reading a vintage
-The plan: $1M, a 60/40, 4% indexed. Replayed vintage by vintage, the January 2000 start shows what a bad vintage looks like: two crashes in the first decade, the real portfolio cut in half by 2009, a recovery that never catches up with the good vintages, and capital still below half its starting value a quarter of a century later, winded but solvent. The 2009 start sails far above it. Same rule, same portfolio, same long-run average: only the **start date** differs. That is sequence risk made visible, and the best possible way into [[sequence-of-returns]].
+The plan: $1M, a 60/40, 4% indexed. Replayed vintage by vintage, the January 2000 start shows what a bad vintage looks like: two crashes in the first decade, the real portfolio cut in half by 2009, a recovery that never catches up with the good vintages, and capital still below half its starting value a quarter of a century later, winded but solvent. The 2009 start sails far above it. Same rule, same portfolio: only the **start date** differs, and with it the markets lived through. That is sequence risk made visible, and the best possible way into [[sequence-of-returns]].
 :::
 
 ## The essentials

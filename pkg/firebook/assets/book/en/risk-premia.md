@@ -1,5 +1,5 @@
 # Where returns come from: risk premia
-<!-- source: primes-de-risque @ 02e0c7fc7476 -->
+<!-- source: primes-de-risque @ 376aeb9c87a6 -->
 
 This whole book rests on an assumption so basic that nobody stops to look at it: a portfolio of stocks and bonds earns something, durably, above inflation. Without it there is no 4% rule, no FIRE, nothing. This page drags that assumption into the light and asks the three uncomfortable questions. Why do stocks pay more than bonds, and bonds more than cash? Who pays those gaps, and why would they keep paying? And why do some assets, gold first among them, return nothing in real terms without that being a flaw?
 
@@ -19,7 +19,7 @@ Remarkably, the premium we observe is too big for standard theory to explain: th
 
 ## The term premium, the credit premium, and the loose change
 
-**The term premium** pays you for holding long bonds instead of cash: you take interest rate risk and, above all, inflation risk on fixed nominal payments ([[bonds-in-retirement]]). Historically it is worth 1 to 2 points, and it is the least stable premium in the catalog. It was sumptuous through the forty years of disinflation from 1981 to 2021. It went negative at the bottom in 2020, when bonds yielded less than expected cash and you paid for the privilege. It has been positive again since. The practical rule: you read it live in the slope of the yield curve, and a bond layer earns its place only while the premium is there ([[return-stacking]] applies that test to the letter).
+**The term premium** pays you for holding long bonds instead of cash: you take interest rate risk and, above all, inflation risk on fixed nominal payments ([[bonds-in-retirement]]). Historically it is worth 1 to 2 points, and it is the least stable premium in the catalog. It was sumptuous through the forty years of disinflation from 1981 to 2021. It went negative at the bottom in 2020, when bonds yielded less than expected cash and you paid for the privilege. It has been positive again since. The practical rule: the slope of the yield curve gives an imperfect reading of it, since it mixes this premium with expected short rates. A bond layer held for its return earns its place only while the premium is there ([[return-stacking]] applies that test to the letter); held to fund a maturity or hedge a risk, it can do without it.
 
 **The credit premium** pays you for the default risk of corporate bonds. Its weakness is how little survives once realized defaults are deducted: 0.5 to 1 point net for investment grade, barely more for high yield, with a correlation to stocks that shoots up in a crisis (defaults arrive in recessions). That is why this book files high yield under false defensives ([[defensive-assets]]). It stacks the equity premium and the credit premium into the same bad state of the world, at a bond's price.
 
@@ -37,13 +37,13 @@ What becomes of a premium once it is published in an academic journal? McLean an
 
 ## Why gold returns nothing (and why you want some anyway)
 
-Gold is the perfect teaching counterexample. No cash flow, no dividend, no coupon, nobody handing off a risk in exchange for a wage: there is no gold risk premium, and its secular real return is close to zero ([[gold-in-retirement]]). That is not a hidden flaw, it is the definition. Gold is not a return asset. It is an **alternative currency** whose price rises when confidence in official money falls. You do not hold it for its premium, it has none, but for its **correlation**: it pays in the states of the world (currency crises, financial repression, stagflation) where almost everything else betrays you. The same reasoning, minus the thousand years of history, applies to cryptocurrencies: no cash flow, no theoretical premium, a pure monetary and behavioral bet, which rules out sizing them like return assets in a withdrawal plan.
+Gold is the perfect teaching counterexample. No cash flow, no dividend, no coupon, nobody handing off a risk in exchange for a wage: there is no gold risk premium, and its secular real return is close to zero ([[gold-in-retirement]]). That is not a hidden flaw, it follows from what gold is. Gold is not a return asset. It is an **alternative currency** whose price rises when confidence in official money falls. You do not hold it for its premium, it has none, but for its **correlation**: it pays in the states of the world (currency crises, financial repression, stagflation) where almost everything else betrays you. The same reasoning, minus the thousand years of history, applies to cryptocurrencies: no cash flow, no theoretical premium, a pure monetary and behavioral bet, which rules out sizing them like return assets in a withdrawal plan.
 
 ::: figure douleur-prime
 Every asset over the same 57 years: what it returned in the ten worst years for equities (horizontal, the pain at the wrong moment) and what it paid above cash (vertical, the wage). The five assets that claim a premium sit on one line. Gold is paid 4.1 points more than its pain justifies, which is another way of saying it collects no premium at all: what the window credits it with is the monetary repricing of 1971-1980, not a wage.
 :::
 
-Cash brings up the rear. It is the yardstick, since premia are measured above it, and it returns roughly zero in real terms over long stretches, with long negative episodes whenever financial repression joins in. Holding it has a role, room to maneuver ([[cash-buffer]]), but there is no return to expect from it.
+Cash brings up the rear. It is the yardstick, since premia are measured above it, and it returns roughly zero in real terms over long stretches, with long negative episodes whenever financial repression joins in. Holding it has a role, room to maneuver ([[cash-buffer]]), but do not expect a real return from it.
 
 ## Auditing your portfolio, premium by premium
 

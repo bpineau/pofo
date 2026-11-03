@@ -28,7 +28,7 @@ On fixe la **règle de retrait** par la procédure des cinq étapes ([[choisir-s
 
 ## Étape 5 : la validation multi-modèles (une séance de simulation)
 
-Le plan complet passe au banc d'essai, avec les entrées auditées et rien d'autre. La séance type est déroulée pas à pas dans [[utiliser-la-page-fire]] ; voici la recette finale. La lecture se fait en faisceau (central acceptable à **votre** seuil [[ruine-et-probabilites]], broad-sample tolérable avec des échecs analysés [[historique-vs-parametrique]], millésimes 1966/2000 traversés, décennie perdue tenable). On regarde ensuite le niveau de vie réellement servi dans le pire quartile des trajectoires, en profondeur de coupe et en durée, et pas seulement le taux de ruine. L'écart entre le modèle central et le stress de séquence donne l'exposition à l'ordre des rendements, adoucie par vos protections ([[sequence-des-rendements]]). Les sensibilités tranchent (±10 % dépenses, ±0,5 pt rendement, pension ±2 ans, la décision survit-elle ?). Un solveur en mouvements équivalents sert enfin de contre-épreuve, en convertissant chaque marge en euros, en années ou en flexibilité (si un levier bon marché traîne, le prendre maintenant). Un plan qui passe cette recette est un plan. Les suivants échouent à un test et retournent à leur étape. C'est le fonctionnement normal du chantier.
+Le plan complet passe au banc d'essai, avec les entrées auditées et rien d'autre. La séance type est déroulée pas à pas dans [[utiliser-la-page-fire]] ; voici la recette finale. La lecture se fait en faisceau (central acceptable à **votre** seuil [[ruine-et-probabilites]], broad-sample passé comme crash-test, en sachant qu'il simule un 60/40 domestique et non votre portefeuille [[historique-vs-parametrique]], millésimes 1966/2000 traversés, décennie perdue tenable). On regarde ensuite le niveau de vie réellement servi dans le pire quartile des trajectoires, en profondeur de coupe et en durée, et pas seulement le taux de ruine. L'écart entre le modèle central et le stress de séquence donne l'ordre de grandeur de votre exposition aux mauvaises années regroupées, adoucie par vos protections ([[sequence-des-rendements]]). Les sensibilités tranchent (±10 % dépenses, ±0,5 pt rendement, pension ±2 ans, la décision survit-elle ?). Un solveur en mouvements équivalents sert enfin de contre-épreuve, en convertissant chaque marge en euros, en années ou en flexibilité (si un levier bon marché traîne, le prendre maintenant). Un plan qui passe cette recette est un plan. Les suivants échouent à un test et retournent à leur étape. C'est le fonctionnement normal du chantier.
 
 ::: astuce Le gabarit du plan d'une page
 Le livrable, à recopier et à remplir. **PLAN DE [noms], version [1], [date].**
@@ -56,14 +56,14 @@ Le passage à l'acte est mécanique. Les **virements** automatiques d'abord (le 
 ::: exemple Un plan complet, condensé
 Le plan v1 d'Aline et Thomas (46/48 ans, départ dans 2 ans), tel qu'écrit, dans l'ordre du gabarit.
 
-- **Les chiffres** → dépenses de 54 k€ confort et 41 k€ plancher (testé) ; pensions de 26 k€ à 67 ans (décotées 15 %) ; horizon de 52 ans ; patrimoine de 1,75 M€ (PEA 2 × 150 k€ pleins, AV 480 k€, CTO 880 k€, livrets 90 k€) ; cible et taux à 3,5 % avec marges, validé.
-- **Le portefeuille** → 68/32 (Monde PEA 17 %, All-World CTO 34 %, SCV 8 %, État euro 5-8 ans 12 %, linkers courts 8 %, or ETC 5 %, trend UCITS 5 %, fonds euros 11 %), avec une tente de 58→80 % sur 10 ans par retraits obligataires.
+- **Les chiffres** → dépenses de 54 k€ confort et 41 k€ plancher (testé) ; pensions de 26 k€ à 67 ans (décotées 15 %) ; horizon de 52 ans ; patrimoine de 1,75 M€ (PEA 2 × 150 k€ pleins, AV 480 k€, CTO 880 k€, livrets 90 k€) ; taux de retrait d'environ 3,1 %, sous le plafond de 3,5 % retenu, validé.
+- **Le portefeuille** → 59/41 (Monde PEA 17 %, All-World CTO 34 %, SCV 8 %, État euro 5-8 ans 12 %, linkers courts 8 %, or ETC 5 %, trend UCITS 5 %, fonds euros 11 %), avec une tente de 58→80 % sur 10 ans par retraits obligataires.
 - **La règle** → des guardrails par risque (cible 5 % de ruine centrale, coupe −10 % si >13 % deux revues, hausse +10 % si <1 %, plancher de coupe 78 %) pendant le pont, puis VPW ensuite ; retrait auto de 4 500 €/mois ; panachage AV-abattement plus PEA plus CTO au barème.
 - **Les protections** → un buffer de 26 mois en fonds euros (drawdown 18 %, extinction année 10), un gel d'indexation, une échelle d'études 2029-2033 pour les enfants.
 - **Les seuils** → vert <4,3 %, orange 4,3-5,2, rouge au-delà.
 - **Les marges** → les missions de Thomas (~12 k€/an possibles), la maison (dépendance), des donations différables.
 
-Validation faite, ruine centrale de 4,6 %, broad-sample à 9,1 % (échecs tardifs adossés), 1966 et 2000 traversés, pire quartile à deux coupes max, plancher jamais percé.
+Validation faite, ruine centrale de 4,6 %, broad-sample à 9,1 % (crash-test du 60/40 domestique, échecs tardifs ; après la pension, le portefeuille finance encore 15 k€ de plancher), 1966 et 2000 traversés, pire quartile à deux coupes max, plancher jamais percé.
 
 Une page. Deux ans avant le départ, le chantier des critères est déjà derrière eux.
 :::

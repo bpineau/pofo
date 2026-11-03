@@ -118,7 +118,7 @@ func TestWealthProportionalRulesNeverRuin(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, rule := range r.Rules {
-			if (rule.Name == "VPW" || rule.Name == "ABW") && rule.Ruined {
+			if (rule.Tag == "VPW" || rule.Name == "ABW") && rule.Ruined {
 				t.Errorf("%d: %s ruined in %d", start, rule.Name, rule.RuinYear)
 			}
 		}

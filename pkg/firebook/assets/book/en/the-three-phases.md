@@ -1,5 +1,5 @@
 # Accumulation, transition, withdrawal: the three lives of a FIRE plan
-<!-- source: les-trois-phases @ 48cf1a0d7cee -->
+<!-- source: les-trois-phases @ 88945e06126e -->
 
 A FIRE plan is not a state, it is a path. It runs through three phases, and they do not obey the same rules. Accumulation: you save, and time works for you. Transition: the five years around the exit, the most dangerous stretch of the whole journey. Withdrawal: you live off the capital, and you steer. Most of the expensive mistakes come from one move, using the reflexes of one phase in another. The aggression of accumulation during the transition. The caution of withdrawal during accumulation.
 
@@ -21,7 +21,7 @@ The good news about accumulation is that it is the best understood phase, and th
 
 **2. Automation beats discipline.** An automatic transfer on payday, a standing investment order, and the budget lives on what is left. Willpower runs out; the way you wire your money spends none of it.
 
-**3. The portfolio can be aggressive, because the flows protect you.** 80 to 100% in global equities defends itself as long as the first withdrawal is more than 10 to 15 years away. An early crash is a buyer's windfall, and the order of returns never works against you while there are no withdrawals ([[arithmetic-vs-geometric-returns]]). The classic mistake here is not aggression, it is infidelity: switching strategy with the fashions, selling into declines, collecting funds.
+**3. The portfolio can be aggressive, because the flows protect you.** 80 to 100% in global equities defends itself as long as the first withdrawal is more than 10 to 15 years away. An early crash is a buyer's windfall. A late one, just before you leave, much less so: it hits a portfolio that is already large and can push back your stop date ([[arithmetic-vs-geometric-returns]]). The classic mistake here is not aggression, it is infidelity: switching strategy with the fashions, selling into declines, collecting funds.
 
 **4. The accounts get set up now.** A tax shelter mostly pays you in years, and years cannot be bought back later: some clocks only start once an account is open and funded, and contribution room accrues year by year and is gone if you skip it. Opening the right accounts early, even with a token amount, and filling them in the right order is one of the few genuinely free things in this business ([[us-accounts-and-account-order]]). The 45-year-old living off a portfolio inherits the choices the 30-year-old made.
 
@@ -61,7 +61,7 @@ The day of your first withdrawal you change jobs: from saver (pile it up, ignore
 
 **Do not forget to spend.** Ruin has a mirror image, and it is the likelier one among people who were good at saving: dying on a pile of gold after decades of self-denial in the name of caution ([[the-psychology-of-spending]], [[spending-in-retirement]]). Floor-and-ceiling rules exist to authorize the good years, not only to cut the bad ones.
 
-**Let the phase evolve.** Withdrawal is not one flat stretch. The fragile window of the early years demands the most attention. Ten years in with no major accident, the game is statistically won and the steering gets lighter. When the pensions start ([[pensions-and-other-income]]) the picture changes again, often enough to close the question of ruin for good.
+**Let the phase evolve.** Withdrawal is not one flat stretch. The fragile window of the early years demands the most attention. A good first decade often leaves a comfortable margin and lets the steering get lighter, but it does not close the question: take stock again from the capital left, the spending and the horizon that remains. When the pensions start ([[pensions-and-other-income]]) the picture changes again, and the question truly closes the day your guaranteed income covers the essential budget.
 
 ::: exemple The same person, three jobs
 Inès at 36, saving 34%, 90% equities: her job is to automate and not look. Inès at 44, at 90% of her target. She takes equities down to 55%, moves 30 months of spending into a money-market fund, tries a four-day week, writes her withdrawal rule and sets her criteria for leaving. Inès at 47, two years out, in a mediocre market: current rate 4.8%, amber. She applies her rule (comfort minus 8%), draws on the buffer instead of selling stocks, and touches nothing else. Three snapshots, three jobs, one plan.

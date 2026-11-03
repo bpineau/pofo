@@ -1,7 +1,7 @@
 # The library: sites, papers, books, tools
-<!-- source: bibliotheque @ 27f0ee1dde5f -->
+<!-- source: bibliotheque @ 36fb3fea33d2 -->
 
-Everything this book cites, plus what belongs on your shelf if you want to keep going on your own: every reference annotated in a sentence or two (**why** to read it, and where to get it), sorted by kind, each with the chapter of this book that leans on it. Links are given by name, because URLs change and names do not. The last section lays out reading paths, since a library with no reading order is just a pile.
+The references this book leans on, plus what belongs on your shelf if you want to keep going on your own: every reference annotated in a sentence or two (**why** to read it, and where to get it), sorted by kind, each with the chapter of this book that leans on it. References are given by authors, year and full title, enough to find the document, because URLs change and names do not (for a working paper that gets revised, read the latest version). The last section lays out reading paths, since a library with no reading order is just a pile.
 
 ## The reference series and blogs
 
@@ -43,7 +43,7 @@ Everything this book cites, plus what belongs on your shelf if you want to keep 
 
 **Bengen (1994), "Determining Withdrawal Rates Using Historical Data"; Cooley, Hubbard and Walz (1998, the Trinity study)**: the foundations. Short, readable, freely available. [[the-trinity-study]]
 
-**Anarkulova, Cederburg, O'Doherty and Sias (2023), "The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets"; Cederburg et al., "Beyond the Status Quo"**: the world sample and the 100% stocks debate. The modern prudent bounds (SSRN, free). [[anarkulova-cederburg]], [[stock-bond-allocation]]
+**Anarkulova, Cederburg, O'Doherty and Sias (2023), "The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets"; Anarkulova, Cederburg and O'Doherty (2023), "Beyond the Status Quo: A Critical Assessment of Lifecycle Investment Advice"**: the first recomputes the withdrawal rate on the 38-country world sample, the modern prudent reference; the second applies the same sample to the life cycle, hence the 100% stocks debate (SSRN, free). [[anarkulova-cederburg]], [[stock-bond-allocation]]
 
 **Jorda, Knoll, Kuvshinov, Schularick and Taylor, "The Rate of Return on Everything, 1870-2015"**: the academic panel of long multi-country returns. The raw material of the broad sample. [[historical-vs-parametric]]
 
@@ -61,7 +61,7 @@ Everything this book cites, plus what belongs on your shelf if you want to keep 
 
 **Reinhart and Sbrancia (2011), "The Liquidation of Government Debt"**: financial repression, documented. [[hyperinflation-and-extremes]]
 
-**Redington (1952), "Review of the Principles of Life-Office Valuations"; Fisher and Weil (1971), "Coping with the Risk of Interest-Rate Fluctuations"; Leibowitz (1986), "The Dedicated Bond Portfolio in Pension Funds"**: immunization and cash-flow matching, from life-office actuaries to pension funds. Where the bond ladder comes from. [[bond-ladders]]
+**Redington (1952), "Review of the Principles of Life-Office Valuations"; Fisher and Weil (1971), "Coping with the Risk of Interest-Rate Fluctuations"; Leibowitz (1986), "The Dedicated Bond Portfolio in Pension Funds", parts I and II**: immunization and cash-flow matching, from life-office actuaries to pension funds. Where the bond ladder comes from. [[bond-ladders]]
 
 **Dimson, Marsh and Staunton, *Global Investment Returns Yearbook* (annual, UBS)**: the world century in numbers, country by country, updated every year. The one annual report to read. [[international-diversification]]
 
@@ -83,7 +83,7 @@ This section is not a list of links, it is the calendar of your annual review ([
 
 Each source has the chapter that puts it to work: [[expected-returns|the forward μ]], [[morningstar-guardrails|the guardrails]], [[international-diversification|the premia country by country]], [[valuations-and-cape|the CAPE]], [[tracking-inflation|inflation]] and [[us-healthcare-and-social-security|Social Security]]. The SG Trend Index stays out of this table, because it refreshes no input of the plan. It remains the yardstick to hold any trend vehicle against ([[managed-futures]]).
 
-One rule of discipline goes with the calendar. Read these values once a year, on a fixed date, and never in reaction to the headlines. A μ recalibrated in the middle of a selloff is no longer a forecast, it is a market call in disguise ([[the-psychology-of-spending]]).
+One rule of discipline goes with the calendar. Read these values once a year, on a fixed date, and never in reaction to the headlines. And do not copy them straight into the simulator's μ: these houses mostly publish nominal, geometric returns in their own currency, while the book's μ is real and arithmetic ([[expected-returns]]). A μ recalibrated in the middle of a selloff is no longer a forecast, it is a market call in disguise ([[the-psychology-of-spending]]).
 
 ## The official sources
 

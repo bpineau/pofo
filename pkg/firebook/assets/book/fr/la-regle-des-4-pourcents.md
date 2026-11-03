@@ -69,12 +69,12 @@ Trente ans de recherche ont précisé le tableau. Les résultats convergent sur 
 
 **2. Pour un horizon long, 4 % est trop haut en régime rigide.** C'est le résultat central de la série d'Early Retirement Now ([[serie-ern]]) : sur 50 à 60 ans, le taux qui aurait survécu à tous les millésimes américains tombe vers 3,25 à 3,5 %. La probabilité d'échec du 4 % rigide sur 50 ans, mesurée sur l'histoire américaine, est de l'ordre de 10 à 20 % selon l'allocation, trop pour un plan de vie.
 
-**3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial (le « broad sample » de 16 pays développés depuis 1870, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 %. La France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un investisseur mondialisé d'aujourd'hui se situe quelque part entre ces deux mondes.
+**3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial d'Anarkulova et Cederburg (38 pays développés, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 %. La France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un portefeuille diversifié mondialement n'est ni l'un ni l'autre de ces deux cas : aucun des deux chiffres n'est directement le sien.
 
 **4. Les valorisations de départ déplacent le taux.** Les pires millésimes ont tous démarré sur des marchés chers (CAPE élevé). Les règles modernes conditionnent donc le taux initial aux valorisations ([[valorisations-et-cape]], [[regles-cape]]). C'est l'une des améliorations les mieux établies.
 
 ::: science Où la recherche situe le « vrai » chiffre aujourd'hui
-Pour une retraite précoce (horizon de 45 ans et plus), portefeuille mondial diversifié, sans flexibilité ni revenu complémentaire, la littérature converge vers 3,0 à 3,5 % en régime rigide (ERN, 3,25 % ; Morningstar 2025, sur 30 ans avec rendements prospectifs, 3,9 % ; Anarkulova-Cederburg, échantillon mondial, plutôt 2,3 à 2,7 % pour les plus pessimistes, une borne basse discutée). Chaque protection ajoutée (flexibilité des dépenses [[flexibilite-realite]], revenus partiels [[retour-au-travail]], retraite légale future [[retraite-legale]], guardrails [[guardrails-morningstar]]) remonte ce chiffre, parfois au-delà de 4 %. Le taux sûr n'est pas une constante de la nature. C'est la sortie d'un modèle, fonction de vos hypothèses et de vos marges.
+Pour une retraite précoce (horizon de 45 ans et plus), portefeuille mondial diversifié, sans flexibilité ni revenu complémentaire, ce livre retient 3,0 à 3,5 % comme zone de départ en régime rigide. Les travaux qui l'encadrent ne mesurent pas tous la même chose : ERN trouve 3,25 % sur l'histoire américaine et 50 ans ; Morningstar 2025, 3,9 % sur 30 ans avec des rendements prospectifs ; Anarkulova et Cederburg, autour de 2,3 % pour un couple de 65 ans en 60/40 domestique, une borne basse discutée. Chaque protection ajoutée (flexibilité des dépenses [[flexibilite-realite]], revenus partiels [[retour-au-travail]], retraite légale future [[retraite-legale]], guardrails [[guardrails-morningstar]]) remonte ce chiffre, parfois au-delà de 4 %. Le taux sûr n'est pas une constante de la nature. C'est la sortie d'un modèle, fonction de vos hypothèses et de vos marges.
 :::
 
 ## Alors, la garder ou la jeter ?
@@ -87,14 +87,14 @@ La garder, mais à sa place. La règle des 4 % excelle dans trois rôles et éch
 
 **Excellente comme borne de récit.** Quand un vendeur promet « 8 % de rente sans risque », la règle vous dit instantanément que c'est deux fois le taux que le meilleur marché de l'histoire a soutenu en rigide sur 30 ans. Réflexe salvateur.
 
-**Mauvaise comme stratégie de retrait effective.** Personne ne devrait exécuter mécaniquement un retrait indexé aveugle pendant 40 ans. Non parce que la règle est fausse, mais parce qu'elle ignore l'information qui arrive : marchés, santé, dépenses réelles, valorisations. Toute la partie « stratégies de retrait » de ce livre ([[panorama-strategies-retrait]]) traite de ce qu'on met à la place : des règles qui écoutent le portefeuille ([[guyton-klinger]], [[guardrails-morningstar]], [[amortissement-abw]]). À capital égal, elles financent davantage de dépenses, ou sécurisent bien mieux le même train de vie.
+**Mauvaise comme stratégie de retrait effective.** Personne ne devrait exécuter mécaniquement un retrait indexé aveugle pendant 40 ans. Non parce que la règle est fausse, mais parce qu'elle ignore l'information qui arrive : marchés, santé, dépenses réelles, valorisations. Toute la partie « stratégies de retrait » de ce livre ([[panorama-strategies-retrait]]) traite de ce qu'on met à la place : des règles qui écoutent le portefeuille ([[guyton-klinger]], [[guardrails-morningstar]], [[amortissement-abw]]). À capital égal, elles permettent de dépenser davantage au départ ou de réduire nettement le risque d'épuisement. Le prix à payer est un revenu qui varie, parfois longtemps à la baisse : à vous de vérifier que votre budget essentiel le supporte.
 
 ::: attention Le contresens le plus fréquent
 « 4 %, donc je peux retirer 4 % du portefeuille chaque année. » Non. Ça, c'est la stratégie du pourcentage fixe ([[pourcentage-fixe]]), qui ne peut jamais ruiner mais fait violemment fluctuer le train de vie. La règle de Bengen indexe le **montant** initial sur l'inflation ; le pourcentage du capital courant, lui, dérive. Les deux stratégies n'ont ni les mêmes risques ni le même confort ; les confondre fausse toute conversation sur le sujet.
 :::
 
 ::: exemple La règle des 4 % à l'épreuve d'un vrai cas
-Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les trois familles de modèles ([[historique-vs-parametrique]]) sur 45 ans : le paramétrique central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 €/mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
+Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les trois familles de modèles ([[historique-vs-parametrique]]) sur 45 ans : sous des hypothèses prudentes, le paramétrique central donne une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins (des ordres de grandeur, qui bougent avec vos paramètres). À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 €/mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Attention à ce que la pension ne fait pas : elle réduit le besoin à 30 400 € par an à partir de 67 ans, mais les 22 premières années reposent entièrement sur le portefeuille. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
 :::
 
 ## L'essentiel à retenir
@@ -103,7 +103,7 @@ Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an inde
 - Le « 4 » vient du pire millésime américain (1966), pas d'une moyenne ; c'était déjà un chiffre prudent... dans son cadre.
 - Hors de son cadre (horizon long, monde entier, frais, impôts, valorisations élevées), le taux rigide équivalent est plutôt 3 à 3,5 %.
 - Inversée en « multiple de 25 », c'est le meilleur réflexe mental du sujet.
-- Comme stratégie effective, elle est dominée par les règles adaptatives : lisez [[panorama-strategies-retrait]] avant de graver 4 % dans votre plan.
+- Comme stratégie effective, une règle adaptative fait généralement mieux, si votre budget accepte un revenu variable : lisez [[panorama-strategies-retrait]] avant de graver 4 % dans votre plan.
 
 ---
 

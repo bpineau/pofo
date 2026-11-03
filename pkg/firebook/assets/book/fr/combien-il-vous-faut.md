@@ -5,7 +5,7 @@
 Cette page déroule le calcul complet, du relevé bancaire au capital cible. Elle ajoute les corrections que le calcul de comptoir oublie. À la fin, vous saurez produire **votre** chiffre, avec une fourchette honnête plutôt qu'une fausse précision.
 
 ::: cle La vraie formule
-Capital cible = (dépenses annuelles brutes de la vie visée, impôts sur les retraits compris, moins les revenus non financiers actualisés) × un multiple entre 25 et 33 choisi selon l'horizon, le portefeuille et la flexibilité. Chaque terme de cette phrase fait l'objet d'une section ci-dessous.
+Capital cible = (dépenses annuelles brutes de la vie visée, impôts sur les retraits compris, moins les revenus que vous touchez déjà chaque année) × un multiple entre 25 et 33 choisi selon l'horizon, le portefeuille et la flexibilité. Les revenus futurs, comme une pension, ne se soustraient pas du budget d'aujourd'hui : ils entrent dans le plan à leur date (étape 3). Chaque terme de cette phrase fait l'objet d'une section ci-dessous.
 :::
 
 ## Étape 1 : le vrai chiffre de vos dépenses
@@ -28,9 +28,9 @@ Le multiple amplifie tout : 200 € par mois oubliés, c'est 60 000 à 80 000 �
 
 Les études américaines raisonnent hors impôt, et le multiple de 25 aussi. Or vos retraits seront partiellement taxés. Vous visez un niveau de dépenses net, mais le retrait qui le finance part du brut.
 
-En France, l'imposition dépend de l'enveloppe ([[enveloppes-francaises]], [[flat-tax-et-imposition]]). Sur un CTO, la plus-value incluse dans chaque retrait subit le PFU, 31,4 % depuis 2026 (12,8 % d'impôt et 18,6 % de prélèvements sociaux). Sur une assurance-vie de plus de 8 ans, la part de gains supporte 24,7 % (7,5 % d'impôt et 17,2 % de prélèvements sociaux, l'assurance-vie ayant été épargnée par la hausse de 2026). Un abattement annuel, 4 600 € de gains pour une personne seule et 9 200 € pour un couple, efface l'impôt sur le revenu mais jamais les prélèvements sociaux. La friction n'y descend donc pas sous 17,2 % de la part de gains. Sur un PEA de plus de 5 ans, 18,6 % sur les gains. Ajoutez enfin la cotisation subsidiaire maladie, dite taxe PUMa. Elle peut prélever de l'ordre de 6,5 % des revenus du capital d'un rentier sans activité ([[taxe-puma]]).
+En France, l'imposition dépend de l'enveloppe ([[enveloppes-francaises]], [[flat-tax-et-imposition]]). Sur un CTO, la plus-value incluse dans chaque retrait subit le PFU, 31,4 % depuis 2026 (12,8 % d'impôt et 18,6 % de prélèvements sociaux). Sur une assurance-vie de plus de 8 ans, la part de gains supporte 24,7 % (7,5 % d'impôt et 17,2 % de prélèvements sociaux, l'assurance-vie ayant été épargnée par la hausse de 2026), du moins tant que vos primes ne dépassent pas 150 000 € ; au-delà, l'impôt passe à 12,8 % sur la fraction correspondante. Un abattement annuel, 4 600 € de gains pour une personne seule et 9 200 € pour un couple, efface l'impôt sur le revenu mais jamais les prélèvements sociaux. La friction n'y descend donc pas sous 17,2 % de la part de gains. Sur un PEA de plus de 5 ans, 18,6 % sur les gains. Ajoutez enfin la cotisation subsidiaire maladie, dite taxe PUMa. Elle peut prélever de l'ordre de 6,5 % des revenus du capital d'un rentier sans activité ([[taxe-puma]]).
 
-**Ordre de grandeur utile** : pour un rentier français précoce dont le portefeuille a beaucoup de plus-values latentes, la friction fiscale totale sur les retraits se situe typiquement entre 8 et 20 % selon les enveloppes et le montage. Une correction simple et prudente : majorer les dépenses cibles de 10 à 15 % pour couvrir impôts et PUMa, puis affiner avec votre situation réelle.
+**Ordre de grandeur utile** : pour un rentier français précoce dont le portefeuille a beaucoup de plus-values latentes, la friction fiscale totale sur les retraits se situe souvent entre 8 et 20 % selon les enveloppes et le montage. Pour la couvrir, divisez la dépense nette par (1 - friction) : 10 % de friction demandent 11 % de retrait en plus, 20 % en demandent 25 %. Affinez ensuite avec votre situation réelle.
 
 ::: exemple Du net au brut
 Dépenses visées : 36 000 €/an nets. Portefeuille réparti entre PEA mûr, assurance-vie de plus de 8 ans et CTO ; friction fiscale estimée : 12 %. Dépenses brutes à financer : 36 000 / 0,88 ≈ 40 900 €/an. À 3,5 %, la cible passe de 1 029 000 € (calcul naïf sur le net) à 1 169 000 €. L'oubli de la fiscalité aurait sous-dimensionné le plan de 140 000 €, soit environ deux ans d'épargne pour un couple de cadres.
@@ -54,11 +54,11 @@ Le multiple est l'inverse du taux de retrait ([[la-regle-des-4-pourcents]]). Le 
 |---|---|---|
 | 25 (4 %) | 4,0 % | Horizon ≤ 30 ans, ou horizon long avec fortes marges : flexibilité réelle, pension légale future, revenus partiels probables |
 | 28-29 (3,5 %) | ~3,5 % | Le compromis de travail pour un départ précoce avec un portefeuille mondial diversifié et une flexibilité normale |
-| 33 (3 %) | 3,0 % | Horizon très long sans aucune marge, budget déjà au plancher, forte aversion au risque, ou foi dans l'échantillon mondial pessimiste |
-| > 33 | < 3 % | Rarement rationnel : à ce stade, le risque dominant n'est plus la ruine, c'est de mourir riche en ayant travaillé des années de trop ([[une-annee-de-plus]]) |
+| 33 (3 %) | 3,0 % | Horizon très long sans aucune marge, budget déjà au plancher, forte aversion au risque, ou poids donné à l'échantillon mondial le plus sévère |
+| > 33 | < 3 % | Rarement justifié à nos yeux : à ce stade, le risque dominant n'est plus la ruine, c'est de mourir riche en ayant travaillé des années de trop ([[une-annee-de-plus]]) |
 
 ::: figure cible-convexite
-Les trois lignes du tableau posées sur la courbe qui les relie. Le multiple étant l'inverse exact du taux, chaque demi-point de prudence coûte plus cher que le précédent, et la ligne « > 33 » est une propriété de cette courbe, pas une opinion.
+Les trois lignes du tableau posées sur la courbe qui les relie. Le multiple étant l'inverse exact du taux, chaque demi-point de prudence coûte plus cher que le précédent. C'est ce qui rend la ligne « > 33 » si chère.
 :::
 
 Deux forces tirent ce choix en sens contraires, et il faut les nommer pour arbitrer honnêtement. Vers le bas (multiple haut) : horizon long, valorisations de départ élevées ([[valorisations-et-cape]]), monde plus large que l'échantillon américain, frais et fiscalité. Vers le haut (multiple bas) : flexibilité réelle des dépenses, revenus futurs (pension !), capacité de retour au travail, stratégie de retrait adaptative ([[choisir-sa-strategie]]). Il faut y ajouter un fait souvent oublié. Le « succès » binaire du simulateur est une mesure trop brutale. La plupart des « échecs » historiques du 3,5 % sont des trajectoires où l'on aurait vu venir le problème dix ans à l'avance ([[quand-s-inquieter]]).
@@ -82,7 +82,7 @@ Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans.
 
 **Cible : 54 100 × 28,6 ≈ 1 547 000 €.**
 
-Vérification en simulation, à 1 550 000 € et 54 100 €/an avec pensions à 66 ans : ruine centrale ~5 %, sous la zone de travail des 10-20 % ([[ruine-et-probabilites]]) par construction, puisque la pension est comptée et le multiple déjà prudent. Le même plan **sans** les pensions afficherait ~12 %, et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail. Voilà pourquoi on ne l'oublie pas.
+Vérification en simulation, à 1 550 000 € et 54 100 €/an avec pensions à 66 ans : ruine centrale ~5 % sous les hypothèses prudentes du livre, sous la zone de travail des 10-20 % ([[ruine-et-probabilites]]), puisque la pension est comptée et le multiple déjà prudent. La pension ne fait pourtant rien avant 66 ans : elle couvre ensuite 25 200 € des 54 100 € annuels, et ce sont ces années-là qu'elle allège. Le même plan **sans** les pensions afficherait ~12 %, et aurait exigé ~200 000 € de plus. Pour un couple qui épargne ~50 000 € par an, la pension légale « vaut » ici quatre ans de travail. Voilà pourquoi on ne l'oublie pas.
 :::
 
 ::: figure cible-cascade
@@ -103,7 +103,7 @@ Le chiffre obtenu n'est pas une ligne d'arrivée sacrée. C'est le centre d'une 
 
 ## L'essentiel à retenir
 
-- La cible = dépenses brutes (fiscalité comprise, + 10 à 15 % pour un rentier français typique) × 25 à 33.
+- La cible = dépenses brutes (dépense nette divisée par 1 moins la friction fiscale, souvent 8 à 20 % en France) × 25 à 33.
 - Le terme le plus incertain est les dépenses : 24 mois de relevés, irrégulier annualisé, mutuelle ajoutée, trois budgets (plancher, confort, rêve).
 - La retraite légale se donne au simulateur comme revenu différé. L'oublier coûte des années de travail superflues.
 - Le multiple est un arbitrage de posture entre 25 et 33. Le 28-29 (3,5 %) est le compromis de travail moderne pour un départ précoce diversifié.

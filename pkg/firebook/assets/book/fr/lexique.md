@@ -27,7 +27,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Bootstrap (par blocs)** : rééchantillonner l'histoire en tirant des blocs de plusieurs années recollés. Des histoires synthétiques faites de morceaux réels. [[historique-vs-parametrique]]
 
-**Broad sample** : le modèle qui rejoue le siècle de 16 pays développés (panel JST, 1870-2020) en 60/40 domestique. La borne empirique du risque de long horizon. [[anarkulova-cederburg]], [[la-machine-pofo]]
+**Broad sample** : le modèle qui rejoue le siècle de 16 pays développés (panel JST, 1870-2020) en 60/40 domestique, par blocs tirés d'un pays à l'autre. Il ignore vos poids et vos curseurs : c'est un étalon externe, pas une mesure de votre portefeuille. [[anarkulova-cederburg]], [[la-machine-pofo]]
 
 **Buckets (seaux)** : découper le patrimoine en horizons (cash/obligations/actions). Une allocation déguisée plus des flux à écrire. Un bon langage, une mécanique sans valeur ajoutée propre. [[strategie-buckets]]
 
@@ -53,6 +53,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **CSM (cotisation subsidiaire maladie)** : le vrai nom de la taxe PUMa. Elle vaut ~6,5 % des revenus du capital du rentier sans activité, au-delà d'une franchise. [[taxe-puma]]
 
+**Décennie perdue (Lost decade)** : le modèle de stress à régime baissier collant, dont la profondeur croît avec la volatilité saisie. Un test d'endurance, pas un scénario probable. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
+
 **Décote (retraite)** : la minoration de pension par trimestre manquant. Elle disparaît au taux plein automatique de 67 ans. La disposition clé des carrières courtes. [[retraite-legale]]
 
 **Décumulation** : la phase où l'on vit du capital. L'objet de ce livre. Un problème différent de l'accumulation (l'ordre des rendements s'y met à compter). [[les-trois-phases]]
@@ -63,11 +65,11 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Drawdown** : la baisse depuis le dernier sommet. En réel pour un rentier. Le déclencheur standard du buffer (10-20 %). [[recharger-ou-pas]]
 
-**Duration** : la sensibilité d'une obligation aux taux (≈ % de perte par point de hausse) et l'horizon auquel son rendement est verrouillé. [[obligations-en-retrait]]
+**Duration** : la sensibilité d'une obligation aux taux (≈ % de perte par point de hausse). Elle ne garantit ni un rendement ni un capital à une date donnée. [[obligations-en-retrait]]
 
 ## E-G
 
-**Échelle (obligataire, de linkers)** : un barreau détenu à échéance par année de passif. L'appariement qui annule le risque de taux. Le pont vers la pension en version contractuelle. [[echelle-obligataire]], [[obligations-indexees]]
+**Échelle (obligataire, de linkers)** : un barreau détenu à échéance par année de passif. L'appariement qui dispense de vendre avant échéance, donc neutralise le risque de taux pour la dépense prévue. Le pont vers la pension en version contractuelle. [[echelle-obligataire]], [[obligations-indexees]]
 
 **Effet ciseaux** : l'inflation qui gonfle les retraits indexés pendant que le portefeuille nominal stagne. Le mécanisme du millésime 1966. [[inflation-et-taux-de-retrait]]
 
@@ -127,7 +129,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Plancher (de dépenses)** : le budget tenable cinq ans, moral compris. La capacité de flexibilité du plan. Testé (le trimestre d'essai), jamais déclaré. [[flexibilite-realite]], [[combien-il-vous-faut]]
 
-**PMP (prix moyen pondéré)** : le prix d'acquisition fiscal d'une ligne. La friction d'une vente = taux × (1 − PMP/cours). Basse au début du plan, croissante ensuite. [[flat-tax-et-imposition]]
+**PMP (prix moyen pondéré)** : le prix d'acquisition fiscal d'une ligne. La friction d'une vente = taux × (1 − PMP/cours). Elle reflète l'historique de la ligne : une ligne achetée 40 et vendue 100 porte 60 % de gain dès le premier retrait. [[flat-tax-et-imposition]]
 
 **Point mort (breakeven)** : l'écart taux nominal − taux réel. L'inflation anticipée par le marché. La seule prévision qui engage de l'argent. [[obligations-indexees]], [[suivre-inflation]]
 
@@ -137,11 +139,13 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Pourcentage fixe** : retirer w % du portefeuille courant. La ruine du capital impossible, la ruine de train de vie possible. La matière première des règles modernes, à lisser (Yale). [[pourcentage-fixe]]
 
-**Prime de risque** : le salaire d'un risque porté, la raison d'être de tout rendement. Les actifs qui font mal au mauvais moment (actions) paient ; ceux qui ne transfèrent aucun risque (or, cash) ne rapportent rien en réel, par construction. [[primes-de-risque]]
+**Prime de risque** : le salaire d'un risque porté, la raison d'être de tout rendement. Les actifs qui font mal au mauvais moment (actions) paient ; ceux qui ne transfèrent aucun risque (or, cash) n'ont pas de prime durable à espérer en réel. [[primes-de-risque]]
 
 **Prime de variance** : l'écart persistant entre volatilité implicite (le prix de l'assurance) et volatilité réalisée, 2-4 points en moyenne. Ce que l'acheteur de protection paie en trop, et ce que le vendeur encaisse. [[long-volatility]]
 
-**Probabilité de ruine** : la fraction des futurs simulés où le portefeuille s'épuise avant l'horizon, sous une règle mécanique. Une propriété du couple plan + modèle. Se lit en intervalle et en ordinal. [[ruine-et-probabilites]]
+**Prior broad-sample** : les paramètres de rendement par défaut du simulateur (µ 4,5 %, σ 13 %, queues épaisses, un portefeuille d'actions mondiales, pas vos fonds), vers lesquels il ramène vos curseurs quand l'historique est plus court que l'horizon, et que le bouton « Broad-sample prior » impose d'un coup (rien à voir avec la colonne Broad sample). Les paramètres effectivement simulés peuvent donc différer de ceux que vous avez saisis. [[la-machine-pofo]]
+
+**Probabilité de ruine** : la fraction des futurs simulés où le portefeuille ne peut plus financer le retrait prévu avant l'horizon, sous une règle mécanique. Une propriété du couple plan + modèle. Se lit modèle par modèle, en ordre de grandeur et en ordinal. [[ruine-et-probabilites]]
 
 **PUMa** : la Protection Universelle Maladie. La couverture santé de tout résident stable. Et, par métonymie, la cotisation (CSM) qui la finance chez le rentier. [[taxe-puma]], [[sante-et-protection-sociale]]
 
@@ -169,7 +173,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Safety-first** : l'école de l'adossement. Garantir le plancher par des revenus à vie (pension, rente, échelle), risquer seulement le confort. [[rentes-et-annuites]], [[panorama-strategies-retrait]]
 
-**Séquence stress** : le modèle à sticky bears (Markov, moyenne préservée). L'écart avec le central mesure le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
+**Séquence stress** : le modèle à sticky bears (Markov, moyenne préservée, mais volatilité accrue en régime baissier). L'écart avec le central mesure surtout le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
 
 **σ (sigma)** : la volatilité annualisée (écart-type des rendements) du moteur. Sa traînée σ²/2 sépare moyenne arithmétique et géométrique (le volatility drag). Plus basse que la vol « une année » des brochures. [[rendements-arithmetiques-geometriques]], [[queues-epaisses]]
 
@@ -179,7 +183,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **SWR (Safe Withdrawal Rate)** : le taux de retrait « sûr ». Jamais une constante. Une fonction du cadre (horizon, échantillon, valorisations, marges). [[la-regle-des-4-pourcents]]
 
-**Taux courant (de retrait)** : dépenses annuelles / portefeuille du moment. Le voyant central du pilotage, gradué en vert-orange-rouge. [[quand-s-inquieter]]
+**Taux courant (de retrait)** : retrait annuel net des pensions et revenus / portefeuille du moment. Le voyant central du pilotage, gradué en vert-orange-rouge. [[quand-s-inquieter]]
 
 **Time buckets** : dater ses envies par fenêtres physiologiques (avant 60, avant 75...). Ce qui est daté se finance maintenant. L'outil central de Die With Zero. [[depenses-en-retraite]]
 
@@ -189,7 +193,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Trinity (étude)** : la grille de 1998 (taux × allocation × horizon → % de succès historique). L'origine du langage de la probabilité de ruine. [[etude-trinity]]
 
-**Utilité (espérance d')** : le critère qui pèse chaque niveau de richesse par ce qu'il vaut vraiment pour vous, et non en euros bruts. Sa concavité fonde l'aversion au risque et le jugement des plans sur percentile 5 + médiane. [[decider-sous-incertitude]]
+**Utilité (espérance d')** : le critère qui pèse chaque niveau de richesse par ce qu'il vaut vraiment pour vous, et non en euros bruts. Sa concavité fonde l'aversion au risque. Le couple percentile 5 et médiane en est un raccourci pratique, pas un équivalent. [[decider-sous-incertitude]]
 
 **Volatility drag** : la traînée σ²/2 entre moyenne arithmétique et géométrique. La volatilité est un coût de composition, même sans krach. [[rendements-arithmetiques-geometriques]]
 
@@ -197,13 +201,13 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 ## Le mémo chiffré
 
-Quinze nombres traversent tout le livre. Les voici rassemblés, avec le terme qui les porte et le chapitre qui les établit. Aucun n'est nouveau ici, et c'est justement le service rendu. Un chiffre de votre plan qui ne ressemble à aucun de ceux-là mérite une explication avant d'être retenu.
+Quinze nombres traversent tout le livre. Les voici rassemblés, avec le terme qui les porte et le chapitre qui les établit. Aucun n'est nouveau ici, et c'est justement le service rendu. Un chiffre de votre plan qui ne ressemble à aucun de ceux-là demande de vérifier ses conventions (réel ou nominal, brut ou net, période) avant d'être retenu.
 
 | Repère | Ce qu'il mesure | Terme | Chapitre |
 |---|---|---|---|
 | ~4 % sur 30 ans | Le taux rigide qui passe le pire millésime américain | SAFEMAX | Trinity |
 | 3,25-3,5 % | Le même taux à un horizon FIRE de 45-55 ans | SAFEMAX | ERN |
-| ~17 % | L'échec du 4 % rigide sur l'échantillon mondial | Broad sample | Échantillon mondial |
+| ~17 % | L'échec du 4 % rigide sur l'échantillon mondial (38 pays) | Anarkulova-Cederburg | Échantillon mondial |
 | 0,5-1,5 point | Ce que coûte chaque marche de la cascade | Cascade | Les deux moyennes |
 | 50-80 % d'actions | La largeur du plateau d'allocation | Allocation d'actifs | Allocation |
 | 4-6 points | La prime actions historique au-dessus du cash | Prime de risque | Primes de risque |

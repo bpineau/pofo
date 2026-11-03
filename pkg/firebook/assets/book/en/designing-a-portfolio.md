@@ -1,5 +1,5 @@
 # Designing a portfolio: the method, not the model
-<!-- source: concevoir-un-portefeuille @ dd14e1f5f80e -->
+<!-- source: concevoir-un-portefeuille @ 7405c54587de -->
 
 Most books and most forums hand you a finished portfolio. The 60/40, All Weather, the Golden Butterfly, a recipe ready to copy. Copying a recipe has one deep flaw. It answers somebody else's questions. The right allocation is the one that answers **your** risks and that **you** can hold through a bad decade. This chapter gives you the method, not the model. A portfolio is not a list of funds. It is a series of answers to a series of questions, in order.
 
@@ -55,7 +55,7 @@ The map is the article's own: the risks named in question 1 on the left, the blo
 
 A design is a hypothesis. You test it on the tails, not on the average. The average always looks acceptable, while the plan dies on the worst paths. In a simulator ([[using-the-fire-simulator]], [[reading-a-fan-chart]]), read three things. The infamous vintages, 1966 and 2000, to see whether the design survives the start years that broke the naive plan ([[valuations-and-cape]]). The stress models and the broad sample, not just the central case ([[simulator-traps]]). And the 5th percentile plus the safe withdrawal rate at **your** tolerance for failure, not the median ([[failure-probability]]).
 
-The verdict to read is the tradeoff. A good defensive block lifts the worst paths while costing a little on the median. If a block does not move the worst paths, it defends nothing. If it damages the median, it is too big. Test the design, then size each block by the tradeoff you are willing to accept.
+The verdict to read is the tradeoff. A good defensive block lifts the worst paths while costing a little on the median. If a block does not move the worst paths, it defends nothing (still check that the model uses it: the broad sample, for one, ignores your weights). If it costs more on the median than you accept, it is too big. Test the design, then size each block by the tradeoff you are willing to accept.
 
 ## 7. When do you change it?
 

@@ -286,7 +286,7 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | croisement (of two curves) | where the two curves cross | Never "the crossing" (reserved for traversée). | rentes-et-annuites |
 | protocole (the replay's fixed setup) | the setup | Never "the protocol". | sept-facons-de-vivre |
 | écart (column: coefficient of variation of income) | Variability | | sept-facons-de-vivre |
-| the seven replay rule labels | Fixed (inflation-adjusted), Flex −10%, Guardrails (GK), Risk-based guardrails, Bounded %, Amortization (ABW), % of portfolio (VPW) | Identical in prose, tables and plates. | sept-facons-de-vivre |
+| the seven replay rule labels | Fixed (inflation-adjusted), Flex −10%, Guardrails (GK), Risk-based guardrails, Bounded %, Amortization (ABW), % of portfolio | Identical in prose, tables and plates. | sept-facons-de-vivre |
 | moy. / pire (plate panel stats) | avg / worst | | sept-facons-de-vivre |
 | vent arrière | tailwind | | sept-facons-de-vivre |
 | capital final (table column) | Ending capital | | sept-facons-de-vivre |
@@ -965,7 +965,7 @@ CAPE", "parametric models only"); the paraphrase is not the label.
 | les guardrails, les guardrails par risque | `Guyton-Klinger guardrails`, `Risk-based guardrails (Kitces / Morningstar)` | With `Risk-guardrail raise ceiling (x planned spend)` and `Guardrails floor (% of initial, 0 = none)`. | guardrails-morningstar |
 | le cliquet à la hausse | `Ratchet lifestyle up when rich` | | utiliser-la-page-fire |
 | la dérive structurelle des dépenses, le sourire | `Real spending drift /yr`, `Retirement smile (down, plateau, up late)` | | suivre-inflation |
-| le VPW pur, l'ABW, le pourcentage borné | `Spend % of portfolio (VPW, 0 = off)`, `Amortize over the horizon (ABW / TPAW)`, `Bounded % of portfolio (Vanguard-style)` | Exactly one spending policy runs at a time. | vpw |
+| le VPW pur, l'ABW, le pourcentage borné | `Spend % of portfolio (0 = off)`, `Amortize over the horizon (ABW / TPAW)`, `Bounded % of portfolio (Vanguard-style)` | Exactly one spending policy runs at a time. | vpw |
 | la rente viagère et ses réglages | `Annuitise % of the growth sleeve`, `Buy in year`, `Insurer margin`, the card `Annuity · pays vs withdraws` | Group "Longevity insurance", NOT a spending policy since 2026-08: bought in §05 only. | utiliser-la-page-fire |
 | l'indexation de la pension | `Pension indexation vs prices /yr` | Group "Pension & side income". | utiliser-la-page-fire |
 | les flux datés, ponctuel / annuel | the `dated flows` fold, `once` / `each year` | Lower case on the page. "One-off flow" in prose. | utiliser-la-page-fire |

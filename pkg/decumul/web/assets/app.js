@@ -60,12 +60,12 @@ const GROUPS = [
       "Structural real drift of the need: health insurance and care costs drift upward faster than inflation (+0.3-0.5%/yr is a common planning value)."),
     c("smile", "Retirement smile (down, plateau, up late)",
       "Blanchett's observed shape: real spending drifts down through the go-go years, plateaus, then climbs back with late-life health costs."),
-    r("percent", "Spend % of portfolio (VPW, 0 = off)", 0, 0.08, 0.005, 0, "pct",
-      "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier. Only one spending rule runs at a time, so raising it clears the fixed need's flex cut, guardrails and ratchet."),
+    r("percent", "Spend % of portfolio (0 = off)", 0, 0.08, 0.005, 0, "pct",
+      "Percentage-of-portfolio rule (a constant share, unlike the actuarial VPW whose rate rises with age): each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier. Only one spending rule runs at a time, so raising it clears the fixed need's flex cut, guardrails and ratchet."),
     c("abw", "Amortize over the horizon (ABW / TPAW)",
       "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return, a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market; after a bad decade the payment is genuinely lower. Assumes the geometric return the selected central model actually delivers (measured on its own draws, so a stress regime, a glidepath or the CAPE anchor lowers it). Only one spending rule runs at a time, so ticking it clears the others."),
     c("bounded", "Bounded % of portfolio (Vanguard-style)",
-      "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out: it sits between the fixed rule and VPW on the frontier. Only one spending rule runs at a time, so ticking it clears the others."),
+      "Vanguard's 'dynamic spending', the industry's smoothed percentage of portfolio: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out: it sits between the fixed rule and VPW on the frontier. Only one spending rule runs at a time, so ticking it clears the others."),
   ]},
   {title: "Longevity insurance", col: 1, items: [
     r("annuityShare", "Annuitise % of the growth sleeve", 0, 0.5, 0.05, 0, "pct",
@@ -416,7 +416,7 @@ function capEnvelopes(moved) {
 
 // ---------------------------------------------------------------------------
 // Spending policies are mutually exclusive. The kernel applies exactly one,
-// in a fixed precedence (ABW > bounded > VPW > risk guardrails >
+// in a fixed precedence (ABW > bounded > percent > risk guardrails >
 // Guyton-Klinger > the fixed rule and its flex cut / ratchet), so leaving
 // every box tickable let a reader believe rules combine when the extra ones
 // were silently ignored. Touching a control now claims its policy and clears
@@ -1408,7 +1408,7 @@ async function renderModels(b, id) {
     `<th${sel(i)} data-model="${esc(m.name)}" data-help="${esc(m.help)}. CLICK to run every detail section of the page (spending, lifecycle, risk, buffer…) under this model.">${m.name}</th>`).join("")}</tr>`;
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = row("Ruin",
-    "Share of simulated retirements that run out of money, at your planned spend AND under the spending rule you selected (flex cut, guardrails, VPW, ABW, bounded percent). An adaptive rule buys this number down by lowering the income you actually live on, so it is not comparable to the fixed rule's: read section 04 before reading it as safety.",
+    "Share of simulated retirements that run out of money, at your planned spend AND under the spending rule you selected (flex cut, guardrails, % of portfolio, ABW, bounded percent). An adaptive rule buys this number down by lowering the income you actually live on, so it is not comparable to the fixed rule's: read section 04 before reading it as safety.",
     m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`);
   const spendRow = row("Safe spend, no flex",
     "The most you could spend per year and still keep ruin at your acceptable level, under this model. Always solved on the FIXED rule, whatever adaptive rule you selected: a rule that rebases spending on wealth makes ruin non-monotonic in the withdrawal, so the solve would be ill-defined. Everything else (capital, buffer, pension, side income, taxes) is your plan. The gap between this figure and your planned spend is what your flexibility is buying; section 04 shows what it costs in lived income.",

@@ -90,7 +90,7 @@ type Lifetime struct {
 	// member is gone (the literature's figure is around 0.7: one person does
 	// not live on half of what two do). 0 means 1, no adjustment; a survivor
 	// needing literally nothing is not a value anybody means, so the sentinel
-	// is unambiguous. Wealth-based rules (VPW, bounded percent, ABW) are not
+	// is unambiguous. Wealth-based rules (percent of portfolio, bounded percent, ABW) are not
 	// scaled: their budget is a share of what exists, not a restated need.
 	SurvivorSpend float64
 }

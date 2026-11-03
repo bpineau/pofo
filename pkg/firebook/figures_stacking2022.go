@@ -7,10 +7,11 @@ import (
 
 // The 2022 plate. The article's example prints three numbers for that year and
 // leaves the reader to reconcile them: the naked 60/40 lost 17 %, the stacked
-// core lost 21 %, and the whole plan got away with 10 %. Read as prose, the
+// core lost 25 %, and the whole plan got away with 10 %. Read as prose, the
 // third number looks like luck. Decomposed as a waterfall, it is an addition
 // with two terms, and both of them are the point of return stacking: the
-// leverage bill is real, and it is paid by the layer the leverage freed.
+// leverage bill is real, the core's two-thirds weight gives it back, and the
+// layer the leverage freed makes the gain.
 //
 // Every level is the article's own. The two intermediate steps are pure
 // arithmetic on those levels and on the plan's stated 67 % core weight; no
@@ -22,10 +23,10 @@ import (
 // The example's 2022, in percent of the plan's value, and the weight the
 // stacked core carries in it.
 const (
-	stack22Naked      = -17.0 // the plain 60/40 that year
-	stack22Core       = -21.0 // the stacked core, on its own
-	stack22Plan       = -10.0 // the whole plan
-	stack22CoreWeight = 0.67  // what the core weighs in the plan
+	stack22Naked      = -17.0   // the plain 60/40 that year
+	stack22Core       = -25.0   // the stacked core, on its own
+	stack22Plan       = -10.0   // the whole plan
+	stack22CoreWeight = 2.0 / 3 // what the core weighs in the plan, the 67 % it states
 )
 
 // The three moves between those levels, all derived, all exact.
@@ -68,7 +69,7 @@ func figStacking2022() string {
 	const (
 		x0, x1     = 90.0, 570.0
 		yTop, yBot = 112.0, 330.0
-		vHi, vLo   = 1.0, -24.0
+		vHi, vLo   = 1.0, -28.0
 		barW       = 76.0
 	)
 	steps := stack22Steps()
@@ -123,7 +124,7 @@ func figStacking2022() string {
 
 	// The sentence the plate exists to prove, under the bar that proves it.
 	b.WriteString(sTxt(x1, 394, 11, figInk, "end", "600",
-		"Le levier pique, et c'est l'étage libéré qui paie la facture."))
+		"Le poids de deux tiers efface le levier, et l'étage libéré fait le gain."))
 
 	b.WriteString(sTxt(24, 416, 9.5, figMuted, "start", "400", fmt.Sprintf(
 		"Les trois niveaux sont ceux de l'article : %s %% pour le 60/40 nu, %s %% pour le cœur empilé seul, %s %% pour le plan entier.",

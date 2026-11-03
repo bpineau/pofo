@@ -1,5 +1,5 @@
 # What FIRE actually is
-<!-- source: fire-cest-quoi @ 9d73e3fec2ed -->
+<!-- source: fire-cest-quoi @ 703722d8e10f -->
 
 FIRE stands for *Financial Independence, Retire Early*.
 
@@ -8,7 +8,7 @@ Behind the acronym sits an old and simple idea: build enough capital that its re
 By the end you will know where your own project sits on that map, and which article to read next.
 
 ::: cle The principle in one sentence
-When your invested wealth reaches roughly 25 to 33 times your annual spending, its real return (after inflation) can fund your life indefinitely, with high probability but never with certainty. Everything else in this field, and everything in this book, comes down to understanding that sentence, refining it, securing it and living it.
+When your invested wealth reaches roughly 25 to 33 times your annual spending, its real return (after inflation) can fund the rest of your life, with high probability but never with certainty. Everything else in this field, and everything in this book, comes down to understanding that sentence, refining it, securing it and living it.
 :::
 
 ## Where it came from
@@ -88,7 +88,7 @@ Whatever the variant, every FIRE project comes down to three numbers and their u
 
 **2. Your withdrawal rate.** The bridge between spending and capital. 4% is the historical starting point ([[the-4-percent-rule]]). With an early start, a global portfolio and high valuations, the modern working range is closer to 3 to 3.5% for a rigid withdrawal, and more than that with a flexible strategy ([[choosing-your-strategy]]).
 
-**3. Your horizon.** Thirty years (what the founding studies assumed) and fifty years (leaving at 40) are two different problems. A long horizon lowers the safe rate, but less than you would think. Past 40 years the curve flattens. A portfolio that survives 40 years has almost always grown so large that it survives forever ([[horizon-and-life-expectancy]]).
+**3. Your horizon.** Thirty years (what the founding studies assumed) and fifty years (leaving at 40) are two different problems. A long horizon lowers the safe rate, but less than you would think. Past 40 years the curve flattens: planning for 60 years instead of 40 costs only a little withdrawal rate ([[horizon-and-life-expectancy]]).
 
 ::: astuce Start with the inventory, not with the simulator
 Before any clever calculation: twelve months of bank statements, a spreadsheet, and the true figure for your annual spending, big irregular items included (car, home repairs, health, gifts). Most people find a gap of 15 to 25% between what they think they spend and what they spend. That one number, multiplied by 25 or 30, tells you where you stand better than every simulator in the world.

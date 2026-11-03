@@ -44,7 +44,7 @@ Le catalogue standard tient en quelques lignes. Le momentum et le trend, qui sui
 
 Le carry systématique est donc long des matières premières en backwardation et short de celles en contango. Il capture ainsi un écart documenté sur un siècle. La littérature de référence, de Gorton-Rouwenhorst aux travaux d'AQR, mesure des primes brutes de 3 à 6 %/an pour les versions long-short.
 
-C'est aussi la leçon cachée des ETF matières premières « simples ». Un tracker long-only sur un indice large passe le plus clair de son temps à payer le contango, ce qui explique des décennies de performance décevante malgré des prix spot en hausse. Si vous détenez des matières premières hors or, le véhicule à roll optimisé n'est pas un raffinement : c'est la condition d'existence de la position ([[or-en-retrait]] traite le cas à part de l'or).
+C'est aussi la leçon cachée des ETF matières premières « simples ». Un tracker long-only sur un indice large passe le plus clair de son temps à payer le contango, ce qui explique des décennies de performance décevante malgré des prix spot en hausse. Si vous détenez des matières premières hors or, le véhicule à roll optimisé n'est pas un raffinement : il limite le coût du renouvellement des contrats, qui ronge souvent ces positions ([[or-en-retrait]] traite le cas à part de l'or).
 
 ::: figure carry-courbes
 Le roll yield en une image. En backwardation, le contrat acheté sous le spot y converge et rapporte. En contango, c'est l'inverse : un tracker naïf paie cette pente à chaque roulement.
@@ -66,8 +66,8 @@ Il tient en une hiérarchie simple, à trois étages.
 
 La grille de lecture d'une plaquette « alternative » tient en cinq questions.
 
-1. Que fait le fonds quand les actions montent trois ans de suite ? S'il gagne aussi, c'est du beta déguisé.
-2. Quel est son pire drawdown, et en quelle année ? S'il coïncide avec celui des actions, la diversification est décorative.
+1. Que fait le fonds quand les actions montent trois ans de suite ? S'il gagne aussi, vérifiez que ce n'est pas du beta déguisé : gagner en même temps ne prouve rien, mais suivre les actions de près, si.
+2. Quel est son pire drawdown, et en quelle année ? S'il coïncide avec celui des actions, la diversification risque d'être décorative.
 3. Quels sont les frais totaux, commission de performance incluse ?
 4. Contre quel indice public se compare-t-il ? Pas de référence, pas d'achat.
 5. Et la question qui tue : pourquoi cette stratégie rapporte-t-elle, qui paie, et pourquoi continuera-t-il de payer ([[primes-de-risque]]) ?

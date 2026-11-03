@@ -1,5 +1,5 @@
 # Fat tails, crises, and the Student-t
-<!-- source: queues-epaisses @ 2b7e9a46365d -->
+<!-- source: queues-epaisses @ 104d81240098 -->
 
 On October 19, 1987, the US market lost 20% in a single session. Under a normal law calibrated on the volatility of the day, that move sat more than twenty standard deviations out: a probability so small that the entire history of the universe should not have been enough to produce it once.
 
@@ -8,11 +8,11 @@ It happened anyway. And 2008, 2020, 1929, 1973 tell the same story at the annual
 This page takes the subject in order. The phenomenon first: where the tails come from, and how they are measured. Then the standard tool for modeling them, the Student-t distribution and its df parameter. Then what tails really change in a withdrawal plan. And last, the honest limits of that modeling. By the end, df will have stopped being an esoteric knob. It is the number that decides how often your simulator is allowed to produce 2008.
 
 ::: cle The idea in one sentence
-At **identical** volatility, two worlds can differ completely in how often they throw an extreme year. In the Gaussian world, a −30% real year is the stuff of legend. In the real world (df around 4 to 6), it shows up once or twice in a retirement. Volatility σ measures the **ordinary** agitation; the tail parameter df measures the appetite for **catastrophe**. A simulator that knows only σ is blind to half the risk that matters.
+At **identical** volatility, two worlds can differ completely in how often they throw an extreme year. In the Gaussian world, a −30% real year is the stuff of legend. With realistic tails (df around 4 to 6), it becomes a real retirement risk: at σ 12%, more than one 45-year retirement in four goes through at least one. Volatility σ measures the **ordinary** agitation; the tail parameter df measures the appetite for **catastrophe**. A simulator that knows only σ is blind to half the risk that matters.
 :::
 
 ::: figure fat-tails
-Two laws with the **same mean and the same volatility**, but opposite tails. In the middle, ordinary years look alike. In the tail, everything changes: under the normal law, a −30% real year is the stuff of legend; under a Student-t with df 5 (fitted on real data), it is about **ten times** more frequent than under that normal, which amounts to an infinite df. The df parameter does not move the center. It sets how often catastrophes happen.
+Two laws with the **same mean and the same volatility**, but opposite tails. In the middle, ordinary years look alike. In the tail, everything changes: under the normal law, a −30% real year is the stuff of legend; under a Student-t with df 5 (fitted on real data), it is about **three times** more frequent than under that normal, which amounts to an infinite df. The df parameter does not move the center. It sets how often catastrophes happen.
 :::
 
 ## Why the normal law is tempting, and where it breaks
@@ -29,18 +29,18 @@ One reassuring fact: tails get **thinner** as you aggregate over longer horizons
 
 ## The Student-t and the df parameter, in plain terms
 
-One family of distributions was built for exactly this problem: the **Student-t**. It is a bell with three parameters, the center μ, the scale (tied to σ), and the **degrees of freedom df**, which set how fat the tails are. At infinite df, the Student-t is the normal law. As df comes down, the center barely moves but the tails get heavier. Below df 4 they turn genuinely wild. This is the foundation of the central model in serious simulators: monthly Student-t draws, compounded into years ([[historical-vs-parametric]]).
+One family of distributions was built for exactly this problem: the **Student-t**. It is a bell with three parameters, the center μ, the scale (tied to σ), and the **degrees of freedom df**, which set how fat the tails are. At infinite df, the Student-t is the normal law. As df comes down, the center barely moves but the tails get heavier. Below df 4 they turn genuinely wild. This is the foundation of the central model in serious simulators: Student-t draws of whole years ([[historical-vs-parametric]]).
 
 What df changes **in practice**, at identical annual volatility (σ = 12%, μ = 4% real; the orders of magnitude are those of a "catastrophic" year at −30% real, close to a 3 standard deviation event):
 
-| df | The world it describes | How often a −30% real year | Over a 45-year retirement |
+| df | The world it describes | A year below −30% real | At least one in 45 years |
 |---|---|---|---|
-| 30+ (about normal) | The world of math textbooks | ~1 year in 400 | Probably never |
-| 10 | Moderate tails | ~1 in 150 | Maybe once |
-| 5 (the sensible default) | The world of real monthly data | ~1 in 40 | Once or twice |
-| 3 | A catastrophe-prone world | ~1 in 20 | Two or three times |
+| Infinite (normal law) | The world of math textbooks | ~1 year in 430 | ~10% of retirements |
+| 10 | Moderate tails | ~1 in 200 | ~20% |
+| 5 (the sensible default) | The world of real monthly data | ~1 in 140 | ~28% |
+| 3 | A catastrophe-prone world | ~1 in 120 | ~31% |
 
-Compare the df 5 row with the df 30 row: **the same σ, and a factor of ten on how often catastrophes happen**. That is why two simulators both showing "12% volatility" can hand you unrelated verdicts. It all sits in the law of the tails, which most commercial tools do not even document; they are Gaussian without saying so ([[simulator-traps]]).
+Compare the df 5 row with the normal law: **the same σ, and catastrophes three times as frequent**. That is why two simulators both showing "12% volatility" can hand you unrelated verdicts. It all sits in the law of the tails, which most commercial tools do not even document; they are Gaussian without saying so ([[simulator-traps]]).
 
 **Where does the df value come from?** You do not guess it, you **estimate** it from the data. The method is two steps. Measure the kurtosis of the portfolio's monthly returns. Then invert the Student-t's theoretical relation, kurtosis ≈ 3 + 6/(df − 4), to get the matching df. Months with a kurtosis of 7 to 9 give df around 5 to 6. Plain equity funds land near df 4 to 6, while a heavily diversified portfolio with defensive sleeves can climb to 8 to 12. A tool that can read the history of your holdings runs that computation for you and leaves the value editable for sensitivity tests. So a df of 5 is not a cautious opinion. It is the number that comes out of the real monthly data of most global equity portfolios.
 
@@ -54,14 +54,14 @@ From the model to the plan. Fat tails hit a withdrawal plan in a precise pattern
 
 **First effect, direct: failure probability rises, the median barely moves.** Going from df 30 to df 5 at constant σ leaves the median scenario almost untouched, because ordinary years have not changed. But failure probability swells, typically by 30 to 80% in relative terms depending on the plan. A Gaussian 4% failure becomes 6 to 7% at df 5. Tails do not change your **likely** life. They change how often the unlikely lives happen, and those are exactly the ones you plan against ([[failure-probability]]).
 
-**Second effect, subtler: the interaction with sequence.** A −30% year does not cost the same depending on when it lands. In year 2 it cuts the plan down for good ([[sequence-of-returns]]). In year 30 it is cosmetic. Fat tails raise the odds that the fragile window **contains** a catastrophe. The danger is the product of the two risks. The practical corollary: the defenses of the fragile window (glide path, buffer, early income) are **also** the best anti-tail defenses, at no extra cost ([[glidepaths]], [[cash-buffer]]).
+**Second effect, subtler: the interaction with sequence.** A −30% year does not cost the same depending on when it lands. In year 2 it cuts the plan down for good ([[sequence-of-returns]]). In year 30 it weighs much less, unless the portfolio still funds a large share of the budget. Fat tails raise the odds that the fragile window **contains** a catastrophe. The danger is the product of the two risks. The practical corollary: the defenses of the fragile window (glide path, buffer, early income) are **also** the best anti-tail defenses, at no extra cost ([[glidepaths]], [[cash-buffer]]).
 
 **Third effect: diversification delivers less than advertised.** The Gaussian case for diversification (average correlations reduce σ) misses one fact about crises: in the tail, correlations **rise**. In 2008 everything fell together except long government bonds and the yen. Diversification works, but it works **less** well in exactly the scenarios you bought it for. Unless you own assets whose decorrelation **survives** a crisis: government duration, gold, systematic managed futures ([[defensive-assets]], [[managed-futures]], [[all-weather-portfolios]]). A portfolio's kurtosis comes down through the **choice** of building blocks, more than through their number.
 
 Two mistakes are left to avoid. The optimistic one says: "the median does not move, so tails are a detail." No: retirement planning is tail management. The safe withdrawal rate is defined by the worst cases, not by the median ([[the-trinity-study]]). The catastrophist one says: "then set df 3 everywhere and stop talking about it." No again. Stacking df 3 on top of an already prudent mean and a CAPE anchor is the triple-counted prudence this book keeps warning about ([[expected-returns]]). And a permanent df 3 world is not the real world either. Fitting to the data, plus one sensitivity test, beats both postures.
 
 ::: exemple The two-minute sensitivity test
-Plan: $1.5M, $52,000 a year, 45 years, a pension starting in year 16. Note the central-case failure probability at the df fitted to your data (say 5): 5.2%. Push df to 30 and it drops to 3.1%. Take it down to 3 and it climbs to 7.8%. The reading: that 3 to 8% range is your exposure to disagreement about tails, comparable here to what half a point of μ does. If your decision (leave or not, [[one-more-year]]) survives both bounds, tails are not your dominant problem. If it flips, your plan rests on the world behaving itself. Structural protections (flexibility in writing, a buffer, defensive building blocks) are then a better remedy than a debate about df ([[choosing-your-strategy]]).
+Plan: $1.5M, $52,000 a year, 45 years, a pension starting in year 16. Note the central-case failure probability at the df fitted to your data (say 5): 5.2%. Push df to 30 and it drops to 3.1%. Take it down to 3 and it climbs to 7.8%. (With a portfolio loaded, check the df actually used: the blend toward the prior pulls it toward 4.) The reading: that 3 to 8% range is your exposure to disagreement about tails, comparable here to what half a point of μ does. If your decision (leave or not, [[one-more-year]]) survives both bounds, tails are not your dominant problem. If it flips, your plan rests on the world behaving itself. Structural protections (flexibility in writing, a buffer, defensive building blocks) are then a better remedy than a debate about df ([[choosing-your-strategy]]).
 :::
 
 ## A little history of the idea, to settle the matter
@@ -71,7 +71,7 @@ The history is worth knowing, because it inoculates you against models that are 
 ## The essentials
 
 - Markets throw extremes far more often than the normal law allows: monthly kurtosis of 6 to 12 against 3. That is the signature of volatility clustering and regime changes, not an accident.
-- The Student-t adds the missing parameter: df, the thickness of the tails. At identical σ, df 5 makes a −30% real year about 10 times more likely than df 30. You estimate df by inverting kurtosis ≈ 3 + 6/(df − 4) on **your** funds' monthly returns, which typically gives 4 to 6.
+- The Student-t adds the missing parameter: df, the thickness of the tails. At identical σ, df 5 makes a −30% real year about three times more likely than the normal law. You estimate df by inverting kurtosis ≈ 3 + 6/(df − 4) on **your** funds' monthly returns, which typically gives 4 to 6.
 - Effect on the plan: the median does not move, failure probability rises, often by 30 to 80% in relative terms. Tails mostly worsen the fragile window, and the anti-sequence defenses are the anti-tail defenses too.
 - Limits of the model: it is symmetric (real risk has a negative skew, covered by the sequence stresses and the lost decade) and memoryless (covered by the regimes). Diversification protects less in the tail, except for the blocks whose decorrelation survives a crisis.
 - Practical habit: keep the df fitted to your data, run the 3/30 test once to learn your exposure, and if the decision flips, fix it with the structure of the plan, not with the parameter.
