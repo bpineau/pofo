@@ -36,8 +36,8 @@ import (
 //
 // viewParallel = 2 is safe: marketdata.Client guards its in-memory series
 // and fees caches with c.mu and its Yahoo auth with c.authMu, and its disk
-// writes go through writeCacheFile (write a temp file, then os.Rename),
-// where each write carries the complete JSON so the worst concurrent
+// writes go through writeCacheFile (write a temp file of the writer's own,
+// then os.Rename), where each write carries the complete JSON so the worst concurrent
 // outcome is a redundant, self-consistent overwrite, never a torn file.
 const (
 	viewTimeout  = 60 * time.Second

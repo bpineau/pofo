@@ -71,8 +71,10 @@ func TestPooledBootstrapEmptyPool(t *testing.T) {
 }
 
 func TestPooledBootstrapPreservesMean(t *testing.T) {
-	// Resampling is mean-preserving: the pooled long-run mean of the draws should
-	// match the pooled mean of the input series within Monte-Carlo tolerance.
+	// Resampling is NEARLY mean-preserving: the restart at a series' end tilts
+	// the weights toward later observations (see PooledBootstrap), which on
+	// these short series stays inside the tolerance; the exact tilt is pinned
+	// by TestPooledBootstrapEndpointWeights.
 	s1 := []float64{0.05, -0.10, 0.20, 0.00, 0.08}
 	s2 := []float64{0.03, 0.03, -0.20, 0.15, 0.10, -0.05}
 	want := 0.0
@@ -93,5 +95,40 @@ func TestPooledBootstrapPreservesMean(t *testing.T) {
 	}
 	if got := sum / float64(n); math.Abs(got-want) > 0.01 {
 		t.Errorf("pooled mean = %.4f, want ~%.4f", got, want)
+	}
+}
+
+// The restart at a series' end weighs a two-point series' last observation
+// (1+q)/(2+q) and its first 1/(2+q), q = 1-1/MeanBlock: the documented,
+// deliberate tilt (no block wraps across a series' end).
+func TestPooledBootstrapEndpointWeights(t *testing.T) {
+	p := PooledBootstrap{Series: [][]float64{{-0.5, 0.5}}, MeanBlock: 8, Periods: 1_000_000}
+	q := 1 - 1/p.MeanBlock
+	want := -0.5/(2+q) + 0.5*(1+q)/(2+q)
+	got := 0.0
+	for _, v := range p.Draw(rand.New(rand.NewPCG(1, 2))) {
+		got += v
+	}
+	if got /= float64(p.Periods); math.Abs(got-want) > 0.003 {
+		t.Errorf("sampled mean %.5f, want the stationary %.5f", got, want)
+	}
+}
+
+// MeanBlock 1 is a fresh draw every period, as in StationaryBootstrap: no
+// block continues (successive history entries only by accident).
+func TestPooledBootstrapMeanBlockOne(t *testing.T) {
+	hist := make([]float64, 10_000)
+	for i := range hist {
+		hist[i] = float64(i + 1)
+	}
+	s := PooledBootstrap{Series: [][]float64{hist}, MeanBlock: 1, Periods: 10_000}.Draw(rand.New(rand.NewPCG(1, 2)))
+	runs := 0
+	for i := 1; i < len(s); i++ {
+		if s[i] == s[i-1]+1 {
+			runs++
+		}
+	}
+	if runs > 10 {
+		t.Errorf("%d of %d transitions continued a block, want ~0", runs, len(s)-1)
 	}
 }

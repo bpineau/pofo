@@ -293,3 +293,46 @@ func TestSolveValidation(t *testing.T) {
 		t.Fatalf("single asset: %+v %v", r, err)
 	}
 }
+
+// A max-weight below 1/n is infeasible for one asset too: the one-asset
+// shortcut must not answer 100 % under a 40 % cap.
+func TestSolveOneAssetHonoursMaxWeight(t *testing.T) {
+	for _, s := range []string{"min-volatility,max-weight:40", "max-sharpe,max-weight:40"} {
+		spec, err := ParseSpec(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if r, err := Solve([][]float64{{0.1, -0.1, 0.05}}, 1, spec); err == nil {
+			t.Errorf("%s on one asset: weights %v, want an infeasibility error", s, r.Weights)
+		}
+	}
+}
+
+// A NaN or infinite number is refused at parse time, never read as an
+// absent limit.
+func TestParseSpecRefusesNonFiniteNumbers(t *testing.T) {
+	for _, s := range []string{"min-volatility,max-vol:NaN", "max-sharpe,max-weight:NaN",
+		"max-sharpe,min-return:Inf", "black-litterman,view:TEST:NaN", "black-litterman,view:TEST:-Inf"} {
+		if spec, err := ParseSpec(s); err == nil {
+			t.Errorf("ParseSpec(%q) = %+v, want an error", s, spec)
+		}
+	}
+}
+
+// With no limit to violate, a successful solve is feasible.
+func TestSolveUnconstrainedIsFeasible(t *testing.T) {
+	returns := [][]float64{{0.1, -0.1, 0.05, 0.02}, {0.03, -0.02, 0.01, 0.0}}
+	for _, s := range []string{"max-sharpe", "min-volatility", "risk-parity", "max-sortino"} {
+		spec, err := ParseSpec(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		r, err := Solve(returns, 12, spec)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !r.Feasible {
+			t.Errorf("%s: Feasible false with no limit", s)
+		}
+	}
+}

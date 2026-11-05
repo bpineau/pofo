@@ -270,9 +270,10 @@ type Result struct {
 	// mean/covariance solvers work in, and runs higher by the volatility
 	// drag). Zero when the solve did not go through that path.
 	CAGR float64
-	// Feasible reports whether the returned weights satisfy Spec.Limits.
-	// False means the constraints could not be met and the weights are the
-	// least-violating point found, not an answer.
+	// Feasible reports whether the returned weights satisfy Spec.Limits:
+	// always true for a successful solve with no limit. False means the
+	// constraints could not be met and the weights are the least-violating
+	// point found, not an answer.
 	Feasible bool
 
 	// Implied, Posterior and Lambda describe a BlackLitterman solve (zero
@@ -417,7 +418,9 @@ func ParseSpec(s string) (Spec, error) {
 func percent(val string, lo, hi float64, zeroOK bool) (float64, error) {
 	pct, err := strconv.ParseFloat(strings.TrimSuffix(strings.TrimSpace(val), "%"), 64)
 	switch {
-	case err != nil:
+	case err != nil, math.IsNaN(pct), math.IsInf(pct, 0):
+		// NaN passes every comparison below, and a NaN limit then reads as
+		// no limit at all: a constraint asked for and dropped in silence.
 		return 0, fmt.Errorf("%q is not a number", val)
 	case pct > hi, pct < lo, pct == lo && !zeroOK:
 		return 0, fmt.Errorf("%q is not a percentage in %s%.0f,%.0f]", val, map[bool]string{true: "[", false: "("}[zeroOK], lo, hi)
@@ -477,7 +480,7 @@ func parseView(val string) (View, error) {
 	}
 	ret, conf, hasConf := strings.Cut(rest, "@")
 	pct, err := strconv.ParseFloat(strings.TrimSuffix(strings.TrimSpace(ret), "%"), 64)
-	if err != nil {
+	if err != nil || math.IsNaN(pct) || math.IsInf(pct, 0) {
 		return View{}, fmt.Errorf("%q is not a percentage per year", ret)
 	}
 	v.Return = pct / 100
@@ -546,8 +549,23 @@ func parseBound(s string, end bool) (time.Time, error) {
 // their dates in general. Every annualized figure, in the objective, the
 // limits and the Result, is annualized at that cadence.
 func Solve(returns [][]float64, periodsPerYear float64, spec Spec) (Result, error) {
+	res, err := solvePanel(returns, periodsPerYear, spec)
+	if err == nil && !spec.Limits.Any() {
+		res.Feasible = true // no limit to violate
+	}
+	return res, err
+}
+
+// solvePanel is Solve before the Feasible convention: every successful
+// unconstrained solve is feasible, which only the constrained path measures.
+func solvePanel(returns [][]float64, periodsPerYear float64, spec Spec) (Result, error) {
 	if err := checkPanel(returns, periodsPerYear); err != nil {
 		return Result{}, err
+	}
+	// The one-asset shortcuts answer weight 1 before any cap is read: a
+	// max-weight below 1/n is infeasible however few the assets.
+	if n := len(returns); spec.MaxWeight > 0 && spec.MaxWeight < 1 && float64(n)*spec.MaxWeight < 1-1e-9 {
+		return Result{}, fmt.Errorf("max-weight too low: %d assets cannot sum to 100%% under a %.0f%% cap", n, spec.MaxWeight*100)
 	}
 	// Black-Litterman derives its own expected returns before optimizing,
 	// and chooses between the two paths below itself.

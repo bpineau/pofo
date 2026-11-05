@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -170,6 +171,37 @@ func TestSanitizeFilename(t *testing.T) {
 	for in, want := range cases {
 		if got := sanitizeFilename(in); got != want {
 			t.Errorf("sanitizeFilename(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+// Concurrent writers of one cache file each go through their own temporary
+// file: the survivor is one complete payload, never a mixture, and no
+// temporary file is left behind.
+func TestCacheWriteConcurrentWriters(t *testing.T) {
+	dir := t.TempDir()
+	c := NewClient(dir)
+	path := filepath.Join(dir, "X.json")
+	for round := range 20 {
+		var wg sync.WaitGroup
+		payloads := make([][]byte, 12)
+		for i := range payloads {
+			payloads[i], _ = json.Marshal(map[string]string{"pad": strings.Repeat("x", 100*(i+1)+round)})
+			wg.Go(func() { c.writeCacheFile(path, payloads[i]) })
+		}
+		wg.Wait()
+		got, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !json.Valid(got) {
+			t.Fatalf("round %d: the cache file is not one payload: %d bytes of invalid JSON", round, len(got))
+		}
+	}
+	entries, _ := os.ReadDir(dir)
+	for _, e := range entries {
+		if strings.HasSuffix(e.Name(), ".tmp") {
+			t.Errorf("a temporary file survived: %s", e.Name())
 		}
 	}
 }

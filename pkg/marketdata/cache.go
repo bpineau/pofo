@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"cmp"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -184,20 +185,37 @@ func (c *Client) saveCacheAs(cacheID string, s *Series, from time.Time) {
 
 // writeCacheFile writes data atomically, creating the cache directory on
 // demand. A cache-less client (empty CacheDir) never touches the disk.
+//
+// Each write goes through its OWN temporary file in the destination
+// directory, closed before the rename: two writers sharing one "path.tmp"
+// could truncate and rename the same inode while the other was still
+// writing, leaving a file of one payload with another's tail. With a file
+// apiece, concurrent writers each rename a complete payload and the last
+// rename wins.
 func (c *Client) writeCacheFile(path string, data []byte) {
 	if c.CacheDir == "" {
 		return
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		c.Logf("warning: cache directory unusable: %v", err)
 		return
 	}
-	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, data, 0o644); err != nil {
+	f, err := os.CreateTemp(dir, filepath.Base(path)+".*.tmp")
+	if err != nil {
+		c.Logf("warning: cache write failed: %v", err)
+		return
+	}
+	tmp := f.Name()
+	_, werr := f.Write(data)
+	cerr := f.Close()
+	if err := cmp.Or(werr, cerr, os.Chmod(tmp, 0o644)); err != nil {
+		os.Remove(tmp)
 		c.Logf("warning: cache write failed: %v", err)
 		return
 	}
 	if err := os.Rename(tmp, path); err != nil {
+		os.Remove(tmp)
 		c.Logf("warning: cache write failed: %v", err)
 	}
 }

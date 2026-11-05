@@ -15,7 +15,7 @@
 # persist /root/.cache/go-build and /go/pkg/mod across rebuilds.
 
 ARG GO_VERSION=1.26.8
-ARG ALPINE_VERSION=3.20
+ARG ALPINE_VERSION=3.24
 
 # ---------- 1. build stage ----------
 FROM golang:${GO_VERSION}-alpine AS builder

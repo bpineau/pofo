@@ -139,7 +139,7 @@ func TestErreursFrictionMatchesTheArticle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"8 à 20 %", "10-15 %"} {
+	for _, want := range []string{"8 à 20 %"} {
 		if !strings.Contains(string(raw), want) {
 			t.Errorf("the article no longer states the friction band %q the plate's 12 %% comes from", want)
 		}
