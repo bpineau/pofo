@@ -14,7 +14,7 @@
 # Requires BuildKit (DOCKER_BUILDKIT=1) for the --mount=type=cache lines, which
 # persist /root/.cache/go-build and /go/pkg/mod across rebuilds.
 
-ARG GO_VERSION=1.26.8
+ARG GO_VERSION=1.26.10
 ARG ALPINE_VERSION=3.24
 
 # ---------- 1. build stage ----------
