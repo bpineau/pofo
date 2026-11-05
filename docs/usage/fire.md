@@ -53,6 +53,14 @@ inflation. Three models then use it: a parametric fit, a historical bootstrap
 (blocks of months resampled) and historical cohorts (every actual start
 month). You can drag each holding's weight and watch ruin move.
 
+That history is a fully invested mix of the holdings' monthly real returns,
+on one unbroken stretch of complete months, starting no earlier than the
+inflation series. What it cannot carry of the file is stated as a caveat on
+the market pill rather than dropped in silence: a leverage read as fully
+invested (no financing leg), extra fees not deducted, an optimizer's weights
+replaced by the written ones, months left out. A holding that cannot be read
+leaves no history at all, since the others alone are another portfolio.
+
 The same page runs inside the web app at `/firesimulator/`
 ([web guide](web.md)), where each portfolio of a report links to it.
 

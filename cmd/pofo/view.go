@@ -129,6 +129,12 @@ func parseViewQuery(q url.Values, base *options, gate *foreignGate) (*viewReques
 			return nil, err
 		}
 		add(spec)
+		// The page's global sim=on is the report's reading of every column:
+		// the linked simulator must study the same history, so the toggle
+		// travels into the spec it is mounted on.
+		if q.Get("sim") == "on" && !strings.Contains(strings.ToLower(raw), "!sim:on") {
+			raw += "!sim:on"
+		}
 		vr.fireHrefs[spec.Name] = fireBase + "/p/" + url.PathEscape(raw) + "/"
 	}
 	if err := columnBudget(vr.specs); err != nil {
@@ -145,14 +151,20 @@ func parseViewQuery(q url.Values, base *options, gate *foreignGate) (*viewReques
 // turns a single portfolio into one fetched, simulated and fully rendered
 // column per currency, and that list is unbounded: a lone 2 kB p= can name
 // several hundred codes, so counting parameters let a page past its own limit
-// by two orders of magnitude. The count is what the report will draw.
+// by two orders of magnitude. The count is what the report will draw, and an
+// "optimize" spec draws two columns, its written weights beside the
+// optimizer's (compare.Compute).
 func columnBudget(specs []*portfolio.Spec) error {
 	cols := 0
 	for _, s := range specs {
-		cols += max(len(s.Currencies), 1)
+		n := max(len(s.Currencies), 1)
+		if s.Optimize != nil {
+			n *= 2
+		}
+		cols += n
 	}
 	if cols > maxViewPortfolios {
-		return fmt.Errorf("at most %d portfolios per page; this one asks for %d columns (a \"currencies\" list counts once per currency)",
+		return fmt.Errorf("at most %d portfolios per page; this one asks for %d columns (a \"currencies\" list counts once per currency, an optimizer twice)",
 			maxViewPortfolios, cols)
 	}
 	return nil

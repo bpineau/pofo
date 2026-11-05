@@ -58,6 +58,7 @@ type handlerConfig struct {
 	picker      *Picker
 	indexNowKey string
 	beaconToken string
+	notes       []string
 	embedded    bool
 	gate        simGate // nil = a fresh gate of simParallel slots
 }
@@ -108,6 +109,16 @@ func WithIndexNowKey(key string) Option {
 // wraps this handler from the outside and needs no option here.
 func WithBeaconToken(token string) Option {
 	return func(c *handlerConfig) { c.beaconToken = token }
+}
+
+// WithNotes states what the mount's history could not carry of the portfolio
+// it was built from (a leverage read as fully invested, portfolio-level fees
+// not deducted, a holding that could not be read, months left out of the
+// panel: Coverage.Notes). The page shows them on the provenance pill, so a
+// simulator that studies something other than the written portfolio says
+// so rather than presenting its figures as that portfolio's.
+func WithNotes(notes []string) Option {
+	return func(c *handlerConfig) { c.notes = notes }
 }
 
 // Embedded marks this handler as an inner app mounted under a larger site
@@ -229,6 +240,9 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		}
 		if cfg.picker != nil {
 			meta["picker"] = cfg.picker
+		}
+		if len(cfg.notes) > 0 {
+			meta["notes"] = cfg.notes
 		}
 		if panel != nil {
 			meta["weights"] = panel.Weights

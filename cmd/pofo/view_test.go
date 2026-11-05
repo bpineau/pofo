@@ -315,6 +315,34 @@ func TestViewFireHrefs(t *testing.T) {
 	if o.fireHref[adhoc] != want {
 		t.Errorf("serverOptions fireHref = %q", o.fireHref[adhoc])
 	}
+
+	// The page's global sim=on travels into the simulator's spec, so both
+	// study the same history; a spec already carrying it is left alone.
+	vr, err = parseViewQuery(url.Values{"p": {"DTLA", "IWDA!sim:on"}, "sim": {"on"}}, viewBase(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, raw := range map[string]string{vr.specs[0].Name: "DTLA!sim:on", vr.specs[1].Name: "IWDA!sim:on"} {
+		if got, want := vr.fireHrefs[name], "/firesimulator/p/"+url.PathEscape(raw)+"/"; got != want {
+			t.Errorf("sim=on href for %s = %q, want %q", name, got, want)
+		}
+	}
+}
+
+// An optimized spec draws two columns (written and optimized weights), so
+// six of them are twelve columns, past the page cap.
+func TestColumnBudgetCountsTheOptimizerColumn(t *testing.T) {
+	q := url.Values{}
+	for range 3 {
+		q.Add("p", "SP500!optimize:min-volatility")
+	}
+	if _, err := parseViewQuery(q, viewBase(), nil); err != nil {
+		t.Fatalf("three optimized specs are six columns: %v", err)
+	}
+	q.Add("p", "SP500!optimize:min-volatility")
+	if _, err := parseViewQuery(q, viewBase(), nil); err == nil || !strings.Contains(err.Error(), "8 columns") {
+		t.Errorf("four optimized specs: err %v, want the 8 columns refused", err)
+	}
 }
 
 func TestParseViewQueryEmpty(t *testing.T) {

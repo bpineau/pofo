@@ -62,7 +62,7 @@ func TestIndexNowSubmitsWhatTheServerServes(t *testing.T) {
 	pushed := serveSite().URLs(origin)
 
 	srv, _ := testServer(t)
-	h := srv.handler(nil, nil)
+	h := srv.handler(fireBuild{})
 	rec := serveGet(t, h, "/sitemap.xml")
 	sitemap := rec.Body.String()
 	if len(pushed) == 0 {
@@ -97,13 +97,13 @@ func TestServeIndexNowKeyFile(t *testing.T) {
 	const key = "1a2b3c4d5e6f7890"
 
 	s, _ := testServer(t)
-	if rec := serveGet(t, s.handler(nil, nil), "/"+key+".txt"); rec.Code != http.StatusNotFound {
+	if rec := serveGet(t, s.handler(fireBuild{}), "/"+key+".txt"); rec.Code != http.StatusNotFound {
 		t.Errorf("without -indexnow-key: status %d, want 404", rec.Code)
 	}
 
 	s, _ = testServer(t)
 	s.opt.indexNowKey = key
-	rec := serveGet(t, s.handler(nil, nil), "/"+key+".txt")
+	rec := serveGet(t, s.handler(fireBuild{}), "/"+key+".txt")
 	if rec.Code != http.StatusOK {
 		t.Fatalf("key file: status %d", rec.Code)
 	}

@@ -178,8 +178,8 @@ func foreignServer(t *testing.T, perClient, global int) *server {
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		return []byte("<html>fake report</html>"), nil
 	}
-	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
-		return &scenario.Panel{}, stubLabels(spec)
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) fireBuild {
+		return fireBuild{panel: &scenario.Panel{}, labels: stubLabels(spec)}
 	}
 	return s
 }
@@ -197,7 +197,7 @@ func serveGetFrom(t *testing.T, h http.Handler, path, addr string) *httptest.Res
 
 func TestServeForeignIdentifiers(t *testing.T) {
 	s := foreignServer(t, 2, 3)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	if rec := serveGetFrom(t, h, "/view?p=DGRO:100", "198.51.100.1"); rec.Code != 200 {
 		t.Fatalf("a well-formed foreign ticker should render: code=%d body=%q", rec.Code, rec.Body.String())
@@ -240,7 +240,7 @@ func TestServeForeignIdentifiers(t *testing.T) {
 // visitor's typo.
 func TestServeUnknownIdentifierStatus(t *testing.T) {
 	s := foreignServer(t, 5, 10)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		return nil, fmt.Errorf("portfolio %s, asset %q: %w", "p1", "ZQXWVT",
@@ -275,7 +275,7 @@ func TestServeForeignOffByDefault(t *testing.T) {
 	if s.foreign != nil {
 		t.Fatal("the default options must leave the foreign-identifier budget off")
 	}
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	rec := serveGetFrom(t, h, "/view?p=DGRO:100", "198.51.100.1")
 	if rec.Code != 400 || !strings.Contains(rec.Body.String(), "not in the local catalog") {
 		t.Errorf("catalog-only server: code=%d body=%q", rec.Code, rec.Body.String())

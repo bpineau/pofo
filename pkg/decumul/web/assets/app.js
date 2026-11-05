@@ -1743,17 +1743,23 @@ function renderMarketPill(meta) {
   const pill = document.getElementById("marketPill");
   if (!pill) return;
   pill.hidden = false;
+  // What the history could not carry of the written portfolio (a leverage
+  // read as fully invested, a holding that could not be read, months left
+  // out): counted on the pill, spelled out in its help.
+  const notes = Array.isArray(meta.notes) ? meta.notes : [];
+  const caveat = notes.length ? " · " + notes.length + (notes.length > 1 ? " caveats" : " caveat") : "";
+  const noted = notes.length ? " Caveats: " + notes.join(" ") : "";
   if (meta.hasPanel) {
     pill.className = "pill market loaded";
-    pill.textContent = "market: " + (meta.sourceLabel || "your portfolio");
+    pill.textContent = "market: " + (meta.sourceLabel || "your portfolio") + caveat;
     pill.setAttribute("data-help",
-      "The historical models and the allocation bar run on this portfolio's own monthly real returns. Click to open the parameters and re-weight it.");
+      "The historical models and the allocation bar run on this portfolio's own monthly real returns. Click to open the parameters and re-weight it." + noted);
     pill.addEventListener("click", () => { setDrawer(true); flashGroup("group-allocation"); });
     return;
   }
   pill.className = "pill market generic";
-  pill.textContent = "generic market · load portfolio";
-  pill.setAttribute("data-help", GENERIC_HELP + " Click to open the loader.");
+  pill.textContent = "generic market · load portfolio" + caveat;
+  pill.setAttribute("data-help", GENERIC_HELP + " Click to open the loader." + noted);
   pill.addEventListener("click", () => { setDrawer(true); flashGroup("group-portfolio"); });
 }
 

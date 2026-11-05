@@ -107,7 +107,12 @@ func plancherPanel(t *testing.T) (scenario.Panel, string) {
 	return scenario.Panel{Returns: rows}, span(common[0]) + " -> " + span(common[len(common)-1])
 }
 
-// plancherMonthEnds keeps the last quote of each calendar month (lastPerMonth).
+// plancherMonthEnds keeps the last quote of each calendar month (lastPerMonth),
+// and drops an unfinished last month, one whose last quote falls before the
+// month's last weekday (monthComplete). The page's two other cuts are inert
+// on these legs, so they are not copied: the deflator floor (the US CPI starts
+// in 1913, the trend leg in 1987) and the longest contiguous run (the bundled
+// legs have no hole, which the golden gap guard holds them to).
 func plancherMonthEnds(points []marketdata.Point) []marketdata.Point {
 	var out []marketdata.Point
 	for _, p := range points {
@@ -117,6 +122,16 @@ func plancherMonthEnds(points []marketdata.Point) []marketdata.Point {
 			continue
 		}
 		out = append(out, p)
+	}
+	if n := len(out); n > 0 {
+		d := out[n-1].Date
+		last := time.Date(d.Year(), d.Month()+1, 0, 0, 0, 0, 0, time.UTC)
+		for last.Weekday() == time.Saturday || last.Weekday() == time.Sunday {
+			last = last.AddDate(0, 0, -1)
+		}
+		if d.Before(last) {
+			out = out[:n-1]
+		}
 	}
 	return out
 }

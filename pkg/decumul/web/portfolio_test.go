@@ -10,21 +10,22 @@ import (
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
-func mo(y int, m time.Month) time.Time { return time.Date(y, m, 28, 0, 0, 0, 0, time.UTC) }
+// mo is the last day of month m of year y (time.Date normalizes m past
+// December), the month-end a monthly close is dated on.
+func mo(y int, m time.Month) time.Time { return time.Date(y, m+1, 0, 0, 0, 0, 0, time.UTC) }
 
 func TestBuildMonthlyPanelAndFit(t *testing.T) {
 	// 25 monthly points (24 returns) growing +1%/month, flat inflation.
 	var pts, hicp []marketdata.Point
 	v := 100.0
-	d := mo(2000, time.January)
-	for i := 0; i < 25; i++ {
+	for i := range 25 {
+		d := mo(2000, time.January+time.Month(i))
 		pts = append(pts, marketdata.Point{Date: d, Close: v})
 		hicp = append(hicp, marketdata.Point{Date: d, Close: 100})
 		v *= 1.01
-		d = d.AddDate(0, 1, 0)
 	}
 	a := AssetSeries{Weight: 1, Points: pts}
-	panel, err := BuildMonthlyPanel([]AssetSeries{a}, hicp)
+	panel, _, err := BuildMonthlyPanel([]AssetSeries{a}, hicp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,7 +102,7 @@ func TestBuildMonthlyPanelDateKeyed(t *testing.T) {
 		{Date: mo(2000, time.April), Close: 252}, // Apr +0.20
 		{Date: mo(2000, time.May), Close: 277.2}, // May +0.10
 	}}
-	panel, err := BuildMonthlyPanel([]AssetSeries{a, b}, hicp)
+	panel, _, err := BuildMonthlyPanel([]AssetSeries{a, b}, hicp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -230,7 +231,7 @@ func TestBuildMonthlyPanelSkipsGaps(t *testing.T) {
 		// March missing -> the Feb->Apr return spans two months, excluded.
 		{Date: mo(2000, time.April), Close: 132}, // Apr (Feb->Apr, spanning)
 	}}
-	panel, err := BuildMonthlyPanel([]AssetSeries{full, gapped}, hicp)
+	panel, _, err := BuildMonthlyPanel([]AssetSeries{full, gapped}, hicp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -240,5 +241,79 @@ func TestBuildMonthlyPanelSkipsGaps(t *testing.T) {
 	}
 	if math.Abs(panel.Returns[1][0]-0.10) > 1e-9 {
 		t.Errorf("gapped asset Feb return = %.4f, want 0.10", panel.Returns[1][0])
+	}
+}
+
+// Nominal history before the deflator starts is not real history: holding
+// the first price level flat backwards would read +10 % nominal as +10 %
+// real. Those months are left out, and the coverage says so.
+func TestBuildMonthlyPanelStopsAtTheDeflator(t *testing.T) {
+	var pts []marketdata.Point
+	v := 100.0
+	for i := range 6 {
+		pts = append(pts, marketdata.Point{Date: mo(1954, time.October+time.Month(i)), Close: v})
+		v *= 1.10
+	}
+	hicp := []marketdata.Point{{Date: time.Date(1955, time.January, 1, 0, 0, 0, 0, time.UTC), Close: 10}}
+	panel, cov, err := BuildMonthlyPanel([]AssetSeries{{Weight: 1, Points: pts}}, hicp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Oct..Mar quotes: only the Feb and Mar returns start on or after 1955-01.
+	if panel.Periods() != 2 {
+		t.Errorf("periods = %d, want 2 (Feb, Mar 1955)", panel.Periods())
+	}
+	if !cov.DeflatorStart.Equal(hicp[0].Date) || len(cov.Notes()) != 1 {
+		t.Errorf("coverage %+v notes %q, want the deflator start named", cov, cov.Notes())
+	}
+	if want := time.Date(1955, time.February, 1, 0, 0, 0, 0, time.UTC); !cov.First.Equal(want) {
+		t.Errorf("first month %v, want %v", cov.First, want)
+	}
+}
+
+// A shared hole splits the history into two runs; the panel keeps ONE (the
+// longest), since every scenario model chains its columns as consecutive
+// months, and counts what it left out.
+func TestBuildMonthlyPanelKeepsOneRun(t *testing.T) {
+	hicp := []marketdata.Point{{Date: mo(1999, time.January), Close: 100}}
+	closes := map[time.Month]float64{
+		time.January: 100, time.February: 110, // Feb: a one-month run
+		time.May: 121, time.June: 133.1, time.July: 146.41, time.August: 161.051, // Jun..Aug
+	}
+	var pts []marketdata.Point
+	for m := time.January; m <= time.August; m++ {
+		if c, ok := closes[m]; ok {
+			pts = append(pts, marketdata.Point{Date: mo(2025, m), Close: c})
+		}
+	}
+	panel, cov, err := BuildMonthlyPanel([]AssetSeries{{Weight: 1, Points: pts}}, hicp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if panel.Periods() != 3 || cov.GapMonths != 1 {
+		t.Errorf("periods %d gap months %d, want the 3-month Jun..Aug run and 1 left out", panel.Periods(), cov.GapMonths)
+	}
+	if want := time.Date(2025, time.June, 1, 0, 0, 0, 0, time.UTC); !cov.First.Equal(want) {
+		t.Errorf("first month %v, want %v", cov.First, want)
+	}
+}
+
+// A last quote a few sessions into a month is not that month's return.
+func TestBuildMonthlyPanelDropsTheUnfinishedMonth(t *testing.T) {
+	hicp := []marketdata.Point{{Date: mo(1999, time.January), Close: 100}}
+	pts := []marketdata.Point{
+		{Date: mo(2025, time.January), Close: 100},
+		{Date: mo(2025, time.February), Close: 105},
+		{Date: time.Date(2025, time.March, 4, 0, 0, 0, 0, time.UTC), Close: 115},
+	}
+	panel, cov, err := BuildMonthlyPanel([]AssetSeries{{Weight: 1, Points: pts}}, hicp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if panel.Periods() != 1 || math.Abs(panel.Returns[0][0]-0.05) > 1e-12 {
+		t.Errorf("panel %v, want February's +5 %% alone", panel.Returns)
+	}
+	if want := time.Date(2025, time.March, 1, 0, 0, 0, 0, time.UTC); !cov.Partial.Equal(want) {
+		t.Errorf("partial %v, want %v", cov.Partial, want)
 	}
 }

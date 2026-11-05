@@ -18,18 +18,71 @@ type AssetSeries struct {
 	Points []marketdata.Point // nominal closes in the report currency
 }
 
+// Coverage is what BuildMonthlyPanel kept of the history it was given, and
+// what it had to leave out. The page states every exclusion (Notes), so a
+// panel shorter than its holdings' history is never shorter in silence.
+type Coverage struct {
+	First, Last time.Time // first and last month of the panel (first of the month, UTC)
+
+	// DeflatorStart is the deflator's first date when nominal history began
+	// before it, and those months were left out: a real return needs the
+	// price level at both ends, and holding the first level flat backwards
+	// would read every earlier nominal return as a real one. Zero when
+	// nothing was cut.
+	DeflatorStart time.Time
+
+	// GapMonths counts the months shared by every holding that lay outside
+	// the panel's one contiguous run (the longest; the latest on a tie):
+	// the scenario models chain consecutive months, so two runs joined
+	// across a hole would read as adjacent. Zero when the history is whole.
+	GapMonths int
+
+	// Partial is the first day of an unfinished trailing month left out (a
+	// holding's last quote before that month's last weekday), zero when
+	// every holding's last month was complete: a few sessions are not a
+	// month's return. Routine with live quotes, so Notes leaves it out.
+	Partial time.Time
+}
+
+// Notes renders the exclusions as sentences for the page, none when the
+// panel is the holdings' whole shared history.
+func (c Coverage) Notes() []string {
+	var out []string
+	if !c.DeflatorStart.IsZero() {
+		out = append(out, fmt.Sprintf("History before %s is left out: the inflation series starts there, and a real return needs the price level at both ends.",
+			c.DeflatorStart.Format("2006-01")))
+	}
+	if c.GapMonths > 0 {
+		out = append(out, fmt.Sprintf("%d month(s) of history outside the longest unbroken stretch are left out: the models chain consecutive months and must not join two stretches across a hole.",
+			c.GapMonths))
+	}
+	// Partial is no note: a live quote is nearly always a few sessions into
+	// its month, so the page would carry the same caveat forever.
+	return out
+}
+
 // BuildMonthlyPanel deflates each asset by hicp and aligns the resulting
 // monthly real returns into a scenario.Panel (indexed [asset][month]). Rows are
 // aligned on shared calendar months (intersection of month keys), not by
-// trailing position, so holdings with different start/end months or internal
-// gaps stay column-aligned: every column is the same month across all assets.
-// Only genuine one-month returns count; a return spanning a gap is dropped.
-// Monthly sampling gives the historical models ~12x more data points than
-// annual, so the bootstrap captures intra-year regimes and the cohorts model
-// has many more windows.
-func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.Panel, error) {
+// trailing position, so holdings with different start/end months stay
+// column-aligned: every column is the same month across all assets. Monthly
+// sampling gives the historical models ~12x more data points than annual, so
+// the bootstrap captures intra-year regimes and the cohorts model has many
+// more windows.
+//
+// Four rules keep a month from being wrong, each reported in the Coverage:
+// only genuine one-month returns count (a return spanning a hole is dropped);
+// a holding's unfinished last month is dropped; a return starting before the
+// deflator's first date is dropped (it would be nominal, read as real); and
+// the panel is ONE contiguous run of months, the longest the holdings share,
+// since every scenario model treats consecutive columns as consecutive months.
+func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.Panel, Coverage, error) {
+	var cov Coverage
 	if len(assets) == 0 {
-		return scenario.Panel{}, fmt.Errorf("no assets")
+		return scenario.Panel{}, cov, fmt.Errorf("no assets")
+	}
+	if len(hicp) == 0 {
+		return scenario.Panel{}, cov, fmt.Errorf("no inflation series to deflate by")
 	}
 	// Per asset, the real return of each calendar month keyed by month index,
 	// keeping only months whose previous month is also present (true one-month
@@ -37,14 +90,26 @@ func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.
 	perAsset := make([]map[int]float64, len(assets))
 	weights := make([]float64, len(assets))
 	counts := make(map[int]int)
+	floor := hicp[0].Date
 	for i, a := range assets {
 		pts := lastPerMonth(a.Points)
+		if n := len(pts); n > 0 && !monthComplete(pts[n-1].Date) {
+			m := time.Date(pts[n-1].Date.Year(), pts[n-1].Date.Month(), 1, 0, 0, 0, 0, time.UTC)
+			if m.After(cov.Partial) {
+				cov.Partial = m
+			}
+			pts = pts[:n-1]
+		}
 		rets := scenario.Deflate(pts, hicp)
 		m := make(map[int]float64, len(rets))
 		for j, r := range rets {
 			key := monthKey(pts[j+1].Date)
 			if key != monthKey(pts[j].Date)+1 {
 				continue // not calendar-consecutive: a spanning return, drop it
+			}
+			if pts[j].Date.Before(floor) {
+				cov.DeflatorStart = floor // no price level at the start
+				continue
 			}
 			m[key] = r
 			counts[key]++
@@ -61,22 +126,59 @@ func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.
 	}
 	sort.Ints(common)
 	if len(common) == 0 {
-		return scenario.Panel{}, fmt.Errorf("not enough overlapping monthly history")
+		return scenario.Panel{}, cov, fmt.Errorf("not enough overlapping monthly history")
+	}
+	run := longestRun(common)
+	cov.GapMonths = len(common) - len(run)
+	cov.First, cov.Last = monthStart(run[0]), monthStart(run[len(run)-1])
+	if !cov.DeflatorStart.IsZero() && cov.First.After(cov.DeflatorStart.AddDate(0, 1, 0)) {
+		cov.DeflatorStart = time.Time{} // the holdings start after it anyway
 	}
 	rows := make([][]float64, len(assets))
 	for i := range assets {
-		row := make([]float64, len(common))
-		for k, key := range common {
+		row := make([]float64, len(run))
+		for k, key := range run {
 			row[k] = perAsset[i][key]
 		}
 		rows[i] = row
 	}
-	return scenario.Panel{Returns: rows, Weights: normalize(weights)}, nil
+	return scenario.Panel{Returns: rows, Weights: normalize(weights)}, cov, nil
+}
+
+// longestRun is the longest stretch of consecutive month keys in keys
+// (ascending), the latest one on a tie.
+func longestRun(keys []int) []int {
+	best, start := keys[:1], 0
+	for i := 1; i <= len(keys); i++ {
+		if i < len(keys) && keys[i] == keys[i-1]+1 {
+			continue
+		}
+		if i-start >= len(best) {
+			best = keys[start:i]
+		}
+		start = i
+	}
+	return best
+}
+
+// monthComplete reports whether a last quote on d closes its month: it falls
+// on or after the month's last weekday (the marketdata.NewPanel rule).
+func monthComplete(d time.Time) bool {
+	last := time.Date(d.Year(), d.Month()+1, 0, 0, 0, 0, 0, time.UTC)
+	for last.Weekday() == time.Saturday || last.Weekday() == time.Sunday {
+		last = last.AddDate(0, 0, -1)
+	}
+	return !d.Before(last)
 }
 
 // monthKey maps a date to a dense month index (year*12 + month), so consecutive
 // calendar months differ by exactly one.
 func monthKey(t time.Time) int { return t.Year()*12 + int(t.Month()) - 1 }
+
+// monthStart is the first day of the month monthKey numbered key.
+func monthStart(key int) time.Time {
+	return time.Date(key/12, time.Month(key%12+1), 1, 0, 0, 0, 0, time.UTC)
+}
 
 // lastPerMonth keeps the last point of each calendar month, ascending.
 func lastPerMonth(points []marketdata.Point) []marketdata.Point {

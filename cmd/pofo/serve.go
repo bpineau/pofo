@@ -163,7 +163,7 @@ type server struct {
 	fireBySpec map[string]http.Handler
 	// buildPanel builds a FIRE panel for one spec; a field so tests can
 	// stub the fetch-heavy build. Defaults to firePanel.
-	buildPanel func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string)
+	buildPanel func(ctx context.Context, spec *portfolio.Spec) fireBuild
 
 	// foreign rations the identifiers outside the bundled catalog that
 	// visitors may have fetched from the upstream sources (foreign.go).
@@ -186,16 +186,16 @@ func newServer(opt *options, client *marketdata.Client) *server {
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		return renderComparison(ctx, s.client, o, specs)
 	}
-	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) fireBuild {
 		return firePanel(ctx, s.opt, s.client, []*portfolio.Spec{spec})
 	}
 	return s
 }
 
 // handler assembles the constellation mux.
-func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
+func (s *server) handler(b fireBuild) http.Handler {
 	mux := http.NewServeMux()
-	s.fireDefault = web.Handler(panel, labels, fireOptions(s.sourceLabel)...)
+	s.fireDefault = web.Handler(b.panel, b.labels, append(fireOptions(s.sourceLabel), b.options()...)...)
 	mux.HandleFunc("/", s.landing)
 	mux.HandleFunc("/visualizer", s.hub)
 	// The visualizer used to live at "/"; a trailing-slash form is close
@@ -320,7 +320,7 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 	// A long-lived process replays the fetch narration on every request:
 	// print each informational line once, keep every warning (see logdedup.go).
 	dedupServerLog()
-	panel, labels := firePanel(ctx, opt, client, specs)
+	build := firePanel(ctx, opt, client, specs)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -329,7 +329,7 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 	s := newServer(opt, client)
 	s.sourceLabel = specsLabel(specs)
 	srv := &http.Server{
-		Handler:           logAccess(os.Stdout, s.handler(panel, labels)),
+		Handler:           logAccess(os.Stdout, s.handler(build)),
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
@@ -631,9 +631,9 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	}
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
-	panel, labels := s.buildPanel(buildCtx, spec)
-	h = web.Handler(panel, labels, fireOptions("custom portfolio")...)
-	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
+	b := s.buildPanel(buildCtx, spec)
+	h = web.Handler(b.panel, b.labels, append(fireOptions("custom portfolio"), b.options()...)...)
+	if panelIncomplete(b.panel, b.labels, buildCtx, len(spec.Holdings)) {
 		// The build is degraded or partial: serve this request but do NOT
 		// cache it, so a transient failure is not frozen into a permanently
 		// degraded or wrong-composition simulator. A later visit rebuilds;
@@ -681,9 +681,9 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	}
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
-	panel, labels := s.buildPanel(buildCtx, spec)
-	h = web.Handler(panel, labels, fireOptions(name)...)
-	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
+	b := s.buildPanel(buildCtx, spec)
+	h = web.Handler(b.panel, b.labels, append(fireOptions(name), b.options()...)...)
+	if panelIncomplete(b.panel, b.labels, buildCtx, len(spec.Holdings)) {
 		// A degraded or partial build must not be cached, or a transient
 		// failure freezes this example into a permanently degraded or
 		// wrong-composition simulator. Serve it once, rebuild next time.

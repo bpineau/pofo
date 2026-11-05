@@ -39,10 +39,10 @@ func testServer(t *testing.T) (*server, *[]renderCall) {
 		calls = append(calls, renderCall{opt: o, specs: specs})
 		return []byte("<html>fake report</html>"), nil
 	}
-	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) fireBuild {
 		// A complete build: non-nil panel with one label per holding, so it
 		// is cacheable (no fetching). See panelIncomplete.
-		return &scenario.Panel{}, stubLabels(spec)
+		return fireBuild{panel: &scenario.Panel{}, labels: stubLabels(spec)}
 	}
 	return s, &calls
 }
@@ -67,7 +67,7 @@ func serveGet(t *testing.T, h http.Handler, path string) *httptest.ResponseRecor
 
 func TestServeRoutes(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	if rec := serveGet(t, h, "/examples/golden-butterfly.txt"); rec.Code != 200 ||
 		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/plain") ||
@@ -179,7 +179,7 @@ func TestServeRoutes(t *testing.T) {
 // POST to a page is still refused.
 func TestServeHeadIsARead(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	for _, path := range []string{"/", "/visualizer", "/theme.css", "/composer.js", "/catalog.json", "/healthz", "/firebook/fr/"} {
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, httptest.NewRequest(http.MethodHead, path, nil))
@@ -196,7 +196,7 @@ func TestServeHeadIsARead(t *testing.T) {
 
 func TestServeLanding(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	rec := serveGet(t, h, "/")
 	if rec.Code != 200 {
@@ -230,7 +230,7 @@ func TestServeLanding(t *testing.T) {
 
 func TestServeComposerAssets(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	if rec := serveGet(t, h, "/composer.js"); rec.Code != 200 ||
 		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/javascript") {
 		t.Errorf("composer.js: code=%d type=%q", rec.Code, rec.Header().Get("Content-Type"))
@@ -253,7 +253,7 @@ func TestServeComposerAssets(t *testing.T) {
 // version). A bare request stays uncached so it can never pin an old copy.
 func TestServeAssetFingerprinting(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	hub := serveGet(t, h, "/visualizer").Body.String()
 	for _, want := range []string{
 		`href="/theme.css?v=`, `href="/fonts.css?v=`,
@@ -273,7 +273,7 @@ func TestServeAssetFingerprinting(t *testing.T) {
 
 func TestServeCatalogJSON(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	rec := serveGet(t, h, "/catalog.json")
 	if rec.Code != 200 ||
@@ -303,7 +303,7 @@ func TestServeCatalogJSON(t *testing.T) {
 
 func TestServeFireComposed(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	// A valid composed spec mounts the simulator app shell.
 	rec := serveGet(t, h, "/firesimulator/p/IWDA:60,IGLN:40!sim:on/")
@@ -359,7 +359,7 @@ func TestServeFireComposed(t *testing.T) {
 func TestServeFireMetaSourceAndPicker(t *testing.T) {
 	s, _ := testServer(t)
 	s.sourceLabel = "startup-portfolio"
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	meta := func(path string) map[string]any {
 		t.Helper()
@@ -399,7 +399,7 @@ func TestServeFireMetaSourceAndPicker(t *testing.T) {
 
 func TestServeFireExampleNakedRedirect(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	if rec := serveGet(t, h, "/firesimulator/e/golden-butterfly"); rec.Code != 301 ||
 		rec.Header().Get("Location") != "/firesimulator/e/golden-butterfly/" {
 		t.Errorf("naked example: code=%d loc=%q", rec.Code, rec.Header().Get("Location"))
@@ -412,7 +412,7 @@ func TestServeFireExampleNakedRedirect(t *testing.T) {
 
 func TestServeView(t *testing.T) {
 	s, calls := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	rec := serveGet(t, h, "/view?ex=golden-butterfly&rebalance=180")
 	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "fake report") {
@@ -436,7 +436,7 @@ func TestServeView(t *testing.T) {
 
 func TestServeViewCurrencyNative(t *testing.T) {
 	s, calls := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	// currency=native renders with an empty currency override (keep native
 	// currencies), not the EUR server default.
@@ -479,7 +479,7 @@ func TestServeViewCurrencyNative(t *testing.T) {
 
 func TestServeHubOutOfListPref(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	// A stored rebalance outside the hardcoded list must appear as its own
 	// selected option, never silently rewritten by a lying select.
@@ -501,8 +501,8 @@ func TestFireForSpecPanelCaching(t *testing.T) {
 	// A degraded build (nil panel) is served but never cached: a transient
 	// failure must not freeze a permanently degraded simulator.
 	s, _ := testServer(t)
-	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
-		return nil, nil
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) fireBuild {
+		return fireBuild{}
 	}
 	if h := s.fireForSpec(context.Background(), "k", spec); h == nil {
 		t.Fatal("a degraded build must still serve this request")
@@ -515,8 +515,8 @@ func TestFireForSpecPanelCaching(t *testing.T) {
 	// fetch failure, so fewer labels than holdings) is served but not cached:
 	// its composition is wrong and must not be frozen in.
 	sp, _ := testServer(t)
-	sp.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
-		return &scenario.Panel{}, []string{spec.Holdings[0].ID} // 1 label, spec has 2 holdings
+	sp.buildPanel = func(ctx context.Context, spec *portfolio.Spec) fireBuild {
+		return fireBuild{panel: &scenario.Panel{}, labels: []string{spec.Holdings[0].ID}} // 1 label, spec has 2 holdings
 	}
 	if h := sp.fireForSpec(context.Background(), "k", spec); h == nil {
 		t.Fatal("a partial build must still serve this request")
@@ -529,9 +529,9 @@ func TestFireForSpecPanelCaching(t *testing.T) {
 	// sequential cold hits build exactly once.
 	s2, _ := testServer(t)
 	builds := 0
-	s2.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+	s2.buildPanel = func(ctx context.Context, spec *portfolio.Spec) fireBuild {
 		builds++
-		return &scenario.Panel{}, stubLabels(spec)
+		return fireBuild{panel: &scenario.Panel{}, labels: stubLabels(spec)}
 	}
 	s2.fireForSpec(context.Background(), "k", spec)
 	s2.fireForSpec(context.Background(), "k", spec)
@@ -545,7 +545,7 @@ func TestFireForSpecPanelCaching(t *testing.T) {
 
 func TestServeHub(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	rec := serveGet(t, h, "/visualizer")
 	if rec.Code != 200 {
 		t.Fatalf("hub: code=%d", rec.Code)
@@ -579,7 +579,7 @@ func TestServeHub(t *testing.T) {
 // JSON whose p= round-trips through adhocSpec, unforkable examples excluded).
 func TestServeHubComposer(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	body := serveGet(t, h, "/visualizer").Body.String()
 
 	for _, want := range []string{
@@ -614,7 +614,7 @@ func TestServeHubComposer(t *testing.T) {
 
 func TestServeHubPrefs(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	// Without a cookie: server defaults selected, bare Open links.
 	body := serveGet(t, h, "/visualizer").Body.String()
@@ -648,7 +648,7 @@ func TestServeHubPrefs(t *testing.T) {
 
 func TestServeViewSetsPrefsCookie(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 
 	// Explicit globals set the cookie.
 	rec := serveGet(t, h, "/view?ex=golden-butterfly&currency=USD&rebalance=30")
@@ -698,7 +698,7 @@ func TestServeViewSetsPrefsCookie(t *testing.T) {
 // /firesimulator/e/<name>/firebook/..., which used to answer 200.
 func TestFireMountsDoNotRepublishTheSite(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	name := ""
 	for n := range s.examples {
 		name = n
@@ -732,7 +732,7 @@ func TestFireMountsDoNotRepublishTheSite(t *testing.T) {
 // and refuses anything but a read.
 func TestServeHealthz(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	rec := serveGet(t, h, healthPath)
 	if rec.Code != http.StatusOK ||
 		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/plain") ||
@@ -758,7 +758,7 @@ func TestServeHealthz(t *testing.T) {
 func TestLogAccessSkipsHealthz(t *testing.T) {
 	s, _ := testServer(t)
 	var buf bytes.Buffer
-	h := logAccess(&buf, s.handler(nil, nil))
+	h := logAccess(&buf, s.handler(fireBuild{}))
 
 	for range 3 {
 		rec := httptest.NewRecorder()
@@ -874,7 +874,7 @@ func TestLogAccessRecordsTheStatus(t *testing.T) {
 // through, and links back to the composer prefilled with the failing query.
 func TestServeViewWindowErrors(t *testing.T) {
 	s, _ := testServer(t)
-	h := s.handler(nil, nil)
+	h := s.handler(fireBuild{})
 	var logs bytes.Buffer
 	log.SetOutput(newDedupWriter(&logs))
 	flags := log.Flags()

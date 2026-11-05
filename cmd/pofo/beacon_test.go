@@ -19,7 +19,7 @@ func beaconServer(t *testing.T) http.Handler {
 	t.Helper()
 	s, _ := testServer(t)
 	s.opt.cfBeaconToken = cfTestToken
-	return s.handler(nil, nil)
+	return s.handler(fireBuild{})
 }
 
 // htmlFamilies names one route per HTML-producing family of the constellation:
@@ -88,10 +88,10 @@ func TestServeBeaconSkipsNonPages(t *testing.T) {
 // server that never heard of the beacon.
 func TestServeWithoutBeaconTokenIsByteIdentical(t *testing.T) {
 	s, _ := testServer(t)
-	plain := s.handler(nil, nil)
+	plain := s.handler(fireBuild{})
 	s2, _ := testServer(t)
 	s2.opt.cfBeaconToken = ""
-	same := s2.handler(nil, nil)
+	same := s2.handler(fireBuild{})
 	for _, path := range append(append([]string{}, htmlFamilies...), notHTML...) {
 		a, b := serveGet(t, plain, path), serveGet(t, same, path)
 		if a.Body.String() != b.Body.String() {
