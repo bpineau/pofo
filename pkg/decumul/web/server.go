@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html"
 	iofs "io/fs"
+	"log"
 	"net/http"
 	"strings"
 
@@ -60,7 +61,7 @@ type handlerConfig struct {
 	beaconToken string
 	notes       []string
 	embedded    bool
-	gate        simGate // nil = a fresh gate of simParallel slots
+	gate        simGate // nil = processGate, the one budget every Handler shares
 }
 
 // Option configures Handler.
@@ -158,7 +159,7 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		o(&cfg)
 	}
 	if cfg.gate == nil {
-		cfg.gate = newSimGate(simParallel)
+		cfg.gate = processGate
 	}
 	mux := http.NewServeMux()
 	// The index page carries a "<!--topnav-->" placeholder; splice the
@@ -317,12 +318,20 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 				return
 			}
 			defer cfg.gate.release()
-			w.Header().Set("Content-Type", "application/json")
 			// The risk-based guardrail's table is solved on the page's own
 			// central assumptions (blended toward the prior on a short
 			// history, CAPE-anchored when the anchor is on), which only the
-			// server knows: stamp them before any plan is built.
-			_ = json.NewEncoder(w).Encode(compute(pr.withCentral(panel)))
+			// server knows: stamp them before any plan is built. The answer
+			// is encoded before anything is written, so a result JSON cannot
+			// carry (a NaN, an infinity) is a 500, never a truncated 200.
+			out, err := json.Marshal(compute(pr.withCentral(panel)))
+			if err != nil {
+				log.Printf("error: %s: %v", r.URL.Path, err)
+				http.Error(w, "the result could not be encoded", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write(append(out, '\n'))
 		})
 	}
 	post("/api/sim", func(pr Params) any { return ComputeWithPanel(pr, panel) })

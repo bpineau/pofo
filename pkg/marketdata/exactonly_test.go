@@ -129,3 +129,20 @@ func TestClientCached(t *testing.T) {
 		t.Error("a cache-less client cannot answer offline")
 	}
 }
+
+// A name match a permissive caller cached is not trusted by an exact one
+// sharing the cache: the cached resolution obeys the rule a fresh search does.
+func TestFetchExactOnlyIgnoresACachedNameMatch(t *testing.T) {
+	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	dir := t.TempDir()
+	c, srv := newTestClient(t, dir, fuzzyOnlyMux(t))
+	defer srv.Close()
+	if _, err := c.FetchExtended(context.Background(), "FOOBAR", FetchOptions{From: from}); err != nil {
+		t.Fatalf("the permissive fetch should have cached the name match: %v", err)
+	}
+	exact, srv2 := newTestClient(t, dir, fuzzyOnlyMux(t))
+	defer srv2.Close()
+	if s, err := exact.FetchExtended(context.Background(), "FOOBAR", FetchOptions{From: from, ExactOnly: true}); err == nil {
+		t.Fatalf("exact-only served the cached name match %q, want a miss", s.Symbol)
+	}
+}

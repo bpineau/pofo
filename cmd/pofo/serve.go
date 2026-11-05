@@ -331,7 +331,10 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 	srv := &http.Server{
 		Handler:           logAccess(os.Stdout, s.handler(build)),
 		ReadHeaderTimeout: 10 * time.Second,
-		IdleTimeout:       120 * time.Second,
+		// The whole request, body included: the JSON bodies are capped in
+		// bytes, and this caps how slowly those bytes may arrive.
+		ReadTimeout: 30 * time.Second,
+		IdleTimeout: 120 * time.Second,
 	}
 	go func() {
 		<-ctx.Done()
@@ -658,9 +661,9 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 
 // fireForExample returns the FIRE app bound to the named example's panel,
 // building and caching it on first use. It returns nil for an unknown name.
-// The panel build (which fetches quotes) runs outside the lock so distinct
-// examples build in parallel; a rare double build of the same name is
-// harmless, the first writer wins.
+// The panel build (which fetches quotes) runs outside the lock, under the
+// shared render semaphore, and the cache is checked again once a slot is
+// held, so a burst on one cold example builds it once.
 func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	if _, ok := s.examples[name]; !ok {
 		return nil
@@ -678,6 +681,21 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	spec, err := portfolio.Parse(name, strings.NewReader(string(raw)))
 	if err != nil {
 		return nil
+	}
+	// The same build budget as a composed spec (fireForSpec): a wave of
+	// cold examples must not stack unbounded quote fetches, and a burst on
+	// one cold example builds it once.
+	select {
+	case s.sem <- struct{}{}:
+		defer func() { <-s.sem }()
+	case <-ctx.Done():
+		return nil
+	}
+	s.fireMu.Lock()
+	h, ok = s.fireByEx[name]
+	s.fireMu.Unlock()
+	if ok {
+		return h
 	}
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()

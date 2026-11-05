@@ -32,7 +32,16 @@ const (
 // a queue, not a rejection: a request waits for a slot until its client
 // gives up (the request context), and a caller that has gone away is turned
 // down with 503 rather than computed for nobody.
+//
+// The bound is the PROCESS's, shared by every Handler: the -serve
+// constellation mounts one per example and per composed portfolio, and a
+// gate apiece would multiply the budget by the number of mounts a burst
+// spreads over.
 var simParallel = max(2, runtime.GOMAXPROCS(0)/2)
+
+// processGate is the one simGate every Handler waits on (withSimGate
+// substitutes another in tests).
+var processGate = newSimGate(simParallel)
 
 // bounded returns pr with every size-like field clamped into its bound.
 // Negative counts fall back to zero, which the endpoints read as "default".
@@ -77,6 +86,9 @@ func (pr Params) bounded() Params {
 // holdings would be given a weight nobody chose), so the caller is told
 // instead. Called on the bounded params, before any slot is taken.
 func (pr Params) validate(panel *scenario.Panel) error {
+	if err := pr.validateDomain(); err != nil {
+		return err
+	}
 	if err := validateFlows(pr.Flows); err != nil {
 		return err
 	}
@@ -86,6 +98,47 @@ func (pr Params) validate(panel *scenario.Panel) error {
 			pr.PEACapital, pr.AVCapital, g, pr.Capital, pr.Capital-g)
 	}
 	return pr.checkWeights(panel)
+}
+
+// Numerical domain of the model inputs. JSON carries any finite number, and a
+// "mu": 1e308 compounds into an overflow that a 200 then reports as NaN k€.
+// The bounds are far wider than the page's sliders (a portfolio fit can
+// seed a mu above the slider's top, a shared URL can carry any value the
+// page once produced), and only refuse what no household can mean: a real
+// return beyond ±100 %/yr, a volatility beyond 200 %/yr, an amount beyond
+// ten billion.
+const (
+	maxRate   = 1.0
+	maxVol    = 2.0
+	maxMoney  = 1e10
+	maxTailDf = 1e6
+)
+
+// validateDomain rejects a model input outside the domain the kernels compute
+// in, before any slot is taken.
+func (pr Params) validateDomain() error {
+	type field struct {
+		name   string
+		v      float64
+		lo, hi float64
+	}
+	for _, f := range []field{
+		{"mu", pr.Mu, -maxRate, maxRate},
+		{"sigma", pr.Sigma, 0, maxVol},
+		{"df", pr.Df, 0, maxTailDf},
+		{"bufferReturn", pr.BufferReturn, -maxRate, maxRate},
+		{"spendDrift", pr.SpendDrift, -maxRate, maxRate},
+		{"capital", pr.Capital, 0, maxMoney},
+		{"needAnnual", pr.NeedAnnual, 0, maxMoney},
+		{"pensionAnnual", pr.PensionAnnual, 0, maxMoney},
+		{"sideAnnual", pr.SideAnnual, 0, maxMoney},
+		{"bufferYears", pr.BufferYears, 0, maxYears},
+	} {
+		if !(f.v >= f.lo && f.v <= f.hi) {
+			return fmt.Errorf("%s = %g is outside the model's domain [%g, %g]", f.name, f.v, f.lo, f.hi)
+		}
+	}
+	return nil
 }
 
 func clamp[T int | float64](v, lo, hi T) T {

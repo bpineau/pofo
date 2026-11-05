@@ -316,12 +316,15 @@ func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time, spe
 func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time, spec fetchSpec) (*Series, error) {
 	if isIndexSymbol(ticker) {
 		spec.exactOnly = true
-		if res, ok := c.loadResolution(ticker); ok && !isListingOf(res.Symbol, ticker) {
-			c.Logf("warning: ignoring the cached resolution of %s to %s (%s): an index symbol is resolved by its symbol only",
-				ticker, res.Symbol, res.Name)
-		} else if s, ok := c.cachedResolutionHistory(ctx, ticker, from, spec); ok {
-			return s, nil
-		}
+	}
+	// Under exactOnly a cached resolution obeys the rule a fresh search does
+	// (exactMiss in resolveBest): a listing of the ticker itself, or nothing.
+	// A permissive caller sharing the cache may have stored a name match, and
+	// trusting it here would serve that unrelated instrument to a caller that
+	// asked for exactly this ticker.
+	if res, ok := c.loadResolution(ticker); ok && spec.exactOnly && !isListingOf(res.Symbol, ticker) {
+		c.Logf("warning: ignoring the cached resolution of %s to %s (%s): an exact lookup takes listings of the ticker only",
+			ticker, res.Symbol, res.Name)
 	} else if s, ok := c.cachedResolutionHistory(ctx, ticker, from, spec); ok {
 		return s, nil
 	}

@@ -226,3 +226,26 @@ func TestBoundedClampsThePensionDrift(t *testing.T) {
 		}
 	}
 }
+
+// A finite but absurd model input (JSON carries any) is a 400 before any
+// computation, never a 200 whose cards read NaN.
+func TestAPIRejectsInputsOutsideTheModelDomain(t *testing.T) {
+	for _, body := range []string{
+		`{"capital":1000000,"needAnnual":30000,"years":1,"nPaths":1,"mu":1e308,"sigma":1e308,"df":5}`,
+		`{"capital":1e308,"needAnnual":1e308,"years":1,"nPaths":1,"mu":0.05,"sigma":0.1,"df":5}`,
+		`{"capital":1000000,"needAnnual":30000,"years":1,"nPaths":1,"mu":0.05,"sigma":-0.1,"df":5}`,
+	} {
+		rec := httptest.NewRecorder()
+		Handler(nil, nil, Embedded()).ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/api/sim", strings.NewReader(body)))
+		if rec.Code != http.StatusBadRequest || !strings.Contains(rec.Body.String(), "outside the model's domain") {
+			t.Errorf("%s: status %d %q, want a 400 naming the domain", body, rec.Code, rec.Body.String())
+		}
+	}
+	// The page's own default plan stays inside it.
+	rec := httptest.NewRecorder()
+	Handler(nil, nil, Embedded()).ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/api/sim",
+		strings.NewReader(`{"capital":600000,"needAnnual":24000,"years":42,"nPaths":200,"mu":0.05,"sigma":0.11,"df":5}`)))
+	if rec.Code != http.StatusOK {
+		t.Errorf("a slider-range plan: status %d %s", rec.Code, rec.Body.String())
+	}
+}
