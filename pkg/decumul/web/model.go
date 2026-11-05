@@ -348,10 +348,12 @@ func (pr Params) envelopes() []decumul.Envelope {
 	if pr.AVCapital > 0 {
 		out = append(out, decumul.Envelope{
 			Name: "AV", Amount: pr.AVCapital, GainFrac: pr.GainFrac,
-			// Past 8 years: 9 200 €/yr of gains tax-free (couple), then
-			// 7.5% + 17.2% social levies on the excess (assurance-vie was
-			// carved out of the 2026 CSG rise, unlike the PEA and the CTO).
-			Tax: decumul.AVTax{Rate: 0.247, Allowance: 9200},
+			// Past 8 years: 17.2% social levies on every euro of gain
+			// (assurance-vie was carved out of the 2026 CSG rise, unlike the
+			// PEA and the CTO), plus 7.5% income tax on the gain above the
+			// couple's 9 200 €/yr allowance, which relieves the income tax
+			// only. Unit-linked: the levies fall at withdrawal.
+			Tax: decumul.AVTax{Rate: 0.075, Levies: 0.172, Allowance: 9200},
 		})
 	}
 	return out

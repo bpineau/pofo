@@ -66,8 +66,10 @@ year. A nil `Plan.Envelopes` keeps the historical single sleeve taxed by
 
 The web layer maps it in `pkg/decumul/web/model.go`: `Params.PEACapital`,
 `Params.AVCapital` and `Params.GainFrac` feed `Params.envelopes()`, which
-builds CTO (at the slider rate) then PEA (18.6 %) then AV (`AVTax{0.247,
-9200}`) in that drain order. But NONE of those three fields is in the page's
+builds CTO (at the slider rate) then PEA (18.6 %) then AV (`AVTax{Rate:
+0.075, Levies: 0.172, Allowance: 9200}`: the allowance relieves the 7.5 %
+income tax only, the 17.2 % social levies fall on every euro of gain,
+BOI-RPPM-RCM-20-10-20-50 § 230; the unit-linked case) in that drain order. But NONE of those three fields is in the page's
 control list (`GROUPS` in `pkg/decumul/web/assets/app.js`), so they are always
 zero in practice: the shipped page runs the single sleeve at the default
 32.8 % rate with NO embedded gain. The slider's help text says to use a blended
@@ -131,8 +133,9 @@ with gain fractions 45 / 60 / 35 % and rates 31.4 / 18.6 / 24.7 %: gain
 fraction 47.3 %, blended rate 26.6 %. Measured against the explicit three-
 envelope run: 0.021 point of withdrawal rate. Two riders: where a wrapper is
 covered by an allowance (assurance-vie past 8 years, 9 200 EUR of gains a year
-for a couple, worth roughly 2 400 EUR of tax) set its `r_i` to 0 for as long as
-the yearly realised gain stays under it; and any envelope taxed only on gains
+for a couple, worth 690 EUR of income tax at 7.5 %) set its `r_i` to the
+17.2 % social levies alone for as long as the yearly realised gain stays
+under it (the allowance never relieves the levies); and any envelope taxed only on gains
 still needs its OWN `g_i`, since a PEA opened in 2014 and a CTO funded last
 year do not carry the same embedded gain.
 

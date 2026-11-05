@@ -174,7 +174,7 @@ func determinismPlans() []struct {
 	envelopes.Envelopes = []Envelope{
 		{Name: "CTO", Amount: 500_000, GainFrac: 0.4, Tax: CTOFlatTax{Rate: 0.314}},
 		{Name: "PEA", Amount: 250_000, GainFrac: 0.5, Tax: CTOFlatTax{Rate: 0.186}},
-		{Name: "AV", Amount: 250_000, GainFrac: 0.3, Tax: AVTax{Rate: 0.247, Allowance: 9200}},
+		{Name: "AV", Amount: 250_000, GainFrac: 0.3, Tax: AVTax{Rate: 0.075, Levies: 0.172, Allowance: 9200}},
 	}
 
 	monthly := fixed
@@ -241,7 +241,7 @@ func TestDeterminismPlans(t *testing.T) {
 		"percent":           "5448cda43b23f4eed132a9a0c0e4139d482666140ed49bce5ccf3d9155225035",
 		"bounded":           "2c00e8ef61dc6d87b4d4847cf261ccc76a570f15699a06da89f13d504a553787",
 		"amortize":          "27210a0dc1d5ef61ca084d5a627b66105f0e08cc823b51066e04d2e595366705",
-		"envelopes":         "d54cd6866ea27bee6badd5f7ab6fbb325596a9e28f355c91375b376a28a22823",
+		"envelopes":         "874e204b705409fd83a233a44e63d201ffccaf37649753f0b260c58cffd69fef",
 		"monthly":           "48bccaf40fff4600158b62d08e0b60313a59b21394e32b2e559ddc9b40895e36",
 		"monthly-riskguard": "7922f357ecadd534f995f3504db142a3d66a38ae4aaf83b31f7eb34c65ab85f4",
 		"schedule":          "3e69680a0b55cc03af710298875df2567017750cee54a2cb196359b944324696",

@@ -73,8 +73,8 @@ func TestEnvelopeAmountsSplitTheGrowthSleeve(t *testing.T) {
 	if got, ok := env[1].Tax.(decumul.CTOFlatTax); !ok || got.Rate != 0.186 {
 		t.Errorf("PEA tax = %+v, want the 18.6%% social levies", env[1].Tax)
 	}
-	if got, ok := env[2].Tax.(decumul.AVTax); !ok || got.Rate != 0.247 || got.Allowance != 9200 {
-		t.Errorf("AV tax = %+v, want 24.7%% past the couple's 9 200 € allowance", env[2].Tax)
+	if got, ok := env[2].Tax.(decumul.AVTax); !ok || got.Rate != 0.075 || got.Levies != 0.172 || got.Allowance != 9200 {
+		t.Errorf("AV tax = %+v, want 17.2%% levies on every gain plus 7.5%% past the couple's 9 200 € allowance", env[2].Tax)
 	}
 }
 

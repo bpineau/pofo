@@ -110,12 +110,12 @@ const GROUPS = [
       r("peaCapital", "PEA capital", 0, 3000000, 10000, 0, "eur",
         "How much of the invested capital sits in a French PEA, taxed on exit at the 18.6% social levies alone past 5 years. Naming it splits the book into ordered pockets (taxable account first, then PEA, then assurance-vie) instead of one blended rate, and withdrawals drain them in that order. Leave both amounts at zero to keep the single blended rate above, which is worth about 0.015 point of withdrawal rate: the structure matters far less than the two figures above it. The cash buffer is carved out first, so the two amounts together stop at the invested capital."),
       r("avCapital", "Assurance-vie capital", 0, 3000000, 10000, 0, "eur",
-        "How much of the invested capital sits in a French assurance-vie past 8 years: the first 9 200 EUR of gains withdrawn each year are free of tax (the couple's allowance, tracked year by year inside every simulated path), the excess pays 7.5% plus 17.2% social levies. Drained last, after the taxable account and the PEA. Zero keeps this pocket out of the plan."),
+        "How much of the invested capital sits in a French assurance-vie past 8 years: every euro of gain withdrawn pays the 17.2% social levies, and the first 9 200 EUR of gains each year are free of the 7.5% income tax (the couple's allowance, which relieves the income tax only, tracked year by year inside every simulated path), the excess paying both. Drained last, after the taxable account and the PEA. Zero keeps this pocket out of the plan."),
     ),
   ]},
   {title: "Simulation", col: 0, id: "group-simulation", items: [
     r("nPaths", "Simulated paths", 1000, 10000, 500, 2000, "int",
-      "Monte-Carlo paths per model. At 2000 the ruin figure wobbles by roughly ±0.7 point run to run (pure sampling noise); 4000 halves the wobble, 8000 halves it again. Raise it if the figures dance when nothing changed; the engine is fast."),
+      "Monte-Carlo paths per model. At 2000 the ruin figure wobbles by roughly ±0.7 point run to run (pure sampling noise); the wobble shrinks with the square root of the count, so 8000 halves it and 4000 cuts it by about 30%. Raise it if the figures dance when nothing changed; the engine is fast."),
   ]},
 ];
 

@@ -7,31 +7,39 @@ import (
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
-// Within the annual allowance, an assurance-vie withdrawal is tax-free: the
-// realised gain share of the sale stays below the allowance.
+// Within the annual allowance, an assurance-vie withdrawal pays the social
+// levies on its gain and no income tax: the allowance relieves the income
+// tax only (BOI-RPPM-RCM-20-10-20-50, § 230).
 func TestAVTaxWithinAllowance(t *testing.T) {
-	tax := AVTax{Rate: 0.247, Allowance: 9200}.NewPath()
-	// growth 200k, cost 100k -> gain fraction 0.5; net 10k realises 5k of gain.
+	tax := AVTax{Rate: 0.075, Levies: 0.172, Allowance: 9200}.NewPath()
+	// growth 200k, cost 100k -> gain fraction 0.5; the realised gain stays
+	// under 9.2k.
 	gross, _, paid := tax.GrossUp(10000, 200000, 100000)
-	if math.Abs(gross-10000) > 1e-6 {
-		t.Errorf("gross = %.2f, want 10000 (no tax inside the allowance)", gross)
+	wantGross := 10000 / (1 - 0.172*0.5)
+	if math.Abs(gross-wantGross) > 1e-6 {
+		t.Errorf("gross = %.2f, want %.2f (levies only inside the allowance)", gross, wantGross)
 	}
-	if paid != 0 {
-		t.Errorf("paid = %.2f, want 0", paid)
+	if want := 0.172 * 0.5 * wantGross; math.Abs(paid-want) > 1e-6 {
+		t.Errorf("paid = %.2f, want %.2f", paid, want)
+	}
+	// Levies at zero (a euro fund, levied as interest is credited): free.
+	euro := AVTax{Rate: 0.075, Allowance: 9200}.NewPath()
+	if g, _, p := euro.GrossUp(10000, 200000, 100000); g != 10000 || p != 0 {
+		t.Errorf("euro fund: gross %.2f paid %.2f, want 10000 and 0", g, p)
 	}
 }
 
-// Beyond the allowance, only the excess gain is taxed, and the gross-up solves
-// the circular net/tax dependency exactly.
+// Beyond the allowance, the excess gain also pays the income tax, and the
+// gross-up solves the circular net/tax dependency exactly.
 func TestAVTaxBeyondAllowance(t *testing.T) {
-	tax := AVTax{Rate: 0.247, Allowance: 9200}.NewPath()
+	tax := AVTax{Rate: 0.075, Levies: 0.172, Allowance: 9200}.NewPath()
 	gross, _, paid := tax.GrossUp(30000, 200000, 100000)
-	// gross = (net - rate*allowance) / (1 - rate*gainFrac)
-	wantGross := (30000 - 0.247*9200) / (1 - 0.247*0.5)
+	// gross = (net - rate*allowance) / (1 - (rate+levies)*gainFrac)
+	wantGross := (30000 - 0.075*9200) / (1 - 0.247*0.5)
 	if math.Abs(gross-wantGross) > 1e-6 {
 		t.Errorf("gross = %.2f, want %.2f", gross, wantGross)
 	}
-	wantPaid := 0.247 * (wantGross*0.5 - 9200)
+	wantPaid := 0.172*wantGross*0.5 + 0.075*(wantGross*0.5-9200)
 	if math.Abs(paid-wantPaid) > 1e-6 {
 		t.Errorf("paid = %.2f, want %.2f", paid, wantPaid)
 	}
@@ -42,7 +50,7 @@ func TestAVTaxBeyondAllowance(t *testing.T) {
 
 // The allowance is consumed within a year and restored by NewYear.
 func TestAVTaxAllowanceResetsYearly(t *testing.T) {
-	tax := AVTax{Rate: 0.247, Allowance: 9200}.NewPath()
+	tax := AVTax{Rate: 0.075, Allowance: 9200}.NewPath()
 	// Two 10k withdrawals at gain fraction 0.5 realise 5k gain each: the first
 	// fits the allowance, the second exceeds the 4.2k remainder and pays tax.
 	_, _, paid1 := tax.GrossUp(10000, 200000, 100000)
@@ -127,7 +135,7 @@ func TestEnvelopesNilParity(t *testing.T) {
 func TestRunPathAVAllowanceYearly(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 10000, Years: 2,
 		Envelopes: []Envelope{
-			{Name: "AV", Amount: 1, GainFrac: 0.5, Tax: AVTax{Rate: 0.247, Allowance: 9200}},
+			{Name: "AV", Amount: 1, GainFrac: 0.5, Tax: AVTax{Rate: 0.075, Allowance: 9200}},
 		}}
 	res := p.RunPath(scenario.Sequence{0, 0}, Lives{})
 	// Each year realises 5k of gain, inside the 9.2k allowance: no tax at all.
@@ -142,7 +150,7 @@ func TestRunPathAVAllowanceYearly(t *testing.T) {
 
 	noAllowance := p
 	noAllowance.Envelopes = []Envelope{
-		{Name: "AV", Amount: 1, GainFrac: 0.5, Tax: AVTax{Rate: 0.247}}}
+		{Name: "AV", Amount: 1, GainFrac: 0.5, Tax: AVTax{Rate: 0.075, Levies: 0.172}}}
 	if got := noAllowance.RunPath(scenario.Sequence{0, 0}, Lives{}); got.TaxPaid <= 0 {
 		t.Errorf("TaxPaid = %.2f, want > 0 without an allowance", got.TaxPaid)
 	}

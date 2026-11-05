@@ -32,18 +32,24 @@ type YearlyTax interface {
 	NewYear()
 }
 
-// AVTax models the French assurance-vie taxation after 8 years: each year the
-// first Allowance euros of realised gain are tax-free (4 600 € per person,
-// 9 200 € for a couple), and the excess gain is taxed at Rate (7.5% + 17.2%
-// social levies ≈ 24.7% below the 150 k€ premium threshold; assurance-vie was
-// carved out of the 2026 CSG rise, so it stays at 17.2%). The gain share of
-// a sale follows the same cost-basis pro-rata as CTOFlatTax.
+// AVTax models the French assurance-vie taxation after 8 years. Two levies
+// fall on the realised gain of a withdrawal, and the annual allowance
+// (4 600 € per person, 9 200 € for a couple) relieves only ONE of them: the
+// income tax (Rate, 7.5 % below the 150 k€ premium threshold) is due on the
+// gain above what is left of the year's Allowance, while the social levies
+// (Levies, 17.2 %: assurance-vie was carved out of the 2026 CSG rise) are due
+// on EVERY euro of gain, the allowance not applying to them (BOI-RPPM-RCM-20-
+// 10-20-50, § 230). That is the unit-linked case, whose levies are collected
+// at withdrawal; a euro fund pays them each year as interest is credited, so
+// its withdrawals owe the income tax alone (Levies 0). The gain share of a
+// sale follows the same cost-basis pro-rata as CTOFlatTax.
 //
 // AVTax is a stateless template: the kernel derives per-path state through
 // NewPath, so a Plan can be simulated concurrently.
 type AVTax struct {
-	Rate      float64 // on the gain above the allowance, a FRACTION
-	Allowance float64 // tax-free realised gain per year, in currency units
+	Rate      float64 // income tax on the gain above the allowance, a FRACTION (0.075)
+	Levies    float64 // social levies on the whole gain, a FRACTION (0.172); 0 = already paid (euro fund)
+	Allowance float64 // realised gain per year free of income tax (not of Levies), in currency units
 }
 
 // GrossUp implements Tax on the template with a zero used-allowance; the
@@ -72,9 +78,9 @@ func (t *avTaxState) NewPath() YearlyTax { return &avTaxState{AVTax: t.AVTax} }
 // NewYear restores the annual allowance.
 func (t *avTaxState) NewYear() { t.used = 0 }
 
-// GrossUp implements Tax: the sale's realised gain first consumes what is left
-// of the allowance, and only the excess is taxed at Rate. Like CTOFlatTax, the
-// sale is capped at the available market value.
+// GrossUp implements Tax: the sale's realised gain pays Levies in full, and
+// pays Rate on what exceeds the rest of the year's allowance. Like
+// CTOFlatTax, the sale is capped at the available market value.
 func (t *avTaxState) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid float64) {
 	if growth <= 0 {
 		return net, cost, 0
@@ -88,18 +94,26 @@ func (t *avTaxState) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid
 		left = 0
 	}
 	gross = net
-	if gainFrac > 0 && net*gainFrac > left {
-		// Solve gross = net + Rate*(gross*gainFrac - left) for gross.
-		if d := 1 - t.Rate*gainFrac; d > 0 {
-			gross = (net - t.Rate*left) / d
+	if gainFrac > 0 {
+		// Inside the allowance: gross = net + Levies*gross*gainFrac.
+		if d := 1 - t.Levies*gainFrac; d > 0 {
+			gross = net / d
+		}
+		if gross*gainFrac > left {
+			// Beyond it: gross = net + Levies*gross*gainFrac
+			// + Rate*(gross*gainFrac - left).
+			if d := 1 - (t.Rate+t.Levies)*gainFrac; d > 0 {
+				gross = (net - t.Rate*left) / d
+			}
 		}
 	}
 	if gross > growth {
 		gross = growth // sale capped at the available market value
 	}
 	gain := gross * gainFrac
+	taxPaid = t.Levies * gain
 	if taxable := gain - left; taxable > 0 {
-		taxPaid = t.Rate * taxable
+		taxPaid += t.Rate * taxable
 	}
 	t.used += gain
 	newCost = cost * (1 - gross/growth)
