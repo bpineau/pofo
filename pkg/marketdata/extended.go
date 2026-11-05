@@ -91,7 +91,10 @@ type FetchOptions struct {
 // currency. Real quotes always take precedence wherever they exist;
 // Series.SimulatedBefore marks the frontier. Progress and degradations
 // (unreadable simdata, unavailable proxy, FX rates held flat before their
-// history) are reported through Client.Logf.
+// history) are reported through Client.Logf. When the real quotes cannot be
+// read at all, a SIM identifier with a bundled history is served from it
+// alone, under the same currency contract (stated, converted, or refused
+// under NoConvert) as the quotes it stands in for.
 //
 // Plain identifiers skip the extension: FetchExtended("VOO", …) behaves
 // like Fetch plus the window and currency handling, so it is safe to route
@@ -139,10 +142,7 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 	s, err := c.fetch(ctx, base, opt.From, spec)
 	if err != nil {
 		if simOK {
-			c.Logf("warning: %s unavailable (%v), using simulated data only", base, err)
-			sim.SimulatedBefore = sim.Last().Date
-			sim.ProxySymbol = "simdata"
-			return Trim(sim, time.Time{}, opt.To), nil
+			return c.simOnly(ctx, sim, canonical, base, err, opt)
 		}
 		return nil, err
 	}
@@ -178,6 +178,41 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 		}
 	}
 	return Trim(s, time.Time{}, opt.To), nil
+}
+
+// simOnly serves a SIM request from its bundled history alone, when the real
+// quotes could not be read (fetchErr). The file is in the asset's quote
+// currency, the catalog's, and it goes through the same currency contract as
+// the quotes it stands in for: converted into opt.Currency, or refused with
+// ErrWrongCurrency under NoConvert when that is not its own. A currency
+// nothing states is refused (ErrUnknownCurrency) when one was asked, never
+// passed off unconverted as the requested one.
+func (c *Client) simOnly(ctx context.Context, sim *Series, canonical, base string, fetchErr error, opt FetchOptions) (*Series, error) {
+	cp := *sim
+	sim = &cp
+	if sim.Currency == "" {
+		sim.Currency = catalogByID()[canonical].Currency
+	}
+	if opt.Currency != "" {
+		switch {
+		case sim.Currency == "":
+			return nil, fmt.Errorf("%s unavailable (%v), and its simulated history states no currency to convert into %s: %w",
+				base, fetchErr, opt.Currency, ErrUnknownCurrency)
+		case opt.NoConvert && sim.Currency != opt.Currency:
+			return nil, fmt.Errorf("%s unavailable (%v), and its simulated history is in %s, not %s: %w",
+				base, fetchErr, sim.Currency, opt.Currency, ErrWrongCurrency)
+		}
+	}
+	c.Logf("warning: %s unavailable (%v), using simulated data only", base, fetchErr)
+	sim.SimulatedBefore = sim.Last().Date
+	sim.ProxySymbol = "simdata"
+	if !opt.NoConvert {
+		var err error
+		if sim, err = c.convertTo(ctx, sim, opt.Currency, opt.From); err != nil {
+			return nil, err
+		}
+	}
+	return Trim(sim, time.Time{}, opt.To), nil
 }
 
 // proxyHistory fetches the proxy symbol sym for an asset quoted in currency,

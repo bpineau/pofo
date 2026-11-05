@@ -73,3 +73,39 @@ func TestOfflineServesWhatIsLocal(t *testing.T) {
 		t.Errorf("an Offline client sent %d requests", requests)
 	}
 }
+
+// A SIM request served from its bundled history alone (the real quotes
+// unreadable) keeps the currency contract of the quotes it stands in for:
+// the catalog's currency stated, converted into a requested one, refused
+// under NoConvert when that is not its own.
+func TestSimOnlyFallbackHonoursCurrency(t *testing.T) {
+	requests := 0
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(http.ResponseWriter, *http.Request) { requests++ })
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	c.Offline = true
+	ctx := context.Background()
+
+	usd, err := c.FetchExtended(ctx, "DBMFSIM", FetchOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if usd.Currency != "USD" || usd.ProxySymbol != "simdata" {
+		t.Errorf("native fallback: currency %q proxy %q, want USD from the catalog, simdata", usd.Currency, usd.ProxySymbol)
+	}
+	eur, err := c.FetchExtended(ctx, "DBMFSIM", FetchOptions{Currency: "EUR"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if eur.Currency != "EUR" || eur.Len() != usd.Len() || eur.Last().Close == usd.Last().Close {
+		t.Errorf("EUR fallback: currency %q, %d points, last %v vs %v: want a converted series",
+			eur.Currency, eur.Len(), eur.Last().Close, usd.Last().Close)
+	}
+	if _, err := c.FetchExtended(ctx, "DBMFSIM", FetchOptions{Currency: "EUR", NoConvert: true}); !errors.Is(err, ErrWrongCurrency) {
+		t.Errorf("NoConvert into EUR: err %v, want ErrWrongCurrency", err)
+	}
+	if requests != 0 {
+		t.Errorf("%d requests from an offline client", requests)
+	}
+}
