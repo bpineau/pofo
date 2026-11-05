@@ -174,7 +174,7 @@ func ExampleAnnuity() {
 	// Output:
 	// no annuity    broke while alive 33%, median estate 0.26 M
 	// a third at 65 broke while alive 29%, median estate 0.23 M
-	// a third at 75 broke while alive 42%, median estate 0.10 M
+	// a third at 75 broke while alive 41%, median estate 0.11 M
 }
 
 // Solving needs no special case for mortality: the axes, the bisection and the

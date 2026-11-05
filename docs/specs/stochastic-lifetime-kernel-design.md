@@ -420,7 +420,11 @@ alive-ruin 27.0 % -> 40.4 %, median estate 419 k -> 85 k" to "pays 2.9 % vs
 4.2 %, alive-ruin 27.0 % -> 55.1 %, median estate 419 k -> 0". `ExampleAnnuity`
 (a third at 75, 2 % real, 10 % load; it used `Gompertz{91, 10}`, equally
 unsourced) moves from 35 % alive-ruin and a 0.19 M estate to 42 % and 0.10 M,
-its payout from 5.53 % to 4.25 % of the premium.
+its payout from 5.53 % to 4.25 % of the premium; 41 % and 0.11 M since the
+purchase reads the deaths already OBSERVED at its date (2026-11): a
+single-life annuity on a member already dead is not bought, and a joint one
+after a first death is priced on the survivor alone. That is no
+clairvoyance: the household knows who has died, never who will.
 
 **What is still assumed.** The insurer's margin (10 % by default, 2 % to 25 %
 on the slider) and the 1 % real pricing rate are planning figures, not

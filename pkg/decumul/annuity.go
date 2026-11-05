@@ -94,20 +94,30 @@ type Annuity struct {
 // survivalFrom is the survival function the annuity is priced on, seen from
 // the purchase year: the covered life or lives, at the ages they have reached.
 func (a *Annuity) survivalFrom(lt *Lifetime, year int) func(float64) float64 {
+	return a.survivalOf(lt, year, true, a.Joint && lt.Partner != nil)
+}
+
+// survivalOf prices on the lives named: self, partner, or both (at least one
+// of two independent lives still going). At least one must be named.
+func (a *Annuity) survivalOf(lt *Lifetime, year int, self, partner bool) func(float64) float64 {
 	lawOf := func(l Life) MortalityLaw {
 		if a.Law != nil {
 			return a.Law
 		}
 		return l.law()
 	}
-	selfAge, selfLaw := lt.Self.Age+float64(year), lawOf(lt.Self)
-	if !a.Joint || lt.Partner == nil {
-		return func(years float64) float64 { return selfLaw.Survival(selfAge, years) }
+	one := func(l Life) func(float64) float64 {
+		age, law := l.Age+float64(year), lawOf(l)
+		return func(years float64) float64 { return law.Survival(age, years) }
 	}
-	partnerAge, partnerLaw := lt.Partner.Age+float64(year), lawOf(*lt.Partner)
-	return func(years float64) float64 {
-		// At least one of two independent lives is still going.
-		return 1 - (1-selfLaw.Survival(selfAge, years))*(1-partnerLaw.Survival(partnerAge, years))
+	switch {
+	case self && partner:
+		s, q := one(lt.Self), one(*lt.Partner)
+		return func(years float64) float64 { return 1 - (1-s(years))*(1-q(years)) }
+	case partner:
+		return one(*lt.Partner)
+	default:
+		return one(lt.Self)
 	}
 }
 
@@ -115,22 +125,34 @@ func (a *Annuity) survivalFrom(lt *Lifetime, year int) func(float64) float64 {
 // recording the premium raised and the lifelong income it bought on the path
 // and on its mortality state. It is a no-op without a Lifetime, outside the
 // purchase year, or once already bought.
+//
+// The purchase reads the deaths ALREADY observed, never the ones to come
+// (the household does not see its own drawn death): a single-life annuity on
+// a member who has died is not bought (its income would never be paid), and
+// a joint one after a first death is priced on the survivor alone, whose
+// remaining life is all it will pay over.
 func (p *Plan) buyAnnuity(k int, pks pocketOps, res *PathResult, lf *life) {
 	a := p.Annuity
 	if a == nil || p.Lifetime == nil || k != a.Year || lf.annYear >= 0 {
+		return
+	}
+	joint := a.Joint && p.Lifetime.Partner != nil
+	selfAlive, partnerAlive := lf.alive(Self, k), joint && lf.alive(Partner, k)
+	if !selfAlive && !partnerAlive {
 		return
 	}
 	want := math.Min(math.Max(a.Share, 0), 1) * pks.total()
 	if want <= 0 {
 		return
 	}
+	survival := a.survivalOf(p.Lifetime, k, selfAlive, partnerAlive)
 	premium := pks.sell(want, &res.TaxPaid)
-	factor := AnnuityFactorFor(a.survivalFrom(p.Lifetime, k), a.Rate)
+	factor := AnnuityFactorFor(survival, a.Rate)
 	if premium <= 0 || factor <= 0 {
 		return
 	}
 	res.Premium = premium
 	lf.annuity = math.Max(0, 1-a.Load) * premium / factor
 	lf.annYear = k
-	lf.annJoint = a.Joint && p.Lifetime.Partner != nil
+	lf.annJoint = joint
 }

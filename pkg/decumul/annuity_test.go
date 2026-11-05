@@ -32,3 +32,25 @@ func TestAnnuityIncome(t *testing.T) {
 		t.Error("zero premium must give zero income")
 	}
 }
+
+// A deferred annuity reads the deaths already observed: a single-life one is
+// not bought on a member who has died, and a joint one after a first death is
+// priced on the survivor alone.
+func TestDeferredAnnuityReadsObservedDeaths(t *testing.T) {
+	lt := &Lifetime{Self: Life{Age: 60}, Partner: &Life{Age: 60}}
+	single := Plan{Capital: 100000, Years: 4, Lifetime: lt, Annuity: &Annuity{Year: 2, Share: 0.5}}
+	r := single.RunPath(nil, Lives{Self: 1, Partner: 4})
+	if r.Premium != 0 || r.Estate != 100000 {
+		t.Errorf("single life on a dead annuitant: premium %v estate %v, want no purchase", r.Premium, r.Estate)
+	}
+
+	joint := single
+	joint.Annuity = &Annuity{Year: 2, Share: 0.5, Joint: true}
+	survivorOnly := joint.Annuity.survivalOf(lt, 2, false, true)
+	want := 50000 / AnnuityFactorFor(survivorOnly, 0)
+	r = joint.RunPath(nil, Lives{Self: 1, Partner: 4})
+	if r.Premium != 50000 || math.Abs(r.Annuity-2*want) > 1e-6 {
+		t.Errorf("joint after a death: premium %v income %v, want 50000 and 2 years of %v (the survivor's life)",
+			r.Premium, r.Annuity, want)
+	}
+}

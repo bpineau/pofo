@@ -48,8 +48,8 @@ const errCostRef = 19.13 // ruin (%) of the clean reference plan
 // the reference), it shows in the number of years lived under a cut budget.
 const (
 	errCostEquity    = 18.17 // ruin (%) of the same plan run 100 % equities
-	errCostCutRef    = 16.73 // mean years with a cut budget, reference 60/40
-	errCostCutEquity = 20.02 // mean years with a cut budget, 100 % equities
+	errCostCutRef    = 20.81 // mean years with a cut budget (broke years included), reference 60/40
+	errCostCutEquity = 24.05 // mean years with a cut budget (broke years included), 100 % equities
 )
 
 // errCosts is the measured ranking, most expensive first.

@@ -235,7 +235,7 @@ var figureDict = map[string]string{
 	"+6,2 pts": "+6.2 pts",
 	"Plan de référence : 1 M€, 35 k€/an réels (3,5 %), 50 ans, 60/40, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.": "Reference plan: $1M, $35k/yr real (3.5%), 50 years, 60/40, a $14k/yr pension from year 20, a 10% cut held.",
 	"Modèle empirique : 16 pays, 1870-2020, blocs de 10 ans, 200 000 tirages. Une seule entrée change par barre.":             "Empirical model: 16 countries, 1870 to 2020, 10-year blocks, 200,000 draws. One input changes per bar.",
-	"Le tout-actions, lui, ne se voit pas sur cet axe (18,2 %) : il coûte 20 années de budget coupé sur 50, contre 16,7.":     "All-equity does not show on this axis (18.2%): it costs 20 years of cut budget out of 50, against 16.7.",
+	"Le tout-actions, lui, ne se voit pas sur cet axe (18,2 %) : il coûte 24 années de budget coupé sur 50, contre 20,8.":     "All-equity does not show on this axis (18.2%): it costs 24 years of cut budget out of 50, against 20.8.",
 
 	// anarkulova-cederburg
 	"SEIZE PAYS, 1870-2020":                                                          "SIXTEEN COUNTRIES, 1870 TO 2020",

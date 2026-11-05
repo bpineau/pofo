@@ -170,3 +170,30 @@ func TestExactlyExhaustedAtTheHorizonIsNotRuin(t *testing.T) {
 		}
 	}
 }
+
+// An empty portfolio is no ruin while a pension pays the whole budget: ruin
+// is a year whose need goes unfunded, in both kernels.
+func TestEmptyPortfolioFundedByIncomeIsNoRuin(t *testing.T) {
+	p := Plan{Capital: 120, NeedAnnual: 120, Years: 3, Cashflows: []Cashflow{{FromYear: 1, Annual: 120}}}
+	for _, r := range []PathResult{p.RunPath(nil, Lives{}), p.RunPathMonthly(nil, Lives{})} {
+		if r.Ruined || r.CutYears != 0 {
+			t.Errorf("ruined=%v year=%d cut years=%d, want every budget funded (pension pays years 1-2)",
+				r.Ruined, r.RuinYear, r.CutYears)
+		}
+		if r.Received != 240 {
+			t.Errorf("received %v, want the 240 of pension", r.Received)
+		}
+	}
+}
+
+// The years lived broke are years below the standard: FirstCut and CutYears
+// count them, which an early exit used to skip.
+func TestBrokeYearsCountAsCut(t *testing.T) {
+	p := Plan{Capital: 120, NeedAnnual: 60, Years: 5}
+	for name, r := range map[string]PathResult{"annual": p.RunPath(nil, Lives{}), "monthly": p.RunPathMonthly(nil, Lives{})} {
+		if !r.Ruined || r.RuinYear != 2 || r.FirstCut != 2 || r.CutYears != 3 {
+			t.Errorf("%s: ruin %v at %d, first cut %d, cut years %d; want ruin, cut and first cut at 2, three cut years",
+				name, r.Ruined, r.RuinYear, r.FirstCut, r.CutYears)
+		}
+	}
+}

@@ -234,20 +234,20 @@ func determinismPlans() []struct {
 // every envelope arrangement and the lifetime kernel.
 func TestDeterminismPlans(t *testing.T) {
 	want := map[string]string{
-		"fixed":             "f58ac5e3b3c959a247d1a165d86ab91e2a52b10261ff94bd5f7dc854b4c34426",
-		"ratchet":           "0f27951e9f595ac0dc3840778b8b2b4c560648816d91a5144211e36ffc385336",
-		"guardrails":        "93b31335846e45439a1d271950b6d2a7f18ee390e811dc27fe5c3efa26ffd26c",
-		"riskguard":         "acb97cfcb0ffacd70899547e7d43f590b658e65e760dd2d7f4309b9748d2f73b",
-		"percent":           "5448cda43b23f4eed132a9a0c0e4139d482666140ed49bce5ccf3d9155225035",
-		"bounded":           "2c00e8ef61dc6d87b4d4847cf261ccc76a570f15699a06da89f13d504a553787",
-		"amortize":          "27210a0dc1d5ef61ca084d5a627b66105f0e08cc823b51066e04d2e595366705",
-		"envelopes":         "874e204b705409fd83a233a44e63d201ffccaf37649753f0b260c58cffd69fef",
-		"monthly":           "48bccaf40fff4600158b62d08e0b60313a59b21394e32b2e559ddc9b40895e36",
-		"monthly-riskguard": "7922f357ecadd534f995f3504db142a3d66a38ae4aaf83b31f7eb34c65ab85f4",
-		"schedule":          "3e69680a0b55cc03af710298875df2567017750cee54a2cb196359b944324696",
-		"lifetime-single":   "31c13663bcc458274e1e51a4590f52c9bb2789c982aecfdbe1e35e6e62a847b1",
-		"lifetime-couple":   "e5c4fbd0998b74f73c459efc146cade656dff0bf66b434a190482ef677c2e28c",
-		"lifetime-annuity":  "25a9eebd5101561f4dd0deb6658ea5ef40d9eea479d50943894c1c3f2b1b7d0b",
+		"fixed":             "69256edbb1056c04b5fa6b84dc8051dd5ee5429016fb430779d79d66aefd61f7",
+		"ratchet":           "acd7e52953faa17a47a7e34debaa8bc60d019beebeb81f5fc5427355fa004106",
+		"guardrails":        "0f7defc3c6aeaa57265af3a2f734935a2c8dda8eb55b36b03c5d6c87e9d33073",
+		"riskguard":         "1a6cf017b600f29abfca2946405be1d448ee960f1ec361b1a9daeaea390dd141",
+		"percent":           "de0b4831a3dcfccf2318d105b6fda16101d526d2c8fcb01be6aec2f8ada946b7",
+		"bounded":           "34b5e30f6628f7c984346bd57e9734d2efd7c32f664906cb72322fd68b068c44",
+		"amortize":          "91034a9c6b6e64f32e199818231339319d097e23d0cdf6c2015a4db36e3cc44a",
+		"envelopes":         "720e17528e8d54cb86969c9e1a02205392efb2490d54bdfffdb6a8b545d11af7",
+		"monthly":           "50a8fdaabb8a7d01de431ea8fe95836878dcedf5f804d299511647acf48a5489",
+		"monthly-riskguard": "d9ab5a63fdf0cb5f4db11171c1dfb7399dc086fba1fade62cfa772bf0c6db24d",
+		"schedule":          "69926640b9433dccf0303e63ee520c3e919c2b7fbbcfc2c77c4ddc8dcc90a6da",
+		"lifetime-single":   "d7de2389d542ddb2662ebf1ae8e83394d0f4d936b152e0ad4c639aea63a84a26",
+		"lifetime-couple":   "8caac299bff265dec174ec09c7b40a5de7a2420fa606f4b42800da5aca7052f7",
+		"lifetime-annuity":  "1dbada2b29714d5429e7ec8f07d97aa8c19a5a04b9160fbcf4a02584c1c87045",
 		"lifetime-amortize": "36bda999b1b35a153524e292ab0f88f1006aa03be87dc1c879c6eba06247ae08",
 	}
 	for _, c := range determinismPlans() {
@@ -306,11 +306,11 @@ func determinismSources() []struct {
 // full plan run on each of them.
 func TestDeterminismSources(t *testing.T) {
 	want := map[string]string{
-		"parametric":           "ac5ce475001a10c6a17c599856f09fab1e7bee9040861fbd4ec106548851e51f",
-		"parametric-normal":    "fe5ed8b0430d5ab249e6cb466b1a7d0a0b7388aa12771d0aa1d96ddd4cc8a4dc",
-		"markov-regime":        "cd4e81e0ad04472ec90529609bc1e4dedc4eb865e61db075001da7fde3c713cf",
-		"lost-decade":          "1367d7ca168a4b29dc56634dfc8bdbadde0b241a79d02aa7307087fdbb9ef0cb",
-		"glidepath":            "b4fa490323f4ad16fdb02eab0df4909dc7be323b9355bea6074d5d682564743c",
+		"parametric":           "314f2e3f4bfc353c49d813f9a2889902cd1b9f45ae044694613c10b1745a1f59",
+		"parametric-normal":    "dfed3be7ae653138095df1de51acba990194c978ed397f02c868daf036a424d9",
+		"markov-regime":        "36a4898194d40dab5798e2644d7932c829ea815e995f193fbc6f86b95e5eb399",
+		"lost-decade":          "44cdc2d631cc8b9e4231f9fc153c8975da5ff55d3af63e78da8474d5c8715765",
+		"glidepath":            "a9a38ddbca1a80b30aa56d9f607d481d3213e3d757f19adae14f01845f4db369",
 		"block-bootstrap":      "77652b7162cd09d1acde72aa6fa86e86a309f40f0086b2bb6aa420cc3464b13b",
 		"stationary-bootstrap": "3668128bc14b7ae2189086302e0a9dfc89e72b5c5589dc7e7135c4c8e9ee8694",
 		"historical-cohorts":   "efba101dbadc7611bb1093fab34c7911f88f19b29291a66ae80234399926fef6",

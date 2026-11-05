@@ -17,6 +17,9 @@ import (
 // FirstCut and CutYears account the spending cuts: FirstCut is the first year
 // the household lived below its uncut standard (flex cut, guardrails cut or
 // under-delivery), -1 when it never did, and CutYears counts such years.
+// An empty portfolio alone is neither: a year whose budget the pensions and
+// the annuity pay in full is funded, and every year they leave short, broke
+// years included, counts as a cut and, the first, as the ruin.
 //
 // The last block is the household's lifetime. Without a Plan.Lifetime it still
 // reads correctly: LifeYears is the full horizon, Outlived is true and Estate
@@ -76,17 +79,38 @@ func (r *PathResult) ruinAt(k int) {
 	}
 }
 
-// collectIncome accounts the income of years from..end-1 on a path whose
-// portfolio has run dry. Both kernels stop stepping the sleeves there, since
-// empty sleeves neither sell nor grow, but a pension and an annuity keep being
-// paid to a household that is still alive: leaving them out let a plan whose
-// pension covered its whole need from year 10 report a mean income of 5 k€ on
-// a 50 k€ pension, and understated LifeOutcome.IncomeMean by a third on an
-// ordinary plan with a retirement pension and a realistic ruin probability.
-func (r *PathResult) collectIncome(p *Plan, from, end int, l life) {
+// emptyFrom accounts the years from..end-1 of a household whose portfolio has
+// run dry. Both kernels stop stepping the sleeves there, since empty sleeves
+// neither sell nor grow, but the household lives on:
+//
+//   - its pension and annuity keep being paid (Received, Annuity): leaving
+//     them out let a plan whose pension covered its whole need from year 10
+//     report a mean income of 5 k€ on a 50 k€ pension;
+//   - each year is judged on its own budget, as a funded year would be: one
+//     the income covers in full is no failure (an empty portfolio is not an
+//     unfunded withdrawal when a pension pays the whole need), and one it
+//     does not is a year lived below the standard (cutAt) and, the first
+//     time, the ruin (ruinAt). Counting none of them hid every broke year
+//     from FirstCut and CutYears.
+//
+// A lump due after the portfolio emptied is not simulated: the path stays
+// broke from here.
+func (r *PathResult) emptyFrom(p *Plan, from, end int, l life) {
 	for k := from; k < end; k++ {
+		inc := p.income(k, l) // income() already carries the annuity
 		r.Annuity += l.annuityAt(k)
-		r.Received += p.income(k, l) // income() already carries the annuity
+		r.Received += inc
+		r.brokeYear(k, p.needAtWith(k, l, inc))
+	}
+}
+
+// brokeYear accounts year k of a household with no portfolio left, whose
+// budget net of its income is need: unfunded (and lived below the standard)
+// unless the income covered it all.
+func (r *PathResult) brokeYear(k int, need float64) {
+	if need > 1e-6 {
+		r.ruinAt(k)
+		r.cutAt(k)
 	}
 }
 
@@ -238,14 +262,14 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		growth := pks.total()
 		total := growth + buffer
 		if total <= 0 {
-			res.ruinAt(k)
 			// The portfolio is gone; the household is not. Its pensions and
-			// its annuity keep paying for the rest of its life, and Received
-			// is what it really received, so the remaining years' income is
-			// accounted before the sleeves, which have nothing left to do,
-			// stop being simulated. The spending series stays at 0: what the
-			// portfolio delivers from here is nothing.
-			res.collectIncome(p, k+1, end, lf)
+			// its annuity keep paying for the rest of its life, so this year
+			// and every one after it are judged on what that income leaves
+			// unfunded (emptyFrom) before the sleeves, which have nothing
+			// left to do, stop being simulated. The spending series stays at
+			// 0: what the portfolio delivers from here is nothing.
+			res.brokeYear(k, p.needAtWith(k, lf, inc))
+			res.emptyFrom(p, k+1, end, lf)
 			if led != nil {
 				for j := k; j < end; j++ {
 					*led = append(*led, LedgerYear{Year: j, Return: ret(returns, j),

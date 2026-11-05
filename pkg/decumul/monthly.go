@@ -80,8 +80,8 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 		annuityYear = p.Annuity.Year
 	}
 
-	ruined := false
-	for k := 0; k < end && !ruined; k++ {
+	empty := false // the portfolio ran dry: the years left are accounted, not simulated
+	for k := 0; k < end && !empty; k++ {
 		// The ratchet, the annuity purchase and stateful taxes stay yearly
 		// decisions, taken at the start of each year against current wealth.
 		pks.newYear()
@@ -117,11 +117,15 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 		for m := range 12 {
 			total := pks.total() + buffer
 			if total <= 0 {
-				res.ruinAt(k)
-				// The pensions and the annuity outlive the portfolio (see the
-				// annual kernel): account the years nobody will simulate.
-				res.collectIncome(p, k+1, end, lf)
-				ruined = true
+				// The rest of this year is unfunded unless the income covers
+				// its budget (the year's cut is read below, on Spend[k]); the
+				// pensions and the annuity outlive the portfolio (see the
+				// annual kernel), and the years nobody will simulate are
+				// judged on what they leave unfunded.
+				if uncut > 1e-6 {
+					res.ruinAt(k)
+				}
+				empty = true
 				break
 			}
 			if total > peak {
@@ -186,6 +190,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 			res.cutAt(k)
 		}
 		res.Wealth[k+1] = pks.total() + buffer
+		if empty {
+			res.emptyFrom(p, k+1, end, lf) // after this year's cut, so FirstCut stays the first
+		}
 	}
 	res.close(lf)
 	return res
