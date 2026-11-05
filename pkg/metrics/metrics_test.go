@@ -81,6 +81,36 @@ func TestComputeErrors(t *testing.T) {
 	if _, err := Compute(days(2), []float64{100, -5}); err == nil {
 		t.Error("expected error: negative value")
 	}
+	if _, err := Compute(days(3), []float64{100, 0, 50}); err == nil {
+		t.Error("expected error: a zero before the last value")
+	}
+}
+
+// A terminal zero is a total loss, read as such rather than refused.
+func TestComputeTerminalWipeout(t *testing.T) {
+	s, err := Compute(days(3), []float64{100, 120, 0})
+	if err != nil {
+		t.Fatal(err)
+	}
+	near(t, "CAGR", s.CAGR, -1, 0)
+	near(t, "MaxDrawdown", s.MaxDrawdown, -1, 0)
+	if !s.TTROngoing {
+		t.Error("a wipeout never recovers")
+	}
+}
+
+// Successive new highs are no underwater stretch: a series that never fell
+// has no time to recovery, as DrawdownEpisodes reports no episode for it.
+func TestComputeTTRWithoutDrawdown(t *testing.T) {
+	for _, values := range [][]float64{{100, 110, 121}, {100, 100, 100}} {
+		s, err := Compute(days(3), values)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if s.TTRDays != 0 || s.TTROngoing {
+			t.Errorf("%v: TTR = %d d (ongoing: %v), want 0", values, s.TTRDays, s.TTROngoing)
+		}
+	}
 }
 
 func TestBetaTwiceTheBenchmark(t *testing.T) {

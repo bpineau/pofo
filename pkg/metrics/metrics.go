@@ -33,7 +33,10 @@ type Stats struct {
 }
 
 // Compute derives Stats from a value series. dates must be ascending and
-// values strictly positive and finite, both of equal length >= 2.
+// values strictly positive and finite, both of equal length >= 2, with one
+// exception: the LAST value may be exactly 0, a total loss (a levered
+// portfolio wiped out, portfolio.SimResult.Ruined), which reads as a CAGR
+// and a MaxDrawdown of -1 rather than as an error.
 //
 // The per-period statistics are annualized at the series' own cadence,
 // PeriodsPerYear(dates): a daily series at 252, a weekly NAV at 52, a monthly
@@ -43,10 +46,13 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 	if len(dates) != len(values) || len(values) < 2 {
 		return Stats{}, fmt.Errorf("series too short (%d points)", len(values))
 	}
-	for _, v := range values {
+	for i, v := range values {
 		// An infinity passes "> 0" and then poisons half the statistics with
 		// NaN while leaving the other half (the CAGR, the drawdown) looking
 		// like numbers. Refuse it where the series is still readable.
+		if i == len(values)-1 && v == 0 {
+			continue // a terminal total loss, see above
+		}
 		if !(v > 0) || math.IsInf(v, 1) {
 			return Stats{}, fmt.Errorf("non-positive or infinite value in series")
 		}
@@ -72,13 +78,19 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 	sumSqDD, maxDD := 0.0, 0.0
 	maxTTR := time.Duration(0)
 	ongoing := false
+	underwater := false // a point below the running peak opened a spell
 	for i, v := range values {
 		if v >= peak {
-			if spell := dates[i].Sub(peakDate); spell > maxTTR {
+			// A new high closes a spell only if one was open: two
+			// successive highs are no recovery, and their gap is no
+			// underwater time (the DrawdownEpisodes reading).
+			if spell := dates[i].Sub(peakDate); underwater && spell > maxTTR {
 				maxTTR = spell
 				ongoing = false
 			}
-			peak, peakDate = v, dates[i]
+			peak, peakDate, underwater = v, dates[i], false
+		} else {
+			underwater = true
 		}
 		dd := v/peak - 1
 		if dd < maxDD {
@@ -86,7 +98,7 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 		}
 		sumSqDD += dd * dd * 10000 // drawdown in percent, squared
 	}
-	if spell := s.End.Sub(peakDate); spell > maxTTR {
+	if spell := s.End.Sub(peakDate); underwater && spell > maxTTR {
 		maxTTR = spell
 		ongoing = true
 	}

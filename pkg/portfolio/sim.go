@@ -113,7 +113,11 @@ type SimResult struct {
 	Contributed, Withdrawn float64
 
 	// Ruined is true when the value hit zero (levered losses, or
-	// withdrawals from a depleted portfolio): the series is truncated.
+	// withdrawals from a depleted portfolio): the series stops on the
+	// observation where it did, so its last date is the wipeout's. Values
+	// ends at 0 in both cases; Index ends at 0 on a levered wipeout (the
+	// market took the capital) and stays positive on a withdrawal ruin (the
+	// market return of that day was not a loss, the household spent it).
 	Ruined bool
 
 	// Warnings records what the simulation had to assume, e.g. a financing
@@ -312,8 +316,23 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			v += shares[i] * prices[i][k]
 		}
 		if v <= 0 {
-			// Capital wiped out (levered losses): the series stops here.
-			dates, values, index, res.Ruined = dates[:k], values[:k], index[:k], true
+			// Capital wiped out (levered losses): the series stops HERE, on
+			// the observation that took it to zero, never on the one before,
+			// which would report the surviving stretch's positive return as
+			// the investment's. Limited liability: the holder loses the
+			// capital (a -100 % step) and no more, so the step's
+			// contributions are scaled to sum to that loss.
+			total := 0.0
+			for i := range contrib {
+				total += contrib[i][k]
+			}
+			if total < -1 {
+				for i := range contrib {
+					contrib[i][k] /= -total
+				}
+			}
+			dates, values, index, res.Ruined = dates[:k+1], values[:k+1], index[:k+1], true
+			values[k], index[k] = 0, 0
 			break
 		}
 		// Index accrues the market return only, before today's flows.

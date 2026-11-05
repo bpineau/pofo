@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
@@ -404,6 +405,34 @@ func TestSimulateLeverage(t *testing.T) {
 	}
 	if len(sim3.Values) >= 60 {
 		t.Error("the series should have been truncated")
+	}
+}
+
+// A levered wipeout ends the series ON the observation that crossed zero,
+// at a total loss, never on the surviving point before it (which would
+// report the pre-loss gain as the investment's return).
+func TestSimulateWipeoutKeepsTheLoss(t *testing.T) {
+	dates := []time.Time{
+		time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+		time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC),
+	}
+	s, err := marketdata.NewSeries("T", dates, []float64{100, 110, 44})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sim, err := Simulate(&Portfolio{Leverage: true, Assets: []Asset{{ID: "T", Symbol: "T", Weight: 2, Series: s}}}, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !sim.Ruined || len(sim.Dates) != 3 || !sim.Dates[2].Equal(dates[2]) {
+		t.Fatalf("ruined=%v dates=%v, want the wipeout on %v", sim.Ruined, sim.Dates, dates[2])
+	}
+	if sim.Values[2] != 0 || sim.Index[2] != 0 {
+		t.Errorf("terminal value %v index %v, want 0", sim.Values[2], sim.Index[2])
+	}
+	if c := sim.Contributions[0][2]; math.Abs(c+1) > 1e-12 {
+		t.Errorf("wipeout contribution %v, want -1 (limited liability)", c)
 	}
 }
 
