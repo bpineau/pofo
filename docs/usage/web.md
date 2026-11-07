@@ -74,6 +74,14 @@ resolved exactly, with no fuzzy search, so a typo fails instead of quoting an
 unrelated fund. An identifier no source knows answers `404`; a spent budget
 answers `429`.
 
+The per-visitor key uses `CF-Connecting-IP`, then the final `X-Forwarded-For`
+hop, then the socket peer. Restrict origin access to a trusted proxy that
+removes visitor-supplied CF-Connecting-IP or replaces it with an authoritative
+address. Without that authoritative header, the proxy must append the real
+peer to XFF or replace XFF entirely. These headers are not trustworthy on an unrestricted
+listener. Multiple proxy hops without the Cloudflare header can share a bucket;
+the global budget remains independent of headers.
+
 ## The FIRE simulator
 
 `/firesimulator/` is the page `pofo -fire` opens: sliders for capital,

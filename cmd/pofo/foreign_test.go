@@ -22,6 +22,30 @@ func testGate(perClient, global int) (*foreignGate, *foreignBudget) {
 	return &foreignGate{budget: b, client: "203.0.113.7"}, b
 }
 
+// A client-supplied XFF prefix must not mint a fresh upstream allowance.
+func TestForeignBudgetIgnoresForgedForwardedPrefix(t *testing.T) {
+	for _, edgeHeader := range []bool{false, true} {
+		t.Run(fmt.Sprintf("cloudflare=%t", edgeHeader), func(t *testing.T) {
+			b := newForeignBudget(1, 100, time.Hour)
+			for i := range 2 {
+				r := httptest.NewRequest(http.MethodGet, "/", nil)
+				r.RemoteAddr = "127.0.0.1:1234"
+				r.Header.Set("X-Forwarded-For", fmt.Sprintf("192.0.2.%d, 198.51.100.7", i+1))
+				if edgeHeader {
+					r.Header.Set("CF-Connecting-IP", "203.0.113.9")
+				}
+				err := b.charge(clientIP(r), 1)
+				if i == 0 && err != nil {
+					t.Fatalf("first request: %v", err)
+				}
+				if i == 1 && !errors.Is(err, errForeignBudget) {
+					t.Fatalf("forged prefix bypassed per-client budget: %v", err)
+				}
+			}
+		})
+	}
+}
+
 // TestForeignSyntacticGate pins what a p= holding may be: a catalog
 // identifier always, an identifier outside it only when the server runs a
 // budget AND the identifier looks like an ISIN or a ticker.

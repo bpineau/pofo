@@ -791,23 +791,37 @@ func TestSpecsLabel(t *testing.T) {
 	}
 }
 
-// The source address is the left-most X-Forwarded-For entry when the server
-// sits behind a proxy, and the peer's own host otherwise.
+// The source address uses the trusted edge's header, never a forged prefix.
 func TestClientIP(t *testing.T) {
-	for _, tc := range []struct{ xff, remote, want string }{
-		{"", "203.0.113.9:54321", "203.0.113.9"},
-		{"198.51.100.7", "10.0.0.1:80", "198.51.100.7"},
-		{" 198.51.100.7 , 10.0.0.1 ", "10.0.0.1:80", "198.51.100.7"},
-		{"", "not-an-address", "not-an-address"},
+	for _, tc := range []struct{ cf, xff, remote, want string }{
+		{"", "", "203.0.113.9:54321", "203.0.113.9"},
+		{"", "198.51.100.7", "10.0.0.1:80", "198.51.100.7"},
+		{"", " 198.51.100.7 , 10.0.0.1 ", "10.0.0.1:80", "10.0.0.1"},
+		{"203.0.113.9", "192.0.2.1, 198.51.100.7", "10.0.0.1:80", "203.0.113.9"},
+		{"2001:db8:0::1", "", "10.0.0.1:80", "2001:db8::1"},
+		{"invalid", "198.51.100.7", "10.0.0.1:80", "198.51.100.7"},
+		{"", "198.51.100.7, ", "10.0.0.1:80", "10.0.0.1"},
+		{"", "not-an-ip", "10.0.0.1:80", "10.0.0.1"},
+		{"", "", "not-an-address", "not-an-address"},
 	} {
 		r := httptest.NewRequest(http.MethodGet, "/", nil)
 		r.RemoteAddr = tc.remote
+		r.Header.Set("CF-Connecting-IP", tc.cf)
 		if tc.xff != "" {
 			r.Header.Set("X-Forwarded-For", tc.xff)
 		}
 		if got := clientIP(r); got != tc.want {
 			t.Errorf("clientIP(xff=%q, remote=%q) = %q, want %q", tc.xff, tc.remote, got, tc.want)
 		}
+	}
+}
+
+func TestClientIPUsesLastForwardedHeader(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "/", nil)
+	r.Header.Add("X-Forwarded-For", "192.0.2.1")
+	r.Header.Add("X-Forwarded-For", "198.51.100.7")
+	if got := clientIP(r); got != "198.51.100.7" {
+		t.Fatalf("clientIP = %q, want the appended peer", got)
 	}
 }
 

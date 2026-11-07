@@ -405,15 +405,21 @@ func logAccess(w io.Writer, h http.Handler) http.Handler {
 	})
 }
 
-// clientIP returns the request's source address: the left-most entry of an
-// X-Forwarded-For header when present (the server may sit behind a reverse
-// proxy), otherwise the host part of RemoteAddr.
+// clientIP returns the edge's CF-Connecting-IP, then the last X-Forwarded-For
+// hop, otherwise the socket peer. An appending proxy preserves a caller's
+// forged XFF prefix, so the first hop cannot identify a client for quotas.
+// Forwarding headers require a trusted reverse proxy and a restricted origin;
+// they provide no protection from clients that can reach the server directly.
 func clientIP(r *http.Request) string {
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		if first, _, ok := strings.Cut(xff, ","); ok {
-			return strings.TrimSpace(first)
+	if ip := net.ParseIP(strings.TrimSpace(r.Header.Get("CF-Connecting-IP"))); ip != nil {
+		return ip.String()
+	}
+	if values := r.Header.Values("X-Forwarded-For"); len(values) > 0 {
+		xff := values[len(values)-1]
+		last := xff[strings.LastIndexByte(xff, ',')+1:]
+		if ip := net.ParseIP(strings.TrimSpace(last)); ip != nil {
+			return ip.String()
 		}
-		return strings.TrimSpace(xff)
 	}
 	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
 		return host
