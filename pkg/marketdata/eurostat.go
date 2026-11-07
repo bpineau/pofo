@@ -226,9 +226,12 @@ func (c *Client) downloadHICP(ctx context.Context, symbol, geo string) (*Series,
 		return nil, fmt.Errorf("eurostat HICP %s: only %d monthly points", geo, len(monthly))
 	}
 	sort.Slice(monthly, func(i, j int) bool { return monthly[i].Date.Before(monthly[j].Date) })
+	var warnings []string
 	if last := monthly[len(monthly)-1].Date; hicpLagging(last, time.Now()) {
-		c.Logf("warning: Eurostat %s ends %s for %s: the dataset looks frozen (a rebase moves the live index to a new dataset); every later date deflates at zero inflation",
+		warning := fmt.Sprintf("Eurostat %s ends %s for %s: the dataset looks frozen (a rebase can move the live index to a new dataset); deflation past its coverage needs explicit extrapolation",
 			hicpDataset, last.Format("2006-01"), geo)
+		warnings = append(warnings, warning)
+		c.Logf("warning: %s", warning)
 	}
 
 	// Eurostat's harmonised index only starts in the mid-1990s. For France,
@@ -243,7 +246,9 @@ func (c *Client) downloadHICP(ctx context.Context, symbol, geo string) (*Series,
 			c.Logf("warning: FRED French CPI unavailable (%v); %s starts %s", ferr, symbol, monthly[0].Date.Format("2006-01"))
 		}
 	}
-	return hicpSeries(symbol, geo, monthly), nil
+	s := hicpSeries(symbol, geo, monthly)
+	s.Warnings = warnings
+	return s, nil
 }
 
 // extendMonthlyBack prepends older's history, rescaled to base's level at the

@@ -71,6 +71,38 @@ func TestFetchExtendedSplicesSimdata(t *testing.T) {
 	}
 }
 
+func TestFetchExtendedKeepsEarlierSameTargetFrontier(t *testing.T) {
+	for _, tc := range []struct {
+		name, metadata string
+		want           time.Time
+	}{
+		{"bundle has earlier real quotes", "# simulated-before: 2020-01-03\n", d(2020, 1, 3)},
+		{"live has earlier real quotes", "# simulated-before: 2020-01-07\n", d(2020, 1, 6)},
+		{"bundle wholly reconstructed", "# fully-simulated: true\n", d(2020, 1, 6)},
+		{"legacy bundle", "", d(2020, 1, 6)},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/v8/finance/chart/VOO", func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, chartJSON("VOO", testDays(3), []float64{104, 106, 108}))
+			})
+			c, srv := newTestClient(t, "", mux)
+			defer srv.Close()
+			fsys := fstest.MapFS{"VOO.csv": &fstest.MapFile{Data: []byte(tc.metadata + "date,close\n2020-01-02,50\n2020-01-03,51\n2020-01-06,52\n2020-01-07,53\n")}}
+			s, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{Simdata: fsys})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !s.SimulatedBefore.Equal(tc.want) || s.FullySimulated {
+				t.Errorf("spliced frontier=%v fully=%v, want frontier=%v", s.SimulatedBefore, s.FullySimulated, tc.want)
+			}
+			if len(s.Points) != 5 || s.Points[0].Close != 100 || s.Last().Close != 108 {
+				t.Errorf("changed splice prices: %v", s.Points)
+			}
+		})
+	}
+}
+
 func TestFetchExtendedNoSim(t *testing.T) {
 	realDays := testDays(3)
 	mux := http.NewServeMux()
@@ -94,7 +126,7 @@ func TestFetchExtendedNoSim(t *testing.T) {
 
 func TestFetchExtendedSimdataOnlyFallback(t *testing.T) {
 	// No handler for VOO: the real fetch fails, the simulated series
-	// (2+ points) is served alone, flagged as fully simulated.
+	// (2+ points) is served alone, with its missing frontier disclosed.
 	c, srv := newTestClient(t, t.TempDir(), http.NewServeMux())
 	defer srv.Close()
 
@@ -108,13 +140,60 @@ func TestFetchExtendedSimdataOnlyFallback(t *testing.T) {
 	if len(s.Points) != 3 || s.ProxySymbol != "simdata" {
 		t.Fatalf("expected the simulated series alone: %+v", s)
 	}
-	if !s.SimulatedBefore.Equal(s.Last().Date) {
-		t.Errorf("a simdata-only series must be flagged simulated throughout")
+	if !s.SimulatedBefore.IsZero() {
+		t.Errorf("legacy simdata must not invent a frontier: %v", s.SimulatedBefore)
+	}
+	if !strings.Contains(strings.Join(s.Warnings, " "), "boundary is unknown") {
+		t.Errorf("legacy simdata must disclose its unknown boundary: %v", s.Warnings)
 	}
 
 	// Without simulated data the original fetch error must surface.
 	if _, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{Simdata: fstest.MapFS{}}); err == nil {
 		t.Error("expected an error when neither real nor simulated data exists")
+	}
+}
+
+func TestFetchExtendedSimdataOnlyKeepsKnownBoundary(t *testing.T) {
+	c, srv := newTestClient(t, t.TempDir(), http.NewServeMux())
+	defer srv.Close()
+	c.Offline = true
+	fsys := fstest.MapFS{"VOO.csv": &fstest.MapFile{Data: []byte("# simulated-before: 2020-01-03\n# warnings: [\"reference caveat\"]\ndate,close\n2020-01-02,50\n2020-01-03,51\n2020-01-04,52\n")}}
+	s, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{Simdata: fsys})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !s.SimulatedBefore.Equal(d(2020, 1, 3)) {
+		t.Errorf("fallback replaced known frontier: %v", s.SimulatedBefore)
+	}
+	if !strings.Contains(strings.Join(s.Warnings, " "), "reference caveat") || strings.Contains(strings.Join(s.Warnings, " "), "boundary is unknown") {
+		t.Errorf("fallback qualifications = %v", s.Warnings)
+	}
+}
+
+func TestFetchExtendedSimdataOnlyKnownStates(t *testing.T) {
+	for _, tc := range []struct {
+		name, header string
+		fully        bool
+		frontier     time.Time
+	}{
+		{"fully reconstructed", "# fully-simulated: true\n", true, time.Time{}},
+		{"all real", "# simulated-before: 2020-01-02\n", false, d(2020, 1, 2)},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			c := NewClient("")
+			c.Offline = true
+			fsys := fstest.MapFS{"VOO.csv": &fstest.MapFile{Data: []byte(tc.header + "date,close\n2020-01-02,50\n2020-01-03,51\n2020-01-04,52\n")}}
+			s, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{Simdata: fsys, To: d(2020, 1, 3)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !s.SimulatedBefore.Equal(tc.frontier) || s.FullySimulated != tc.fully || len(s.Points) != 2 {
+				t.Errorf("fallback/window changed provenance: frontier=%v fully=%v count=%d", s.SimulatedBefore, s.FullySimulated, len(s.Points))
+			}
+			if strings.Contains(strings.Join(s.Warnings, " "), "boundary is unknown") {
+				t.Errorf("known state reported unknown: %v", s.Warnings)
+			}
+		})
 	}
 }
 

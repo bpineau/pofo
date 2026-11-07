@@ -12,11 +12,27 @@ identifier.
 
 | Call | Returns |
 |---|---|
-| `marketdata.Bundled("IWDASIM")` | the reconstruction alone, offline |
+| `marketdata.Bundled("IWDASIM")` | the shipped history, including any real quotes grafted during generation, offline |
 | `Client.FetchExtended(ctx, "IWDASIM", opt)` | the real quotes with the reconstruction in front; `Series.SimulatedBefore` marks the join |
 | `Client.Load(ctx, "IWDASIM", opt)` | the same, falling back on the bundle alone when offline and uncached |
 
 The bare `IWDA` always means the real quotes only.
+
+`SimulatedBefore` records the first real quote date when it is known. If it
+equals the first stored date, no reconstructed prefix was needed.
+`FullySimulated` explicitly identifies an entirely reconstructed series with
+no real-quote frontier. A zero frontier with that flag unset is not evidence
+of real prices: older files may lack the boundary, and `Bundled` and the
+client fallback then add an unknown-boundary warning. Show the warnings.
+The client preserves a recorded frontier when real downloads fail or cover
+a shorter history; it never substitutes the file's last date for inception.
+
+Generation persists known frontiers, the fully simulated flag, warnings and
+definition junctions. Recipes that provide no evidence of a frontier remain
+explicitly unknown. No inception date is guessed from today's catalog.
+`ExtendBack` retains the donor's definition junctions through the splice date
+and qualifies copied warnings with the donor name. Consequently `NewPanel`
+still excludes a definition change instead of treating it as a market return.
 
 ## Rebuilding one
 

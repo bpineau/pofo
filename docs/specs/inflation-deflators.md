@@ -4,11 +4,13 @@ The real (inflation-adjusted) side of pofo rests on two index levels:
 `^HICP-<geo>` (Eurostat's Harmonised Index of Consumer Prices, `^HICP-FR`
 for euro reports, bundled from 1955 through the OECD French CPI) and
 `^CPI-US` (BLS CPI-U all items, not seasonally adjusted, via FRED
-`CPIAUCNS`, bundled from 1913). Every consumer holds the last level flat past
-a deflator's end (`scenario.Deflate`'s `hicpAt`, `pkg/compare`'s `deflate`),
-so a deflator that stops updating does not fail anything: it reads every
-later month as zero inflation, in the report's real statistics, in the FIRE
-engine's real returns, everywhere.
+`CPIAUCNS`, bundled from 1913). Legacy implicit consumers can hold the last
+level flat past a deflator's end, treating later months as zero inflation.
+Explicit `Series.Deflate` and `analyze.Options.Inflation` instead refuse
+missing coverage by default. `AdjustmentOptions.AllowExtrapolation` opts into
+a flat tail with a warning; `compare` keeps that permissive behavior for its
+implicit CPI selection and exposes the warning. `scenario.Deflate` retains
+its historical flat-tail convention.
 
 ## The trap: a statistics office rebases and the old dataset stops
 
@@ -62,7 +64,11 @@ Annual rates computed from the new `I15` levels against the published
   it compares two dates in the file and never the clock.
 - The live Eurostat path (`downloadHICP`, the only path for a geography
   without a snapshot, such as `^HICP-EA`) logs a `warning:` when the series
-  trails the current month by more than three months (`hicpLagging`).
+  trails the current month by more than three months (`hicpLagging`). The
+  qualification also travels in `Series.Warnings` and survives cache reloads,
+  transformations and CSV export. A refresh failure served from expired cache
+  or a fallback snapshot adds a per-read warning with the retained dates;
+  the transient outage is not saved as a permanent provider qualification.
 
 - The disk cache files a HICP under `eurostat.<dataset>` (`hicpCacheSource`),
   so a move to another dataset refetches rather than replaying the old one's

@@ -344,7 +344,7 @@ func (s *Series) clone() *Series {
 	out.Points = append([]Point(nil), s.Points...)
 	out.Dividends = append([]Dividend(nil), s.Dividends...)
 	out.Junctions = append([]time.Time(nil), s.Junctions...)
-	out.Warnings = append([]string(nil), s.Warnings...)
+	out.Warnings = s.DataWarnings()
 	return &out
 }
 

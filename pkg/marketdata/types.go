@@ -154,6 +154,8 @@ type Series struct {
 	Cadence float64
 	// Warnings are data qualifications carried through transformations and
 	// into analyze studies. They must be displayed with the resulting figures.
+	// For a caller-constructed series, DataWarnings also derives known
+	// provider qualifications before any transformation has materialized them.
 	Warnings []string
 	// FXExtrapolatedBefore marks the first available FX observation when an
 	// earlier part of this series was converted at a constant rate. Zero means
@@ -167,9 +169,17 @@ type Series struct {
 	Dividends []Dividend
 
 	// SimulatedBefore is non-zero when points before that date were
-	// reconstructed from ProxySymbol instead of actual quotes.
+	// reconstructed from ProxySymbol instead of actual quotes. It is the
+	// first real quote date; equal to First().Date means none were prepended.
+	// Zero is not proof of real quotes: check FullySimulated and Warnings
+	// for wholly reconstructed histories and legacy files with unknown bounds.
 	SimulatedBefore time.Time
 	ProxySymbol     string // what the points before SimulatedBefore come from
+	// FullySimulated positively identifies a wholly reconstructed history,
+	// with no real quotes or known first-real-quote frontier. It is mutually
+	// exclusive with SimulatedBefore. False alone does not establish that
+	// quotes are real: older SIM files can have unknown reconstruction bounds.
+	FullySimulated bool
 
 	// EstimatedFrom is non-zero when the points from that date on are a
 	// nowcast: the fund's last published value carried forward by the daily

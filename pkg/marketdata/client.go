@@ -388,6 +388,7 @@ func (c *Client) fetchIndexAsset(canonical string, from time.Time, spec fetchSpe
 		return nil, fmt.Errorf("index %s: no embedded reconstruction", canonical)
 	}
 	s.Name, s.Symbol, s.Source = e.Name, canonical, "index"
+	markSimdataProvenance(s)
 	if s.Currency == "" {
 		s.Currency = e.Currency
 	}
@@ -916,6 +917,7 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 	if _, _, ok := fxCross(symbol); ok && s.Source != "ecb" {
 		c.fillFXHoles(ctx, symbol, s) // the days a market source skipped, from the ECB fixings
 	}
+	s.Warnings = s.DataWarnings()
 	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil
@@ -934,14 +936,18 @@ func (c *Client) staleFallback(ctx context.Context, cacheID, embedID string, fro
 	s, fetchedAt, ok := c.loadCacheAnyAge(cacheID, from)
 	if !ok {
 		if emb, embOK := embeddedHistory(embedID); embOK {
-			c.Logf("warning: %v; using the embedded %s snapshot (ends %s)",
-				cause, embedID, emb.Last().Date.Format("2006-01-02"))
+			warning := fmt.Sprintf("data fallback: using the embedded %s snapshot (ends %s)",
+				embedID, emb.Last().Date.Format("2006-01-02"))
+			emb.Warnings = appendWarning(emb.DataWarnings(), warning)
+			c.Logf("warning: %s (%v)", warning, cause)
 			return emb, nil
 		}
 		return nil, cause
 	}
-	c.Logf("warning: refreshing %s failed (%v), keeping cached data from %s (last quote %s)",
-		embedID, cause, fetchedAt.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"))
+	warning := fmt.Sprintf("refreshing %s failed; keeping cached data from %s (last quote %s)",
+		embedID, fetchedAt.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"))
+	s.Warnings = appendWarning(s.DataWarnings(), warning)
+	c.Logf("warning: %s (%v)", warning, cause)
 	return s, nil
 }
 
@@ -1003,6 +1009,7 @@ func (c *Client) cachedHistory(ctx context.Context, source, id string, from time
 		c.memoize(key, s)
 		return s, nil
 	}
+	s.Warnings = s.DataWarnings()
 	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	c.memoize(key, s)

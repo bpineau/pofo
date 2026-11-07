@@ -16,6 +16,21 @@ to detect either layout and select by Symbol when the file holds several
 series. Currency, explicit cadence, warnings and FX extrapolation metadata
 survive the export/import cycle.
 
+Display `Series.Warnings` beside the resulting figures. For a series built
+directly by your own code, `Series.DataWarnings()` also derives known
+provider qualifications, such as Stooq prices without dividend adjustments
+or distributing FT/Morningstar NAVs. Panels, transformations and CSV export
+materialize those qualifications so a blend or export cannot silently erase
+them when it replaces or omits `Source`. The method returns a detached,
+deduplicated slice and does not mutate the series.
+
+A failed refresh can still return cached quotes or a bundled fallback.
+Its warning identifies the retained data dates; detailed provider errors
+remain in `Client.Logf`. A live HICP source that appears frozen also carries
+a warning, preserved in its cache. These warnings do not relax strict
+deflator coverage checks. `Offline` prohibits downloads; it does not freeze
+the contents of an existing cache.
+
 ## One call for any identifier
 
 ```go

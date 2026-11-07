@@ -65,6 +65,7 @@ func Bundled(id string) (*Series, error) {
 					"Client.FetchExtended(%q) its real quotes: %w", asset, asset+"SIM", asset, fs.ErrNotExist)
 			}
 			s.Symbol, s.Source, s.Currency = bundledID(asset, index), "simdata", e.Currency
+			markSimdataProvenance(s)
 			return s, nil
 		}
 	}

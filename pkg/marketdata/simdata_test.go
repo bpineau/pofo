@@ -3,6 +3,7 @@ package marketdata
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -60,11 +61,55 @@ func TestWriteSimdataRejectsIncomplete(t *testing.T) {
 	cases := []*SimdataFile{
 		{ID: "", Points: []Point{{Date: d(2000, 1, 3), Close: 1}}},
 		{ID: "X", Points: nil},
+		{ID: "X", SimulatedBefore: d(2000, 1, 3), FullySimulated: true, Points: []Point{{Date: d(2000, 1, 3), Close: 1}}},
 	}
 	for _, sf := range cases {
 		if err := WriteSimdata(dir, sf); err == nil {
 			t.Errorf("WriteSimdata(%+v) should have failed", sf)
 		}
+	}
+}
+
+func TestSimdataKnownProvenanceDoesNotBecomeUnknown(t *testing.T) {
+	for _, s := range []*Series{
+		{FullySimulated: true},
+		{SimulatedBefore: d(2000, 1, 3)},
+	} {
+		markSimdataProvenance(s)
+		if len(s.Warnings) != 0 {
+			t.Errorf("known provenance marked unknown: %v", s.Warnings)
+		}
+	}
+}
+
+func TestSimdataProvenanceRoundTrip(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		frontier time.Time
+		fully    bool
+	}{
+		{"mixed", d(2000, 1, 4), false},
+		{"all real", d(2000, 1, 3), false},
+		{"all reconstructed", time.Time{}, true},
+		{"unknown", time.Time{}, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			sf := &SimdataFile{ID: "TEST", SimulatedBefore: tc.frontier, FullySimulated: tc.fully,
+				Warnings: []string{"source says \"limited\"\ncoverage"},
+				Points:   []Point{{Date: d(2000, 1, 3), Close: 100}, {Date: d(2000, 1, 4), Close: 101}},
+			}
+			if err := WriteSimdata(dir, sf); err != nil {
+				t.Fatal(err)
+			}
+			s, ok, err := ReadSimdata(dir, "TEST")
+			if err != nil || !ok {
+				t.Fatalf("read back: ok=%v err=%v", ok, err)
+			}
+			if !s.SimulatedBefore.Equal(tc.frontier) || s.FullySimulated != tc.fully || !slices.Equal(s.Warnings, sf.Warnings) {
+				t.Errorf("provenance lost: frontier=%v fully=%v warnings=%v", s.SimulatedBefore, s.FullySimulated, s.Warnings)
+			}
+		})
 	}
 }
 

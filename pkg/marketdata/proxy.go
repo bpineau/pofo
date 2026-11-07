@@ -1,6 +1,10 @@
 package marketdata
 
-import "sort"
+import (
+	"slices"
+	"sort"
+	"time"
+)
 
 // proxyFor maps common ETFs to a longer-lived series tracking the same
 // market, used to reconstruct ("simulate") history before the ETF's
@@ -68,8 +72,11 @@ func ProxySymbol(symbol string) (string, bool) {
 // was extended. Only the proxy's returns are kept, so it must be quoted in
 // the asset's currency (a sub-unit such as GBp and its currency agree):
 // FetchExtended converts it first.
+// The donated segment retains its definition junctions (including the
+// anchor date) and data warnings; metadata belonging only to the unused
+// proxy tail is not copied. The proxy is never modified.
 func ExtendBack(s, proxy *Series) bool {
-	if len(s.Points) == 0 || len(proxy.Points) == 0 || !s.SimulatedBefore.IsZero() {
+	if len(s.Points) == 0 || len(proxy.Points) == 0 || !s.SimulatedBefore.IsZero() || s.FullySimulated {
 		return false
 	}
 	anchor := s.Points[0]
@@ -92,6 +99,18 @@ func ExtendBack(s, proxy *Series) bool {
 		return false
 	}
 	s.Points = append(pre, s.Points...)
+	s.Junctions = slices.Clone(s.Junctions)
+	for _, j := range proxy.Junctions {
+		if j.After(pre[0].Date) && !j.After(anchor.Date) {
+			s.Junctions = append(s.Junctions, j)
+		}
+	}
+	slices.SortFunc(s.Junctions, func(a, b time.Time) int { return a.Compare(b) })
+	s.Junctions = slices.CompactFunc(s.Junctions, time.Time.Equal)
+	s.Warnings = s.DataWarnings()
+	for _, w := range proxy.DataWarnings() {
+		s.Warnings = appendWarning(s.Warnings, "proxy "+proxy.Symbol+": "+w)
+	}
 	s.SimulatedBefore = anchor.Date
 	s.ProxySymbol = proxy.Symbol
 	return true

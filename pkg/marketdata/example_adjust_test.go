@@ -54,3 +54,13 @@ func ExampleSeries_Deflate() {
 	fmt.Printf("purchasing power: %.2f\n", real.Last().Close)
 	// Output: purchasing power: 104.76
 }
+
+func ExampleSeries_DataWarnings() {
+	s := &marketdata.Series{Source: "stooq", Warnings: []string{"Example qualification"}}
+	for _, warning := range s.DataWarnings() {
+		fmt.Println(warning)
+	}
+	// Output:
+	// Example qualification
+	// Stooq closes are not dividend-adjusted: the income is missing from every statistic
+}

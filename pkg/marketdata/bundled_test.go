@@ -43,6 +43,23 @@ func TestBundled(t *testing.T) {
 	}
 }
 
+func TestBundledLegacyReconstructionBoundary(t *testing.T) {
+	s, err := Bundled("IWDASIM")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !s.SimulatedBefore.IsZero() || !strings.Contains(strings.Join(s.Warnings, " "), "boundary is unknown") {
+		t.Errorf("legacy reconstruction lacks honest provenance: boundary=%v warnings=%v", s.SimulatedBefore, s.Warnings)
+	}
+	ref, err := Bundled("TREASURY-LONG-YIELD")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(strings.Join(ref.Warnings, " "), "boundary is unknown") {
+		t.Errorf("reference level incorrectly treated as a reconstruction: %v", ref.Warnings)
+	}
+}
+
 // The SIM convention, which every door obeys: a quoted fund's reconstruction
 // answers only to its SIM form, never to its plain name, whatever alias or
 // ISIN spells it; a catalog index, quoted nowhere, answers to both; a

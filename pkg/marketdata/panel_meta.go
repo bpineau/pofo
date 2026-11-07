@@ -9,7 +9,7 @@ func (p *Panel) mixMetadata(id string, weights map[string]float64) (map[string]*
 	for key, s := range p.meta {
 		meta[key] = s
 	}
-	mix := &Series{Symbol: id, Source: "blend"}
+	mix := &Series{Symbol: id, Source: "blend", FullySimulated: true}
 	unknown := false
 	for _, key := range p.IDs {
 		if weights[key] == 0 {
@@ -18,8 +18,10 @@ func (p *Panel) mixMetadata(id string, weights map[string]float64) (map[string]*
 		s := p.meta[key]
 		if s == nil {
 			unknown = true
+			mix.FullySimulated = false
 			continue
 		}
+		mix.FullySimulated = mix.FullySimulated && s.FullySimulated
 		if s.Currency == "" {
 			unknown = true
 		} else if mix.Currency == "" {

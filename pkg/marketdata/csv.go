@@ -39,10 +39,11 @@ const (
 	keyCadence         = "cadence"                // Series.Cadence, periods per year
 	keyWarnings        = "warnings"               // Series.Warnings, a JSON string array
 	keyFXBefore        = "fx-extrapolated-before" // Series.FXExtrapolatedBefore
+	keyFullySimulated  = "fully-simulated"        // Series.FullySimulated
 )
 
 // seriesKeys lists the metadata keys in the order WriteCSV writes them.
-var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions, keyEnds, keyCadence, keyWarnings, keyFXBefore}
+var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyFullySimulated, keyJunctions, keyEnds, keyCadence, keyWarnings, keyFXBefore}
 
 // ReadSeriesCSV reads either supported CSV layout, detecting it from the
 // first data or column-header row. A date,value file uses id as its symbol;
@@ -85,7 +86,9 @@ func ReadSeriesCSV(r io.Reader, id string) ([]*Series, error) {
 // "# junctions:" (comma-separated ISO dates) and "# ends:" (one ISO date,
 // optionally followed by the reason in free text, which is not kept), plus
 // "# cadence:" (periods per year), "# warnings:" (a JSON string array) and
-// "# fx-extrapolated-before:" (ISO date). They set the matching Series fields.
+// "# fx-extrapolated-before:" (ISO date). "# fully-simulated: true" declares
+// a wholly reconstructed history and cannot coexist with simulated-before.
+// They set the matching Series fields.
 // Junctions are the one header a
 // consumer must honour to be correct rather than merely informed: see
 // Series.Junctions. The first other
@@ -112,8 +115,8 @@ func ReadCSV(r io.Reader, id string) (*Series, error) {
 // WriteCSV writes, and returns them in the order their identifiers first
 // appear, each sorted by date. Blank lines and "#" comments are skipped,
 // except for the per-series metadata headers WriteCSV writes,
-// "# <id> <key>: <value>" with the keys ReadCSV knows (name, currency,
-// simulated-before, junctions, ends). The first other line may be the column
+// "# <id> <key>: <value>" with all the keys ReadCSV knows. The first other
+// line may be the column
 // header, recognized as ReadCSV recognizes one.
 //
 // A date given twice for one identifier is an error, as is metadata for an
@@ -179,8 +182,10 @@ func ReadLongCSV(r io.Reader) ([]*Series, error) {
 // Values are written in the shortest form that parses back to the same
 // float64 (strconv 'g', -1), so ReadLongCSV returns exactly the symbols,
 // names and currencies (trimmed of surrounding blanks), simulation frontiers,
-// junctions, declared ends, cadence, warnings, FX extrapolation frontier and
-// points it was given. Nothing else a Series carries is
+// junctions, declared ends, cadence, fully-simulated status, warnings,
+// FX extrapolation frontier and points it was given. Warnings additionally
+// include DataWarnings' provider qualifications, so omitting Source never
+// erases a known missing-income warning. Nothing else a Series carries is
 // written: not its source, its dividends nor a nowcast frontier (strip a
 // nowcast tail with WithoutEstimates first, as every storing consumer does).
 //
@@ -239,6 +244,8 @@ func writable(s *Series) error {
 		return fmt.Errorf("%s has no point", s.Symbol)
 	case !finite(s.Cadence) || s.Cadence < 0:
 		return fmt.Errorf("%s: invalid cadence", s.Symbol)
+	case s.FullySimulated && !s.SimulatedBefore.IsZero():
+		return fmt.Errorf("%s: fully-simulated and simulated-before are mutually exclusive", s.Symbol)
 	}
 	for i, p := range s.Points {
 		if !finite(p.Close) {
@@ -261,9 +268,13 @@ func metadataValue(s *Series, key string) string {
 			return strconv.FormatFloat(s.Cadence, 'g', -1, 64)
 		}
 	case keyWarnings:
-		if len(s.Warnings) > 0 {
-			b, _ := json.Marshal(s.Warnings)
+		if warnings := s.DataWarnings(); len(warnings) > 0 {
+			b, _ := json.Marshal(warnings)
 			return string(b)
+		}
+	case keyFullySimulated:
+		if s.FullySimulated {
+			return "true"
 		}
 	case keyFXBefore:
 		if !s.FXExtrapolatedBefore.IsZero() {
@@ -343,6 +354,12 @@ type csvRow struct {
 // metadata applies one header; an unknown key is ignored, as any comment.
 func (b *seriesBuilder) metadata(n int, key, val string) error {
 	switch key {
+	case keyFullySimulated:
+		v, err := strconv.ParseBool(val)
+		if err != nil {
+			return fmt.Errorf("line %d: invalid fully-simulated flag %q", n, val)
+		}
+		b.s.FullySimulated = v
 	case keyCadence:
 		v, err := strconv.ParseFloat(val, 64)
 		if err != nil || !finite(v) || v < 0 {
@@ -405,6 +422,9 @@ func (b *seriesBuilder) row(n int, date, value string, valid func(float64) bool)
 // series sorts the rows by date and returns the finished series, refusing an
 // empty one and a date given twice.
 func (b *seriesBuilder) series() (*Series, error) {
+	if b.s.FullySimulated && !b.s.SimulatedBefore.IsZero() {
+		return nil, errors.New("fully-simulated and simulated-before are mutually exclusive")
+	}
 	if len(b.rows) == 0 {
 		return nil, errors.New("no data")
 	}

@@ -34,6 +34,7 @@ type cacheFile struct {
 	Name          string    `json:"name"`
 	Currency      string    `json:"currency"`
 	Source        string    `json:"source"`
+	Warnings      []string  `json:"warnings,omitempty"`
 	RequestedFrom string    `json:"requested_from"`
 	FetchedAt     time.Time `json:"fetched_at"`
 	Dates         []string  `json:"dates"`
@@ -118,7 +119,8 @@ func (c *Client) loadCacheEntry(symbol string, from time.Time) (*Series, cacheFi
 	if err != nil || (reqFrom.After(from) && !c.Offline) {
 		return nil, cacheFile{}, false
 	}
-	s := &Series{Symbol: cf.Symbol, Name: cf.Name, Currency: cf.Currency, Source: cf.Source}
+	s := &Series{Symbol: cf.Symbol, Name: cf.Name, Currency: cf.Currency, Source: cf.Source, Warnings: cf.Warnings}
+	s.Warnings = s.DataWarnings()
 	for i, d := range cf.Dates {
 		t, err := time.ParseInLocation("2006-01-02", d, time.UTC)
 		if err != nil {
@@ -162,6 +164,7 @@ func (c *Client) saveCacheAs(cacheID string, s *Series, from time.Time) {
 		Name:          s.Name,
 		Currency:      s.Currency,
 		Source:        s.Source,
+		Warnings:      s.DataWarnings(),
 		Version:       cacheFormat,
 		RequestedFrom: from.UTC().Format("2006-01-02"),
 		FetchedAt:     time.Now(),

@@ -90,12 +90,17 @@ func genOne(ctx context.Context, client *marketdata.Client, fetcher simgen.Fetch
 		return nil
 	}
 	return marketdata.WriteSimdata(dir, &marketdata.SimdataFile{
-		ID:         r.ID,
-		Name:       r.Name,
-		Method:     r.Method,
-		Validation: validation,
-		Generated:  time.Now().Format("2006-01-02"),
-		Points:     sim.Points,
+		ID:              r.ID,
+		Name:            r.Name,
+		Method:          r.Method,
+		Validation:      validation,
+		Generated:       time.Now().Format("2006-01-02"),
+		SimulatedBefore: sim.SimulatedBefore,
+		FullySimulated:  sim.FullySimulated,
+		Warnings:        sim.DataWarnings(),
+		Junctions:       sim.Junctions,
+		Ends:            sim.Ends,
+		Points:          sim.Points,
 	})
 }
 

@@ -45,8 +45,11 @@ func TestLoadDoors(t *testing.T) {
 	// The SIM suffix goes to the client, which offline and with an empty
 	// cache still serves the SIM history it would splice, and says so.
 	ext, err := c.Load(ctx, "DBMFSIM", FetchOptions{})
-	if err != nil || ext.Len() < 1000 || ext.SimulatedBefore.IsZero() {
+	if err != nil || ext.Len() < 1000 {
 		t.Fatalf("SIM through the client: %v", err)
+	}
+	if ext.SimulatedBefore.IsZero() && !ext.FullySimulated && !strings.Contains(strings.Join(ext.Warnings, " "), "boundary") {
+		t.Fatal("SIM fallback must expose its known status or qualify an unknown frontier")
 	}
 
 	// A file, named by its path.

@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 )
@@ -36,15 +37,39 @@ import (
 //
 //	# ends: 2024-04-05 (EIA discontinued the contract series)
 type SimdataFile struct {
-	ID         string      // canonical identifier; the file is "<ID>.csv"
-	Name       string      // "# name:" header, a display name
-	Method     string      // "# method:" header, how the history was built
-	Validation string      // "# validation:" header, how it was checked
-	Generated  string      // "# generated:" header, the generation date
-	Junctions  []time.Time // "# junctions:" header, see Series.Junctions
-	Ends       time.Time   // "# ends:" header, see Series.Ends; zero for a live series
-	EndsWhy    string      // the reason written after the Ends date, in parentheses
-	Points     []Point     // the date,close rows, ascending
+	ID         string // canonical identifier; the file is "<ID>.csv"
+	Name       string // "# name:" header, a display name
+	Method     string // "# method:" header, how the history was built
+	Validation string // "# validation:" header, how it was checked
+	Generated  string // "# generated:" header, the generation date
+	// SimulatedBefore is the first real quote date, persisted verbatim in
+	// "# simulated-before:". Zero means no known frontier; the first stored
+	// date means the file has no reconstructed prefix.
+	SimulatedBefore time.Time
+	// FullySimulated declares positively known reconstruction throughout,
+	// without a real quote frontier. It is mutually exclusive with
+	// SimulatedBefore and is written as "# fully-simulated: true".
+	FullySimulated bool
+	// Warnings qualify the stored data, persisted as a JSON string array in
+	// "# warnings:". Consumers must display them with the resulting figures.
+	Warnings  []string
+	Junctions []time.Time // "# junctions:" header, see Series.Junctions
+	Ends      time.Time   // "# ends:" header, see Series.Ends; zero for a live series
+	EndsWhy   string      // the reason written after the Ends date, in parentheses
+	Points    []Point     // the date,close rows, ascending
+}
+
+// markSimdataProvenance qualifies an actual reconstruction with no recorded
+// frontier. ReadSimdataFS also reads reference levels, so the callers that
+// know they are serving reconstruction data apply this qualification.
+func markSimdataProvenance(s *Series) {
+	if !s.SimulatedBefore.IsZero() || s.FullySimulated {
+		return
+	}
+	const warning = "Reconstruction boundary is unknown: this history does not record where simulated data ends and real quotes begin."
+	if !slices.Contains(s.Warnings, warning) {
+		s.Warnings = append(slices.Clone(s.Warnings), warning)
+	}
 }
 
 // ReadSimdata loads the simulated series stored for the canonical id in a
@@ -81,10 +106,14 @@ func ReadSimdataFS(fsys fs.FS, id string) (s *Series, ok bool, err error) {
 }
 
 // WriteSimdata stores a simulated series in dir, named after the canonical
-// id, in the format read back by ReadSimdata.
+// id, in the format read back by ReadSimdata. It rejects a missing ID or
+// empty history and contradictory FullySimulated and SimulatedBefore fields.
 func WriteSimdata(dir string, sf *SimdataFile) error {
 	if sf.ID == "" || len(sf.Points) == 0 {
 		return fmt.Errorf("incomplete simdata for %q", sf.ID)
+	}
+	if sf.FullySimulated && !sf.SimulatedBefore.IsZero() {
+		return fmt.Errorf("simdata %q cannot be fully simulated and have a real quote frontier", sf.ID)
 	}
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
@@ -103,6 +132,15 @@ func WriteSimdata(dir string, sf *SimdataFile) error {
 	}
 	if sf.Generated != "" {
 		fmt.Fprintf(&b, "# generated: %s\n", sf.Generated)
+	}
+	if !sf.SimulatedBefore.IsZero() {
+		fmt.Fprintf(&b, "# simulated-before: %s\n", sf.SimulatedBefore.Format(time.DateOnly))
+	}
+	if sf.FullySimulated {
+		b.WriteString("# fully-simulated: true\n")
+	}
+	if warnings := metadataValue(&Series{Warnings: sf.Warnings}, keyWarnings); warnings != "" {
+		fmt.Fprintf(&b, "# warnings: %s\n", warnings)
 	}
 	if len(sf.Junctions) > 0 {
 		days := make([]string, len(sf.Junctions))

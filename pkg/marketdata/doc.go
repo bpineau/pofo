@@ -27,6 +27,8 @@
 //   - [ReadSeriesCSV] detects simple/long CSV; [ReadCSV], [ReadLongCSV] and
 //     [WriteCSV] are the explicit file readers and writer. Warnings, currency
 //     and explicit cadence survive a round trip.
+//   - [Series.DataWarnings] exposes known provider qualifications even for
+//     caller-constructed series. Panels and CSV exports retain them.
 //
 // The CLI's own fetch, a fund with its backcast in front, in euros:
 //

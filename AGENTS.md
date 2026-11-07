@@ -51,6 +51,8 @@ and `go vet ./...` do not.
 - A bare fund ID means real quotes; its `SIM` suffix opts into reconstructed
   history. `Bundled("IWDASIM")` is valid; `Bundled("IWDA")` is not a shortcut
   to that reconstruction. Catalog indices can have long bare IDs.
+  SIM files carry known `SimulatedBefore` / `FullySimulated` provenance;
+  legacy files without a frontier warn explicitly instead of inventing one.
 - Use `NewPanel` for cross-series statistics: shared return intervals, no
   fabricated zero returns. Use `AlignSeries` for forward-filled valuation.
   Use `Series.Stats` after `Panel.Series` to retain its explicit cadence.
@@ -66,8 +68,11 @@ and `go vet ./...` do not.
   already reside in prices; envelope fees and execution costs do not.
 - With external flows, statistics use `SimResult.Index` (time weighted);
   `Values` and flows serve money outcomes and IRR. Scenario/decumul returns
-  are real. Surface study/series `Warnings` to users. Undefined statistics
-  remain NaN in Go and serialize as JSON null, not a measured zero.
+  are real. Surface study/series `Warnings` to users.
+  For caller-constructed series, `Series.DataWarnings()` includes provider
+  qualifications; panels and CSV exports retain these even without `Source`.
+  Undefined statistics remain NaN in Go and serialize as JSON null, not a
+  measured zero.
 - Optimizers take aligned return slices, asset order and explicit cadence.
   Resolve named bounds first. Apply `Spec.Train` to the calendar and clear it
   before solving; it is rejected if left unhandled. `FitEvaluate` fits training

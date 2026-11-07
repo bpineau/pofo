@@ -153,7 +153,7 @@ func NewPanel(f Frequency, list ...*Series) (*Panel, error) {
 	for _, s := range list {
 		cp := *s
 		cp.Points, cp.Dividends = nil, nil
-		cp.Warnings, cp.Junctions = slices.Clone(s.Warnings), slices.Clone(s.Junctions)
+		cp.Warnings, cp.Junctions = s.DataWarnings(), slices.Clone(s.Junctions)
 		p.meta[s.Symbol] = &cp
 	}
 periods:

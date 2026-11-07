@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"slices"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -345,9 +346,26 @@ func (r refFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error)
 
 // Splice returns the real series extended backwards by the simulated
 // composite: real quotes wherever they exist, rescaled simulation before.
+// It preserves the first real quote frontier even if no points are prepended,
+// and retains existing provenance and qualifications of the real segment.
 func Splice(real, sim *marketdata.Series) *marketdata.Series {
-	out := &marketdata.Series{Symbol: real.Symbol, Name: real.Name, Currency: real.Currency, Source: "simdata"}
-	out.Points = append(out.Points, real.Points...)
-	marketdata.ExtendBack(out, sim)
-	return out
+	out := *real
+	out.Source = "simdata"
+	out.Points = slices.Clone(real.Points)
+	out.Dividends = slices.Clone(real.Dividends)
+	out.Warnings = real.DataWarnings()
+	out.Junctions = slices.Clone(real.Junctions)
+	// An existing reconstructed prefix is still a usable anchor for an
+	// earlier donor, but its known real frontier must survive that extension.
+	out.SimulatedBefore = time.Time{}
+	marketdata.ExtendBack(&out, sim)
+	switch {
+	case real.FullySimulated:
+		out.SimulatedBefore = time.Time{}
+	case !real.SimulatedBefore.IsZero():
+		out.SimulatedBefore = real.SimulatedBefore
+	case len(real.Points) > 0:
+		out.SimulatedBefore = real.First().Date
+	}
+	return &out
 }

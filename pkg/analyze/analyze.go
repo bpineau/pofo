@@ -273,7 +273,7 @@ func seriesWarnings(s *marketdata.Series) []string {
 	if s.Len() == 0 {
 		return nil
 	}
-	out := append([]string(nil), s.Warnings...)
+	out := s.DataWarnings()
 	first, last := s.First().Date, s.Last().Date
 	if sb := s.SimulatedBefore; !sb.IsZero() && first.Before(sb) {
 		out = append(out, fmt.Sprintf("simulated before %s%s: the history before that date is a reconstruction, not quotes",
@@ -282,14 +282,6 @@ func seriesWarnings(s *marketdata.Series) []string {
 	if ef := s.EstimatedFrom; !ef.IsZero() && !last.Before(ef) {
 		out = append(out, fmt.Sprintf("estimated from %s%s: the points from that date on are a nowcast, not published values",
 			ef.Format(time.DateOnly), via(s.EstimateProxy)))
-	}
-	switch s.Source {
-	case "ft", "morningstar":
-		if marketdata.LooksDistributing(s.Name) {
-			out = append(out, fmt.Sprintf("distributing share class quoted as a NAV (%s): the income it pays out is missing from every statistic", s.Source))
-		}
-	case "stooq":
-		out = append(out, "Stooq closes are not dividend-adjusted: the income is missing from every statistic")
 	}
 	for _, j := range s.Junctions {
 		if j.After(first) && !j.After(last) {

@@ -152,6 +152,12 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 	cp := *s
 	s = &cp
 	if simOK && ExtendBack(s, sim) {
+		// This file describes the same target, so its recorded real quote
+		// frontier remains evidence even when today's download starts later.
+		// A generic proxy's own real quotes are not evidence about the target.
+		if !sim.SimulatedBefore.IsZero() && sim.SimulatedBefore.Before(s.SimulatedBefore) {
+			s.SimulatedBefore = sim.SimulatedBefore
+		}
 		s.ProxySymbol = "simdata"
 		c.Logf("%s: history extended via simdata starting %s",
 			canonical, s.First().Date.Format("2006-01-02"))
@@ -203,8 +209,10 @@ func (c *Client) simOnly(ctx context.Context, sim *Series, canonical, base strin
 				base, fetchErr, sim.Currency, opt.Currency, ErrWrongCurrency)
 		}
 	}
-	c.Logf("warning: %s unavailable (%v), using simulated data only", base, fetchErr)
-	sim.SimulatedBefore = sim.Last().Date
+	warning := fmt.Sprintf("%s real quotes unavailable; using bundled history only (ends %s)", base, sim.Last().Date.Format(time.DateOnly))
+	sim.Warnings = appendWarning(sim.DataWarnings(), warning)
+	c.Logf("warning: %s (%v)", warning, fetchErr)
+	markSimdataProvenance(sim)
 	sim.ProxySymbol = "simdata"
 	if !opt.NoConvert {
 		var err error
