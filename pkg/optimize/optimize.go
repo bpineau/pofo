@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // Objective is the quantity the optimizer targets.
@@ -75,11 +77,10 @@ func (l Limits) Any() bool {
 // Window is the optional fitting period parsed from a "train:" constraint.
 // A zero Start or End leaves that end open.
 //
-// Solve IGNORES IT: this package is date-free, and slicing the returns to the
-// training window is the caller's job (pkg/compare does it, then measures the
-// resulting weights over the full window so the report's numbers are
-// out-of-sample). It travels in Spec only because it arrives in the same
-// "#meta optimize:" directive and one parser is better than two.
+// This package is date-free: the caller selects the dates, then clears Train
+// before calling Solve or SolveCWARP. Both reject a nonzero window so an
+// unapplied fitting window cannot silently describe an in-sample fit as a
+// held-out result. FitEvaluate accepts separate training and test panels.
 type Window struct {
 	Start, End time.Time // inclusive bounds; a zero bound is open
 }
@@ -133,8 +134,8 @@ type Spec struct {
 	// path search, for every objective but RiskParity and CWARP, which are
 	// solved elsewhere and reject limits at parse time.
 	Limits Limits
-	// Train is the fitting window parsed from "train:", ignored here and
-	// applied by the caller: see Window.
+	// Train is the fitting window parsed from "train:". Apply it in the
+	// caller and clear it before solving: see Window.
 	Train Window
 
 	// Views are the BlackLitterman beliefs parsed from "view:" tokens. They
@@ -153,6 +154,18 @@ type Spec struct {
 	// fixes the risk aversion at PriorReturn divided by the prior's
 	// variance; zero falls back to an assumed Sharpe of 0.4.
 	PriorReturn float64
+
+	// RiskBudgets sets strictly positive target Euler risk shares for
+	// RiskParity, in asset order. They must sum to 1 (tolerance 1e-6).
+	// Nil means equal shares. Zero budgets are rejected: omit that asset
+	// from the input instead. Other objectives reject this field.
+	RiskBudgets []float64
+	// RiskFree is the annual arithmetic risk-free return, as a fraction,
+	// for MaxSharpe and MaxSortino. Zero preserves their historical default.
+	// Other objectives reject a nonzero value. Negative finite rates are valid.
+	RiskFree float64
+
+	boundsResolved bool
 }
 
 // Resolve turns Spec.Bounds (keyed by identifier) into the Lower/Upper slices
@@ -161,6 +174,7 @@ type Spec struct {
 // in Bounds that matches no asset is an error, since a typo would otherwise
 // read as "no bound at all".
 func (s *Spec) Resolve(ids [][]string) error {
+	s.boundsResolved = false
 	n := len(ids)
 	s.Lower, s.Upper = make([]float64, n), make([]float64, n)
 	for i := range s.Lower {
@@ -180,6 +194,7 @@ func (s *Spec) Resolve(ids [][]string) error {
 		views := append([]View(nil), s.Views...)
 		for i := range views {
 			v := &views[i]
+			v.resolved = false
 			if v.asset = indexOf(ids, v.Asset); v.asset < 0 {
 				return fmt.Errorf("view: %q matches no holding", v.Asset)
 			}
@@ -189,9 +204,11 @@ func (s *Spec) Resolve(ids [][]string) error {
 					return fmt.Errorf("view: %q matches no holding", v.Versus)
 				}
 			}
+			v.resolved = true
 		}
 		s.Views = views
 	}
+	s.boundsResolved = true
 	return nil
 }
 
@@ -270,11 +287,16 @@ type Result struct {
 	// mean/covariance solvers work in, and runs higher by the volatility
 	// drag). Zero when the solve did not go through that path.
 	CAGR float64
-	// Feasible reports whether the returned weights satisfy Spec.Limits:
-	// always true for a successful solve with no limit. False means the
-	// constraints could not be met and the weights are the least-violating
-	// point found, not an answer.
+	// Feasible reports whether the returned weights satisfy Spec.Limits and
+	// weight bounds (including RiskParity's historically ignored bounds).
+	// RiskParity also verifies its Euler risk shares within 1e-4 absolute.
+	// Always true for a successful solve with no constraint. False means the
+	// returned point misses a limit. The heuristic did not find a feasible
+	// answer; it does not prove that none exists.
 	Feasible bool
+	// FeasibilityReason explains a false Feasible result. RiskParity retains
+	// its risk-budget weights even when they violate requested weight bounds.
+	FeasibilityReason string
 
 	// Implied, Posterior and Lambda describe a BlackLitterman solve (zero
 	// for every other objective): the annualized returns the prior
@@ -548,10 +570,57 @@ func parseBound(s string, end bool) (time.Time, error) {
 // metrics.TradingDaysPerYear for daily returns, metrics.PeriodsPerYear of
 // their dates in general. Every annualized figure, in the objective, the
 // limits and the Result, is annualized at that cadence.
+// Returns must be finite and greater than -1. Bounds and views keyed by
+// identifier require Spec.Resolve first; an unapplied Train is an error.
 func Solve(returns [][]float64, periodsPerYear float64, spec Spec) (Result, error) {
+	if err := validateSpec(spec, len(returns), false); err != nil {
+		return Result{}, err
+	}
 	res, err := solvePanel(returns, periodsPerYear, spec)
+	if err == nil {
+		err = checkSolution(res, len(returns))
+	}
 	if err == nil && !spec.Limits.Any() {
 		res.Feasible = true // no limit to violate
+	}
+	if err == nil {
+		if res.Volatility > 0 {
+			res.Sharpe = (res.Return - spec.RiskFree) / res.Volatility
+		}
+		if spec.Objective == MaxSortino {
+			buf := make([]float64, len(returns[0]))
+			blend(returns, res.Weights, buf)
+			res.Sortino = metrics.Sortino(buf, spec.RiskFree, periodsPerYear)
+		}
+		if spec.Objective == RiskParity {
+			_, cov := meanCov(returns, periodsPerYear)
+			marginal := matVec(cov, res.Weights)
+			variance := dot(res.Weights, marginal)
+			for i, w := range res.Weights {
+				budget := 1 / float64(len(res.Weights))
+				if len(spec.RiskBudgets) > 0 {
+					budget = spec.RiskBudgets[i]
+				}
+				share := w * marginal[i] / variance
+				if !(variance > 0) || !finite(share) || math.Abs(share-budget) > 1e-4 {
+					res.Feasible = false
+					res.FeasibilityReason = "risk-parity search did not achieve the requested Euler risk shares (absolute tolerance 1e-4)"
+					break
+				}
+			}
+			lo, hi := spec.box(len(returns))
+			for i, w := range res.Weights {
+				if w < lo[i]-1e-7 || w > hi[i]+1e-7 {
+					res.Feasible = false
+					res.FeasibilityReason = "risk-parity retains its risk-budget allocation, which violates requested weight bounds"
+					break
+				}
+			}
+		}
+		if !res.Feasible && res.FeasibilityReason == "" {
+			res.FeasibilityReason = "the heuristic did not find weights satisfying every portfolio limit"
+		}
+		err = checkSolution(res, len(returns))
 	}
 	return res, err
 }
@@ -564,7 +633,7 @@ func solvePanel(returns [][]float64, periodsPerYear float64, spec Spec) (Result,
 	}
 	// The one-asset shortcuts answer weight 1 before any cap is read: a
 	// max-weight below 1/n is infeasible however few the assets.
-	if n := len(returns); spec.MaxWeight > 0 && spec.MaxWeight < 1 && float64(n)*spec.MaxWeight < 1-1e-9 {
+	if n := len(returns); spec.Objective != RiskParity && spec.MaxWeight > 0 && spec.MaxWeight < 1 && float64(n)*spec.MaxWeight < 1-1e-9 {
 		return Result{}, fmt.Errorf("max-weight too low: %d assets cannot sum to 100%% under a %.0f%% cap", n, spec.MaxWeight*100)
 	}
 	// Black-Litterman derives its own expected returns before optimizing,
@@ -600,9 +669,26 @@ func checkPanel(returns [][]float64, periodsPerYear float64) error {
 		if len(r) != t {
 			return fmt.Errorf("asset %d has %d observations, expected %d", i, len(r), t)
 		}
+		for j, x := range r {
+			if !finite(x) || x <= -1 {
+				return fmt.Errorf("asset %d observation %d: return must be finite and greater than -1, got %v", i, j, x)
+			}
+		}
 	}
 	if !(periodsPerYear > 0) || math.IsInf(periodsPerYear, 1) {
 		return fmt.Errorf("periods per year must be a positive count, got %v", periodsPerYear)
+	}
+	// Guard arithmetic overflow before it reaches a projection or search.
+	mu, cov := meanCov(returns, periodsPerYear)
+	for i := range mu {
+		if !finite(mu[i]) {
+			return fmt.Errorf("asset %d: annualized mean overflows", i)
+		}
+		for _, v := range cov[i] {
+			if !finite(v) {
+				return fmt.Errorf("asset %d: annualized covariance overflows", i)
+			}
+		}
 	}
 	return nil
 }
@@ -705,6 +791,13 @@ func meanCov(returns [][]float64, periodsPerYear float64) (mu []float64, cov [][
 // and covariance matrix.
 func solve(mu []float64, cov [][]float64, spec Spec) (Result, error) {
 	n := len(mu)
+	if spec.Objective == RiskParity {
+		for i := range cov {
+			if cov[i][i] <= 0 {
+				return Result{}, fmt.Errorf("risk-parity: asset %d has no variance", i)
+			}
+		}
+	}
 	if n == 1 {
 		return stats([]float64{1}, mu, cov), nil
 	}
@@ -727,9 +820,13 @@ func solve(mu []float64, cov [][]float64, spec Spec) (Result, error) {
 		if float64(n)*maxW < 1-1e-9 {
 			return Result{}, fmt.Errorf("max-weight too low: %d assets cannot sum to 100%% under a %.0f%% cap", n, maxW*100)
 		}
-		w = maxSharpe(mu, cov, maxW)
+		excess := append([]float64(nil), mu...)
+		for i := range excess {
+			excess[i] -= spec.RiskFree
+		}
+		w = maxSharpe(excess, cov, maxW)
 	case RiskParity:
-		w = riskParity(cov)
+		w = riskParity(cov, spec.RiskBudgets)
 	default:
 		return Result{}, fmt.Errorf("unknown objective %q", spec.Objective)
 	}
@@ -780,7 +877,10 @@ func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 			iv[i] = 1 / cov[i][i]
 		}
 	}
-	starts = append(starts, projectCappedSimplex(iv, maxW))
+	if sum := dot(iv, equalStart(n, 1)); finite(sum) && sum > 0 {
+		iv = normalize(iv)
+		starts = append(starts, projectCappedSimplex(iv, maxW))
+	}
 	// The exact uncapped tangency portfolio: the global optimum itself when
 	// no cap binds, and the best available seed when one does.
 	if qp, ok := tangencyQP(mu, cov); ok {
@@ -871,17 +971,22 @@ func projectMuPlane(v, mu []float64) []float64 {
 	return at((lo + hi) / 2)
 }
 
-// riskParity returns the long-only portfolio whose assets contribute equal
-// shares of risk. It minimizes the convex Spinu objective
-// ½·wᵀΣw − (1/n)·Σ ln(wᵢ) over w>0, then normalizes the weights to sum to 1;
-// at the minimum every wᵢ·(Σw)ᵢ is equal, i.e. equal risk contributions.
-func riskParity(cov [][]float64) []float64 {
+// riskParity minimizes the convex risk-budgeting objective
+// 0.5*x'Cov*x - sum(b_i*log(x_i)) over positive x, then normalizes to 1.
+// At the optimum x_i*(Cov*x)_i = b_i; normalization preserves risk shares.
+// Nil budgets retain equal risk contributions.
+func riskParity(cov [][]float64, budgets []float64) []float64 {
 	n := len(cov)
-	c := 1.0 / float64(n)
+	if len(budgets) == 0 {
+		budgets = make([]float64, n)
+		for i := range budgets {
+			budgets[i] = 1 / float64(n)
+		}
+	}
 	f := func(x []float64) float64 {
 		v := 0.5 * quad(cov, x)
-		for _, xi := range x {
-			v -= c * math.Log(xi)
+		for i, xi := range x {
+			v -= budgets[i] * math.Log(xi)
 		}
 		return v
 	}
@@ -889,7 +994,7 @@ func riskParity(cov [][]float64) []float64 {
 		sx := matVec(cov, x)
 		g := make([]float64, n)
 		for i := range g {
-			g[i] = sx[i] - c/x[i]
+			g[i] = sx[i] - budgets[i]/x[i]
 		}
 		return g
 	}
@@ -965,6 +1070,11 @@ func projectedGradient(f func([]float64) float64, grad func([]float64) []float64
 // {w : Σwᵢ = 1, 0 ≤ wᵢ ≤ cap}. It solves Σ clamp(vᵢ−λ, 0, cap) = 1 for the
 // threshold λ by bisection (the sum is monotonically non-increasing in λ).
 func projectCappedSimplex(v []float64, maxW float64) []float64 {
+	for _, x := range v {
+		if !finite(x) {
+			return make([]float64, len(v))
+		}
+	}
 	sumClamp := func(lam float64) float64 {
 		s := 0.0
 		for _, x := range v {
@@ -974,10 +1084,16 @@ func projectCappedSimplex(v []float64, maxW float64) []float64 {
 	}
 	lo, hi := -1.0, 1.0
 	for sumClamp(lo) < 1 {
-		lo -= 1
+		lo *= 2
+		if !finite(lo) {
+			return make([]float64, len(v))
+		}
 	}
 	for sumClamp(hi) > 1 {
-		hi += 1
+		hi *= 2
+		if !finite(hi) {
+			return make([]float64, len(v))
+		}
 	}
 	for i := 0; i < 100; i++ {
 		mid := (lo + hi) / 2

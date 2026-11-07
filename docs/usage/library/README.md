@@ -23,6 +23,7 @@ bundled data or the network.
 | blend, regress, study the worst months | `marketdata.NewPanel`, `Panel.Mix`, `metrics.Regress`, `metrics.LowestK` | [Panels and blends](panels.md) |
 | compare series | `marketdata.AlignSeries`, `metrics.CorrelationMatrix`, `analyze.Pair` | [Comparing series](comparing.md) |
 | study a portfolio | `analyze.Portfolio`; `portfolio.Parse`, `Build`, `Simulate` | [Portfolios](portfolios.md) |
+| combine FX, inflation and cash; analyze own data | `Series.Deflate`, `CashIndex`, `Series.Excess`, `analyze.Series`, `SeriesSource` | [Adjustments](adjustments.md) |
 | optimize weights | `optimize.ParseSpec`, `optimize.Solve` | [Optimization](optimization.md) |
 | rebuild a missing past | `simgen.Find`, `simgen.Validate` | [Backcasts](backcasts.md) |
 | draw charts or the report | `chart.Line`, `compare.Compute`, `report.Render` | [Rendering](rendering.md) |
@@ -73,7 +74,7 @@ for _, id := range p.IDs {
 
 ## Scripts to start from
 
-[`examples/code/`](../../../examples/code/README.md) holds nineteen
+[`examples/code/`](../../../examples/code/README.md) holds
 single-file programs, one question each: describe a series, compare several,
 blend, regress, the worst months, the crises, rolling outcomes, calendar
 years, the currency effect, a fee, a reconstruction against its reference, a
@@ -103,10 +104,13 @@ step.
 | closes | ADJUSTED (dividends reinvested) by default | `FetchOptions.Raw` gives unadjusted closes with `Series.Dividends` (never both); a distributing fund's NAV is a PRICE return |
 | SIM suffix | `IWDA` = real quotes only; `IWDASIM` = the bundled backcast spliced in front | `Client.FetchExtended`, `Series.SimulatedBefore`; `#meta sim:on` for a whole file |
 | rates | annualized PERCENT LEVELS, never a return | `^IRX`, `^ESTR`, `^SOFR`, `portfolio.Portfolio.Cash` |
+| risk-free | annual arithmetic FRACTION, or total-return cash LEVEL | `analyze.Options.RiskFree`, `optimize.Spec.RiskFree`, `metrics.ComputeOptions.RiskFree`; `analyze.Options.RiskFreeIndex` |
+| execution costs | FRACTION of gross traded notional; results in money or turnover | `portfolio.SimOptions.TransactionCost`; `SimResult.Costs` is money, `SimResult.Turnover` gross trades / pre-trade capital |
 | #meta directives | PERCENT as written | `max-vol:9`, `view:ID:8@70`; FRACTION once parsed into `optimize.Spec` |
 
 Volatility and ratios annualize at each series' own cadence, with a zero
-risk-free rate; CAGR counts 365.25-day years. The conventions section of
+risk-free rate by default; `metrics.ComputeWith` and `analyze.Options` make
+the rate explicit. CAGR counts 365.25-day years. The conventions section of
 `go doc github.com/bpineau/pofo/pkg/metrics` says why figures differ from
 other tools'.
 

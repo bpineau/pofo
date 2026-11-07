@@ -2,6 +2,8 @@ package marketdata
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -29,15 +31,49 @@ import (
 
 // The metadata keys a series carries through a CSV file.
 const (
-	keyName            = "name"             // Series.Name
-	keyCurrency        = "currency"         // Series.Currency
-	keyJunctions       = "junctions"        // Series.Junctions, comma-separated ISO dates
-	keySimulatedBefore = "simulated-before" // Series.SimulatedBefore, one ISO date
-	keyEnds            = "ends"             // Series.Ends, one ISO date, then an optional free-text reason
+	keyName            = "name"                   // Series.Name
+	keyCurrency        = "currency"               // Series.Currency
+	keyJunctions       = "junctions"              // Series.Junctions, comma-separated ISO dates
+	keySimulatedBefore = "simulated-before"       // Series.SimulatedBefore, one ISO date
+	keyEnds            = "ends"                   // Series.Ends, one ISO date, then an optional free-text reason
+	keyCadence         = "cadence"                // Series.Cadence, periods per year
+	keyWarnings        = "warnings"               // Series.Warnings, a JSON string array
+	keyFXBefore        = "fx-extrapolated-before" // Series.FXExtrapolatedBefore
 )
 
 // seriesKeys lists the metadata keys in the order WriteCSV writes them.
-var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions, keyEnds}
+var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions, keyEnds, keyCadence, keyWarnings, keyFXBefore}
+
+// ReadSeriesCSV reads either supported CSV layout, detecting it from the
+// first data or column-header row. A date,value file uses id as its symbol;
+// an id,date,value file retains its own symbols. Metadata and validation are
+// those of ReadCSV and ReadLongCSV. An empty file is an error.
+func ReadSeriesCSV(r io.Reader, id string) ([]*Series, error) {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	sc := bufio.NewScanner(bytes.NewReader(b))
+	sc.Buffer(make([]byte, 4096), 1<<20)
+	for sc.Scan() {
+		line := strings.TrimSpace(sc.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		if len(strings.Split(line, ",")) == 3 {
+			return ReadLongCSV(bytes.NewReader(b))
+		}
+		break
+	}
+	if err := sc.Err(); err != nil {
+		return nil, err
+	}
+	s, err := ReadCSV(bytes.NewReader(b), id)
+	if err != nil {
+		return nil, err
+	}
+	return []*Series{s}, nil
+}
 
 // ReadCSV reads one series from a "date,value" CSV: the layout of every file
 // bundled under pkg/datasets, of a file written by hand, or of an old version
@@ -47,8 +83,10 @@ var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions
 // Blank lines and "#" comments are skipped, except for the metadata headers
 // "# name:", "# currency:", "# simulated-before:" (one ISO date),
 // "# junctions:" (comma-separated ISO dates) and "# ends:" (one ISO date,
-// optionally followed by the reason in free text, which is not kept), which
-// set the Series field of the same name. Junctions are the one header a
+// optionally followed by the reason in free text, which is not kept), plus
+// "# cadence:" (periods per year), "# warnings:" (a JSON string array) and
+// "# fx-extrapolated-before:" (ISO date). They set the matching Series fields.
+// Junctions are the one header a
 // consumer must honour to be correct rather than merely informed: see
 // Series.Junctions. The first other
 // line may be a column header ("date,close", "date,value": a date field that
@@ -141,7 +179,8 @@ func ReadLongCSV(r io.Reader) ([]*Series, error) {
 // Values are written in the shortest form that parses back to the same
 // float64 (strconv 'g', -1), so ReadLongCSV returns exactly the symbols,
 // names and currencies (trimmed of surrounding blanks), simulation frontiers,
-// junctions, declared ends and points it was given. Nothing else a Series carries is
+// junctions, declared ends, cadence, warnings, FX extrapolation frontier and
+// points it was given. Nothing else a Series carries is
 // written: not its source, its dividends nor a nowcast frontier (strip a
 // nowcast tail with WithoutEstimates first, as every storing consumer does).
 //
@@ -198,6 +237,8 @@ func writable(s *Series) error {
 		return fmt.Errorf("%s: the name or the currency holds a line break", s.Symbol)
 	case len(s.Points) == 0:
 		return fmt.Errorf("%s has no point", s.Symbol)
+	case !finite(s.Cadence) || s.Cadence < 0:
+		return fmt.Errorf("%s: invalid cadence", s.Symbol)
 	}
 	for i, p := range s.Points {
 		if !finite(p.Close) {
@@ -215,6 +256,19 @@ func writable(s *Series) error {
 // field is unset.
 func metadataValue(s *Series, key string) string {
 	switch key {
+	case keyCadence:
+		if s.Cadence != 0 {
+			return strconv.FormatFloat(s.Cadence, 'g', -1, 64)
+		}
+	case keyWarnings:
+		if len(s.Warnings) > 0 {
+			b, _ := json.Marshal(s.Warnings)
+			return string(b)
+		}
+	case keyFXBefore:
+		if !s.FXExtrapolatedBefore.IsZero() {
+			return s.FXExtrapolatedBefore.Format(time.DateOnly)
+		}
 	case keyName:
 		return strings.TrimSpace(s.Name)
 	case keyCurrency:
@@ -289,6 +343,22 @@ type csvRow struct {
 // metadata applies one header; an unknown key is ignored, as any comment.
 func (b *seriesBuilder) metadata(n int, key, val string) error {
 	switch key {
+	case keyCadence:
+		v, err := strconv.ParseFloat(val, 64)
+		if err != nil || !finite(v) || v < 0 {
+			return fmt.Errorf("line %d: invalid cadence %q", n, val)
+		}
+		b.s.Cadence = v
+	case keyWarnings:
+		if err := json.Unmarshal([]byte(val), &b.s.Warnings); err != nil {
+			return fmt.Errorf("line %d: invalid warnings: %w", n, err)
+		}
+	case keyFXBefore:
+		t, err := parseDate(val)
+		if err != nil {
+			return fmt.Errorf("line %d: invalid FX frontier", n)
+		}
+		b.s.FXExtrapolatedBefore = t
 	case keyName:
 		b.s.Name = val
 	case keyCurrency:

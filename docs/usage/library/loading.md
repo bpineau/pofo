@@ -11,6 +11,10 @@ where it came from. There are four ways to get one.
 | `Client.Load(ctx, id, opt)` | the first of the three that holds `id`: a path is a file, then the bundle, then the client | as the client allows |
 
 `Client.Load` is the one call an exploration program needs.
+It also reads a single-series long export from `WriteCSV`. Use `ReadSeriesCSV`
+to detect either layout and select by Symbol when the file holds several
+series. Currency, explicit cadence, warnings and FX extrapolation metadata
+survive the export/import cycle.
 
 ## One call for any identifier
 

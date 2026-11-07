@@ -179,3 +179,69 @@ func exampleReturns(t int) [][]float64 {
 	}
 	return out
 }
+
+func ExampleFrontier() {
+	returns := [][]float64{{.03, -.02, .04, -.01, .02, -.02}, {.003, -.001, .004, -.002, .003, -.001}}
+	points, err := optimize.Frontier(returns, 12, optimize.Spec{Objective: optimize.MaxReturn}, []float64{.0001, .2})
+	if err != nil {
+		panic(err)
+	}
+	for _, p := range points {
+		fmt.Printf("cap %.2f %%, feasible %v\n", p.MaxVolatility*100, p.Result.Feasible)
+	}
+	// Output:
+	// cap 0.01 %, feasible false
+	// cap 20.00 %, feasible true
+}
+
+func ExampleEvaluate() {
+	p, err := optimize.Evaluate([][]float64{{.1, -.1, .1, -.1}}, []float64{1}, 1)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("CAGR %.2f %%, deepest drawdown %.0f %%\n", p.CAGR*100, p.MaxDrawdown*100)
+	// Output:
+	// CAGR -0.50 %, deepest drawdown -11 %
+}
+
+func ExampleFitEvaluate() {
+	training := [][]float64{{.02, -.02, .02, -.02}, {.01, .01, -.01, -.01}}
+	heldOut := [][]float64{{-.03, -.03, .02, .02}, {.01, -.01, .01, -.01}}
+	result, err := optimize.FitEvaluate(training, heldOut, 12, optimize.Spec{Objective: optimize.MinVolatility})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("training weight A %.0f %%\n", result.Fit.Weights[0]*100)
+	fmt.Printf("in sample CAGR %.2f %%, out of sample CAGR %.2f %%\n", result.InSample.CAGR*100, result.OutOfSample.CAGR*100)
+	// Output:
+	// training weight A 20 %
+	// in sample CAGR -0.05 %, out of sample CAGR -1.25 %
+}
+
+func ExampleSolve_riskBudgets() {
+	returns := [][]float64{{.01, .01, -.01, -.01}, {.02, -.02, .02, -.02}}
+	result, err := optimize.Solve(returns, 12, optimize.Spec{Objective: optimize.RiskParity, RiskBudgets: []float64{.8, .2}})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("weights %.0f / %.0f %%\n", result.Weights[0]*100, result.Weights[1]*100)
+	// Output:
+	// weights 80 / 20 %
+}
+
+func ExampleEvaluateWithRiskFree() {
+	returns := [][]float64{{.03, -.01, .04, -.02}}
+	zero, err := optimize.Evaluate(returns, []float64{1}, 12)
+	if err != nil {
+		panic(err)
+	}
+	excess, err := optimize.EvaluateWithRiskFree(returns, []float64{1}, 12, .03)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("positive cash rate lowers Sharpe: %v\n", excess.Sharpe < zero.Sharpe)
+	fmt.Printf("nominal CAGR unchanged: %v\n", excess.CAGR == zero.CAGR)
+	// Output:
+	// positive cash rate lowers Sharpe: true
+	// nominal CAGR unchanged: true
+}

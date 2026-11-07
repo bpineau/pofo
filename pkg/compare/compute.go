@@ -154,6 +154,9 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 	// Best-effort: a currency without a wired CPI simply has no real columns.
 	deflatorCache := map[string]*marketdata.Series{}
 	deflatorIn := func(cur string) (*marketdata.Series, bool) {
+		if opt.Inflation != nil {
+			return opt.Inflation, true
+		}
 		if s, ok := deflatorCache[cur]; ok {
 			return s, s != nil
 		}
@@ -175,7 +178,24 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 			return nil, fmt.Errorf("portfolio %s: %w", r.p.Name, err)
 		}
 		if d, ok := deflatorIn(r.currency); ok {
-			if rs, err := metrics.Compute(r.winDates, deflate(r.winDates, r.winValues, d)); err == nil {
+			curve, err := marketdata.NewSeries(r.p.Name, r.winDates, r.winValues)
+			if err != nil {
+				return nil, err
+			}
+			adjust := opt.Adjustment
+			if opt.Inflation == nil {
+				adjust.AllowExtrapolation = true
+			}
+			real, err := curve.Deflate(d, adjust)
+			if err != nil {
+				if opt.Inflation != nil {
+					return nil, fmt.Errorf("portfolio %s inflation: %w", r.p.Name, err)
+				}
+				r.warnings = append(r.warnings, fmt.Sprintf("no real statistics: %v", err))
+				continue
+			}
+			r.warnings = append(r.warnings, real.Warnings...)
+			if rs, err := real.Stats(); err == nil {
 				r.realStats, r.hasReal = rs, true
 			}
 		}
@@ -206,7 +226,7 @@ func studyColumn(ctx context.Context, src *source, spec *portfolio.Spec, aopt an
 	for _, w := range sim.Warnings {
 		log.Printf("warning: portfolio %s: %s", p.Name, w)
 	}
-	warnings := slices.Concat(p.Warnings, sim.Warnings)
+	warnings := slices.Clone(ps.Warnings)
 	if sim.Ruined {
 		cause := "the leveraged exposure exhausted the net value"
 		if p.Withdraw.Active() && !p.Leverage {

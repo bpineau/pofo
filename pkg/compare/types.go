@@ -17,15 +17,21 @@ import (
 // rebalancing cadence, the SIM/fee toggles, an optional embedded simdata
 // filesystem, and the suggestion framework used for coverage/gap analysis.
 type Options struct {
-	Currency  string            // base currency every column is evaluated in
-	Benchmark string            // identifier of the benchmark series, if any
-	Start     time.Time         // first date analysed; zero = as early as the data goes
-	End       time.Time         // last date analysed; zero = the latest quote
-	Rebalance int               // rebalancing period in days
-	NoSim     bool              // ignore SIM-suffixed simulated history extension
-	NoFees    bool              // do not fetch the assets' ongoing charges (TER); envelope fees still apply
-	Simdata   fs.FS             // optional filesystem of simulated-history CSVs
-	Framework suggest.Framework // regime or factor lens of the coverage bars
+	// Inflation overrides the currency-based default CPI for every column.
+	// Its consumption basket is independent of the evaluation currency.
+	Inflation *marketdata.Series
+	// Adjustment applies to an explicit Inflation index. The automatic CPI
+	// retains legacy flat extrapolation, now reported in column Warnings.
+	Adjustment marketdata.AdjustmentOptions
+	Currency   string            // base currency every column is evaluated in
+	Benchmark  string            // identifier of the benchmark series, if any
+	Start      time.Time         // first date analysed; zero = as early as the data goes
+	End        time.Time         // last date analysed; zero = the latest quote
+	Rebalance  int               // rebalancing period in days
+	NoSim      bool              // ignore SIM-suffixed simulated history extension
+	NoFees     bool              // do not fetch the assets' ongoing charges (TER); envelope fees still apply
+	Simdata    fs.FS             // optional filesystem of simulated-history CSVs
+	Framework  suggest.Framework // regime or factor lens of the coverage bars
 	// ExactForeign resolves identifiers OUTSIDE the bundled catalog
 	// exactly (marketdata.FetchOptions.ExactOnly): no instrument matched by
 	// name, so a typo fails instead of quoting an unrelated fund. Catalog
@@ -58,6 +64,8 @@ type Column struct {
 	WinValues []float64         // the time-weighted index over WinDates, rebased to 100
 	Assets    []portfolio.Asset // the resolved holdings
 	Stats     metrics.Stats     // nominal statistics on the common window
+	RealStats *metrics.Stats    // purchasing-power statistics; nil if unavailable
+	Warnings  []string          // qualifications of the column's data and calculations
 	// Note is the informational line a computed column carries, currently
 	// the optimizer's account of the weights it chose, the window it fitted
 	// them on and how they did outside it. Empty for a plain portfolio.
@@ -160,6 +168,11 @@ func (c *Comparison) Columns() []Column {
 			SimDates: col.sim.Dates, SimValues: col.sim.Values,
 			WinDates: col.winDates, WinValues: col.winValues,
 			Assets: col.p.Assets, Stats: col.stats, Note: col.note,
+		}
+		out[i].Warnings = append([]string(nil), col.warnings...)
+		if col.hasReal {
+			real := col.realStats
+			out[i].RealStats = &real
 		}
 	}
 	return out

@@ -95,8 +95,7 @@ pairs (and `cwarp` with `min-weight` or `bounds`) instead of letting the solver
 drop them: an unenforced constraint is worse than a rejected one, since the
 report would otherwise describe limits nobody evaluated, and even print the
 "no allocation meets the limits" warning for a feasibility that was never
-tested. `max-weight` on `risk-parity` keeps its older, lenient treatment
-(ignored, with a note in the report).
+tested. Risk-parity retains its risk-budget weights; requested weight bounds are checked afterward. A violation sets `Feasible=false` with `FeasibilityReason`, and the report warns. The public Go solvers enforce these rules independently of ParseSpec.
 
 New objective `max-return`: maximize the blend's CAGR. On its own it is
 degenerate (100 % of the best line) and it says so in the note; under a
@@ -234,13 +233,8 @@ one a window happened to produce. See `docs/specs/black-litterman-design.md`.
 
 ## Traps for whoever touches this next
 
-- Sharpe here runs at a ZERO risk-free rate. Constrained objectives exist
-  partly to route around that; do not "improve" them by scalarizing back into
-  a ratio.
-- `Spec.Train` is inert inside `pkg/optimize` by design. If a future caller
-  forgets to slice, the optimizer will silently fit the whole window: the
-  note's "over <window>" clause is what makes that visible, so keep it
-  printing the range it actually received.
+- Sharpe/Sortino default to zero risk-free, with an explicit annual arithmetic fraction in `Spec.RiskFree`. Other objectives reject a nonzero rate. Constrained objectives retain their own objectives; do not scalarize them into a ratio.
+- Public solvers reject an unapplied `Spec.Train`. Select the dates, clear it on a solver copy, and retain the original for reporting. `FitEvaluate` takes separate training and held-out panels; their calendar separation and matching asset order remain the caller's responsibility.
 - Bounds are resolved by the caller against asset identifiers. An id that
   matches no line is an ERROR, not a silent no-op; a typo in
   `bounds:NTGS:15-30` must not read as "no bound".
@@ -252,3 +246,7 @@ one a window happened to produce. See `docs/specs/black-litterman-design.md`.
   believes `Result.Feasible`, and a solver that never saw the limits leaves it
   false: the reader would be told a feasibility question was answered when it
   was never asked.
+
+## Library research interface
+
+`Frontier` now returns structured MaxReturn candidates over explicit volatility caps; the HTML frontier chart remains a separate presentation concern. It uses the same heuristic solver, so a failed feasibility search is not a proof that no feasible point exists. `Spec.RiskBudgets` generalizes risk parity to positive requested Euler shares. `EvaluateWithRiskFree` and `FitEvaluate` report realized path statistics separately from Black-Litterman expected returns. All public solver entry points validate finite returns, cadence and typed options; unresolved named bounds/views are errors.

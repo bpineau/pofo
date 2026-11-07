@@ -15,8 +15,10 @@ import (
 // network, and a file of one's own named like any identifier.
 //
 //  1. A FILE, when id is a path (it holds a path separator or ends in
-//     ".csv"): ReadCSV, labelled with the path as written. This is how an
-//     older version of a bundled file joins in, piped out of "git show".
+//     ".csv"): ReadSeriesCSV. Simple files take the path as their symbol;
+//     long exports keep their symbol and must contain exactly one series.
+//     Select from a multi-series export with ReadSeriesCSV instead. An older
+//     bundled file joins in when piped out of "git show".
 //  2. The BUNDLE (Bundled), for a bare identifier: a reference series (an
 //     index, a yield, a cash rate) or a catalog index (SP500, MSCIWORLD),
 //     offline and the same on every machine.
@@ -66,11 +68,14 @@ func (c *Client) load(ctx context.Context, id string, opt FetchOptions) (*Series
 			return nil, err
 		}
 		defer f.Close()
-		s, err := ReadCSV(f, id)
+		list, err := ReadSeriesCSV(f, id)
 		if err != nil {
 			return nil, err
 		}
-		return c.localTo(ctx, s, "the file's header", opt)
+		if len(list) != 1 {
+			return nil, fmt.Errorf("%s holds %d series: use ReadSeriesCSV to select one by Symbol", id, len(list))
+		}
+		return c.localTo(ctx, list[0], "the file's header", opt)
 	}
 	if _, sim := SplitSim(id); !sim && !opt.Raw {
 		s, err := Bundled(id)

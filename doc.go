@@ -20,17 +20,21 @@
 //     bundle, then the client), the one call an exploration script needs.
 //   - Describe it ([metrics], [analyze]): Series.Stats, which returns a
 //     metrics.Stats; metrics.CalendarReturns, metrics.DrawdownEpisodes; or
-//     analyze.Asset for everything at once.
+//     analyze.Asset for everything at once, analyze.Series for owned data.
+//   - Inflation and cash: Series.Deflate with an explicit CPI, Series.Excess
+//     with a total-return cash index, CashIndex for annual percent rates
+//     with an explicit day count. analyze.Options adds Real/Excess studies.
 //   - Compare series: analyze.Pair (a candidate against its reference: a
 //     backcast against its fund, a file against its previous version);
-//     marketdata.AlignSeries then metrics.CorrelationMatrix.
+//     marketdata.NewPanel then metrics.CorrelationMatrix on Panel.R.
 //   - Returns panels, blends, conditional statistics: marketdata.NewPanel,
 //     then Panel.Mix (a rebalanced blend), Panel.Series, Panel.Pick with
 //     metrics.LowestK (the worst months, dated), Panel.Track.
 //   - Regression: metrics.Regress on panel columns.
 //   - A portfolio ([portfolio]): analyze.Portfolio in one call, or
 //     portfolio.Parse or NewSpec, then Build and Simulate.
-//   - Optimize weights ([optimize]): ParseSpec, then Solve.
+//   - Optimize weights ([optimize]): ParseSpec, then Solve; Frontier for
+//     risk-cap candidates, FitEvaluate for separate training/test panels.
 //   - FIRE and decumulation ([decumul], [scenario], [replay]): a
 //     decumul.Plan over a scenario.Source, then Plan.Simulate and
 //     Plan.Solve; replay.Run for history as it happened.
@@ -139,11 +143,18 @@
 //	                 marks the join); "#meta sim:on" asks it for a whole file
 //	rates            annualized PERCENT LEVELS (^IRX, ^ESTR, ^SOFR..., and
 //	                 portfolio.Portfolio.Cash); never a return
+//	risk-free        annual arithmetic FRACTION in analyze.Options.RiskFree,
+//	                 optimize.Spec.RiskFree and metrics.ComputeOptions.RiskFree;
+//	                 analyze.Options.RiskFreeIndex is a total-return cash LEVEL
+//	execution costs  FRACTION of gross traded notional in
+//	                 portfolio.SimOptions.TransactionCost; SimResult.Costs is
+//	                 money, SimResult.Turnover gross trades / pre-trade capital
 //	#meta directives PERCENT as written (max-vol:9, view:ID:8@70), FRACTION
 //	                 once parsed into optimize.Spec
 //
 // Volatility and ratios annualize at each series' own cadence with a zero
-// risk-free rate, the CAGR over 365.25-day years; the conventions section of
+// risk-free rate by default (ComputeWith and analyze.Options override it),
+// the CAGR over 365.25-day years; the conventions section of
 // the metrics documentation says why the figures differ from other tools'.
 //
 // # Packages

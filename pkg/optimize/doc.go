@@ -12,6 +12,11 @@
 //     1, the figures they reach, and whether every limit held (Feasible).
 //   - [SolveCWARP] is the one objective that also needs the replacement
 //     portfolio's returns.
+//   - [Frontier] fits MaxReturn on an explicit volatility-cap grid and
+//     retains each point's feasibility, weights and measured performance.
+//   - [FitEvaluate] fits on training returns only and measures the fixed
+//     weights separately in and out of sample. [Evaluate] measures an
+//     existing allocation without fitting it.
 //
 // The package is date-free: slicing the returns to a training window
 // ([Window]) is the caller's job. Percent in the grammar ("max-vol:9"),
@@ -23,7 +28,7 @@
 //     ratio of expected return to volatility.
 //   - MinVolatility ("min-volatility"): the lowest-variance portfolio.
 //   - RiskParity ("risk-parity"): every asset contributes the same share
-//     of the total risk.
+//     of the total risk, or the strictly positive shares in Spec.RiskBudgets.
 //   - MaxSortino ("max-sortino"): maximizes the portfolio's own Sortino
 //     ratio (return over downside deviation), rewarding assets that cut the
 //     downside, i.e. non-correlation and positive skew.
@@ -53,7 +58,7 @@
 //
 // Weights are long-only (no short selling) and sum to 1. Concentration is
 // bounded for every objective except RiskParity (whose weights follow
-// directly from the equal-risk condition) by, in increasing order of
+// directly from the risk-budget condition) by, in increasing order of
 // precision: MaxWeight, a cap on every asset; MinWeight, a floor on every
 // asset, which keeps each line in the book instead of letting the search
 // drop the ones that only pay off out of sample; and Bounds, a range per
@@ -62,6 +67,12 @@
 // CALLER runs: resolving identifiers is pkg/marketdata's job. CWARP is the
 // exception on the box too: SolveCWARP caps weights (MaxWeight) but knows
 // nothing of MinWeight or Bounds, which ParseSpec therefore refuses.
+// RiskParity retains its historical risk-budget weights, but checks the
+// requested bounds afterward: violations set Feasible=false and explain why
+// in FeasibilityReason. Satisfied bounds remain feasible.
+// Its achieved Euler risk shares must also match the requested budgets
+// within 1e-4 absolute. A degenerate cancelling portfolio or a search that
+// failed to converge cannot silently certify those budgets as feasible.
 //
 // Bounds matter more than they look. An unconstrained optimum is a corner
 // solution, and a corner fitted on one window is the least durable thing an
@@ -89,11 +100,12 @@
 // Any limit (or any per-asset bound) routes the solve through one penalized
 // path search, whatever the objective; without them the closed forms answer
 // exactly as they always did. Result.Feasible reports whether the answer
-// actually meets the limits: when nothing can, the weights returned are the
-// least-violating point found, and saying so is the point of the flag.
+// actually meets the limits. False means the heuristic failed to find a
+// feasible point, not a proof that none exists. Keep infeasible frontier
+// points visible rather than presenting them as investable allocations.
 //
 // Reaching for a constraint rather than a ratio also sidesteps a trap of this
-// toolkit's conventions: Sharpe here runs at a ZERO risk-free rate, so any
+// toolkit's default conventions: Sharpe runs at a ZERO risk-free rate, so any
 // cash-like sleeve buys ratio for free. A euro-linker sleeve can raise a
 // portfolio's measured Sharpe while cutting two points of CAGR. A volatility
 // cap asks the question that was meant.
@@ -155,12 +167,31 @@
 //
 // # Fitting on one window, judging on another
 //
-// Spec.Train carries the "train:" window parsed from a portfolio file. This
-// package IGNORES IT: Solve is date-free, and slicing the returns is the
-// caller's job (pkg/compare fits on the slice, then measures the resulting
-// weights over the whole window, so what the report shows is out-of-sample).
-// It travels in Spec because it arrives in the same directive, and one
-// parser beats two.
+// Spec.Train carries the "train:" window parsed from a portfolio file. Solve
+// and SolveCWARP reject it: the caller must select the dates, then clear the
+// field. The command's report does that selection before fitting. FitEvaluate
+// accepts explicit training and held-out panels in the same asset order and
+// at the same cadence; only training determines the weights. Its InSample
+// and OutOfSample fields contain measured path figures, separately from the
+// training Result's expected figures (notably under BlackLitterman).
+//
+// The package cannot detect overlapping windows or reordered columns: date
+// selection and column identity remain the caller's responsibility. Choose
+// disjoint windows, for example using marketdata.Panel.Between.
+//
+// Risk budgets are a code-only option: Spec.RiskBudgets contains finite,
+// strictly positive fractions summing to 1 (tolerance 1e-6). Nil retains
+// equal-risk parity; omit an asset from the panel instead of giving it zero
+// budget. Assets with zero sample variance are rejected for risk parity.
+// Its legacy weights are preserved, but requested caps and floors are checked
+// and reported through Feasible and FeasibilityReason.
+//
+// Spec.RiskFree optionally supplies an annual arithmetic fraction for
+// MaxSharpe and MaxSortino; negative finite rates are valid, zero retains the
+// historical default. Both the optimization and reported ratios use it.
+// Nonzero values on other objectives are rejected. Evaluate keeps its zero
+// rate contract; EvaluateWithRiskFree measures a fixed allocation at an
+// explicit rate. FitEvaluate uses the spec's rate in both measured windows.
 //
 // # How each objective is solved, and how much to trust it
 //
@@ -170,14 +201,15 @@
 // projected gradient descent over the capped simplex, from several
 // deterministic starting points. They differ in what that buys:
 //
-//   - MinVolatility, RiskParity and BlackLitterman are convex programs, so
-//     their answer is the global optimum.
+//   - Without path-dependent limits, MinVolatility, RiskParity and
+//     BlackLitterman have convex formulations. The numerical solver still
+//     has finite tolerances; its result carries no optimality certificate.
 //   - MaxSharpe is not concave in the weights, but the UNCAPPED tangency
-//     portfolio is still obtained exactly, via Schaible's transformation
+//     portfolio has a convex formulation via Schaible's transformation
 //     (minimizing yᵀΣy under muᵀy = 1 and y ≥ 0 is convex, and w = y/Σyᵢ
-//     maximizes the ratio); that exact solution is one of the starting
-//     points, so an uncapped run returns the global optimum and a capped one
-//     starts from the right neighbourhood.
+//     maximizes a positive excess-return ratio). A numerical solution is
+//     one starting point; this argument needs a feasible positive excess
+//     return and supplies no global certificate for constrained path search.
 //   - MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y and CWARP are
 //     non-convex AND non-smooth (they depend on the realized drawdown path),
 //     so their weights are a good allocation, not a certified optimum.
@@ -187,7 +219,8 @@
 // Conventions match pkg/metrics: simple returns on one calendar, annualized at
 // the cadence the caller passes (metrics.TradingDaysPerYear for daily
 // returns, metrics.PeriodsPerYear of their dates in general: the package is
-// date-free, so it never guesses one), and a risk-free rate of 0. Note that a
+// date-free, so it never guesses one), and a risk-free rate of 0 unless
+// Spec.RiskFree sets the annual arithmetic fraction for Sharpe/Sortino. A
 // zero risk-free rate moves the tangency point: with rf = 0 the ratio rewards
 // any positive return, so cash-like assets score far better than they would
 // against a realistic rate.

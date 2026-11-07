@@ -110,10 +110,12 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 
 	var res optimize.Result
 	var err error
+	solveSpec := sp
+	solveSpec.Train = optimize.Window{} // already applied to fitReturns above
 	if cwarpObj {
-		res, err = optimize.SolveCWARP(fitReturns, fit.cut(benchReturns), ppy, sp)
+		res, err = optimize.SolveCWARP(fitReturns, fit.cut(benchReturns), ppy, solveSpec)
 	} else {
-		res, err = optimize.Solve(fitReturns, ppy, sp)
+		res, err = optimize.Solve(fitReturns, ppy, solveSpec)
 	}
 	if err != nil {
 		return nil, "", fmt.Errorf("optimize: %w", err)
@@ -148,8 +150,8 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 			retDates[rest.from].Format("2006-01-02"), retDates[rest.to-1].Format("2006-01-02"),
 			hCAGR*100, hVol*100, hDD*100)
 	}
-	if sp.Limits.Any() && !res.Feasible {
-		note += ". WARNING: no allocation of these holdings meets the limits; the weights above are the least-violating point found, not an answer"
+	if !res.Feasible {
+		note += ". WARNING: returned allocation does not meet the requested constraints: " + res.FeasibilityReason
 	}
 	if cwarpObj {
 		note += fmt.Sprintf(", achieved CWARP %+.1f vs %s. Note: these are the best diversifier "+
@@ -179,7 +181,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		note += blackLittermanNote(sp, res, names, vols)
 	}
 	if spec.Optimize.Objective == optimize.RiskParity && (sp.MaxWeight > 0 || sp.Bounded()) {
-		note += " (weight bounds do not apply to risk-parity)"
+		note += " (risk-parity weights retained; requested bounds checked after solving)"
 	}
 	return &cp, note, nil
 }

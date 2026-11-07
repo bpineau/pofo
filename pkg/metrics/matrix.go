@@ -32,11 +32,11 @@ func Corr(a, b []float64) float64 {
 // CorrelationMatrix is the Pearson correlation of every pair of assets:
 // out[i][j] = Corr(returns[i], returns[j]). returns is [asset][period], every
 // asset's per-period returns (fractions) on ONE calendar, which is what
-// marketdata.Aligned.Returns produces. The matrix is symmetric, its diagonal
+// marketdata.Panel.R produces. The matrix is symmetric, its diagonal
 // is 1, except for an asset whose returns are constant, whose whole row and
 // column read 0 as Corr says. It is an error when the rows differ in length:
 // periods that are not the same periods pair into no number at all (build
-// the rows on one calendar, a marketdata.Panel or Aligned, first).
+// the rows on shared return intervals, through marketdata.NewPanel, first).
 func CorrelationMatrix(returns [][]float64) ([][]float64, error) {
 	if err := checkRectangular("CorrelationMatrix", returns); err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func CorrelationMatrix(returns [][]float64) ([][]float64, error) {
 
 // Covariance is the per-period SAMPLE covariance (n-1 denominator) of every
 // pair of assets. returns is [asset][period], per-period returns as fractions
-// on ONE calendar (marketdata.Aligned.Returns), and the result is in squared
+// on ONE calendar (marketdata.Panel.R), and the result is in squared
 // fractions per period: multiply by the calendar's PeriodsPerYear to
 // annualize it (252 for daily returns, 12 for monthly ones). The matrix is
 // symmetric and its diagonal is each asset's sample variance. Fewer than two

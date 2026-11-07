@@ -47,31 +47,6 @@ func inflationSeries(ctx context.Context, c *marketdata.Client, currency string,
 	return s, true
 }
 
-// deflate converts a nominal value series into real terms (base-date purchasing
-// power): real_t = nominal_t × CPI_base / CPI_t, with CPI forward-filled on the
-// value dates. Dates before the CPI history hold its first level (no deflation),
-// so early points degrade gracefully rather than break.
-func deflate(dates []time.Time, values []float64, cpi *marketdata.Series) []float64 {
-	out := make([]float64, len(values))
-	j, rate := 0, cpi.Points[0].Close
-	var base float64
-	for k, d := range dates {
-		for j < len(cpi.Points) && !cpi.Points[j].Date.After(d) {
-			rate = cpi.Points[j].Close
-			j++
-		}
-		if k == 0 {
-			base = rate
-		}
-		if rate > 0 {
-			out[k] = values[k] * base / rate
-		} else {
-			out[k] = values[k]
-		}
-	}
-	return out
-}
-
 // negate returns a sign-flipped copy: portfolio flows (contributions
 // positive) become investor flows (money out of pocket negative).
 func negate(xs []float64) []float64 {

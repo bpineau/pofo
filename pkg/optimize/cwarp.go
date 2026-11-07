@@ -18,12 +18,18 @@ import (
 // starts (equal weights, then each single asset), keeping the best score. The
 // weights are a good allocation, not a certified global optimum.
 func SolveCWARP(returns [][]float64, replacement []float64, periodsPerYear float64, spec Spec) (Result, error) {
+	if err := validateSpec(spec, len(returns), true); err != nil {
+		return Result{}, err
+	}
 	if err := checkPanel(returns, periodsPerYear); err != nil {
 		return Result{}, err
 	}
 	n, t := len(returns), len(returns[0])
 	if len(replacement) != t {
 		return Result{}, fmt.Errorf("replacement has %d observations, expected %d", len(replacement), t)
+	}
+	if err := checkPanel([][]float64{replacement}, periodsPerYear); err != nil {
+		return Result{}, fmt.Errorf("replacement: %w", err)
 	}
 	maxW := spec.MaxWeight
 	if maxW <= 0 || maxW > 1 {
@@ -42,8 +48,12 @@ func SolveCWARP(returns [][]float64, replacement []float64, periodsPerYear float
 
 	mu, cov := meanCov(returns, periodsPerYear)
 	r := stats(w, mu, cov)
+	r.Feasible = true
 	if c, ok := score(w); ok {
 		r.CWARP = c
+	}
+	if err := checkSolution(r, n); err != nil {
+		return Result{}, err
 	}
 	return r, nil
 }

@@ -88,6 +88,7 @@ both sides.
 | size a retirement | [FIRE and decumulation](docs/usage/fire.md) |
 | know where the data comes from and how far to trust it | [Data and backcasts](docs/usage/data.md) |
 | use the library, by task | [The library](docs/usage/library/README.md) |
+| combine currency, inflation and cash in a study | [Adjustments and complete offline workflow](docs/usage/library/adjustments.md) |
 | start from a runnable script | [`examples/code/`](examples/code/README.md) |
 | start from a model portfolio | [`examples/portfolios/`](examples/portfolios/README.md) |
 | read the API reference | `go doc github.com/bpineau/pofo`, [pkg.go.dev](https://pkg.go.dev/github.com/bpineau/pofo) |

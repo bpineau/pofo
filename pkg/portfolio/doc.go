@@ -6,12 +6,15 @@
 //
 //   - [Parse] and [ParseFile] read a portfolio file (the format below);
 //     [NewSpec] builds the same [Spec] in code, from [Line] values whose
-//     weights are FRACTIONS.
+//     weights are FRACTIONS. [NewSpecWith] applies [SpecOptions] before
+//     normalization, so explicit leverage preserves exposures.
 //   - [Build] resolves a Spec into a [Portfolio], fetching every holding
 //     through the callback of [BuildOptions] (typically
 //     marketdata.Client.FetchExtended).
 //   - [Simulate] replays it over time into a [SimResult]: Index, the
 //     time-weighted series every statistic reads, and Values, the money.
+//     [SimulateWith] adds calendar schedules and per-side execution costs
+//     through [SimOptions], exposing Costs and gross traded Turnover.
 //
 // For the statistics, the correlations and the attribution in one call, use
 // pkg/analyze (analyze.Portfolio), which runs these three steps. Weights are
@@ -81,7 +84,10 @@
 //		portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: -1},
 //		portfolio.Line{ID: "AGGH", Weight: 0.4, Fees: -1})
 //
-// Directives are Spec fields there (RebalanceDays, Sim, ...), left unset.
+// NewSpec leaves directives unset. NewSpecWith accepts explicit leverage,
+// rebalancing days, envelope fees and borrowing spread before normalization;
+// pointer options distinguish an omitted directive from an explicit zero.
+// Other directives remain Spec fields (Sim, Capital, flows, ...).
 // For the numbers of such a portfolio in one call (statistics, per-holding
 // studies, correlation, risk budget, look-through), see pkg/analyze.
 //
@@ -111,6 +117,30 @@
 // SimResult.MonthlyContributions folds the attribution into calendar
 // months, the input for contribution timelines and per-regime views.
 //
+// SimulateWith optionally rebalances Monthly, Quarterly or Yearly on the
+// first observed date in each new calendar period. A calendar schedule and
+// positive RebalanceDays are mutually exclusive. The zero SimOptions value
+// means no rebalancing and no execution cost, as Simulate(p,0) does.
+//
+// TransactionCost is a FRACTION per side of gross asset notional traded.
+// The simulation begins already invested and stops without a forced exit,
+// so entry and terminal liquidation are excluded. A flow and a coincident
+// rebalance execute as one net trade. Post-cost positions solve the funding
+// equation, including the extra asset trades needed to pay the cost. Cash
+// and debt movements are not separately charged. Costs lower Values and
+// Index, remain outside holding Contributions, and are reported as money in
+// SimResult.Costs. Turnover is gross purchases plus sales over the net value
+// immediately before trading, after market moves and annual fees and before
+// flows and execution costs. Both are date-aligned and start at zero.
+//
+// Execution follows the market move at that date's prices. Contributions
+// enter before the execution cost is shared across capital; withdrawals
+// leave afterward. A withdrawal can receive only net liquidation proceeds,
+// so execution costs can reduce its funded amount. For a unique positive
+// funding solution, positive-cost trades require cost times target gross
+// exposure below 1 and enough post-flow capital to cover liquidation costs;
+// an execution error reports violations instead of silently borrowing a fee.
+//
 // Two failures are typed so a caller can tell a request it should reword
 // from a data problem: an asset with no point at all is a [NoQuotesError]
 // naming it (a fetch window that excludes the asset entirely is the usual
@@ -124,4 +154,6 @@
 // EnvelopeFees and BorrowSpread are PERCENT per year as written in
 // portfolio files. The simgen package uses fractions for its own fee
 // parameters; do not mix them up.
+// SimOptions.TransactionCost is a FRACTION per traded side, not an annual
+// fee; SimResult.Costs is money and Turnover is a gross fraction per date.
 package portfolio

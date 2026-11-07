@@ -149,6 +149,16 @@ type Series struct {
 	Currency string  // ISO code of Points (major unit); "" for rates and indices without one
 	Source   string  // "yahoo", "stooq", "ft", "morningstar", "simdata", "refdata"...
 	Points   []Point // strictly ascending dates, one per session
+	// Cadence is the explicit periods per year of a sampled return path.
+	// Zero infers it from dates. Panel.Series preserves its measured cadence.
+	Cadence float64
+	// Warnings are data qualifications carried through transformations and
+	// into analyze studies. They must be displayed with the resulting figures.
+	Warnings []string
+	// FXExtrapolatedBefore marks the first available FX observation when an
+	// earlier part of this series was converted at a constant rate. Zero means
+	// no backward FX extrapolation was needed.
+	FXExtrapolatedBefore time.Time
 
 	// Dividends lists the cash distributions the source reported, sorted
 	// by ex-date. Beware of double counting: the default (adjusted) close

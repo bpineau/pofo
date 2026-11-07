@@ -3,6 +3,7 @@ package portfolio
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -91,6 +92,15 @@ type SimResult struct {
 	Values []float64   // worth on each date, flows included (money outcomes, IRR)
 	Index  []float64   // time-weighted index from 100, flows stripped (statistics)
 
+	// Costs is execution cost paid on each date, in the same money units as
+	// Values. Entry and terminal exit are excluded; Costs[0] is zero.
+	Costs []float64
+	// Turnover is gross absolute asset purchases plus sales divided by net
+	// value immediately before trading, after market moves and annual fees,
+	// before external flows and execution cost. Cash/debt transfers are not
+	// separate traded assets. Turnover[0] is zero; this is not one-way turnover.
+	Turnover []float64
+
 	// FlowDates and FlowAmounts record the external flows (positive:
 	// contribution, negative: withdrawal), e.g. for metrics.IRR.
 	FlowDates   []time.Time
@@ -172,9 +182,26 @@ func periodKey(t time.Time, p Period) int {
 // weights every rebalanceDays calendar days (0 disables rebalancing).
 // Prices are forward-filled across each asset's non-trading days.
 func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
-	if len(p.Assets) == 0 {
-		return nil, fmt.Errorf("empty portfolio")
+	return SimulateWith(p, SimOptions{RebalanceDays: max(rebalanceDays, 0)})
+}
+
+// SimulateWith replays p with explicit rebalancing and execution conventions.
+// Calendar rebalancing trades on the first observation in a new month,
+// quarter or year, never its previous close. Costs are per-side fractions of
+// actual asset notional; cash/debt transfers are not charged separately.
+// The sampled run starts already invested, so initial entry and a final exit
+// are excluded. Zero cost preserves Simulate's value/index calculation.
+//
+// Flows and a coincident rebalance are netted into one trade at that date's
+// prices. Post-cost holdings fund the fee, including the additional trades
+// needed to pay it. Costs reduce the time-weighted Index after the market
+// move: contributions join the capital bearing that cost, and withdrawals
+// leave afterward. Costs remain unattributed to individual assets.
+func SimulateWith(p *Portfolio, opt SimOptions) (*SimResult, error) {
+	if err := validateSimulation(p, opt); err != nil {
+		return nil, err
 	}
+	rebalanceDays := opt.RebalanceDays
 	// An amount is money, and money needs a capital to be measured against:
 	// without one the simulation runs on a relative base of 100, where a
 	// 500-a-month contribution would quintuple the "portfolio" every month.
@@ -291,8 +318,14 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 	}
 	values := make([]float64, len(dates))
 	index := make([]float64, len(dates))
+	costs, turnover := make([]float64, len(dates)), make([]float64, len(dates))
 	values[0], index[0] = startValue, 100
 	setShares(0, startValue)
+	for _, s := range shares {
+		if math.IsNaN(s) || math.IsInf(s, 0) {
+			return nil, fmt.Errorf("initial holding quantity overflows")
+		}
+	}
 	yearlyFee := 0.0
 	if p.EnvelopeFees > 0 {
 		yearlyFee = p.EnvelopeFees / 100
@@ -304,6 +337,7 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 	contribKey := periodKey(dates[0], p.Contribute.Period)
 	withdrawKey := periodKey(dates[0], p.Withdraw.Period)
 	nextRebalance := dates[0].AddDate(0, 0, rebalanceDays)
+	beforePositions := make([]float64, len(shares))
 	for k := 1; k < len(dates); k++ {
 		for i := range shares {
 			contrib[i][k] = shares[i] * (prices[i][k] - prices[i][k-1]) / values[k-1]
@@ -313,7 +347,11 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		v := cash
 		for i := range shares {
 			shares[i] *= 1 - stepFee
-			v += shares[i] * prices[i][k]
+			beforePositions[i] = shares[i] * prices[i][k]
+			v += beforePositions[i]
+		}
+		if math.IsNaN(v) || math.IsInf(v, 0) {
+			return nil, fmt.Errorf("portfolio value overflows on %s", dates[k].Format(time.DateOnly))
 		}
 		if v <= 0 {
 			// Capital wiped out (levered losses): the series stops HERE, on
@@ -337,6 +375,10 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		}
 		// Index accrues the market return only, before today's flows.
 		index[k] = index[k-1] * v / values[k-1]
+		rebalance := rebalanceDays > 0 && !dates[k].Before(nextRebalance)
+		if opt.RebalancePeriod != "" {
+			rebalance = periodKey(dates[k], opt.RebalancePeriod) != periodKey(dates[k-1], opt.RebalancePeriod)
+		}
 
 		// External flows fire on the first trading day of a new period,
 		// at today's prices, and buy or sell every position pro rata.
@@ -359,9 +401,51 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 				res.Withdrawn += w
 			}
 		}
+		if opt.TransactionCost > 0 && (flow != 0 || rebalance) {
+			target := make([]float64, len(shares))
+			for i, a := range p.Assets {
+				target[i] = beforePositions[i] / v
+				if rebalance {
+					target[i] = a.Weight / norm
+				}
+			}
+			net, actualFlow, cost, traded, ruined, err := tradeWithCost(beforePositions, target, v, flow, opt.TransactionCost)
+			if err != nil {
+				return nil, fmt.Errorf("execution on %s: %w", dates[k].Format(time.DateOnly), err)
+			}
+			if actualFlow != flow {
+				res.Withdrawn -= actualFlow - flow
+			}
+			if actualFlow != 0 {
+				res.FlowDates = append(res.FlowDates, dates[k])
+				res.FlowAmounts = append(res.FlowAmounts, actualFlow)
+			}
+			costs[k], turnover[k] = cost, traded/v
+			index[k] *= 1 - cost/(v+math.Max(actualFlow, 0))
+			if ruined {
+				dates, values, index, res.Ruined = dates[:k+1], values[:k+1], index[:k+1], true
+				values[k] = 0
+				break
+			}
+			invested := 0.0
+			for i := range shares {
+				shares[i] = target[i] * net / prices[i][k]
+				invested += shares[i] * prices[i][k]
+			}
+			cash = net - invested
+			values[k] = net
+			if rebalance {
+				nextRebalance = dates[k].AddDate(0, 0, rebalanceDays)
+			}
+			continue
+		}
+		beforeValue := v
 		if flow != 0 {
 			ruin := v+flow <= 0
 			if ruin {
+				for _, a := range beforePositions {
+					turnover[k] += math.Abs(a) / beforeValue
+				}
 				// The withdrawal asks for more than is left. Only what was
 				// there can leave: the unfunded remainder is money nobody
 				// received, and recording it would overstate the reported
@@ -384,14 +468,18 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			v += flow
 		}
 		values[k] = v
-		if rebalanceDays > 0 && !dates[k].Before(nextRebalance) {
+		if rebalance {
 			setShares(k, v)
 			nextRebalance = dates[k].AddDate(0, 0, rebalanceDays)
+		}
+		for i := range shares {
+			turnover[k] += math.Abs(shares[i]*prices[i][k]-beforePositions[i]) / beforeValue
 		}
 	}
 	for i := range contrib {
 		contrib[i] = contrib[i][:len(dates)]
 	}
 	res.Dates, res.Values, res.Index, res.Contributions = dates, values, index, contrib
+	res.Costs, res.Turnover = costs[:len(dates)], turnover[:len(dates)]
 	return res, nil
 }

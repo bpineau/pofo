@@ -127,7 +127,7 @@ func TestOptimizedPortfolioObjectiveNotes(t *testing.T) {
 		{"max-worst-5y", "achieved worst rolling 5y return"},
 		{"max-return", "unconstrained, max-return is degenerate"},
 		{"max-return,max-vol:8", "max-return under vol"},
-		{"risk-parity,max-weight:60", "weight bounds do not apply to risk-parity"},
+		{"risk-parity,max-weight:60", "risk-parity weights retained; requested bounds checked after solving"},
 	}
 	for _, c := range cases {
 		t.Run(c.spec, func(t *testing.T) {
@@ -151,7 +151,7 @@ func TestOptimizedPortfolioFlagsInfeasibleLimits(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(note, "WARNING: no allocation of these holdings meets the limits") {
+	if !strings.Contains(note, "WARNING: returned allocation does not meet the requested constraints") {
 		t.Errorf("an infeasible solve went unflagged: %s", note)
 	}
 }

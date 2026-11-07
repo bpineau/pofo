@@ -37,9 +37,8 @@ const DefaultPriorSharpe = 0.4
 //
 // The identifiers are the ones written in the portfolio file (or the resolved
 // symbols); Spec.Resolve turns them into the positions the model works on.
-// Posterior and Solve read those positions, so a View built by hand and
-// passed in without a Resolve points at position 0: build views through a
-// Spec and resolve them, exactly as bounds are.
+// Posterior and Solve reject a view that has not been resolved: build views
+// through a Spec and resolve them, exactly as bounds are.
 type View struct {
 	// Asset is the line the view is about, and Versus the line it is
 	// measured against (empty for an absolute view).
@@ -56,6 +55,7 @@ type View struct {
 	// asset and versus are the resolved positions, filled by Spec.Resolve;
 	// versus is -1 for an absolute view.
 	asset, versus int
+	resolved      bool
 }
 
 // String renders a view the way a portfolio file writes it.
@@ -173,11 +173,11 @@ func viewRows(views []View, n int) ([][]float64, []float64, error) {
 	p := make([][]float64, len(views))
 	q := make([]float64, len(views))
 	for j, v := range views {
-		if v.asset < 0 || v.asset >= n {
-			return nil, nil, fmt.Errorf("view %d (%s): unresolved holding, call Spec.Resolve first", j+1, v.Asset)
-		}
-		if v.Confidence <= 0 || v.Confidence >= 1 {
+		if !finite(v.Return) || !finite(v.Confidence) || v.Confidence <= 0 || v.Confidence >= 1 {
 			return nil, nil, fmt.Errorf("view %d (%s): confidence %.4f is not in (0,1), where 0 switches the view off and 1 makes it a certainty", j+1, v.Asset, v.Confidence)
+		}
+		if !v.resolved || v.asset < 0 || v.asset >= n {
+			return nil, nil, fmt.Errorf("view %d (%s): unresolved holding, call Spec.Resolve first", j+1, v.Asset)
 		}
 		row := make([]float64, n)
 		row[v.asset] = 1
@@ -259,6 +259,9 @@ func checkPrior(prior []float64, n int) error {
 	}
 	sum := 0.0
 	for _, w := range prior {
+		if !finite(w) || w < 0 || w > 1 {
+			return fmt.Errorf("black-litterman: prior weights must be finite fractions in [0,1]")
+		}
 		sum += w
 	}
 	if math.Abs(sum-1) > 1e-6 {

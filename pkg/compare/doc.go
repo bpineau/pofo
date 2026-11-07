@@ -30,9 +30,11 @@
 // suggestion framework, and ExactForeign, which resolves identifiers outside
 // the bundled catalog exactly so a typo composed by an untrusted hand fails
 // instead of quoting an unrelated fund) and Decoration (skin CSS, site
-// chrome). REAL versus nominal accounting is handled inside (deflation by the
-// base currency's CPI), so callers get both nominal and inflation-adjusted
-// statistics without wiring the deflator themselves.
+// chrome). REAL versus nominal accounting uses Options.Inflation when set,
+// otherwise the base currency's default CPI. Columns exposes nominal Stats,
+// optional RealStats and Warnings; explicit CPI coverage is strict unless
+// Options.Adjustment allows extrapolation. Defaults preserve the historical
+// flat extension, with its qualification now visible in Warnings.
 //
 // The pipeline shape is:
 //

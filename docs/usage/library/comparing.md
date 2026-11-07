@@ -7,17 +7,19 @@ against its previous version) needs a dedicated study: `analyze.Pair`.
 
 ## Several series on one calendar
 
-`marketdata.AlignSeries` puts series on the dates where all of them quote.
-It fails, naming the series, where the looser `Align` would forward-fill
-zeros. `pkg/metrics` then reads the aligned slices.
+`marketdata.NewPanel` pairs returns over shared periods: each column covers
+the same start and end dates. Use its `R` slices for cross-series statistics.
+`AlignSeries` uses the forward-filled union calendar for valuation and
+simulation; it does not select the intersection of quote dates. A panel is
+the appropriate input for correlations and covariance.
 
 ```go
 // from metrics.Example_oneCalendar (synthetic: threeFunds builds three made-up series)
-a, err := marketdata.AlignSeries(threeFunds(), time.Time{}, time.Time{})
+p, err := marketdata.NewPanel(marketdata.Daily, threeFunds()...)
 if err != nil {
 	panic(err)
 }
-r := a.Returns()
+r := p.R
 corr, err := metrics.CorrelationMatrix(r)
 if err != nil {
 	panic(err)
@@ -26,24 +28,34 @@ cov, err := metrics.Covariance(r)
 if err != nil {
 	panic(err)
 }
-fmt.Printf("from %s: %s/%s %.2f, %s/%s %.2f\n", a.Dates[0].Format(time.DateOnly),
-	a.IDs[0], a.IDs[1], corr[0][1], a.IDs[0], a.IDs[2], corr[0][2])
-fmt.Printf("%s volatility %.1f %%/yr\n", a.IDs[0], math.Sqrt(cov[0][0]*252)*100)
+fmt.Printf("from %s: %s/%s %.2f, %s/%s %.2f\n", p.Starts[0].Format(time.DateOnly),
+	p.IDs[0], p.IDs[1], corr[0][1], p.IDs[0], p.IDs[2], corr[0][2])
+fmt.Printf("%s volatility %.1f %%/yr\n", p.IDs[0], math.Sqrt(cov[0][0]*p.PeriodsPerYear())*100)
+
+// Rebuild levels from the same paired returns for dated calculations.
+first, err := p.Series(p.IDs[0])
+if err != nil {
+	panic(err)
+}
+second, err := p.Series(p.IDs[1])
+if err != nil {
+	panic(err)
+}
 
 // Partial flags a first year measured from the first quote; the last row
 // ends on the last quote, which its End says.
-years, err := metrics.CalendarReturns(a.Dates, a.Levels[0], 12)
+years, err := metrics.CalendarReturns(first.Dates(), first.Values(), 12)
 if err != nil {
 	panic(err)
 }
 for _, y := range years {
 	fmt.Printf("year to %s %+5.1f %%, partial=%v\n", y.End.Format(time.DateOnly), y.Return*100, y.Partial)
 }
-if _, betas, ok := metrics.RollingBeta(a.Dates, a.Levels[1], a.Dates, a.Levels[0], 1); ok {
-	fmt.Printf("one-year beta of %s on %s, last: %.2f\n", a.IDs[1], a.IDs[0], betas[len(betas)-1])
+if _, betas, ok := metrics.RollingBeta(second.Dates(), second.Values(), first.Dates(), first.Values(), 1); ok {
+	fmt.Printf("one-year beta of %s on %s, last: %.2f\n", p.IDs[1], p.IDs[0], betas[len(betas)-1])
 }
 if v, ok := metrics.VaR(r[0], 0.95); ok {
-	fmt.Printf("daily 95 %% VaR of %s: %.2f %%\n", a.IDs[0], v*100)
+	fmt.Printf("daily 95 %% VaR of %s: %.2f %%\n", p.IDs[0], v*100)
 }
 ```
 
@@ -58,9 +70,11 @@ one-year beta of VUAA on IWDA, last: 1.10
 daily 95 % VaR of IWDA: 0.95 %
 ```
 
-A covariance is per period: annualize it with the cadence (here 252 daily
-returns a year). For monthly work, build a [panel](panels.md) instead and read
-`Panel.R`, which is the same `[asset][period]` layout.
+A covariance is per period: annualize it with `Panel.PeriodsPerYear`, which
+measures the shared calendar's cadence. For monthly work, build a Monthly
+[panel](panels.md) and read the same `[asset][period]` layout in `Panel.R`.
+`Panel.Series` rebuilds a column's levels on those same periods for calendar
+returns and rolling statistics, refusing to chain across a gap.
 
 ## One series against its reference
 
@@ -140,3 +154,64 @@ fmt.Printf("%d months: correlation %.3f, tracking difference %+.2f %%/yr, beta %
 `metrics.Track` does it for two bare return slices. Scripts: `pair.go`,
 `oldnew.go`, `correl.go`, `currency.go` in
 [`examples/code/`](../../../examples/code/README.md).
+
+## Coefficient uncertainty under serial dependence
+
+`Regress` reports classical OLS standard errors. `RegressHAC(y, lags, xs...)`
+keeps the same coefficients and fit, replacing their standard errors and
+t-statistics with the Newey-West Bartlett estimator. Samples must be in time
+order on one regular cadence. Choose `lags` explicitly from 0 to N-1; zero
+is heteroskedasticity-robust HC0. No degrees-of-freedom correction is applied
+to the sandwich covariance. `ResidualSD` retains the ordinary residual
+standard deviation with N-k-1 degrees of freedom.
+
+```go
+// from metrics.ExampleRegressHAC
+// Synthetic ordered observations, with heteroskedastic and serial residuals.
+x := []float64{-3, -2, -1, 1, 2, 3}
+y := []float64{1.5, 3, -1.5, -.5, 5, 4.5}
+fit, err := metrics.RegressHAC(y, 1, x)
+if err != nil {
+	panic(err)
+}
+fmt.Printf("alpha %.2f (HAC SE %.3f), beta %.2f (HAC SE %.3f)\n", fit.Alpha.Value, fit.Alpha.SE, fit.Betas[0].Value, fit.Betas[0].SE)
+```
+
+The standard errors describe asymptotic coefficient uncertainty under weak
+dependence. They do not predict future returns or repair a misspecified mean
+model. Units and annualization remain those of `Regression`; multiply an
+alpha standard error by periods per year to annualize it arithmetically.
+The implementation uses centered Householder QR and inverse triangular
+factors. The weights follow equation (5) of the
+[original Newey-West paper](https://users.ssc.wisc.edu/~behansen/718/NeweyWest1987.pdf).
+
+## Attribute a period's active return
+
+`Brinson` accepts aligned portfolio weights, benchmark weights, portfolio
+sector returns and benchmark sector returns, all as fractions for one period.
+It returns Brinson-Fachler allocation, selection and interaction, per sector
+and in total. Both weight vectors sum to 1, within 1e-9; weights are finite
+and nonnegative. Map the returned positions to sector names in the caller.
+
+```go
+// from metrics.ExampleBrinson
+// Two aligned sectors, with a 60/40 portfolio and 50/50 benchmark.
+attribution, err := metrics.Brinson(
+	[]float64{.6, .4}, []float64{.5, .5},
+	[]float64{.12, .02}, []float64{.10, .04},
+)
+if err != nil {
+	panic(err)
+}
+fmt.Printf("active %.1f pt: allocation %.1f, selection cancels %v, interaction %.1f\n", attribution.ActiveReturn*100, attribution.Allocation*100, math.Abs(attribution.Selection) < 1e-12, attribution.Interaction*100)
+```
+
+The three effects reconcile to portfolio return minus benchmark return up to
+floating-point rounding. Zero-weight sectors are supported, without division
+by their weights. An absent sector still needs a finite return convention on
+that side: the convention can shift the individual effects while leaving
+the active total unchanged. This is single-period arithmetic attribution;
+it does not link effects over multiple periods or attribute fees, flows or
+currencies. The formulas are those of Brinson-Fachler, reproduced as equations
+(10)-(12) in the CFA Institute's
+[Performance Attribution review](https://rpc.cfainstitute.org/sites/default/files/-/media/documents/book/rf-lit-review/2019/rflr-performance-attribution.pdf).

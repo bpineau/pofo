@@ -23,6 +23,7 @@ to standard output.
 
 | Script | The question | Example |
 |---|---|---|
+| [workflow](workflow.go) | Complete offline FX, CPI, cash, analysis, train/test allocation and CSV workflow | `go run examples/code/workflow.go -out /tmp/study.csv` |
 | [describe](describe.go) | What is this series: statistics, calendar years, deepest drawdowns? | `go run examples/code/describe.go SP500-USD` |
 | [stats](stats.go) | How do these series compare, side by side? | `go run examples/code/stats.go -monthly SP500-USD MSCIWORLD-USD TREASURY-LONG-USD XAUUSD-LBMA` |
 | [blend](blend.go) | What would this mix, rebalanced monthly, have done? | `go run examples/code/blend.go SP500-USD=60 TREASURY-INT-USD=40` |

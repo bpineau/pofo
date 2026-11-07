@@ -31,7 +31,8 @@ type Panel struct {
 	IDs    []string    // the columns, the input series' Symbols in order
 	R      [][]float64 // R[i][t]: the return of IDs[i] over period t, a fraction
 
-	cadence float64 // a Daily panel's periods per year, measured by NewPanel and kept by every selection
+	cadence float64            // a Daily panel's periods per year, measured by NewPanel and kept by every selection
+	meta    map[string]*Series // immutable, detached provenance of each column
 }
 
 // NewPanel cuts every series of list into periods of f and returns their
@@ -148,6 +149,13 @@ func NewPanel(f Frequency, list ...*Series) (*Panel, error) {
 	}
 
 	p := &Panel{Freq: f, IDs: ids, R: make([][]float64, len(list))}
+	p.meta = make(map[string]*Series, len(list))
+	for _, s := range list {
+		cp := *s
+		cp.Points, cp.Dividends = nil, nil
+		cp.Warnings, cp.Junctions = slices.Clone(s.Warnings), slices.Clone(s.Junctions)
+		p.meta[s.Symbol] = &cp
+	}
 periods:
 	for k := 1; k < len(labels); k++ {
 		for i, s := range list {
@@ -282,7 +290,7 @@ func (p *Panel) Pick(periods []int) (*Panel, error) {
 
 // pick copies the listed periods into a new panel.
 func (p *Panel) pick(periods []int) *Panel {
-	out := &Panel{Freq: p.Freq, IDs: slices.Clone(p.IDs), R: make([][]float64, len(p.R)), cadence: p.cadence}
+	out := &Panel{Freq: p.Freq, IDs: slices.Clone(p.IDs), R: make([][]float64, len(p.R)), cadence: p.cadence, meta: p.meta}
 	out.Starts, out.Ends = make([]time.Time, len(periods)), make([]time.Time, len(periods))
 	for i := range p.R {
 		out.R[i] = make([]float64, len(periods))
@@ -355,6 +363,10 @@ func (p *Panel) Mix(id string, weights map[string]float64) (*Panel, error) {
 	if math.Abs(sum-1) > weightSumTolerance {
 		return nil, fmt.Errorf("marketdata: Panel.Mix %s: weights sum to %v, not 1 (put the rest in a cash column, negative to borrow)", id, sum)
 	}
+	meta, err := p.mixMetadata(id, weights)
+	if err != nil {
+		return nil, err
+	}
 	out := &Panel{
 		Freq:   p.Freq,
 		Starts: slices.Clone(p.Starts),
@@ -363,6 +375,7 @@ func (p *Panel) Mix(id string, weights map[string]float64) (*Panel, error) {
 		R:      make([][]float64, 0, len(p.R)+1),
 
 		cadence: p.cadence,
+		meta:    meta,
 	}
 	for _, r := range p.R {
 		out.R = append(out.R, slices.Clone(r))
@@ -375,7 +388,8 @@ func (p *Panel) Mix(id string, weights map[string]float64) (*Panel, error) {
 // every period's return, one point per Ends. Its dates are the canonical
 // labels, so metrics.Compute (or Series.Stats) reads it at the panel's
 // cadence, 12 a year for a monthly panel, and every statistic of a blend
-// built by Mix is one call away. Symbol is id; no other metadata survives.
+// built by Mix is one call away. Currency, provenance and warnings survive;
+// Dividends are cleared because levels already compound total returns.
 //
 // It is an error when the panel has no such column or no period, and when
 // its periods are not one unbroken path (a junction dropped one, or Pick
@@ -398,7 +412,12 @@ func (p *Panel) Series(id string) (*Series, error) {
 		}
 		points[t+1] = Point{Date: p.Ends[t], Close: points[t].Close * (1 + r)}
 	}
-	return &Series{Symbol: id, Points: points}, nil
+	out := &Series{Symbol: id}
+	if meta := p.meta[id]; meta != nil {
+		out = meta.clone()
+	}
+	out.Points, out.Cadence = points, p.PeriodsPerYear()
+	return out, nil
 }
 
 // Track measures how column a follows column b over every period
@@ -445,7 +464,7 @@ func (p *Panel) Compound(k int) (*Panel, error) {
 	case p.Freq != Daily:
 		return nil, fmt.Errorf("marketdata: Panel.Compound: a %d-month panel is a calendar one; build it at the coarser Frequency instead", p.Freq)
 	}
-	out := &Panel{Freq: Daily, IDs: slices.Clone(p.IDs), R: make([][]float64, len(p.R)), cadence: p.PeriodsPerYear() / float64(k)}
+	out := &Panel{Freq: Daily, IDs: slices.Clone(p.IDs), R: make([][]float64, len(p.R)), cadence: p.PeriodsPerYear() / float64(k), meta: p.meta}
 	for lo, t := 0, 0; t < p.Len(); t++ {
 		if t > lo && !p.Starts[t].Equal(p.Ends[t-1]) {
 			lo = t // a gap: the run restarts here

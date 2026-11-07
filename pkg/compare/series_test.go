@@ -125,3 +125,17 @@ func TestInflationSeriesUSD(t *testing.T) {
 		t.Errorf("deflator = %s from %s, want ^CPI-US from 1913", s.Symbol, s.First().Date.Format("2006-01"))
 	}
 }
+
+// deflate exercises the report's legacy extrapolation policy through the
+// public transformation rather than carrying another deflation formula.
+func deflate(dates []time.Time, values []float64, cpi *marketdata.Series) []float64 {
+	s, err := marketdata.NewSeries("test", dates, values)
+	if err != nil {
+		panic(err)
+	}
+	real, err := s.Deflate(cpi, marketdata.AdjustmentOptions{AllowExtrapolation: true})
+	if err != nil {
+		panic(err)
+	}
+	return real.Values()
+}

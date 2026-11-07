@@ -88,7 +88,7 @@ func objectiveFn(returns [][]float64, ppy float64, mu []float64, cov [][]float64
 			if v <= 0 {
 				return 0, false
 			}
-			return dot(mu, w) / math.Sqrt(v), true
+			return (dot(mu, w) - spec.RiskFree) / math.Sqrt(v), true
 		}, nil
 	case MinVolatility:
 		return func(w []float64) (float64, bool) {
@@ -101,7 +101,7 @@ func objectiveFn(returns [][]float64, ppy float64, mu []float64, cov [][]float64
 	case MaxSortino:
 		return func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			s := metrics.Sortino(buf, 0, ppy)
+			s := metrics.Sortino(buf, spec.RiskFree, ppy)
 			return s, !math.IsNaN(s)
 		}, nil
 	case ReturnToDrawdown:
@@ -277,6 +277,11 @@ func maximizeBox(lo, hi []float64, score func([]float64) (float64, bool), starts
 // monotonically non-increasing in λ; per-asset bounds change nothing but the
 // clamp. The caller must have checked feasibility (see feasible).
 func projectBoxSimplex(v, lo, hi []float64) []float64 {
+	for _, x := range v {
+		if !finite(x) {
+			return make([]float64, len(v))
+		}
+	}
 	sumClamp := func(lam float64) float64 {
 		s := 0.0
 		for i, x := range v {
@@ -286,10 +291,16 @@ func projectBoxSimplex(v, lo, hi []float64) []float64 {
 	}
 	loLam, hiLam := -1.0, 1.0
 	for sumClamp(loLam) < 1 {
-		loLam -= 1
+		loLam *= 2
+		if !finite(loLam) {
+			return make([]float64, len(v))
+		}
 	}
 	for sumClamp(hiLam) > 1 {
-		hiLam += 1
+		hiLam *= 2
+		if !finite(hiLam) {
+			return make([]float64, len(v))
+		}
 	}
 	for i := 0; i < 100; i++ {
 		mid := (loLam + hiLam) / 2
@@ -313,8 +324,10 @@ func projectBoxSimplex(v, lo, hi []float64) []float64 {
 // solver's limits are measured on, exposed so a caller can report the same
 // quantities on another window (a training slice and the stretch that
 // follows it, say).
+// Invalid panels, cadence or weights return three NaNs. Evaluate provides
+// the same measurements with an explicit error and a named result.
 func PathStats(returns [][]float64, w []float64, periodsPerYear float64) (cagr, vol, maxDrawdown float64) {
-	if len(returns) == 0 || len(returns[0]) == 0 {
+	if checkPanel(returns, periodsPerYear) != nil || checkWeights(w, len(returns), false) != nil {
 		return math.NaN(), math.NaN(), math.NaN()
 	}
 	buf := make([]float64, len(returns[0]))

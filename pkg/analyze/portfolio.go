@@ -43,6 +43,8 @@ type Composition struct {
 // each holding's own study on the same window, and what ties them. Returns,
 // weights and shares are FRACTIONS, as in AssetStudy.
 type PortfolioStudy struct {
+	Real        *AdjustedStudy         // purchasing power, when Inflation is set
+	Excess      *AdjustedStudy         // arithmetic excess over RiskFreeIndex, when set
 	Spec        *portfolio.Spec        // the spec studied (a copy with Sim set under Options.Sim)
 	Portfolio   *portfolio.Portfolio   // as built: series fetched, fees looked up
 	Sim         *portfolio.SimResult   // the simulation; its window is the study's
@@ -53,7 +55,7 @@ type PortfolioStudy struct {
 	Relative    *metrics.Relative      // vs Options.Benchmark; nil without one or without overlap
 	Holdings    []AssetStudy           // in Spec order, each on the simulation window
 	Aligned     *marketdata.Aligned    // the holdings on the simulation calendar, IDs as written
-	Correlation [][]float64            // of the holdings' daily returns on Aligned, Spec order
+	Correlation [][]float64            // shared return periods, Spec order; nil if no shared panel
 	Attribution metrics.Attribution    // risk and return shares from MONTHLY contributions, Spec order
 	Composition Composition            // look-through, from the catalog
 	Warnings    []string               // the portfolio's, the simulation's and every holding's (prefixed "ID: ")
@@ -76,13 +78,15 @@ type PortfolioStudy struct {
 // The rebalancing period is the spec's own RebalanceDays when it sets one
 // (0 or more, "#meta rebalance:N"), else opt.Rebalance, else
 // DefaultRebalance: the precedence the CLI applies. A levered spec is
-// financed at ^IRX (fetched from src, held flat before its history, 0 %/yr
+// financed at Options.Financing or Options.FinancingID, defaulting to ^IRX
+// (fetched from src, held flat before its history, 0 %/yr
 // with a warning when it cannot be fetched) plus its borrow spread, 1 %/yr
 // by default. Spec.Optimize and Spec.Currencies are not acted on: the
 // written weights are studied, in opt.Currency, and a warning says so.
 //
-// Correlation is the Pearson correlation of the holdings' daily returns on
-// Aligned (metrics.CorrelationMatrix). Attribution is metrics.Attribute over
+// Correlation is the Pearson correlation of shared return periods at
+// Options.CorrelationFrequency (daily by default), never the forward-filled
+// returns of Aligned. Attribution is metrics.Attribute over
 // the simulation's MONTHLY contributions (SimResult.MonthlyContributions),
 // the reading the comparison report's risk budget makes: folding to months
 // removes most of the bias asynchronous closes (a US fund against a European
@@ -99,6 +103,9 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	}
 	if err := opt.check(); err != nil {
 		return nil, err
+	}
+	if opt.Simulation != nil && (opt.Rebalance != 0 || spec.RebalanceDays >= 0) {
+		return nil, errors.New("analyze: Simulation cannot be combined with Options.Rebalance or a spec rebalancing directive")
 	}
 	eff := *spec
 	eff.Sim = spec.Sim || opt.Sim
@@ -117,7 +124,7 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	fo := opt.fetchOptions()
 	build := portfolio.BuildOptions{
 		Fetch: func(id string) (*marketdata.Series, error) {
-			s, err := src.FetchExtended(ctx, id, fo)
+			s, err := fetch(ctx, src, id, fo)
 			if err != nil {
 				return nil, err
 			}
@@ -132,9 +139,22 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	}
 	if eff.Leverage {
 		// A rate is a percent LEVEL: fetched as is, never converted.
-		cash, err := src.FetchExtended(ctx, financingRate, marketdata.FetchOptions{From: opt.From})
+		rateID := opt.FinancingID
+		if rateID == "" {
+			rateID = financingRate
+		}
+		cash := opt.Financing
+		var err error
+		if cash == nil {
+			// Rates remain in force until replaced. Keep the observation before
+			// the asset window rather than backfilling its first future rate.
+			cash, err = fetch(ctx, src, rateID, marketdata.FetchOptions{})
+		}
 		if err != nil {
-			warnings = append(warnings, fmt.Sprintf("financing rate %s unavailable (%v), leverage financed at 0 %%", financingRate, err))
+			if opt.FinancingID != "" {
+				return nil, fmt.Errorf("analyze: financing: %w", err)
+			}
+			warnings = append(warnings, fmt.Sprintf("financing rate %s unavailable (%v), leverage financed at 0 %%", rateID, err))
 		} else {
 			build.Cash = cash
 		}
@@ -143,7 +163,12 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	if err != nil {
 		return nil, fmt.Errorf("analyze: %w", err)
 	}
-	sim, err := portfolio.Simulate(p, rebalanceDays(&eff, opt))
+	var sim *portfolio.SimResult
+	if opt.Simulation == nil {
+		sim, err = portfolio.Simulate(p, rebalanceDays(&eff, opt))
+	} else {
+		sim, err = portfolio.SimulateWith(p, *opt.Simulation)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("analyze: portfolio %s: %w", eff.Name, err)
 	}
@@ -156,6 +181,26 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	ps := &PortfolioStudy{Spec: &eff, Portfolio: p, Sim: sim, Stats: stats}
 	ps.Years, ps.Months, ps.Drawdowns = calendar(sim.Dates, sim.Index)
 	ps.Relative = relative(&ps.Stats, sim.Dates, sim.Index, bench)
+	curve, err := marketdata.NewSeries(eff.Name, sim.Dates, sim.Index)
+	if err != nil {
+		return nil, err
+	}
+	curve.Currency = p.Assets[0].Series.Currency
+	for _, asset := range p.Assets {
+		if asset.Series.Currency == "" || asset.Series.Currency != curve.Currency {
+			curve.Currency = ""
+			break
+		}
+	}
+	if opt.RiskFreeIndex != nil && curve.Currency == "" {
+		return nil, errors.New("analyze: cash excess requires every holding in one known currency; convert and label holdings first")
+	}
+	a := &AssetStudy{Series: curve, Stats: ps.Stats, Relative: ps.Relative}
+	if err := adjustStudy(a, opt); err != nil {
+		return nil, fmt.Errorf("analyze: portfolio adjustments: %w", err)
+	}
+	ps.Real, ps.Excess, ps.Stats = a.Real, a.Excess, a.Stats
+	warnings = append(warnings, a.Warnings...)
 	if bench != nil && ps.Relative == nil {
 		warnings = append(warnings, noOverlap(opt.Benchmark))
 	}
@@ -165,6 +210,9 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	for i, a := range p.Assets {
 		series[i] = a.Series
 		h, err := study(a.ID, marketdata.Trim(a.Series, start, end), bench)
+		if err == nil {
+			err = adjustStudy(h, opt)
+		}
 		if err != nil {
 			h.Warnings = append(h.Warnings, fmt.Sprintf("no statistics on the portfolio's window: %v", err))
 		} else if bench != nil && h.Relative == nil {
@@ -184,8 +232,20 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 		al.IDs[i] = a.ID
 	}
 	ps.Aligned = al
-	if ps.Correlation, err = metrics.CorrelationMatrix(al.Returns()); err != nil {
-		return nil, fmt.Errorf("analyze: portfolio %s: %w", eff.Name, err)
+	correlationSeries := make([]*marketdata.Series, len(series))
+	for i, s := range series {
+		cp := *marketdata.Trim(s, start, end)
+		cp.Symbol = fmt.Sprintf("holding-%d", i)
+		correlationSeries[i] = &cp
+	}
+	panel, panelErr := marketdata.NewPanel(opt.CorrelationFrequency, correlationSeries...)
+	if panelErr != nil {
+		warnings = append(warnings, fmt.Sprintf("no correlation on shared periods: %v", panelErr))
+	} else {
+		ps.Correlation, err = metrics.CorrelationMatrix(panel.R)
+		if err != nil {
+			return nil, fmt.Errorf("analyze: correlation: %w", err)
+		}
 	}
 
 	_, monthly := sim.MonthlyContributions()
@@ -201,6 +261,13 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	}
 	ps.Composition = comp
 	ps.Warnings = warnings
+	// Exporting a transformed portfolio curve must retain the qualifications
+	// of its holdings, not just the CPI/cash alignment warnings.
+	for _, adjusted := range []*AdjustedStudy{ps.Real, ps.Excess} {
+		if adjusted != nil {
+			adjusted.Series.Warnings = slices.Clone(warnings)
+		}
+	}
 	return ps, nil
 }
 

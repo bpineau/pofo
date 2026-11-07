@@ -18,8 +18,8 @@ type Stats struct {
 	PeriodsPerYear float64   // the series' cadence (252 daily, 52 weekly, 12 monthly), which annualizes the per-period figures below
 	CAGR           float64   // annualized growth rate (0.07 = +7 %/year)
 	Volatility     float64   // standard deviation of the per-period returns, annualized at PeriodsPerYear (0.16 = 16 %/year)
-	Sharpe         float64   // annualized mean per-period return / Volatility, risk-free rate 0
-	Sortino        float64   // annualized mean per-period return / annualized downside deviation
+	Sharpe         float64   // annualized excess mean / Volatility; Compute uses risk-free 0, ComputeWith selects it
+	Sortino        float64   // annualized excess mean / annualized downside deviation below the selected target
 	Ulcer          float64   // Ulcer Index, in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
 	MaxDrawdown    float64   // deepest peak-to-trough loss (-0.55 = −55 %)
 	TTRDays        int       // longest underwater stretch (peak to recovery), calendar days
@@ -45,6 +45,11 @@ type Stats struct {
 func Compute(dates []time.Time, values []float64) (Stats, error) {
 	if len(dates) != len(values) || len(values) < 2 {
 		return Stats{}, fmt.Errorf("series too short (%d points)", len(values))
+	}
+	for i := 1; i < len(dates); i++ {
+		if !dates[i].After(dates[i-1]) {
+			return Stats{}, fmt.Errorf("dates must be strictly increasing at index %d", i)
+		}
 	}
 	for i, v := range values {
 		// An infinity passes "> 0" and then poisons half the statistics with

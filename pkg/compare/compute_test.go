@@ -197,3 +197,37 @@ func TestComputeErrors(t *testing.T) {
 		t.Errorf("error = %v, want it to name the portfolio and the asset", err)
 	}
 }
+
+func TestExplicitInflationAndPublicRealStats(t *testing.T) {
+	c := marketdata.NewClient("")
+	c.Offline = true
+	start := time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2011, 12, 31, 0, 0, 0, 0, time.UTC)
+	cpi, _ := marketdata.NewSeries("chosen basket", []time.Time{start, end}, []float64{100, 100})
+	spec := parseSpec(t, "example", "100 SP500\n")
+	opt := Options{Currency: "USD", Start: start, End: end, Inflation: cpi, NoFees: true}
+	cmp, err := Compute(context.Background(), c, []*portfolio.Spec{spec}, opt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	col := cmp.Columns()[0]
+	if col.RealStats == nil || col.RealStats.CAGR != col.Stats.CAGR {
+		t.Fatal("constant chosen basket did not preserve nominal result")
+	}
+	opt.Inflation = marketdata.Trim(cpi, end, time.Time{})
+	if _, err := Compute(context.Background(), c, []*portfolio.Spec{spec}, opt); err == nil {
+		t.Fatal("explicit incomplete CPI accepted")
+	}
+	opt.Adjustment.AllowExtrapolation = true
+	cmp, err = Compute(context.Background(), c, []*portfolio.Spec{spec}, opt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, w := range cmp.Columns()[0].Warnings {
+		found = found || strings.Contains(w, "held constant outside")
+	}
+	if !found {
+		t.Fatal("silent CPI extrapolation")
+	}
+}

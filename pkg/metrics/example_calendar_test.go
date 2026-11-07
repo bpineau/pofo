@@ -10,17 +10,17 @@ import (
 )
 
 // Several series meet on ONE calendar before any cross-statistic is read:
-// marketdata.AlignSeries starts where all of them quote and forward-fills each
-// across the others' sessions, and its Returns are the [asset][period] input
-// of the matrices. The synthetic lines of threeFunds stand for world equities,
+// marketdata.NewPanel pairs returns over shared periods and its R matrix is
+// the [asset][period] input of the statistics. The synthetic lines of
+// threeFunds stand for world equities,
 // an S&P 500 fund that mostly follows them, and gold, which does not and whose
 // history starts later, so the common window starts with it.
 func Example_oneCalendar() {
-	a, err := marketdata.AlignSeries(threeFunds(), time.Time{}, time.Time{})
+	p, err := marketdata.NewPanel(marketdata.Daily, threeFunds()...)
 	if err != nil {
 		panic(err)
 	}
-	r := a.Returns()
+	r := p.R
 	corr, err := metrics.CorrelationMatrix(r)
 	if err != nil {
 		panic(err)
@@ -29,24 +29,34 @@ func Example_oneCalendar() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("from %s: %s/%s %.2f, %s/%s %.2f\n", a.Dates[0].Format(time.DateOnly),
-		a.IDs[0], a.IDs[1], corr[0][1], a.IDs[0], a.IDs[2], corr[0][2])
-	fmt.Printf("%s volatility %.1f %%/yr\n", a.IDs[0], math.Sqrt(cov[0][0]*252)*100)
+	fmt.Printf("from %s: %s/%s %.2f, %s/%s %.2f\n", p.Starts[0].Format(time.DateOnly),
+		p.IDs[0], p.IDs[1], corr[0][1], p.IDs[0], p.IDs[2], corr[0][2])
+	fmt.Printf("%s volatility %.1f %%/yr\n", p.IDs[0], math.Sqrt(cov[0][0]*p.PeriodsPerYear())*100)
+
+	// Rebuild levels from the same paired returns for dated calculations.
+	first, err := p.Series(p.IDs[0])
+	if err != nil {
+		panic(err)
+	}
+	second, err := p.Series(p.IDs[1])
+	if err != nil {
+		panic(err)
+	}
 
 	// Partial flags a first year measured from the first quote; the last row
 	// ends on the last quote, which its End says.
-	years, err := metrics.CalendarReturns(a.Dates, a.Levels[0], 12)
+	years, err := metrics.CalendarReturns(first.Dates(), first.Values(), 12)
 	if err != nil {
 		panic(err)
 	}
 	for _, y := range years {
 		fmt.Printf("year to %s %+5.1f %%, partial=%v\n", y.End.Format(time.DateOnly), y.Return*100, y.Partial)
 	}
-	if _, betas, ok := metrics.RollingBeta(a.Dates, a.Levels[1], a.Dates, a.Levels[0], 1); ok {
-		fmt.Printf("one-year beta of %s on %s, last: %.2f\n", a.IDs[1], a.IDs[0], betas[len(betas)-1])
+	if _, betas, ok := metrics.RollingBeta(second.Dates(), second.Values(), first.Dates(), first.Values(), 1); ok {
+		fmt.Printf("one-year beta of %s on %s, last: %.2f\n", p.IDs[1], p.IDs[0], betas[len(betas)-1])
 	}
 	if v, ok := metrics.VaR(r[0], 0.95); ok {
-		fmt.Printf("daily 95 %% VaR of %s: %.2f %%\n", a.IDs[0], v*100)
+		fmt.Printf("daily 95 %% VaR of %s: %.2f %%\n", p.IDs[0], v*100)
 	}
 	// Output:
 	// from 2020-07-20: IWDA/VUAA 0.88, IWDA/IGLN -0.16

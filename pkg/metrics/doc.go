@@ -24,6 +24,12 @@
 //   - [Corr], [CorrelationMatrix] and [Covariance] relate return columns
 //     measured on one calendar; [Regress] fits one on several ([Regression]);
 //     [Track] measures a replica against what it follows ([Tracking]).
+//     [ShrinkageCovariance] explicitly shrinks sample off-diagonal covariance;
+//     [RegressHAC] supplies Newey-West robust coefficient standard errors.
+//   - [BlockBootstrap] estimates uncertainty of CAGR, volatility and Sharpe
+//     with circular moving blocks and an explicit seed ([BootstrapOptions]).
+//     [Brinson] attributes one period's active return to allocation,
+//     selection and interaction ([BrinsonAttribution]).
 //   - [LowestK] and [HighestK] date a sample's extremes; [VaR] and [CVaR]
 //     read its tail.
 //   - [TWR] and [IRR] measure a series that carries external flows ([Flow]);
@@ -48,7 +54,8 @@
 //     WorstRollingReturn, CWARP) take it as an argument, TradingDaysPerYear
 //     for daily returns. A series that changes cadence along the way is read
 //     at its prevailing one: resample it first when that matters;
-//   - Sharpe and Sortino use a zero risk-free rate (like Curvo);
+//   - Compute defaults to a zero risk-free rate (like Curvo). ComputeWith
+//     takes an explicit annual arithmetic fraction and cadence override;
 //     PortfolioVisualizer and LazyPortfolioETF use T-bills and monthly
 //     data; their Sharpe ratios come out ≈ 0.10-0.15 lower;
 //   - Max Drawdown, Ulcer and TTR are measured on daily closes, harsher
@@ -104,6 +111,11 @@
 // Quantiles, as POSITIVE per-period losses (0.95 = the loss exceeded in 5 %
 // of periods), never annualized. Everything here takes and returns
 // fractions.
+// ShrinkageCovariance keeps each sample variance and multiplies its
+// off-diagonal covariances by 1-shrinkage, with an explicit coefficient in
+// [0,1]. This is diagonal-target linear shrinkage, not an automatic estimator
+// of an optimal intensity. Inputs must be finite, rectangular samples with
+// at least two observations.
 //
 // # Regression and dated extremes
 //
@@ -116,6 +128,26 @@
 // AnnualResidualVol annualize them at a cadence the caller passes, the
 // PeriodsPerYear of the data. Each coefficient carries its standard error
 // and t-statistic, classical ones that trust independent residuals.
+// RegressHAC retains that same fit but uses Bartlett-weighted Newey-West
+// standard errors at the caller's chosen lag count, without a finite-sample
+// correction. These are asymptotic coefficient uncertainty, not prediction
+// intervals. Lags zero gives HC0; time order and regular cadence matter.
+//
+// # Resampling uncertainty and benchmark attribution
+//
+// BlockBootstrap draws overlapping circular moving blocks of an observed
+// return sample. The seed, block length, confidence and repetitions are
+// explicit. Its intervals measure estimation uncertainty under resampling of
+// that past, not future outcomes. Undefined Sharpe estimates remain NaN in
+// Go and null in JSON; each Interval counts its defined replicates. Work is
+// proportional to sample length times repetitions, with bounded retained
+// draws and one working return buffer.
+//
+// Brinson is single-period Brinson-Fachler attribution on aligned sector
+// weights and returns. Allocation, selection and interaction sum to the
+// portfolio-minus-benchmark return, within floating-point rounding. Zero
+// weights are supported; labels and absent-sector return conventions belong
+// to the caller. Multi-period linking is outside its contract.
 //
 // LowestK and HighestK return the POSITIONS of a sample's extremes, stable
 // on ties and blind to NaN, so the worst months of a return column can be

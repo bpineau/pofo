@@ -262,7 +262,7 @@ func validFees(pct float64) bool { return pct >= 0 && pct <= maxFeesPct }
 // declared "0 %" would be the trap every other omission avoids.
 type Line struct {
 	ID     string  // ticker, ISIN or alias, SIM suffix allowed, as in a file
-	Weight float64 // fraction of the portfolio, above 0 and at most 1
+	Weight float64 // fraction, in (0,1] normally or (0,5] with SpecOptions.Leverage
 	Fees   float64 // TER in percent per year, above 0 and at most 20; zero or negative when unknown
 }
 
@@ -282,17 +282,70 @@ type Line struct {
 // 20 %/yr, and NaN anywhere. Duplicate identifiers are accepted, as Parse
 // accepts them: they are two lines of the same asset.
 func NewSpec(name string, lines ...Line) (*Spec, error) {
+	return NewSpecWith(name, SpecOptions{}, lines...)
+}
+
+// SpecOptions sets typed directives before NewSpecWith normalizes weights.
+// Nil numeric pointers leave the corresponding directive unset, preserving
+// NewSpec's defaults; pointers to zero explicitly disable that setting.
+type SpecOptions struct {
+	// Leverage preserves exposures instead of normalizing their sum to 1.
+	Leverage bool
+	// RebalanceDays is a nonnegative calendar-day interval; zero means never.
+	RebalanceDays *int
+	// EnvelopeFees is the additional annual fee, in percent, in [0,20].
+	EnvelopeFees *float64
+	// BorrowSpread is the annual borrowing spread, in percent, in [0,10].
+	BorrowSpread *float64
+}
+
+// NewSpecWith is NewSpec with directives applied BEFORE weight normalization.
+// Leverage preserves Line weights as exposures of capital (sum at most 5),
+// keeping a residual cash position. Without leverage weights are normalized.
+// Numeric options use Spec's percent-per-year units, not fractions.
+func NewSpecWith(name string, opt SpecOptions, lines ...Line) (*Spec, error) {
 	spec := newSpec(name)
+	spec.Leverage = opt.Leverage
+	if opt.RebalanceDays != nil {
+		if *opt.RebalanceDays < 0 {
+			return nil, fmt.Errorf("rebalance days must be nonnegative")
+		}
+		spec.RebalanceDays = *opt.RebalanceDays
+	}
+	for _, setting := range []struct {
+		name  string
+		value *float64
+		upper float64
+		dest  *float64
+	}{
+		{"envelope fees", opt.EnvelopeFees, 20, &spec.EnvelopeFees},
+		{"borrow spread", opt.BorrowSpread, 10, &spec.BorrowSpread},
+	} {
+		if setting.value != nil {
+			v := *setting.value
+			if math.IsNaN(v) || math.IsInf(v, 0) || v < 0 || v > setting.upper {
+				return nil, fmt.Errorf("%s must be finite percent per year in [0,%g]", setting.name, setting.upper)
+			}
+			*setting.dest = v
+		}
+	}
 	for i, l := range lines {
 		id := strings.TrimSpace(l.ID)
 		if id == "" || strings.ContainsFunc(id, unicode.IsSpace) {
 			return nil, fmt.Errorf("line %d: invalid identifier %q", i+1, l.ID)
 		}
 		h := Holding{RawWeight: l.Weight * 100, ID: id, Fees: -1}
-		if !validWeight(h.RawWeight) || h.RawWeight > 100 {
-			return nil, fmt.Errorf("line %d (%s): weight %g out of range (a fraction above 0 and at most 1)", i+1, id, l.Weight)
+		if !validWeight(h.RawWeight) || !opt.Leverage && h.RawWeight > 100 {
+			upper := 1.0
+			if opt.Leverage {
+				upper = maxWeightPct / 100.0
+			}
+			return nil, fmt.Errorf("line %d (%s): weight %g out of range (a fraction above 0 and at most %g)", i+1, id, l.Weight, upper)
 		}
-		if l.Fees > 0 || math.IsNaN(l.Fees) {
+		if math.IsNaN(l.Fees) || math.IsInf(l.Fees, 0) {
+			return nil, fmt.Errorf("line %d (%s): fees must be finite", i+1, id)
+		}
+		if l.Fees > 0 {
 			if !validFees(l.Fees) {
 				return nil, fmt.Errorf("line %d (%s): fees %g out of range (0-20 %%/year)", i+1, id, l.Fees)
 			}

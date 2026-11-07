@@ -173,3 +173,100 @@ The look-through splits (`AssetClassSplit`, `CurrencySplit`,
 
 Scripts: `correl.go`, `simulate.go` in
 [`examples/code/`](../../../examples/code/README.md).
+
+## Construct an explicit exposure
+
+`NewSpecWith` applies `SpecOptions` before normalization. With `Leverage`
+enabled, 90 % and 60 % exposures stay as written, with a negative cash
+residual financed at the configured cash rate and borrowing spread.
+`NewSpec` retains its ordinary normalization, turning those same weights
+into 60 % and 40 %.
+
+```go
+// from portfolio.ExampleNewSpecWith
+spec, err := portfolio.NewSpecWith("Levered allocation", portfolio.SpecOptions{Leverage: true},
+	portfolio.Line{ID: "VTI", Weight: .9}, // US9229087690
+	portfolio.Line{ID: "BND", Weight: .6}) // US9219378356
+if err != nil {
+	panic(err)
+}
+fmt.Printf("exposures %.0f / %.0f %%\n", spec.Holdings[0].Weight*100, spec.Holdings[1].Weight*100)
+```
+
+`SpecOptions.RebalanceDays`, `EnvelopeFees` and `BorrowSpread` are pointers:
+nil leaves the directive unset, while a pointer to zero explicitly disables
+it. Days are nonnegative calendar days. Fees and borrowing spread use
+**percent per year**, as their `Spec` fields do, with ranges 0-20 and 0-10
+respectively. Leveraged total exposure cannot exceed 500 %.
+
+## Calendar schedules and execution costs
+
+`SimulateWith` accepts `SimOptions`. Set `RebalancePeriod` to `Monthly`,
+`Quarterly` or `Yearly` to trade on the first observed date of a new calendar
+period. It never uses a future price or rebalances at the preceding close.
+A calendar period and a positive `RebalanceDays` cannot be combined. The zero
+options value means no rebalancing and no cost; `Simulate(p, days)` retains
+its existing behavior.
+
+```go
+// from portfolio.ExampleSimulateWith
+// Synthetic prices around a calendar boundary. February's first
+// observed close executes the rebalance, without using future prices.
+dates := []time.Time{
+	time.Date(2020, 1, 30, 0, 0, 0, 0, time.UTC),
+	time.Date(2020, 1, 31, 0, 0, 0, 0, time.UTC),
+	time.Date(2020, 2, 3, 0, 0, 0, 0, time.UTC),
+}
+a, err := marketdata.NewSeries("A", dates, []float64{100, 200, 200})
+if err != nil {
+	panic(err)
+}
+b, err := marketdata.NewSeries("B", dates, []float64{100, 100, 100})
+if err != nil {
+	panic(err)
+}
+p := &portfolio.Portfolio{Capital: 1000, Assets: []portfolio.Asset{
+	{Symbol: "A", Weight: .5, Series: a}, {Symbol: "B", Weight: .5, Series: b},
+}}
+sim, err := portfolio.SimulateWith(p, portfolio.SimOptions{
+	RebalancePeriod: portfolio.Monthly, TransactionCost: .01,
+})
+if err != nil {
+	panic(err)
+}
+fmt.Printf("January turnover %.1f %%, February turnover %.1f %%\n", sim.Turnover[1]*100, sim.Turnover[2]*100)
+fmt.Printf("cost %.2f, net value %.2f, index %.2f\n", sim.Costs[2], sim.Values[2], sim.Index[2])
+```
+
+`TransactionCost` is a **fraction per side of traded asset notional**, from
+0 inclusive to 1 exclusive. A 1 % charge on selling 250 and buying 250 costs
+5. This is deliberately distinct from annual fees in percent. The sampled
+run starts already invested and stops without assuming a sale, so initial
+entry and final exit are excluded. Cash transfers and changes in debt are
+not separate charged assets.
+
+Costs apply to rebalancing and to purchases or redemptions caused by external
+flows. A flow and a rebalance on the same date execute as one net trade.
+Post-cost targets fund the charge, including the additional trades needed
+to pay it. The model solves this funding equation rather than deducting a
+fee after spending the full pre-cost capital.
+
+`SimResult.Costs` records money paid on each date. `Turnover` is gross
+absolute purchases plus sales divided by net value immediately before
+trading, after market moves and annual fees but before flows and execution
+costs. It is gross traded turnover, not half that quantity. Both slices are
+aligned with `Dates` and start at zero.
+
+Execution takes place after the market move at that day's prices.
+Contributions join the capital bearing execution costs, and withdrawals
+leave afterward. Costs lower both `Values` and the time-weighted `Index`;
+external flows are stripped from `Index`. Costs remain outside per-asset
+`Contributions`, like envelope fees and financing. A depleted portfolio pays
+only net liquidation proceeds on its last withdrawal, and records that funded
+amount in its flow totals.
+
+Positive-cost trades require the charge rate times target gross exposure
+below 1, with sufficient post-flow capital to cover liquidation costs. These
+conditions give a unique self-financing target. Otherwise simulation returns
+an execution error naming the date. The restriction matters for extreme
+cost/exposure combinations and heavily depleted leveraged positions.

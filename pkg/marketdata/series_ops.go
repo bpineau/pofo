@@ -96,7 +96,11 @@ func (s *Series) Returns() []float64 {
 // returns). The closes must be positive, so it is meaningless on a rate or a
 // yield; the error names the series.
 func (s *Series) Stats() (metrics.Stats, error) {
-	st, err := metrics.Compute(s.Dates(), s.Values())
+	var cadence float64
+	if s != nil {
+		cadence = s.Cadence
+	}
+	st, err := metrics.ComputeWith(s.Dates(), s.Values(), metrics.ComputeOptions{PeriodsPerYear: cadence})
 	if err != nil {
 		return metrics.Stats{}, fmt.Errorf("marketdata: %s: %w", s.symbol(), err)
 	}
@@ -287,6 +291,7 @@ func (s *Series) Resample(f Frequency) (*Series, error) {
 	if f == Daily {
 		return out, nil
 	}
+	out.Cadence = 12 / float64(f)
 	kept := out.Points[:0]
 	for i, p := range out.Points {
 		if i+1 < len(out.Points) && f.index(out.Points[i+1].Date) == f.index(p.Date) {
@@ -339,6 +344,7 @@ func (s *Series) clone() *Series {
 	out.Points = append([]Point(nil), s.Points...)
 	out.Dividends = append([]Dividend(nil), s.Dividends...)
 	out.Junctions = append([]time.Time(nil), s.Junctions...)
+	out.Warnings = append([]string(nil), s.Warnings...)
 	return &out
 }
 
@@ -458,8 +464,9 @@ func (s *Series) symbol() string {
 // FRACTIONS: [asset][period], len(Dates)-1 each, parallel to IDs. Period k
 // runs from Dates[k] to Dates[k+1], so a series that did not quote on one of
 // those days reads a zero return there and the whole move on its next quote.
-// This is the input metrics expects for a correlation or covariance across
-// assets.
+// This describes valuation on a union calendar. For cross-asset statistics,
+// prefer NewPanel and Panel.R: artificial zeros from unequal quote calendars
+// can bias correlation and covariance.
 func (a *Aligned) Returns() [][]float64 {
 	out := make([][]float64, len(a.Levels))
 	for i, levels := range a.Levels {

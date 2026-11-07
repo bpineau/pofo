@@ -134,6 +134,8 @@ func extendFXBack(symbol string, s *Series) {
 // asset's trading days). Pence-quoted series (GBp) are first scaled to GBP.
 // When the FX history starts after the series does, earlier points use the
 // first known rate; extrapolatedBefore reports that date (zero when exact).
+// The returned series also records FXExtrapolatedBefore and a Warnings entry,
+// so callers of Load or FetchExtended retain the qualification without logs.
 // A series whose currency is empty or already the target is returned as-is.
 func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, from time.Time) (out *Series, extrapolatedBefore time.Time, err error) {
 	target = strings.ToUpper(strings.TrimSpace(target))
@@ -197,6 +199,12 @@ func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, 
 			rate = fx.Points[0].Close
 		}
 		cp.Dividends[i] = Dividend{Date: d.Date, Amount: d.Amount * scale * rate}
+	}
+	if !extrapolatedBefore.IsZero() {
+		if extrapolatedBefore.After(cp.FXExtrapolatedBefore) {
+			cp.FXExtrapolatedBefore = extrapolatedBefore
+		}
+		cp.Warnings = append(append([]string(nil), s.Warnings...), fmt.Sprintf("FX %s to %s held constant before %s", s.Currency, target, extrapolatedBefore.Format(time.DateOnly)))
 	}
 	return &cp, extrapolatedBefore, nil
 }

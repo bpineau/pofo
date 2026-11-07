@@ -37,7 +37,7 @@ func solveSeries(returns [][]float64, ppy float64, spec Spec) (Result, error) {
 	case MaxSortino:
 		score = func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			s := metrics.Sortino(buf, 0, ppy)
+			s := metrics.Sortino(buf, spec.RiskFree, ppy)
 			return s, !math.IsNaN(s)
 		}
 	case ReturnToDrawdown:
@@ -70,7 +70,7 @@ func solveSeries(returns [][]float64, ppy float64, spec Spec) (Result, error) {
 // checkFiveYears refuses a MaxWorst5y solve on fewer than five years of
 // returns.
 func checkFiveYears(t int, ppy float64) error {
-	if t < fiveYears(ppy) {
+	if fiveYears(ppy) < 1 || t < fiveYears(ppy) {
 		return fmt.Errorf("max-worst-5y needs at least 5 years of common history, got %d returns at %.0f a year", t, ppy)
 	}
 	return nil

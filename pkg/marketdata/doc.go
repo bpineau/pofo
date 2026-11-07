@@ -20,7 +20,13 @@
 //   - [NewPanel] cuts several series into a returns table on the periods they
 //     all share: [Panel.Col], [Panel.Mix], [Panel.Pick], [Panel.Track].
 //     [AlignSeries] puts their levels on one calendar instead.
-//   - [ReadCSV], [ReadLongCSV] and [WriteCSV] move series in and out as files.
+//   - [Series.Deflate] expresses purchasing power using an explicit CPI;
+//     [Series.Excess] subtracts cash returns. [CashIndex] turns nominal annual
+//     percent rates into cash with an explicit day count. Coverage defaults
+//     are strict; [AdjustmentOptions] controls extrapolation and staleness.
+//   - [ReadSeriesCSV] detects simple/long CSV; [ReadCSV], [ReadLongCSV] and
+//     [WriteCSV] are the explicit file readers and writer. Warnings, currency
+//     and explicit cadence survive a round trip.
 //
 // The CLI's own fetch, a fund with its backcast in front, in euros:
 //

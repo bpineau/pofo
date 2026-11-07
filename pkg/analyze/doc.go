@@ -8,6 +8,8 @@
 //   - [Asset] studies one identifier on its longest window: [metrics.Stats],
 //     calendar years and months, drawdown episodes, relative statistics
 //     against a benchmark ([AssetStudy]).
+//   - [Series] studies caller-owned data directly. [SeriesSource] adapts a map
+//     of series to Asset and Portfolio, with no client or network.
 //   - [Portfolio] builds and simulates a [portfolio.Spec] and studies it: the
 //     statistics, each holding on the same window, the correlation matrix,
 //     the risk and return attribution, the look-through composition
@@ -39,6 +41,10 @@
 // the portfolio's capital, Sectors fractions of its equity sleeve. The
 // percent conventions of pkg/portfolio (RawWeight, TERs in percent per year)
 // are the spec's and stay there.
+// Options.Simulation accepts portfolio.SimOptions for explicit calendar
+// rebalancing and fractional per-side execution costs. A nonnil configuration
+// is complete (zero means no rebalance); conflicting legacy rebalancing
+// directives are errors. Sim.Costs and Sim.Turnover expose the result.
 //
 // # Windows
 //
@@ -50,8 +56,25 @@
 // Stats.Start is therefore the window's first day unless it did not quote
 // on it.
 //
-// Nominal statistics only: an inflation-adjusted reading needs a consumer
-// price index per currency, which pkg/compare owns.
+// [Options.Inflation] adds a Real study using a separately chosen price-level
+// index. The consumption basket is independent of Options.Currency. Missing
+// coverage is an error unless Options.Adjustment explicitly allows flat
+// extrapolation, in which case the series and study record warnings.
+// [Options.RiskFree] supplies an annual arithmetic fraction for Sharpe and
+// Sortino; [Options.RiskFreeIndex] instead supplies a total-return cash index
+// and adds an Excess study. Rates quoted in percent first need conversion
+// with marketdata.CashIndex and an explicit day-count basis. Relative beta,
+// alpha and capture remain nominal with a cash index; a scalar RiskFree
+// adjusts Jensen's alpha by (beta-1)*RiskFree. Real and Excess stats use zero
+// as their risk-free rate. Options.Financing independently selects the annual
+// percent rate for a leveraged simulation.
+//
+// Correlations use common return periods through marketdata.NewPanel;
+// valuation uses the forward-filled union through marketdata.AlignSeries.
+// CorrelationFrequency=Monthly reduces asynchronous-close effects. A failed
+// panel produces a warning and a nil matrix, not fabricated correlations.
+// Undefined Stats and Relative ratios remain NaN in Go and marshal as JSON
+// null. A measured zero stays zero.
 //
 // # Pairs
 //
@@ -91,7 +114,8 @@
 // benchmark, is an error that satisfies errors.Is(err,
 // marketdata.ErrUnknownIdentifier). So is a request no study can honor: an
 // empty identifier, a window ending before it starts, a spec pkg/portfolio
-// refuses to build or simulate.
+// refuses to build or simulate, or an explicitly requested CPI/cash index
+// whose coverage/values the adjustment cannot honor.
 //
 // Every other data problem is a line in Warnings, never a silent number:
 // points before a date reconstructed rather than quoted (SIM), a nowcast
@@ -102,7 +126,6 @@
 // missing, a portfolio wiped out. A PortfolioStudy carries the portfolio's
 // own warnings and every holding's, the latter prefixed with its identifier.
 //
-// One problem is not seen here: marketdata.Client holds an FX rate flat
-// before its history when converting, and reports it only in its log
-// (Client.Logf), not on the series.
+// FX extrapolation is recorded on Series.FXExtrapolatedBefore and Warnings,
+// including through CSV export, and is included in every study's warnings.
 package analyze
