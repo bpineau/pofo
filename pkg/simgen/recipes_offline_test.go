@@ -184,6 +184,8 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"XDWD.DE": from(mkCombo("XDWD.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), n/2),
 		// The single stock behind the ERES_DATADOG FCPE.
 		"DDOG": from(mkWave("DDOG", n, 6e-4, 0.030, 1.1, 0.4), n/2),
+		// Observed EUR donor required by the MTH recipe.
+		"DBXG": {Symbol: "DBXG", Source: "ft", Currency: "EUR", Points: mkWave("DBXG", n, 1e-4, 0.01, 0.7, 0.2).Points},
 	}
 	fetcher := WithRefData(datasets.Refdata(), f)
 

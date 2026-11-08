@@ -2478,34 +2478,70 @@ func dbxgBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	return afterFee(gov, dbxgFee)
 }
 
-// mthFee is MTH's 0.07 %/yr TER, deducted from the pre-inception proxy (the
-// real quotes grafted from 2017 already carry it).
+// mthFee is MTH's 0.07 %/yr TER, deducted only from the deep curve proxy.
+// Observed DBXG quotes retain that donor's own fees; MTH quotes carry their own.
 const mthFee = 0.0007
 
+const mthDonor = "DBXG"
+
 // mthRecipe rebuilds the Amundi Euro Government Bond 25+Y UCITS ETF Acc
-// (MTH, LU1686832194, EUR, real from 2017) from the same long euro-area
-// government bond total return as dbxgRecipe: the two funds track
-// near-identical eurozone 25+ sovereign indexes, so they share one
-// reconstruction and differ only by TER and inception date.
+// (MTH, LU1686832194, EUR): its FT quotes start in 2018-09, despite the fund's
+// 2015-03 inception. Observed DBXG accumulating EUR closes extend it to
+// 2007-08; the long euro-area curve proxy supplies the deeper history.
+// DBXG's iBoxx index covers five countries, while MTH's Bloomberg index has a
+// broader eurozone universe. This is a measured proxy, not the same index.
+// No volatility or return fit is applied, and no current fee difference is
+// credited to historical DBXG quotes. See the euro-native backcast design doc.
 func mthRecipe() Recipe {
 	return Recipe{
 		ID:              "MTH",
-		Name:            "Amundi Euro Govt Bond 25+Y: long euro-gov bond",
-		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, 24y constant maturity, modified duration ~17, ~1970; the real ECB 25y curve point sets level and shape from 2004 via EUROGOV-LONG-DAILY) less 0.07%/yr TER; euro-native, real MTH grafted from 2017",
+		Name:            "Amundi Euro Govt Bond 25+Y: observed long euro-gov donor",
+		Method:          "observed DBXG EUR accumulating closes from 2007-08 (iBoxx Eurozone 25+, donor costs retained, sparse through 2009), behind them EUROGOV-LONG-EUR (~1970, ECB 25y daily shape from 2004) less 0.07%/yr; different index and country weights; real MTH grafted from 2018-09",
 		Build:           mthBuild,
 		ValidateAgainst: "MTH",
 		SpliceReal:      "MTH",
+		Donors:          []string{mthDonor, "EUROGOV-LONG-EUR"},
 	}
 }
 
-// mthBuild is the long euro-gov reference net of MTH's TER, exactly like
-// dbxgBuild with the cheaper fee.
+// mthBuild preserves the donor's observed returns and costs, grafting it over
+// the existing net-of-MTH-fee deep curve. A missing or reconstructed donor is
+// an error rather than a silent fallback to a different construction.
 func mthBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	gov, err := euroGovLongDaily(f, from)
 	if err != nil {
 		return nil, err
 	}
-	return afterFee(gov, mthFee)
+	proxy, err := afterFee(gov, mthFee)
+	if err != nil {
+		return nil, err
+	}
+	donor, err := f.Fetch(mthDonor, from)
+	if err != nil {
+		return nil, fmt.Errorf("MTH donor %s: %w", mthDonor, err)
+	}
+	if donor == nil {
+		return nil, fmt.Errorf("MTH donor %s: empty history", mthDonor)
+	}
+	donor = donor.WithoutEstimates()
+	if len(donor.Points) < 2 {
+		return nil, fmt.Errorf("MTH donor %s: need at least two observed quotes", mthDonor)
+	}
+	if !isQuote(donor) || donor.Source == "refdata" || donor.FullySimulated || !donor.SimulatedBefore.IsZero() {
+		return nil, fmt.Errorf("MTH donor %s: observed quotes required, got reconstructed history", mthDonor)
+	}
+	if donor.Currency != "EUR" {
+		return nil, fmt.Errorf("MTH donor %s: currency %q, want EUR", mthDonor, donor.Currency)
+	}
+	out := Splice(donor, proxy)
+	out.Symbol = "MTH"
+	out.Name = "MTH (DBXG donor, then long euro-area curve)"
+	// Every point is still a proxy for MTH. The final SpliceReal establishes
+	// the target's own first-real-quote frontier, never the donor's frontier.
+	out.SimulatedBefore = time.Time{}
+	out.FullySimulated = true
+	out.Warnings = append(out.Warnings, "Before its own quotes, MTH uses DBXG with a different index and country mix, retaining the donor's costs; DBXG quotes are sparse in 2007-2009.")
+	return out, nil
 }
 
 // indepEuropeRecipe backcasts Independance AM Europe Small (LU1832174962,

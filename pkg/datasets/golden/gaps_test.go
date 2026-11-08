@@ -60,6 +60,9 @@ var knownGaps = map[string]struct {
 }{
 	"simdata/DBXG": {35, "the fund's own Xetra closes over its first two years (2007-08 to 2009-08) " +
 		"are up to 35 days apart, a thinly traded new listing; real quotes, spliced as served. Measured 2026-09-27."},
+	"simdata/MTH": {35, "observed DBXG donor closes, 2007-08 to 2009-08, kept as served; " +
+		"the same calendar as simdata/DBXG, including 2008-02-08 to 2008-03-14 and " +
+		"2009-02-24 to 2009-03-31 (35 days each)."},
 	"simdata/IE00B3Q8M574": {15, "2025-05-12 to 2025-05-27, one weekly NAV of the fund itself not " +
 		"published. Measured 2026-09-27."},
 	"simdata/LI0049587301": {28, "the fund's own weekly-to-fortnightly NAV skips a date around Easter " +

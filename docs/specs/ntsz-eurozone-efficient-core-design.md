@@ -126,6 +126,44 @@ before that the ECB 25y curve gives both the level and the daily shape back to
 rejected: leveraging the excess return compounds a sustained bond bull far too
 richly (~20%/yr over the 1981-2004 disinflation vs ~13%/yr for a real long bond).
 
+### MTH's observed donor segment
+
+MTH (LU1686832194) launched on 2015-03-02, but its selected FT EUR quote
+line only starts on 2018-09-11. Its recipe uses observed accumulating EUR
+DBXG closes from 2007-08-08 until MTH's own quotes take over. Before the first
+DBXG quote, the existing long euro-area curve reconstruction remains, with
+MTH's 0.07 %/yr charge applied only to that deep segment. DBXG's observed
+returns retain its own costs. Today's 0.08 percentage point fee difference
+is not credited to historical returns: current fees do not establish the
+historical fee schedules. No return or volatility fit is applied.
+
+The funds cover the same maturity segment but different indices. DBXG follows
+the Markit iBoxx EUR Eurozone (DE ES FR IT NL) 25+ Index; MTH follows the
+Bloomberg Euro Treasury 50bn 25+ Year Bond Index, with a broader country mix.
+DWS records an investment-objective change on 2017-11-30: the earlier record
+followed IBOXX EUR Sovereigns Eurozone 25+, and 2017 combines both indices.
+The observed donor improves monthly tracking and the 2022 rate-shock path
+against MTH, but its cumulative return remains a proxy, not MTH's net return.
+DBXG's selected FT listing is sparse through 2009, with gaps up to 35 calendar
+days; those observed quotes are kept as served. Daily statistics over that
+era have limited meaning. FT exchange closes differ from issuer NAVs: DWS
+calendar returns show gaps up to about 1.2 percentage points in the checked
+years, so the donor is the observed listing, not an exact NAV reconstruction.
+
+The audit declares both junctions, MTH to DBXG and DBXG to the deep curve.
+The curve's maturity was calibrated to DBXG, so that second comparison cannot
+provide independent evidence for selecting DBXG. MTH's observed overlap and
+Amundi's published pre-overlap calendar returns provide the independent
+checks. A missing, reconstructed or non-EUR donor is a generation error,
+never a reason to ship the old curve under the donor method description.
+The donor alone is entirely simulated history for MTH; only MTH's own quotes
+establish the stored first-real-quote frontier.
+
+Primary references: [DWS past performance](https://etf.dws.com/download/asset/990185d6-3588-4bd2-9c03-80ae04f5500e),
+[DWS factsheet](https://etf.dws.com/download/asset/b274b974-7ef0-401d-9e78-281512deb962),
+[Amundi product page](https://www.amundietf.lu/en/individual/products/fixed-income/amundi-euro-government-bond-25%2By-ucits-etf-acc/lu1686832194)
+and [Amundi monthly factsheet](https://www.amundietf.lu/pdfDocuments/monthly-factsheet/LU1686832194/ENG/LUX/INSTITUTIONNEL/ETF).
+
 ## The cash legs: what each rate is quoted in
 
 A short rate is a number plus a convention, and the convention is a property of

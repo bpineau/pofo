@@ -175,6 +175,9 @@ var auditExtras = map[string][]string{
 
 // auditCaveats carry what the statistics alone would misread.
 var auditCaveats = map[string]string{
+	"MTH": "The observed DBXG donor follows a different index and country mix, with its own costs retained. " +
+		"Its sparse 2007-2009 closes limit daily statistics. The deep curve was calibrated to DBXG, so their " +
+		"junction is descriptive, not an independent validation; assess the donor against MTH and stress subperiods.",
 	"DTLETR": "The positive gap is expected: DTLE is a distributing share class whose NAV is a price return, " +
 		"missing its coupon (~3.1 %/yr measured), while the engine is a total return.",
 	"LU1662501532": "The engine already contains the sister class and the real quotes, so the live window holds " +

@@ -9947,8 +9947,8 @@
     "currency": "EUR",
     "fees": 0.15,
     "asset_class": "government-bond",
-    "underlying": "euro-denominated sovereign bonds with 25+ years to maturity (eurozone governments)",
-    "benchmark_index": "iBoxx EUR Eurozone Sovereigns 25+ Index",
+    "underlying": "euro-denominated sovereign bonds with 25+ years to maturity (Germany, Spain, France, Italy and the Netherlands)",
+    "benchmark_index": "Markit iBoxx EUR Eurozone (DE ES FR IT NL) 25+ Index",
     "strategy": "physical-replication",
     "geography": {
       "France": 35,
@@ -9960,10 +9960,11 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "duration": 19.0,
-    "notes": "euro-native long-duration line: deflation/recession convexity in the liability currency, accumulating (no coupons to declare); euro sovereign mix carries OAT/BTP spread risk. The only ETF on the iBoxx EUR Eurozone 25+ (DE ES FR IT NL), and at EUR 96m (justETF, 2026-09) against MTH's 276m for 0.15% against 0.07%, it is the second choice on both counts: watch for closure. Geography by issuer from the DWS constituent export (read 2026-09, the file carries no date; bond lines only, weights as published). duration is the segment's, read off the comparable Amundi book (18.96 on 30/06/2026), the issuer publishing no figure this record could pin; it was not re-read, so the record stays undated.",
+    "notes": "Accumulating euro-native long-duration sovereign exposure, including French and Italian spread risk. The current iBoxx index covers DE, ES, FR, IT and NL, a narrower country universe than MTH's Bloomberg index; the investment objective changed on 2017-11-30 from IBOXX EUR Sovereigns Eurozone 25+. Geography by issuer from the DWS constituent export (read 2026-09, no file date; bond lines only). No duration is pinned: a peer's duration does not establish this fund's. The FT quote line starts 2007-08 and is sparse through 2009; its observed returns also serve as a proxy behind MTH's shorter quote history, retaining DBXG's own costs.",
     "confidence": "medium",
     "sources": [
+      "https://etf.dws.com/download/asset/b274b974-7ef0-401d-9e78-281512deb962",
+      "https://etf.dws.com/download/asset/990185d6-3588-4bd2-9c03-80ae04f5500e",
       "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/LU0290357846/",
       "https://www.justetf.com/en/etf-profile.html?isin=LU0290357846"
     ],
@@ -10001,9 +10002,10 @@
     "distribution": "accumulating",
     "leverage": 1,
     "duration": 18.5,
-    "notes": "euro-native long-duration line, accumulating, cheapest (0.07%) and largest of the eurozone 25+ ETFs (EUR 276m against EUR 104m for the only peer, Xtrackers LU0290357846 at 0.15%, sizes as of 2026-06); deflation/recession convexity in the liability currency; euro sovereign mix carries OAT/BTP spread risk (no Bund-only long ETF exists), though Germany is a fifth of the book, not the sixth an older split suggested. Duration and country weights from the Amundi monthly reporting (see as_of: rate sensitivity 18.45, yield 4.38%, 49 holdings; 18.96 and 4.00% at 30/06/2026); the ETF dates from 2015-03-02 but the FT quote series only starts 2018-09.",
+    "notes": "Accumulating euro-native long-duration sovereign exposure; the broader Bloomberg country universe differs from DBXG's five-country iBoxx index. Rate sensitivity includes sovereign spread risk. Duration and country weights from the Amundi monthly reporting (see as_of: rate sensitivity 18.45, yield 4.38%, 49 holdings; 18.96 and 4.00% at 30/06/2026); the ETF dates from 2015-03-02 but the FT quote series only starts 2018-09.",
     "confidence": "high",
     "sources": [
+      "https://www.amundietf.lu/en/individual/products/fixed-income/amundi-euro-government-bond-25%2By-ucits-etf-acc/lu1686832194",
       "https://www.justetf.com/en/etf-profile.html?isin=LU1686832194",
       "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1686832194/FRA/FRA/RETAIL/ETF"
     ],
