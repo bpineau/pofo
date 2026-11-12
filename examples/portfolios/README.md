@@ -172,7 +172,7 @@ pocket matched to a real-euro liability. Compare the stages side by side:
   derived / mechanism / hedge / constraint, trend capped by the asymmetry of
   behavioral errors, gold sized for the regime nothing else covers, the bond
   overlay rebuilt with two issuers, the linkers dose derived by horizon
-  immunization. Carries its own risk-budget reading, regime map, sane ranges,
+  coverage. Carries its own risk-budget reading, regime map, sane ranges,
   blind-spot ledger, scenario map and running rules. The reference file of
   the whole collection.
 - `miller-50-40-10`: the 2017 paper build that justifies a trend sleeve:

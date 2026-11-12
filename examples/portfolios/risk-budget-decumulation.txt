@@ -14,6 +14,14 @@
 #   Revised 2026-09: gold cut from 15 to 12 points on the price of the
 #   insurance and on its risk share (s. 7), the three points moved to the
 #   linkers after a head-to-head on where they should go (s. 2).
+#   Revised 2026-11: claims held to what their evidence shows. What the
+#   linker fund covers, and how that coverage depends on the draw rate
+#   (s. 1, s. 2); the rising-equity rule named as a variant to test, not
+#   the published glidepath (s. 5); the deep-history stand-ins read as a
+#   regime test, not a floor (s. 12); the forward scenarios read as
+#   illustrations (s. 15); the trend panel quoted with its sample and the
+#   long-history caveat (s. 16). The France small/mid line folded into
+#   the Europe one.
 #
 # Idea: start from the liability (a stream of real euros over ~40 years),
 #   immunize the years where a bad sequence is unrecoverable, and spend the
@@ -90,9 +98,17 @@
 #   Consequence 1, how to read the linkers line. Its low expected return
 #   IS its function. It is the zero point from which every other line is a
 #   deliberate departure that a premium has to pay for. Its job is not to
-#   earn, but to guarantee that the floor years it covers arrive intact
-#   whatever inflation does. Judge it like insurance, on service rendered,
+#   earn, but to fund the floor years it covers without selling equities,
+#   tracking inflation. Judge it like insurance, on service rendered,
 #   never by comparing its return to equities.
+#   WHAT IT DOES NOT GUARANTEE. The line held is a FUND with no maturity
+#   (rolling 1-10y linkers, no capital protection per its KID). It hedges
+#   part of the inflation risk and serves as a funding reserve whose sale
+#   value moves with real yields (duration ~4.5, see consequence 3); it
+#   does not deliver a set real sum on a set date. Only a ladder of
+#   linkers held to maturity matches redemptions to needs, and even that
+#   keeps issuer risk, tax, and the gap between the index and the
+#   household's own spending.
 #
 #   Consequence 2, why 1-10y and not all maturities. Duration ~4 against
 #   ~7-8 for an all-maturity fund: 2022 showed long linkers losing 25-35%
@@ -102,7 +118,8 @@
 #   inflation hedge.
 #
 #   Consequence 3, measured rather than hoped (2026-08). Duration 4.5 is
-#   still duration: four times less than the all-maturity fund, not zero.
+#   still duration: ~1.7 times less than the all-maturity fund (7-8), not
+#   zero.
 #   In 2022 the line lost more than cash in real terms (-9.0% against
 #   -6.6%) because real yields rose. Over 2021-2023 it beat cash by ~1.5
 #   pt/yr real, and over twenty years its real drawdown is 10 points
@@ -126,9 +143,10 @@
 #
 #   Sequence risk only destroys on the near years, where no recovery is
 #   possible; distant years have the horizon working for them. So immunize
-#   the beginning and take the risk on the rest. At a floor drawn near
-#   ~2.5-3%/yr of capital and discounted at the real yield linkers
-#   actually pay (~1%):
+#   the beginning and take the risk on the rest. At a NET draw on the
+#   book (the floor minus any bridge income) near ~2%/yr of capital,
+#   discounted at the real yield linkers actually pay (~1%), paid at
+#   year end:
 #     years 1-3    covered by the cash buffer, held OUTSIDE the weights
 #                  (s. 14)
 #     years 4-10   ~12-13% of capital          <- the floor of the dose
@@ -143,6 +161,12 @@
 #   starting years out does NOT shrink this dose, because it starts after
 #   the immunized window; the derivation is invariant to it, which is a
 #   good reason not to reopen this line at every pension scare.
+#   THE HORIZON MOVES WITH THE DRAW, THE WEIGHT DOES NOT. The table scales
+#   with the net draw rate: at 2.7%/yr of capital (a smaller book, or a
+#   larger floor), years 4-10 need ~17.5% and the same 16 points fund
+#   years 4 to ~9 only. Recompute the covered years whenever capital or
+#   spending moves; the weight itself came out of the head-to-head below,
+#   not out of a target horizon.
 #
 #   An independent recount by a blind liability-driven designer landed on
 #   the same net liability and the same duration (~26 years). Its
@@ -281,16 +305,24 @@
 #
 # ## 5. The bond tent that does not say its name
 #
-#   42 points of equity at the start is not "too defensive": it is a
-#   rising equity glidepath (Kitces & Pfau 2014) taken deliberately inside
-#   the retirement red zone (~5 years before, ~10 after the exit). The
-#   defensive start is a TRAJECTORY, not a state: past year ~8, stop
-#   refilling the linkers and let equity drift up by not rebalancing it
-#   down. Write that in the household's rule page: "no DOWNWARD
-#   rebalancing of equity after year 8". Consequence: any comparison of
-#   expected return against a static book UNDERSTATES this one, because
-#   the return given up is concentrated on the years where it buys the
-#   most survival.
+#   42 points of equity at the start is not "too defensive": the idea is
+#   the rising equity glidepath (Pfau & Kitces, Journal of Financial
+#   Planning, January 2014) taken deliberately inside the retirement red
+#   zone (~5 years before, ~10 after the exit). The defensive start is a
+#   TRAJECTORY, not a state. But the rule used here is NOT the glidepath
+#   the paper tests: the paper raises the equity share linearly on a
+#   schedule and rebalances to that target; the rule here (past year ~8,
+#   stop refilling the linkers and never rebalance equity DOWN) lets the
+#   equity share drift up when markets and the spent linkers allow it,
+#   with no schedule and no cap, and lifts nothing after a long decline.
+#   It is a variant inspired by that literature, to be measured against a
+#   static target and against a scheduled glidepath on the same paths
+#   before it is written into the household's rule page (target path,
+#   buying equity on the way down or not, priority over the bands). The
+#   intuition stands: the return given up is concentrated on the years
+#   where it buys the most survival. That a static comparison understates
+#   this book is a hypothesis to test, and a higher mean return would not
+#   prove a better tail.
 #   GUARDRAIL PLUMBING that goes with the tent: if the plan includes an
 #   indexed income arriving mid-retirement (a state pension), REBASE the
 #   guardrail reference rate at each income step (the exit itself, the
@@ -302,9 +334,9 @@
 #   The upward drift past year 8 is not only a trajectory choice; it
 #   falls out of the balance sheet.
 #   Name the mechanical loss honestly: against a build centered on a
-#   stacked 90/60 core, notional exposure falls from ~130% to ~116%,
-#   because cheap embedded leverage was handed back when the equity moved
-#   into the shelters. If the floor metrics ever suffer for it, recover
+#   stacked 90/60 core, notional exposure falls from ~130% to ~116% (the
+#   convention of s. 8), because cheap embedded leverage was handed back
+#   when the equity moved into the shelters. If the floor metrics ever suffer for it, recover
 #   leverage at the margin with +1-2 points of long duration (duration is
 #   cheap leverage), never with more equity.
 #
@@ -449,6 +481,10 @@
 #   + ~26.5 nominal duration in 7y-equivalent terms (the euro 25+ line at
 #     ~20y duration counts ~2.9x its 5 points, the US 20+ at ~17y ~2.4x)
 #   + 20 trend + 12 gold + 16 linkers  = ~116% of exposure, no margin.
+#   A COMPARISON CONVENTION, not a financial notional: bond lines count
+#   as 7y-equivalent rate sensitivity, everything else at its capital
+#   weight (the trend sleeve's futures carry far more notional). Useful to
+#   compare two versions of the book; date it with the durations used.
 #   Against a stacked-core build, equivalent duration is HIGHER (~26.5 vs
 #   ~16 points) and concentrated on the very long end: more convex per
 #   euro, and better matched to a euro liability for the euro half.
@@ -477,8 +513,10 @@
 #   lowers the book's volatility, but that is not the statistic bought
 #   here: on the drawdown and on the BOOK's worst months hedging degrades
 #   (worst drawdown -20.7% against -19.8%, worst 12 months -17.9% against
-#   -16.2%), EVEN AT ZERO CARRY, for 0.22 pt/yr of CAGR. No rate gap
-#   makes the hedge win, so carry is not the criterion; and the hedge buys
+#   -16.2%), EVEN AT ZERO CARRY, for 0.22 pt/yr of CAGR. On the scenarios
+#   measured, then, no carry made the hedge win; a different carry or
+#   other currency paths are not the same test, hence a reopening
+#   condition below rather than a general verdict; and the hedge buys
 #   nothing where it was hoped for (its gain in the book's worst months is
 #   0.00 pt/month, measured). The price is real and accepted: in a 1990
 #   (hedged trend +16%, dollar -12% against the mark) the unhedged half
@@ -529,9 +567,10 @@
 #     two legs; above 20 a zero-real-return asset is funded out of the
 #     growth engine. Inside the range the dose follows the price of the
 #     insurance (s. 7): 15 until 2026-09, 12 since.
-#   Linkers 16 (10-20). 10 covers roughly the floor to year 8, 16 to year
-#     12, 20 to year 15; beyond that the book drifts toward Bodie's
-#     abandoned-growth corner.
+#   Linkers 16 (10-20). At a net draw near 2%/yr, 10 funds the floor to
+#     year ~8, 16 to ~11-12, 20 to ~14; at 2.7%/yr, to ~7, ~9 and ~11
+#     (s. 2: the horizon follows the draw, the weight does not). Beyond 20
+#     the book drifts toward Bodie's abandoned-growth corner.
 #   Long duration 10, split 5/5 (8-14 total, the unhedged US leg NEVER
 #     above 5). The total rebuilds the overlay lost with the stacked core;
 #     the split is issuer diversification, the cap is section 6.
@@ -638,8 +677,12 @@
 #     lines swapped for deeper stand-ins and the swap MEASURED first:
 #     linkers -> cash (effect ~nil); the two trend funds -> the BTOP50
 #     index EUR-hedged at about half its risk (-0.74 pt of CAGR); small
-#     value -> a US small-cap value index (+1.2 pts of volatility). Every
-#     substitution error points DOWN: read the deep variant as a FLOOR.
+#     value -> a US small-cap value index (+1.2 pts of volatility). The
+#     measured substitution gaps lean down on CAGR and volatility, but they
+#     bound neither the drawdown, nor crisis correlations, nor ruin after
+#     withdrawals, and one runs the other way (the pre-1999 euro duration
+#     of 1990, caveats below): read the deep variant as a REGIME TEST, not
+#     as a floor on performance.
 #     (1) The dotcom test passes: 2000-03 to 2003-03 at -13.5% against
 #     MSCI World's -55.2% in EUR, +2.5% cumulative over 2000-2002 against
 #     -44.5%, +60% over 2000-2007 against -13%.
@@ -919,7 +962,10 @@
 #   Forecasts cannot add a line; their one use is to check that no
 #   plausible scenario demands a lever this file does not already hold.
 #   Checked, scenario by scenario, each mapped onto the regime map of
-#   s. 9 and onto its measured anchor:
+#   s. 9 and onto its measured anchor. The "expected" losses below are
+#   rough arithmetic, illustrations rather than measured bounds, and the
+#   responses of gold, trend and the euro long line are assumptions drawn
+#   from the anchors, not certain payments:
 #   A. AN AI-BUBBLE BUST (a slow deflationary crash). Anchor: 2000-02,
 #      +2.5% cumulative against -44.5% for world equity (s. 12). The
 #      analogue is structurally sound: the same valuation gap between
@@ -947,7 +993,10 @@
 #      trend +3-5, the euro long line +1, linkers stable. Net -13 to -19%
 #      real: THE ORDER OF THE MEASURED 1990 (-20.7%, pessimistic, s. 12).
 #      The tent is sized for it: bucket for years 1-3 plus linkers for
-#      4-10 means no forced sale for ten years. No new lever needed.
+#      the following years (4 to ~9-12 depending on the draw, s. 2) means
+#      no forced equity sale for most of a decade, provided the linker
+#      fund, which has no maturity, does not fall in the shock itself.
+#      No new lever needed.
 #   D. AN ENERGY SHOCK (wars plus the power demand of AI). Anchors: 2022
 #      (book ~-2%) without a weak dollar, 1990 with one. No physical
 #      commodities (measured and rejected, s. 11): the regime rests on the
@@ -982,15 +1031,17 @@
 #      s. 4 is written for it. Leaving it out of one's forecasts is
 #      exactly how it hurts.
 #   CONCLUSION, to reread before any urge to "position" the book: no
-#   scenario above demands a new line or a different weight; each lands on
-#   a lever already written. That is a design result, not an evasion: the
+#   scenario listed demands a new line or a different weight, under the
+#   assumed response of each leg; each lands on a lever already written.
+#   A design result conditional on this list, not a bound, and not an
+#   evasion either: the
 #   book exists to make forecasting unnecessary. The uncovered corner
 #   remains the crash in days (s. 11), and the buffer carries it (s. 14).
 #
 # ## 16. The trend sleeve: the panel, and why these two lines
 #
-#   IN ONE SENTENCE: THE DIRECT MANAGER PAYS THE ACCIDENT MONTH, THE
-#   REPLICATION LINE HOLDS THE LONG REGIME. Two managers, two hedging
+#   IN ONE SENTENCE: THE DIRECT MANAGER PAID THE RECENT ACCIDENT MONTHS,
+#   THE REPLICATION LINE HOLDS THE LONG REGIME. Two managers, two hedging
 #   horizons, both measured on this book: that is the 50/50, and why
 #   neither line replaces the other.
 #   JUDGMENT RULE, valid for any future candidate: MEASURING A SLEEVE
@@ -1002,7 +1053,11 @@
 #   the book's 25 worst months are NOT equity crashes (2013-06, 2015, the
 #   2022 rate shock, the 2025-03 dollar). The right test is a candidate's
 #   mean return over the decile of months where THE BOOK bleeds, and its
-#   hit rate there (2026-08, monthly NAVs, 1984-2026 where available):
+#   hit rate there. The table runs on the strictly common window
+#   2020-07 to 2026-08 (74 months, the only one where the whole panel
+#   exists): bottom decile = the book's 7 worst months (2022-05, -06,
+#   -08, -09, -12, 2025-03, 2026-03), hit rate = share of those 7 months
+#   where the candidate is positive (6 of 7 for AQR):
 #     candidate                  bottom decile   hit rate   quintile
 #     AQR MF (= the class held)  +2.44 %/month      86%      +1.09
 #     AlphaSimplex               +1.52              43%      -0.79
@@ -1027,6 +1082,14 @@
 #   DBMFE is the BEST accessible line in the gloomy quadrants (+0.57
 #   against +0.33 for AQR). The two legs do different jobs, which is the
 #   second, measured, justification of the 50/50.
+#   THE CAVEAT THAT TRAVELS WITH THE TABLE: those 74 months saw only
+#   holes friendly to trend (the 2022 rate shock, the 2025 tariffs). Over
+#   the book's 25 worst months out of 249 since 2005, AQR averages +0.45%
+#   with a 52% hit rate, and DBMFE -0.95% (32%). Complementarity and the
+#   split of manager risk hold (paired comparisons and bootstraps in the
+#   study); "the direct manager pays the accident month" is a historical
+#   frequency on a friendly window, not a probability of payment in the
+#   next accident.
 #   VERDICTS (the file is closed after three rounds; do not reopen it
 #   without a named mechanism):
 #   - The direct class CONFIRMED as leg 2, 50/50 with DBMFE for manager
@@ -1088,13 +1151,12 @@
 5	MTH             # euro deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194) | HEDGE, liability currency (s. 6)
 5	DTLA            # US deflation duration: iShares $ Treasury 20+yr Acc (IE00BFM6TC58) | HEDGE, accumulating and unhedged: crisis dollar, capped at 5 (s. 6)
 10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403; UNHEDGED class kept on measurement, ~10 pts of USD ride the NAV, s. 8; the hedged sister MFEH LU3359622902 is not bought) | MECHANISM, dose capped by error asymmetry (s. 4); holds the long regime (s. 16)
-10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26%/yr flat, all of it inside the NAV, no performance fee, EUR 100k minimum; fallback IAET LU1662498721, same portfolio) | MECHANISM, a second manager against manager risk; pays the accident month (s. 16); on the share-class choice see s. 12
+10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26%/yr flat, all of it inside the NAV, no performance fee, EUR 100k minimum; fallback IAET LU1662498721, same portfolio) | MECHANISM, a second manager against manager risk; paid the recent accident months (s. 16, with its long-history caveat); on the share-class choice see s. 12
 12	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602; the USD and EUR listings are the same ETC and the same exposure, gold, not dollar) | HEDGE, the stagflation regime, dosed on the price of the insurance (s. 7); physical ETC only, never an ETN
-16	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-12 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
+16	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, funding reserve for the floor years after the bucket (4 to ~9-12 depending on the draw, s. 2), a rolling fund with no maturity (s. 1); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3, 0.39%) | MECHANISM, weak, hence a minority share; EUR-quoted, USD unhedged
 
 # ---- Tax shelters (equity only by law) --------------------------------
-23	ERESMONDEM      # world equity FCPE, 0.56%/yr KID charge (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge (s. 0)
+23	ERESMONDEM      # world equity FCPE, 0.56%/yr KID ongoing charge plus ~0.06% transaction costs (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge (s. 0)
 5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1; alt CW8 LU1681043599) | MECHANISM + wrapper CONSTRAINT
-7	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelter that cannot hold a world fund; an institutional class exists at 1.40%/yr vs 1.95%, LU1832175001, minimum permitting) | CONSTRAINT + weak mechanism
-2	LU0131510165    # France small/mid value: Independance AM France Small Mid | CONSTRAINT; folding it into the Europe line is equivalent
+9	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelters that cannot hold a world fund; an institutional class exists at 1.40%/yr vs 1.95%, LU1832175001, minimum permitting) | CONSTRAINT + weak mechanism; a former France small/mid line (same manager) folded in. Wrapper floors can pin more of the 14 small-value points here and less in the global line than these weights say: measure the executable split, not only this design vector
