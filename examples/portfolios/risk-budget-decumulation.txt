@@ -324,10 +324,11 @@
 #   end of a bridge income, the first pension). Without the rebase, the
 #   pension's arrival mechanically crushes the measured withdrawal rate
 #   and a prosperity rule would raise spending for the wrong reason. That
-#   holds for a rate measured on the NET withdrawal. The `pofo -fire`
-#   engine behind s. 12 measures it on TOTAL spending, where a rebase has
-#   no object: pick one definition before writing the rule down, and do
-#   not read the simulated ruins as a test of this one.
+#   holds for a rate measured on the NET withdrawal. By default the
+#   `pofo -fire` engine measures it on TOTAL spending, where a rebase has
+#   no object; its gkNet switch reads the net rate and re-centres the band
+#   at each income step. Pick one definition before writing the rule
+#   down (s. 12 compares them).
 #   The same tent seen from the liability: when the pension arrives the
 #   net liability drops sharply, which frees part of the base for equity.
 #   The upward drift past year 8 is not only a trajectory choice; it
@@ -790,9 +791,12 @@
 #     floor 20% lower, a bridge income for 14 years, then an indexed
 #     pension, single gain fraction per wrapper; 40 years, 4,000 paths):
 #     this file alone does not reproduce them, rerun `pofo -fire` on your
-#     own schedule. The engine applies ordinary guardrails on total
-#     spending, uncapped raises and a plain bucket, not the rules of s. 5
-#     and s. 14. Its "book's panel" blends the 21-year fit with the prior
+#     own schedule. These figures use the engine's ordinary guardrails
+#     (rate on total spending, uncapped raises); the written-rule switches
+#     (gkNet, gkCap, bufferRefill, marketDrawdown: the net rate re-centred
+#     at each income step, capped raises, a refill near the peak, a
+#     flow-neutral drawdown) gave the same ruin within half a point and a
+#     higher median wealth on the same schedule. Its "book's panel" blends the 21-year fit with the prior
 #     (47.5% prior here), the history being shorter than the horizon.
 #     Ruin reads:
 #       the book's own panel (Student-t, sequence stress,     0 to 0.2%
