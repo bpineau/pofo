@@ -741,8 +741,8 @@
 #     -3.7, US 20+ -6.1, cash -2.8. The core beats world equity by 6.6
 #     points a year over the decade, at the price of a -43% real trough
 #     in 1974, worse than anything the modern window shows. ALL that holds
-#     comes from gold (+46% and +48% in euros in 1973 and 1974, +113% in
-#     1979), leaving an administered price of $35: a compressed spring
+#     comes from gold (+46% and +48% nominal in euros in 1973 and 1974,
+#     +113% in 1979), leaving an administered price of $35: a compressed spring
 #     unique in history, not reproducible; and from US small value. Both
 #     duration lines cost for TEN YEARS. In 1973-74, cash in place of
 #     trend and linkers softens the trough (-30 against -43): stagflation
@@ -795,8 +795,10 @@
 #     (rate on total spending, uncapped raises); the written-rule switches
 #     (gkNet, gkCap, bufferRefill, marketDrawdown: the net rate re-centred
 #     at each income step, capped raises, a refill near the peak, a
-#     flow-neutral drawdown) gave the same ruin within half a point and a
-#     higher median wealth on the same schedule. Its "book's panel" blends the 21-year fit with the prior
+#     flow-neutral drawdown) moved ruin by 0.4 point at most in the
+#     central models and lowered it somewhat under combined stress (by
+#     1 to 1.7 points), with a higher median wealth except in the lost
+#     decade, on the same schedule and paths. Its "book's panel" blends the 21-year fit with the prior
 #     (47.5% prior here), the history being shorter than the horizon.
 #     Ruin reads:
 #       the book's own panel (Student-t, sequence stress,     0 to 0.2%
