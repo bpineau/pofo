@@ -44,25 +44,30 @@
 #   PEE up to the ceiling the book's EQUITY budget sets, and not one euro
 #   more. Why the PEE despite its fund charges:
 #   1. Future gains pay the social levies only (18.6%), and only on exit,
-#      instead of the 31.4% flat tax (PFU) paid along the way in a taxable
-#      account: each euro of future gain keeps 81.4 cents, not 68.6.
+#      instead of the 31.4% flat tax (PFU) paid on every sale in a taxable
+#      account (rebalancing, spending): each euro of future gain keeps
+#      81.4 cents, not 68.6, and switches inside the plan realize nothing.
 #   2. The latent tax on the gain already accrued stays invested and
 #      compounds for the holder: an interest-free loan from the state,
 #      repaid pro rata at each withdrawal. That, more than the rate gap,
-#      is the engine. Modelled: +16 to +30% of final net wealth per 100
-#      kept in the plan over 20 years, for growth of 4, 6 or 8%/yr.
+#      is the engine. Worked example (illustrative inputs): 100 gross in
+#      the plan carrying 18 of latent tax, a 0.62%/yr plan fund against a
+#      0.20% ETF, and the case most favourable to the taxable account (an
+#      accumulating ETF sold once, at the end, no rebalancing): the plan
+#      ends 20 years ahead by +10 / +17 / +22% of net wealth for 4 / 6 /
+#      8%/yr gross growth, +6 to +15% after 10 years. Every gain realized
+#      on the way in the taxable account widens the gap.
 #   3. The bet is reversible AT TAX PARITY: the levies are flat, with no
 #      progressivity, so leaving later costs the same rate as leaving
 #      today. The converse is false: a euro taken out can never come back
 #      (no new contributions once the employment ends). When in doubt,
 #      keep it in, up to the equity budget.
-#   CROSS-CHECK: three blind designers from opposed schools,
-#   without access to this file, recomputed the arbitrage and concluded
-#   in the same terms: the plan beats the taxable account at every
-#   horizon (break-even fund charge 1.83%/yr at 10 years, 1.14% at 20,
-#   against 0.62% actually charged all-in, a margin of two to three
-#   times), and the tranche kept is sized by the equity budget, never by
-#   tax. The doctrine of this section can be re-derived from nothing.
+#   In that same example the plan fund charge that would cancel the
+#   advantage is 1.1 to 2.1%/yr depending on growth and horizon, against
+#   0.62% actually charged all-in: a margin of two at least. Three blind
+#   designers from opposed schools, without access to this file, reached
+#   the same doctrine: the tranche kept is sized by the equity budget,
+#   never by tax.
 #   SPENDING ORDER in decumulation: taxable account first, then the PEE,
 #   the PEA kept in reserve, a life-insurance contract up to its yearly
 #   allowance once it is eight years old (s. 14). The PEE is the FIRST
@@ -166,7 +171,7 @@
 #   and top up with German or Spanish linkers.
 #
 #   WHAT SETS THE WEIGHT: THE HEAD-TO-HEAD, NEVER AN ISOLATED SWEEP. An
-#   isolated Monte-Carlo sweep of the dose over {5, 10, 15, 20} points at
+#   isolated Monte-Carlo sweep of the dose over {5, 10, 15, 20} favours
 #   the top of the range; the full head-to-head against a book at 20
 #   points of linkers erases that edge as long as a well-paid gold line and
 #   14 points of small value already cover the tail (the extra linkers then
@@ -197,10 +202,12 @@
 #              class (Moskowitz, Ooi & Pedersen 2012; Hurst, Ooi &
 #              Pedersen 2017). Mechanism: under-reaction plus risk
 #              transfer. Correlation ~0 to equities, negative in crises.
-#              CAVEAT: that century is gross of fees, on paper backtests.
-#              Investable UCITS trend (0.8-1.3% plus replication error),
-#              net, has a markedly thinner realized Sharpe and an enormous
-#              manager dispersion. The premium exists; its NET SIZE is the
+#              CAVEAT: that century is a paper reconstruction. The paper
+#              also shows it net of estimated transaction costs and of a
+#              hypothetical 2/20 fee, but no reconstruction captures
+#              every cost; investable UCITS trend (0.8-1.3% plus
+#              replication error) has a markedly thinner realized Sharpe
+#              and an enormous manager dispersion. The premium exists; its NET SIZE is the
 #              least certain input in the whole design. Measured on this
 #              file's own backcast window (2005-2025, real EUR): the
 #              replication leg earned ~3.8%/yr real and the direct-manager
@@ -316,7 +323,11 @@
 #   guardrail reference rate at each income step (the exit itself, the
 #   end of a bridge income, the first pension). Without the rebase, the
 #   pension's arrival mechanically crushes the measured withdrawal rate
-#   and a prosperity rule would raise spending for the wrong reason.
+#   and a prosperity rule would raise spending for the wrong reason. That
+#   holds for a rate measured on the NET withdrawal. The `pofo -fire`
+#   engine behind s. 12 measures it on TOTAL spending, where a rebase has
+#   no object: pick one definition before writing the rule down, and do
+#   not read the simulated ruins as a test of this one.
 #   The same tent seen from the liability: when the pension arrives the
 #   net liability drops sharply, which frees part of the base for equity.
 #   The upward drift past year 8 is not only a trajectory choice; it
@@ -339,8 +350,12 @@
 #      2008 measured: about +26% for the unhedged US line against about
 #      +7% for euro 25+. The euro sovereign drags its spread risk in
 #      exactly when it is needed (2011 showed it again).
-#   2. Hedging pays nothing: a EUR-hedged US bond earns the euro rate. The
-#      carry buys the removal of currency variance, nothing else.
+#   2. Hedging keeps only half of the engine: the forward swaps the US
+#      short rate for the euro short rate, the duration and the long US
+#      curve stay American, but the haven dollar of point 1 is gone. An
+#      accumulating EUR-hedged class exists (iShares $ Treasury 20+ EUR
+#      Hedged Acc, DTEH, listed since 2026-03, 0.10%): holding the
+#      unhedged line is a risk choice, not a lack of product.
 #   3. The currency risk taken in exchange is small and BOUNDED: 5 points
 #      of dollar against an all-euro floor (linkers, euro long duration,
 #      the cash buffer, the hedged trend leg).
@@ -350,7 +365,7 @@
 #   Treasuries falling in concert when the shock is US fiscal and
 #   institutional: the line can then lose on both legs at once. That is
 #   precisely why it is capped at 5 and never averaged up. And 2025 was
-#   not the first failure, only the first watched live: in the 1990
+#   not the first failure: in the 1990
 #   oil-shock recession (US-centered: S&L, recession, dollar sliding
 #   against the mark) the unhedged US line printed -6.7% in EUR while the
 #   euro long line printed +5.9%. Both times, the half that paid was the
@@ -480,15 +495,17 @@
 # ## 8. What 100 EUR actually holds (the exposure ledger)
 #
 #   42 equity (of which 14 small value)
-#   + ~26.5 nominal duration in 7y-equivalent terms (the euro 25+ line at
-#     ~20y duration counts ~2.9x its 5 points, the US 20+ at ~17y ~2.4x)
-#   + 20 trend + 12 gold + 16 linkers  = ~116% of exposure, no margin.
+#   + ~24 to 26.5 nominal duration in 7y-equivalent terms (the euro 25+
+#     line counts ~2.6-2.9x its 5 points at 18-20y, the US 20+ ~2.1-2.4x
+#     at 15-17y; at the catalog durations of late 2026-10, 18.45 and 14.84
+#     years, ~23.8 points: duration shortens as yields rise)
+#   + 20 trend + 12 gold + 16 linkers  = ~114-116% of exposure.
 #   A COMPARISON CONVENTION, not a financial notional: bond lines count
 #   as 7y-equivalent rate sensitivity, everything else at its capital
 #   weight (the trend sleeve's futures carry far more notional). Useful to
 #   compare two versions of the book; date it with the durations used.
-#   Against a stacked-core build, equivalent duration is HIGHER (~26.5 vs
-#   ~16 points) and concentrated on the very long end: more convex per
+#   Against a stacked-core build, equivalent duration is HIGHER (~24-26
+#   vs ~16 points) and concentrated on the very long end: more convex per
 #   euro, and better matched to a euro liability for the euro half.
 #   Accept the consequence: a ~20y duration line will print -30% in
 #   another 2022. That is the line doing its job, and the anti-panic rule
@@ -536,8 +553,9 @@
 #                          and nothing else, one in the liability currency,
 #                          one collecting the haven dollar on top. Trend
 #                          rotates long bonds as the move extends.
-#   Disinflation/recession Duration again, plus trend; the linkers keep
-#                          their value and pay the floor meanwhile.
+#   Disinflation/recession Duration again, plus trend; the linkers are the
+#                          floor's funding reserve meanwhile (with their
+#                          real-rate and issuer risk, s. 1).
 #   Trending inflation     Trend short bonds and long commodities (Neville
 #                          et al. 2021) plus the linkers accruing the index
 #                          by contract. The 2022 configuration.
@@ -615,8 +633,8 @@
 #   THE FLOOR IS IN EUROS and much of the equity is not: a long EUR
 #     appreciation is a real drag that no line here offsets.
 #   CONSIDERED AND REJECTED: all-maturity linkers (a real-rate bet, not an
-#     inflation hedge), EUR-hedged long Treasuries (distributing, and the
-#     hedge pays the euro yield anyway), keeping a stacked 90/60 core in
+#     inflation hedge), EUR-hedged long Treasuries (the US leg is held for
+#     the crisis dollar, which the hedge removes, s. 6), keeping a stacked 90/60 core in
 #     the taxable account (restores leverage but wastes the shelters), a
 #     single trend manager (manager risk on the least certain premium),
 #     cash instead of linkers (see section 1).
@@ -652,9 +670,9 @@
 #     then at 15 and linkers at 13. The drivers: the small-value tilt,
 #     gold's tail covariance, and two drags on the
 #     challenger's side (broad commodities, an oversized near-zero-real
-#     linkers block). Ruin stayed <= 0.1% for both, which ruin saturates
-#     near zero for any sane book, which is why section 13 steers on floor
-#     years rather than on a ruin probability.
+#     linkers block). Ruin stayed <= 0.1% for both under those models, so
+#     it could not tell them apart: section 13 steers on floor years
+#     rather than on a ruin probability.
 #   THE WINDOW'S TAILWINDS, to keep in mind when rereading it (real,
 #     2005-2025): world equity 6.6%/yr, the Europe small-value manager
 #     10.3 (real manager alpha, but not an index: manager risk), gold 9.2,
@@ -707,9 +725,11 @@
 #     in EUR, the three hedges falling TOGETHER; trend +1.7 and cash +7.1
 #     the only shelters, the book -4.6%. No offsetting leg exists in that
 #     regime: what decides the damage is the starting carry (s. 13).
-#     (5) THE CORE ALONE THROUGH 1972-1982 (the 82 points that have a deep
-#     history, renormalized, no trend and no linkers; DM numeraire,
-#     deflated by German CPI; US small value as stand-in): +6.7%/yr REAL
+#     (5) THE CORE ALONE THROUGH 1972-1982 (equity, gold and duration,
+#     renormalized, no trend and no linkers; DM numeraire, deflated by
+#     German CPI; US small value as stand-in; the exact vector and script
+#     of this run were not kept, so treat its figures as an order of
+#     magnitude until replayed): +6.7%/yr REAL
 #     over the decade against -0.3 for world equity, 1973-74 at -33.7%
 #     real against -58.3. The honest reading is uncomfortable: ALL of the
 #     rescue comes from gold (+46% and +48% in DM in 1973 and 1974, +113%
@@ -724,8 +744,9 @@
 #     gadgets, they are the SECOND and THIRD legs of the regime the core
 #     crossed only thanks to a historical accident of gold, which is the
 #     role s. 7 assigns them, now dated on the decade that matters.
-#     (6) COHORTS WITH REAL CASH FLOWS: historical start dates replayed
-#     with a representative schedule (a bridge income, then an indexed
+#     (6) COHORTS WITH REAL CASH FLOWS (an illustration of regimes, not a
+#     proof that any given capital is safe): historical start dates
+#     replayed with a representative schedule (a bridge income, then an indexed
 #     pension; real withdrawals at a target, a base 10% below and a floor
 #     20% below, plus a flexible rule dropping from target to floor while
 #     underwater; French CPI, German before the euro). NO RUIN anywhere,
@@ -744,9 +765,9 @@
 #     against longevity and long-term care that also buys sleep (of the
 #     order of ten years of floor spending still in the account around
 #     90; an order of magnitude, not a rule). Terminal wealth has utility
-#     UP TO that level, not beyond. Hence: (a) the rigid target costs
-#     nothing, historical terminals (x2.1 to x4.9 over 30 years) clearing
-#     any serenity floor by far; it would bite only on paths worse than
+#     UP TO that level, not beyond. Hence: (a) the rigid target passed
+#     every cohort of that test, historical terminals (x2.1 to x4.9 over
+#     30 years) clearing any serenity floor by far; it would bite only on paths worse than
 #     all of history. (b) An upward ratchet is CONDITIONAL: raise spending
 #     only if the projected real path keeps the serenity runway past ~90
 #     (amortize toward the serenity floor at ~95, not toward zero). (c)
@@ -759,10 +780,17 @@
 #     resembles the 1996-2000 starts, not the post-crash ones.
 #     (7) READING THE `pofo -fire` MODEL LADDER FOR THIS BOOK. The models
 #     are a DELIBERATE ladder from optimistic to grim; the trap is to read
-#     the last column as a probability. Measured in 2026-11 on a
-#     representative schedule (a net draw near 2.5% of capital, guardrails
-#     from the target down to a floor 20% lower, a bridge income for 14
-#     years, then an indexed pension; 40 years, 4,000 paths), ruin reads:
+#     the last column as a probability. The figures below are an
+#     ILLUSTRATION from a private household schedule (measured 2026-11: a
+#     net draw near 2.7% of capital, guardrails from the target down to a
+#     floor 20% lower, a bridge income for 14 years, then an indexed
+#     pension, single gain fraction per wrapper; 40 years, 4,000 paths):
+#     this file alone does not reproduce them, rerun `pofo -fire` on your
+#     own schedule. The engine applies ordinary guardrails on total
+#     spending, uncapped raises and a plain bucket, not the rules of s. 5
+#     and s. 14. Its "book's panel" blends the 21-year fit with the prior
+#     (47.5% prior here), the history being shorter than the horizon.
+#     Ruin reads:
 #       the book's own panel (Student-t, sequence stress,     0 to 0.2%
 #         block bootstrap)
 #       prudent priors at the book's volatility (7 to 9%)     0 to 0.6%
@@ -776,7 +804,8 @@
 #     CONSTRUCTION: a domestic 60/40 in ~10-year blocks of ONE country's
 #     history, calibrated on the ~2.26% safe rate of Anarkulova, Cederburg
 #     & O'Doherty; its ruins are failures of states (Austria, Japan,
-#     Germany), not of allocations: its job is to bound, not to predict.
+#     Germany), not of allocations: a comparison stress, not a forecast
+#     and not a mathematical bound.
 #     A LOST DECADE under a CAPE-anchored prior counts the compression
 #     TWICE (the anchor already prices the compression decade, the sticky
 #     bear subtracts it again, and the equity mean is applied to all of the
@@ -799,13 +828,12 @@
 #   estimates the days in between from URTH converted to euros. Never write an FCPE's QS-prefixed
 #   code in a portfolio file: the fund has no public listing and an ISIN
 #   search returns an unrelated asset; use the catalog id.
-#   DTLA has a clean total-return backcast from 1962. Its EUR-hedged
-#     cousin DTLE (IE00BD8PGZ49) is set aside twice over: a distributing
-#     class (coupons taxed every year in a taxable account) whose public
-#     series is a
-#     PRICE return that ruins any backtest, and the hedge converts the US
-#     yield into the euro yield anyway. Use DTLETR to look at the hedged
-#     segment's total return.
+#   DTLA has a clean total-return backcast from 1962. The distributing
+#     EUR-hedged DTLE (IE00BD8PGZ49) is a poor stand-in for the hedged
+#     segment: coupons taxed every year in a taxable account, and a public
+#     PRICE series that ruins any backtest; use DTLETR for that segment's
+#     total return. The accumulating hedged class (DTEH, s. 6) is the
+#     vehicle should the hedged leg ever be wanted.
 #   CHSN backcasts cleanly to 2005-11, which is what bounds this file's
 #     common window. A US TIPS 1-10 stand-in is not a substitute: US CPI
 #     base, different series.
@@ -820,8 +848,9 @@
 #     in the quoted price, so the backtest above is what a holder gets.
 #     And a performance fee bills the most in the years trend explodes,
 #     which are the crash years this sleeve exists to pay the floor
-#     through: at +40% it takes 3.7 points against 1.26, surrendering a
-#     quarter of the very crisis alpha it was bought for. The cheapest
+#     through: in a year at +40% before fees, the performance-fee class
+#     takes ~4.5 points (0.78 of base fee plus ~3.7 of performance fee
+#     above cash) against 1.26 for the flat one. The cheapest
 #     class is cheapest only because its management fee is WAIVED at the
 #     manager's sole discretion, revocable without notice, and leaving
 #     after a revocation realises a taxable gain. Break-even between the
@@ -857,8 +886,7 @@
 #     (s. 8): reopen that only past ~30 points of total dollar exposure,
 #     never on a move in rates.
 #   - A YOUNG OR SMALL SHARE CLASS (the direct trend class today): the
-#     spread is a non-issue (a one-off ~20-40 bps on a 10-point line is
-#     2-4 bps of the book, and orders are limited anyway). The real risk
+#     fund deals at NAV, so there is no spread to speak of. The real risk
 #     is the CLASS CLOSING, and it forks. Closed by MERGER into a sister
 #     class of the same sub-fund, it should benefit from the tax deferral
 #     French law grants fund mergers (art. 150-0 B CGI, cost basis kept;
@@ -866,14 +894,13 @@
 #     it is a taxable sale at 31.4% on the accrued gain, plus days out of
 #     the market and a repurchase elsewhere. The expected cost therefore
 #     scales with the latent gain at closure, hence an ASYMMETRY: at the
-#     INITIAL purchase (gain starting at zero, worst case ~0.03-0.06% of
-#     the book if the class dies within 1-2 years by forced redemption) a
-#     small class is ACCEPTABLE; an assets threshold of 50-100 M only
+#     INITIAL purchase (gain starting at zero; if the class dies within
+#     1-2 years by forced redemption, the tax falls on 1-2 years of gain
+#     at most) a small class is ACCEPTABLE; an assets threshold of 50-100 M only
 #     makes sense for a SWITCH out of a line already held, which would
 #     crystallize its gains as well. What must prove itself is the CLASS,
 #     not the sub-fund: check its size, and check that the broker really
-#     serves it to a French resident (France registration is required
-#     only of French brokers).
+#     serves it to a French resident.
 #   - Duration vulnerability is read off the STARTING long yield, not
 #     rebalanced away: at 8-11% coupons the 1990 rate shock left euro long
 #     bonds positive; from ~1% carry the same shock in 2022 cost -38%.
@@ -908,14 +935,14 @@
 #     every return given up is entered here with what it buys, so the
 #     total is seen rather than felt. Deliberate ones, pre-tax:
 #       the PEE fund charge on 23 points, ~-0.14%/yr: buys the 18.6 vs
-#         31.4 tax wedge plus the float of s. 0 (+16 to +30% of final net
-#         wealth per 100 kept over 20 years, i.e. 0.74 to 1.32%/yr of
-#         growth in the ratio of the two wealths for that tranche, not
-#         points of CAGR for the whole book);
+#         31.4 tax wedge plus the float of s. 0 (+10 to +22% of net wealth
+#         on that tranche over 20 years in the worked example, ~0.5 to
+#         1%/yr of growth in the ratio of the two wealths, not points of
+#         CAGR for the whole book);
 #       giving up the stacked core, -0.07 to -0.14%/yr of notional handed
 #         back (130 -> 116), the intermediate multi-currency duration
 #         profile that won the isolated test (s. 6), and the attachment
-#         to a design one liked (a real behavioral cost: a book one likes
+#         to a familiar design (a real behavioral cost: a book one likes
 #         is held better). Against it: the tax wedge (a stacked core fits
 #         no shelter), a HIGHER equivalent duration in exchange (s. 8),
 #         and a head-to-head this book wins BECAUSE gold and trend absorb
@@ -940,7 +967,9 @@
 #   The weights cover the invested book. Two reserves live apart, and
 #   neither is ever counted in the weights or in the solvency of any line
 #   above:
-#   THE BUCKET, years 1-3 of spending (net of any bridge income). With a
+#   THE BUCKET, three years of spending (total spending, or spending net
+#     of a bridge income: a choice to make; the simulations of s. 12 use
+#     total spending). With a
 #     PEE, its money-market fund is the natural home: the switch in is
 #     tax-free, the refill is a sale of the PEE world fund in good years
 #     (the first draw of s. 0), and the deferred tax beats a money-market
@@ -957,8 +986,10 @@
 #   THE PRECAUTION: regulated savings accounts (Livret A, LDDS), outside
 #     the market and outside the plan.
 #   Rules: the bucket is drawn only when the book is in a real drawdown
-#   deeper than 10% (a MARKET drawdown, net of withdrawals: spending the
-#   capital down is not a crash); the fast half first; refilled as a priority once the book is back within 5% of its peak.
+#   deeper than 10%. Which drawdown is a definition to fix: measured on
+#   the capital stock, planned spending-down alone sets it off; the
+#   candidate is a flow-neutral (time-weighted) real return index of the
+#   growth sleeve from its peak. Refilled as a priority once the book is back within 5% of its peak.
 #   It is what carries the crash that completes in days (s. 11), which no
 #   line of the book covers.
 #   Considered and REJECTED: replacing part of the bucket by a contingent
@@ -1102,9 +1133,11 @@
 #   VERDICTS (the file is closed after three rounds; do not reopen it
 #   without a named mechanism):
 #   - The direct class CONFIRMED as leg 2, 50/50 with DBMFE for manager
-#     risk: a 5/15 split would dominate on the short window, but such a
-#     tilt was already tested and refuted, and it costs drawdown (-21.3%
-#     against -19.8% on the deep history). Fallback if the class cannot
+#     risk. A 5/15 tilt would dominate on the 74 short months; a 14/6 tilt
+#     was refuted in an earlier round, and on the deep history (249
+#     months) the direct manager ALONE (20 points) shows a worst drawdown
+#     of -21.3% and worst 12 months of -18.2%, against -19.8% and -16.2%
+#     for the 50/50 (the 5/15 itself was not measured on that window). Fallback if the class cannot
 #     be subscribed: IAET (LU1662498721), same portfolio and manager, at
 #     the price of its performance fee (s. 12).
 #   - REMOVING the sleeve costs a worst drawdown of -21.1% and a worst
@@ -1167,4 +1200,4 @@
 # ---- Tax shelters (equity only by law) --------------------------------
 23	ERESMONDEM      # world equity FCPE, 0.56%/yr KID ongoing charge plus ~0.06% transaction costs (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge (s. 0)
 5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1; alt CW8 LU1681043599) | MECHANISM + wrapper CONSTRAINT
-9	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelters that cannot hold a world fund; an institutional class exists at 1.40%/yr vs 1.95%, LU1832175001, minimum permitting) | CONSTRAINT + weak mechanism; a former France small/mid line (same manager) folded in. Wrapper floors can pin more of the 14 small-value points here and less in the global line than these weights say: measure the executable split, not only this design vector
+9	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelters that cannot hold a world fund; an institutional class exists at 1.40%/yr vs 1.95%, LU1832175001, minimum permitting) | CONSTRAINT + weak mechanism. Wrapper floors can pin more of the 14 small-value points here and less in the global line than these weights say: measure the executable split, not only this design vector
