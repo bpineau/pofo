@@ -53,6 +53,7 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 	res := newPathResult(p.Capital, p.Years, buf)
 	res.Ret10 = firstDecadeReturn(returns, min(120, p.Years*12), 12)
 	peak := p.Capital
+	idx, idxPeak := 1.0, 1.0         // the growth sleeve's return index, for MarketDrawdown
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
 	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)
 	lastRaise := -p.Ratchet.Cooldown // so a first raise is never cooldown-blocked
@@ -114,6 +115,8 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 		if p.RiskGuard.active() {
 			futurePV = p.cashflowPV(k, p.RiskGuard.PVRate, lf)
 		}
+		// A NetOfIncome band re-centres once, on the year's first month.
+		recentre := guardM.NetOfIncome && k > 0 && p.incomeStep(k)
 		for m := range 12 {
 			total := pks.total() + buffer
 			if total <= 0 {
@@ -132,13 +135,24 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 				peak = total
 			}
 			dd := 1 - total/peak
+			if p.MarketDrawdown {
+				dd = 1 - idx/idxPeak
+			}
 
 			var need float64
 			if p.RiskGuard.active() {
 				spending = riskM.adjust(spending, total+futurePV, k)
 				need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc) / 12
 			} else if p.Guard.active() {
-				spending = guardM.adjust(spending, total)
+				if guardM.NetOfIncome {
+					budget := spending * p.schedAt(k) * lf.spendFactor(k)
+					if recentre {
+						guardM, recentre = guardM.recentred(netAfter(budget, inc)/total), false
+					}
+					spending = guardM.netMove(spending, budget, inc, total)
+				} else {
+					spending = guardM.adjust(spending, total)
+				}
 				need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc) / 12
 			} else {
 				yearNeed := netAfter(level*p.schedAt(k)*lf.spendFactor(k), inc)
@@ -157,7 +171,7 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 			} else {
 				delivered = pks.sell(need, &res.TaxPaid)
 				delivered += drawBuffer(need - delivered)
-				if refill := target - buffer; refill > 0 && pks.total() > 0 && p.Buffer.refillsAt(k) {
+				if refill := target - buffer; refill > 0 && pks.total() > 0 && p.Buffer.refillsAt(k) && p.Buffer.refillsBelow(dd) {
 					if cap := pks.total() * refillCap / 12; refill > cap {
 						refill = cap
 					}
@@ -183,6 +197,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 			pks.grow(ret(returns, k*12+m))
 			if erode != 1 {
 				pks.erode(erode)
+			}
+			if idx *= 1 + ret(returns, k*12+m); idx > idxPeak {
+				idxPeak = idx
 			}
 			buffer *= 1 + bufferStep
 		}

@@ -90,6 +90,10 @@ type Params struct {
 	RiskGuard                    bool    `json:"riskGuard"`      // risk-based guardrails (Kitces/Morningstar): the band tracks the safe rate of the remaining horizon
 	GKFloor                      float64 `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
 	GKRaiseCap                   float64 `json:"gkRaiseCap"`     // risk-guardrail raise ceiling, fraction of the planned spend (0 = default 1 = protective only)
+	GKCap                        float64 `json:"gkCap"`          // Guyton-Klinger raise ceiling, fraction of the planned spend (0 = uncapped)
+	GKNet                        bool    `json:"gkNet"`          // Guyton-Klinger rate read on the net withdrawal (spend minus income), band re-centred at each income step
+	BufferRefill                 float64 `json:"bufferRefill"`   // refill the buffer only within this drawdown (fraction; 0 = whenever it is not drawn)
+	MarketDrawdown               bool    `json:"marketDrawdown"` // drawdown read on the growth sleeve's returns (flow-neutral), not on wealth
 	ABW                          bool    `json:"abw"`            // amortization-based withdrawal (ABW/TPAW family)
 	Bounded                      bool    `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
 	Central                      string  `json:"central"`        // strip column driving the detail sections: "" (central), "stress", "broad", "lost", "hist", "boot"
@@ -175,9 +179,17 @@ func (pr Params) plan() decumul.Plan {
 	// optional incompressible floor bounding the cut spiral.
 	if pr.Guardrails && pr.Capital > 0 {
 		wr0 := pr.NeedAnnual / pr.Capital
+		if net := pr.NeedAnnual - flowAt(p.Cashflows, 0); pr.GKNet && net > 0 {
+			wr0 = net / pr.Capital // the band frames what the portfolio pays in year 0
+		}
 		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10,
-			Floor: pr.GKFloor * pr.NeedAnnual}
+			Floor: pr.GKFloor * pr.NeedAnnual, Cap: pr.GKCap * pr.NeedAnnual, NetOfIncome: pr.GKNet}
 	}
+	if pr.BufferRefill > 0 {
+		th := pr.BufferRefill
+		p.Buffer.RefillThreshold = &th
+	}
+	p.MarketDrawdown = pr.MarketDrawdown
 	// Risk-based guardrails (Kitces & Tharp, Morningstar): the same +-10% moves,
 	// but the band follows the safe rate of the REMAINING horizon and the rate
 	// is read on total wealth, discounted pensions included. It takes
@@ -188,7 +200,7 @@ func (pr Params) plan() decumul.Plan {
 			Floor: pr.GKFloor * pr.NeedAnnual, Cap: pr.raiseCap(), PVRate: pr.pvRate(),
 		}
 	}
-	// The written-rules cliquet (Kitces ratchet, Ben's §10 skeleton): +10% of
+	// A written-rules cliquet (Kitces ratchet): +10% of
 	// the base spend per raise, only above 120% of the initial real capital,
 	// at most every two years, capped at 120% of the base spend, and only
 	// while the current rate stays comfortable (< 2.2%).

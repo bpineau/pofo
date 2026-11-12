@@ -193,6 +193,8 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 	res := newPathResult(p.Capital, p.Years, buf)
 	res.Ret10 = firstDecadeReturn(returns, min(10, p.Years), 1)
 	peak := p.Capital
+	idx, idxPeak := 1.0, 1.0         // the growth sleeve's return index, for MarketDrawdown
+	guard := p.Guard                 // a NetOfIncome band moves with the income steps
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
 	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)
 	bounded := p.NeedAnnual          // last delivered level for the bounded-percent rule
@@ -282,6 +284,9 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			peak = total
 		}
 		dd := 1 - total/peak
+		if p.MarketDrawdown {
+			dd = 1 - idx/idxPeak
+		}
 
 		// uncut is the year's reference standard of living: what would be
 		// spent with no flex cut and no guardrails move. Delivering less
@@ -325,7 +330,15 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc)
 			uncut = p.needAtWith(k, lf, inc)
 		} else if p.Guard.active() {
-			spending = p.Guard.adjust(spending, total)
+			if guard.NetOfIncome {
+				budget := spending * p.schedAt(k) * lf.spendFactor(k)
+				if k > 0 && p.incomeStep(k) {
+					guard = guard.recentred(netAfter(budget, inc) / total)
+				}
+				spending = guard.netMove(spending, budget, inc, total)
+			} else {
+				spending = guard.adjust(spending, total)
+			}
 			need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc)
 			uncut = p.needAtWith(k, lf, inc)
 		} else {
@@ -350,7 +363,7 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			delivered = pks.sell(need, &res.TaxPaid)
 			fromBuffer = drawBuffer(need - delivered)
 			delivered += fromBuffer
-			if refill := target - buffer; refill > 0 && p.Buffer.refillsAt(k) {
+			if refill := target - buffer; refill > 0 && p.Buffer.refillsAt(k) && p.Buffer.refillsBelow(dd) {
 				if avail := pks.total(); avail > 0 { // one total() for both the test and the cap
 					if cap := avail * refillCap; refill > cap {
 						refill = cap
@@ -395,6 +408,9 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		pks.grow(ret(returns, k))
 		if erode != 1 {
 			pks.erode(erode)
+		}
+		if idx *= 1 + ret(returns, k); idx > idxPeak {
+			idxPeak = idx
 		}
 		buffer *= 1 + p.Buffer.RealReturn
 		res.Wealth[k+1] = pks.total() + buffer

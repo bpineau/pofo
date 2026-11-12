@@ -7,8 +7,8 @@ import (
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
-// The flex cut can also trigger on the current withdrawal rate (Ben's written
-// rule: cut when drawdown > 20% OR current rate > 3.6%): here there is no
+// The flex cut can also trigger on the current withdrawal rate (a household's
+// written rule: cut when drawdown > 20% OR current rate > 3.6%): here there is no
 // drawdown at all but the rate is above the trigger, so the cut applies.
 func TestFlexCutTriggersOnWithdrawalRate(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 5000, Years: 2,
@@ -66,7 +66,7 @@ func TestRatchetCooldown(t *testing.T) {
 }
 
 // The cap bounds the ratcheted level, and MaxWR vetoes a raise when the
-// current withdrawal rate is already above it (Ben's rule: only ratchet when
+// current withdrawal rate is already above it (a written rule: only ratchet when
 // the rate is comfortable).
 func TestRatchetCapAndMaxWR(t *testing.T) {
 	capped := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
