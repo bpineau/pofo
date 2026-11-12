@@ -80,6 +80,15 @@
 // which is the Kitces/Morningstar answer to the 2006 rule's blindness to age
 // and to pensions still to come.
 //
+// Written household rules need three more switches, all off by default.
+// Guardrails.NetOfIncome reads the rate on what the portfolio actually pays
+// (spending minus income) and re-centres the band each year an income starts
+// or stops, and Guardrails.Cap bounds the raises. BufferSleeve.RefillThreshold
+// refills the buffer only near the peak ("draw beyond 10 %, refill within
+// 5 %"). Plan.MarketDrawdown reads the drawdown that taps the buffer and the
+// flex cut on the growth sleeve's returns, so spending the capital down as
+// planned is never mistaken for a crash.
+//
 // Lifetime. By default a plan runs Plan.Years for certain and mortality enters
 // afterwards, as a weighting (Ensemble.LifeCurve). Setting Plan.Lifetime draws
 // the household's lifespan inside every path instead, which unlocks what the

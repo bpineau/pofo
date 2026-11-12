@@ -88,15 +88,22 @@ func (c Cashflow) paidAt(year int, l life) float64 {
 // reached the buffer is no longer refilled (0 = always refill), so the sleeve
 // can cover the early sequence-risk window and then be left to run down.
 //
-// DrawThreshold and RefillCap are pointers so a nil leaves the default while an
-// explicit zero is honoured (always draw the buffer, resp. never refill), which
-// a plain zero field could not express.
+// RefillThreshold, when set, refills the buffer only while the drawdown is at
+// or below it, so a written rule such as "draw beyond 10 %, refill only once
+// back within 5 % of the peak" leaves a dead band in between where the buffer
+// is neither drawn nor refilled. nil refills whenever the buffer is not drawn.
+//
+// DrawThreshold, RefillCap and RefillThreshold are pointers so a nil leaves the
+// default while an explicit zero is honoured (always draw the buffer, never
+// refill, refill only at a new peak), which a plain zero field could not
+// express.
 type BufferSleeve struct {
-	Years          float64  // size in years of NeedAnnual; 0 = no buffer
-	RealReturn     float64  // real return per year, a FRACTION (-0.02 for cash under 2 % inflation)
-	DrawThreshold  *float64 // nil = 0.10; 0 = always tap the buffer first
-	RefillCap      *float64 // nil = 0.50; 0 = never refill
-	RefillStopYear int      // stop refilling from this year (0 = never stop)
+	Years           float64  // size in years of NeedAnnual; 0 = no buffer
+	RealReturn      float64  // real return per year, a FRACTION (-0.02 for cash under 2 % inflation)
+	DrawThreshold   *float64 // nil = 0.10; 0 = always tap the buffer first
+	RefillCap       *float64 // nil = 0.50; 0 = never refill
+	RefillStopYear  int      // stop refilling from this year (0 = never stop)
+	RefillThreshold *float64 // nil = refill whenever not drawing; else refill only while drawdown <= it
 }
 
 // refillsAt reports whether the buffer is still refilled in the given year,
@@ -111,6 +118,12 @@ func (b BufferSleeve) drawThreshold() float64 {
 		return 0.10
 	}
 	return *b.DrawThreshold
+}
+
+// refillsBelow reports whether drawdown dd allows a refill (see
+// RefillThreshold).
+func (b BufferSleeve) refillsBelow(dd float64) bool {
+	return b.RefillThreshold == nil || dd <= *b.RefillThreshold
 }
 
 // refillCap resolves RefillCap, applying the 0.50 default when unset.
@@ -193,6 +206,21 @@ func (r Ratchet) raise(level, total, capital0 float64, year, lastRaise int) (flo
 // ruin risk for an unbounded lifestyle risk. A floor re-creates some ruin (the
 // floor itself can prove unsustainable) but bounds the descent.
 //
+// Cap, when set, is the yearly real spending level raises never push past:
+// without it a long bull market raises spending 10 % at a time with no end,
+// which turns the rule's upside into a lifestyle the household never chose.
+//
+// NetOfIncome changes the sensor. The 2006 rule reads spending / portfolio,
+// so a pension arriving in year 14 leaves the rate where it was although the
+// portfolio now pays far less of the budget. With NetOfIncome the rate is what
+// the portfolio actually pays, (spending - income) / portfolio, and the band
+// is re-centred on that rate, at its relative width, every year an income
+// starts or stops (a Cashflow's FromYear or ToYear): without the re-centring
+// the pension's arrival would crush the measured rate and fire raise after
+// raise for the wrong reason. Upper and Lower then frame the NET rate of
+// year 0; a year where income covers the whole budget reads a zero rate and
+// keeps its band.
+//
 // The annual kernel evaluates the rule yearly (Guyton-Klinger's own cadence);
 // the monthly kernel evaluates it every month at the pace-preserving step
 // (see stepped) so a persistent breach produces the same annual intensity
@@ -201,26 +229,60 @@ type Guardrails struct {
 	Upper, Lower float64 // withdrawal-rate guardrails, e.g. 0.06 and 0.03
 	Cut, Raise   float64 // proportional spending adjustments, e.g. 0.10 each
 	Floor        float64 // spending level cuts stop at (euros/yr); 0 = none
+	Cap          float64 // spending level raises stop at (euros/yr); 0 = none
+	NetOfIncome  bool    // read the rate on the portfolio's net withdrawal, re-centred at each income step
 }
 
 // active reports whether the guardrails band is set.
 func (g Guardrails) active() bool { return g.Upper > 0 && g.Lower > 0 }
 
-// adjust moves spending toward the band given the current withdrawal rate.
+// adjust moves spending toward the band given the current withdrawal rate,
+// read as spending / portfolio.
 func (g Guardrails) adjust(spending, portfolio float64) float64 {
 	if portfolio <= 0 {
 		return spending
 	}
-	switch wr := spending / portfolio; {
+	return g.move(spending, spending/portfolio)
+}
+
+// move applies one guardrail decision for the withdrawal rate wr.
+func (g Guardrails) move(spending, wr float64) float64 {
+	switch {
 	case wr > g.Upper:
 		spending *= 1 - g.Cut
 		if g.Floor > 0 && spending < g.Floor {
 			spending = g.Floor
 		}
 	case wr < g.Lower:
-		spending *= 1 + g.Raise
+		raised := spending * (1 + g.Raise)
+		if g.Cap > 0 {
+			raised = math.Min(raised, math.Max(spending, g.Cap))
+		}
+		spending = raised
 	}
 	return spending
+}
+
+// netMove is the NetOfIncome decision: the rate is the net withdrawal the
+// budget leaves after income, over the portfolio.
+func (g Guardrails) netMove(spending, budget, income, portfolio float64) float64 {
+	if portfolio <= 0 {
+		return spending
+	}
+	return g.move(spending, netAfter(budget, income)/portfolio)
+}
+
+// recentred returns the band re-centred on the net rate wr, at its relative
+// width; a non-positive rate (income covers the budget) keeps the band.
+func (g Guardrails) recentred(wr float64) Guardrails {
+	centre := (g.Upper + g.Lower) / 2
+	if wr <= 0 || centre <= 0 {
+		return g
+	}
+	k := wr / centre
+	g.Upper *= k
+	g.Lower *= k
+	return g
 }
 
 // stepped returns the rule with its moves rescaled to n evaluations per year,
@@ -346,6 +408,14 @@ type Plan struct {
 	// Monthly steps the kernel monthly (RunPathMonthly) instead of annually;
 	// the Source must then yield monthly returns (Years*12 per path).
 	Monthly bool
+	// MarketDrawdown measures the drawdown that taps the buffer and triggers
+	// the flex cut on the growth sleeve's RETURNS (a flow-neutral index of its
+	// real performance) instead of on total wealth. Wealth also falls because
+	// the household spends it: a portfolio returning exactly zero while it
+	// pays 4 % a year stands 12 % under its peak after three years, and a
+	// wealth-based trigger reads that planned spending-down as a crash. false
+	// keeps the wealth-based drawdown.
+	MarketDrawdown bool
 	// Lifetime, when set, draws the household's lifespan inside every path
 	// instead of running Years for certain: ruin becomes broke-while-alive,
 	// the wealth left at death becomes a first-class output, and an Annuity
@@ -627,6 +697,17 @@ func (p *Plan) cashflowPV(from int, r float64, l life) float64 {
 		disc *= inv
 	}
 	return pv
+}
+
+// incomeStep reports whether an income starts or stops in year k: the years a
+// NetOfIncome guardrail re-centres its band.
+func (p *Plan) incomeStep(k int) bool {
+	for _, c := range p.Cashflows {
+		if c.FromYear == k || (c.ToYear > 0 && c.ToYear == k) {
+			return true
+		}
+	}
+	return false
 }
 
 // netAfter reduces a gross annual spend by the income of the year (the
