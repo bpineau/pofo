@@ -996,10 +996,9 @@
 #   THE PRECAUTION: regulated savings accounts (Livret A, LDDS), outside
 #     the market and outside the plan.
 #   Rules: the bucket is drawn only when the book is in a real drawdown
-#   deeper than 10%. Which drawdown is a definition to fix: measured on
-#   the capital stock, planned spending-down alone sets it off; the
-#   candidate is a flow-neutral (time-weighted) real return index of the
-#   growth sleeve from its peak. Refilled as a priority once the book is back within 5% of its peak.
+#   deeper than 10%, read on the MARKET: a flow-neutral (time-weighted)
+#   real return index of the growth sleeve from its peak (measured on the
+#   capital stock, planned spending-down alone would set it off). Refilled as a priority once the book is back within 5% of its peak.
 #   It is what carries the crash that completes in days (s. 11), which no
 #   line of the book covers.
 #   Considered and REJECTED: replacing part of the bucket by a contingent
