@@ -457,7 +457,7 @@ func TestFetchISINViaMorningstarScreener(t *testing.T) {
 	mux.HandleFunc("/recherche/ajax", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `<div>Aucun r&eacute;sultat</div>`)
 	})
-	mux.HandleFunc("/api/rest.svc/"+morningstarScreenerToken+"/security/screener", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/rest.svc/"+morningstarToken+"/security/screener", func(w http.ResponseWriter, r *http.Request) {
 		if term := r.URL.Query().Get("term"); term != "IE0000360275" {
 			t.Errorf("unexpected screener term: %q", term)
 		}
