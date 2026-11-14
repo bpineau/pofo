@@ -10,13 +10,10 @@ import (
 )
 
 // morningstarToken is the view id embedded in Morningstar's public chart
-// pages; it has been stable for years.
+// pages; it has been stable for years. It serves both the timeseries and the
+// screener. The screener once had its own view id (klr5zyak8x), which answers
+// 401 since the retirement of the national sites that embedded it.
 const morningstarToken = "ok91jeenoo"
-
-// morningstarScreenerToken is the equivalent view id for the screener the
-// fund-search pages call. It is a second, independent token: the timeseries
-// one is not accepted there.
-const morningstarScreenerToken = "klr5zyak8x"
 
 // morningstarUniverses are the two screener universes worth searching: open
 // end funds and exchange traded ones. They are searched together because a
@@ -98,7 +95,7 @@ type morningstarRow struct {
 // ISIN lookup never adopts a same-family class quoted in another currency.
 func (c *Client) morningstarSearch(ctx context.Context, query string) (resolution, error) {
 	u := fmt.Sprintf("%s/api/rest.svc/%s/security/screener?page=1&pageSize=10&outputType=json&universeIds=%s&securityDataPoints=%s&term=%s",
-		c.MorningstarBase, morningstarScreenerToken,
+		c.MorningstarBase, morningstarToken,
 		url.QueryEscape(morningstarUniverses),
 		url.QueryEscape("SecId|Name|isin|currencyId"),
 		url.QueryEscape(query))
