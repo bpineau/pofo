@@ -36,6 +36,10 @@ missing API instead of duplicating its math. Never commit scratch.
 - Undefined statistics stay NaN (JSON null), never zero. Surface `Warnings`.
 - Optimizers: resolve named bounds and apply/clear `Spec.Train` before solving;
   `Feasible=false` is a failed search, not infeasibility proof.
+- Catalog and reference data are embedded at build time: rebuild before testing
+  an edit to them (`make simdata` does; a stale `./pofo` regenerates from old
+  data, or resolves a new id through a fuzzy search and caches the wrong fund).
+  A delirious statistic is first a wrong resolution: read the `resolved` line.
 
 ## Rules
 
@@ -55,11 +59,16 @@ missing API instead of duplicating its math. Never commit scratch.
 - New or rebuilt bundled series: check CAGR, volatility and currency against
   external references and report divergences. Never widen golden tolerances
   casually.
+- Regenerating data is routine: run `make simdata` or `make refresh` whenever a
+  recipe or reference changes or the bundled data is more than a day old,
+  validate (`make check`, `make golden`, diff review) and commit the
+  regenerated `pkg/datasets` files on their own.
 
 ## Gates
 
 `make check` (fmt, vet, staticcheck, tests, examples) must pass before every
 commit; `make golden` too for computation or data changes. Docs-only quick
 check: `go test -run 'TestGodoc|TestDocSnippets|TestUnitsTable' .`.
-A `v*` tag deploys production and publishes the module for finador/locador:
-never tag unless explicitly asked.
+A `v*` tag publishes a release (container image and the module version that
+downstream modules pin): never tag unless explicitly asked; say when one is
+owed.
