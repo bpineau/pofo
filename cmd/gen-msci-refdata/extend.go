@@ -173,7 +173,7 @@ func compare(anchors []marketdata.Point, proxy monthly, ter float64) (full, gate
 	switch {
 	case math.Abs(gated.td) > maxTD:
 		err = fmt.Errorf("tracking difference %+.3f %%/yr over %s..%s exceeds the %.2f point band", gated.td, gated.from, gated.to, maxTD)
-	case gated.corr < minCorr:
+	case !(gated.corr >= minCorr):
 		err = fmt.Errorf("monthly correlation %.4f over %s..%s below %.3f", gated.corr, gated.from, gated.to, minCorr)
 	}
 	return full, gated, err

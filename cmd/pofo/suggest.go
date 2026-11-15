@@ -193,7 +193,7 @@ func buildCandidates(ctx context.Context, c *marketdata.Client, opt *options, me
 			Returns:        metrics.Returns(p[len(held)]),
 			PeriodsPerYear: metrics.PeriodsPerYear(dates),
 			Years:          years,
-			Simulated:      !cs.SimulatedBefore.IsZero(),
+			Simulated:      cs.FullySimulated || !cs.SimulatedBefore.IsZero(),
 		})
 	}
 	return out

@@ -582,7 +582,7 @@ func runChecks(dir string, bund, bundSynth, bundDaily, jgb, gilt *marketdata.Ser
 		corr := monthlyCorr(bund, euro, date(2005, 1), to)
 		log.Printf("check BUND-EUR vs EUROGOV-EUR: CAGR 1999-2010 %.2f%% vs %.2f%% (gap %+.2f), monthly corr 2005-2010 %.3f",
 			cb*100, cg*100, (cb-cg)*100, corr)
-		if corr < 0.90 || math.Abs(cb-cg) > 0.01 {
+		if !(corr >= 0.90) || math.Abs(cb-cg) > 0.01 {
 			fail("the German and euro-area reconstructions diverge over the years their spreads were thin")
 		}
 	}

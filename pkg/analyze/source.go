@@ -16,7 +16,8 @@ import (
 type SeriesSource map[string]*marketdata.Series
 
 // FetchExtended reads an exact key and honors the window. SIM histories are
-// supplied under their explicit SIM keys. NoSim removes reconstructed points.
+// supplied under their explicit SIM keys. NoSim removes reconstructed points
+// and returns an error if the entire history is explicitly reconstructed.
 func (src SeriesSource) FetchExtended(ctx context.Context, id string, opt marketdata.FetchOptions) (*marketdata.Series, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -29,6 +30,9 @@ func (src SeriesSource) FetchExtended(ctx context.Context, id string, opt market
 		return nil, fmt.Errorf("analyze: %s is in %s, convert to %s before using SeriesSource", id, s.Currency, opt.Currency)
 	}
 	start := opt.From
+	if opt.NoSim && s.FullySimulated {
+		return nil, fmt.Errorf("analyze: %s has no observed quotes: entire history is reconstructed", id)
+	}
 	if opt.NoSim && s.SimulatedBefore.After(start) {
 		start = s.SimulatedBefore
 	}

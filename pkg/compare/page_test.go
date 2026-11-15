@@ -303,6 +303,20 @@ func TestFoldIntoAndRelabel(t *testing.T) {
 // catalog knows and whose contributions actually move: the pies, the coverage
 // bars, the risk budget and the contribution charts must all land in the
 // section, each with the footnote that explains it.
+func TestHTMLPageWhollyReconstructedHistory(t *testing.T) {
+	cols, bench, start, end, meta := fabricatedColumns(t)
+	for _, c := range cols {
+		for _, a := range c.p.Assets {
+			a.Series.SimulatedBefore = time.Time{}
+			a.Series.FullySimulated = true
+		}
+	}
+	page := newTestComparison(cols, bench, start, end, meta, Options{Currency: "EUR", Framework: suggest.RegimeFramework()}).HTMLPage(Decoration{})
+	if !strings.Contains(strings.Join(page.Footnotes, " "), "Reconstructed histories") {
+		t.Fatal("wholly reconstructed holdings have no simulated-history footnote")
+	}
+}
+
 func TestHTMLPageAssemblesEveryBlock(t *testing.T) {
 	cols, bench, start, end, meta := fabricatedColumns(t)
 	// The golden's contributions are constant, so their covariance is

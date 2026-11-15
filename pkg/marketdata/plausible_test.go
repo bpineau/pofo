@@ -189,6 +189,11 @@ func TestIdentityIssues(t *testing.T) {
 		if got := identityIssues(datasets.Asset{Since: "2012-06-01"}, &s); len(got) != 0 {
 			t.Fatalf("a simulated series must not be asked, got %v", got)
 		}
+		s.SimulatedBefore = time.Time{}
+		s.FullySimulated = true
+		if got := identityIssues(datasets.Asset{Since: "2012-06-01"}, &s); len(got) != 0 {
+			t.Fatalf("a wholly reconstructed series has no observed inception: %v", got)
+		}
 	})
 }
 

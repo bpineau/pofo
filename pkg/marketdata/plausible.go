@@ -426,7 +426,7 @@ func identityIssues(a datasets.Asset, s *Series) []Issue {
 	// should be within a year of it. A SIM-extended series starts before any
 	// quote by construction, and an index reconstruction predates its vehicle
 	// on purpose; neither is asked the question.
-	if a.Since != "" && a.Source != "index" && s.SimulatedBefore.IsZero() {
+	if a.Since != "" && a.Source != "index" && !s.FullySimulated && s.SimulatedBefore.IsZero() {
 		if since, err := time.Parse("2006-01-02", a.Since); err == nil {
 			first := s.First().Date
 			if drift := first.Sub(since); drift > sinceDrift {

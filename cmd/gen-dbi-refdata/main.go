@@ -180,12 +180,12 @@ func validate(ref, proj, blend *marketdata.Series) error {
 	if gap := cagr(proj) - cagrOver(ref, from, to); math.Abs(gap) > 0.02 {
 		return fmt.Errorf("projection CAGR is %+.2f pts/yr off the composite's: the level is not credible", 100*gap)
 	}
-	if c := monthlyCorr(proj, ref, from, to); c < 0.55 {
+	if c := monthlyCorr(proj, ref, from, to); !(c >= 0.55) {
 		return fmt.Errorf("projection tracks the composite at only %.3f monthly", c)
 	}
 	// The blend is an average, so it must sit between its two sides everywhere
 	// it can be checked, and stay close to the composite.
-	if c := monthlyCorr(blend, ref, from, to); c < 0.85 {
+	if c := monthlyCorr(blend, ref, from, to); !(c >= 0.85) {
 		return fmt.Errorf("blend tracks the composite at only %.3f monthly", c)
 	}
 	if gap := cagr(blend) - cagrOver(ref, from, to); math.Abs(gap) > 0.01 {

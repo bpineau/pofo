@@ -2,6 +2,8 @@ package main
 
 import (
 	"math"
+	"slices"
+	"strings"
 	"testing"
 	"time"
 
@@ -20,6 +22,46 @@ func walk(n int, scale float64) []marketdata.Point {
 		d = d.AddDate(0, 0, 1)
 	}
 	return out
+}
+
+func TestCorrelationGuardsRejectConstantHistories(t *testing.T) {
+	variable := walk(12000, 1)
+	flat := slices.Clone(variable)
+	for i := range flat {
+		flat[i].Close = variable[len(variable)-1].Close
+	}
+	for _, tc := range []struct {
+		name string
+		a, b []marketdata.Point
+	}{
+		{"flat candidate", flat, variable},
+		{"flat reference", variable, flat},
+		{"both flat", flat, flat},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			for name, check := range map[string]func([]marketdata.Point, []marketdata.Point) (string, error){
+				"fund": checkAgainstFund, "anchors": checkAgainstAnchors,
+			} {
+				t.Run(name, func(t *testing.T) {
+					if _, err := check(tc.a, tc.b); err == nil || !strings.Contains(err.Error(), "correlation") {
+						t.Fatalf("undefined correlation must fail validation: %v", err)
+					}
+				})
+			}
+		})
+	}
+	dir := t.TempDir()
+	old := walk(400, 1)
+	if err := refgen.Write(dir, refgen.Header{ID: "X", Name: "x", Source: "s"}, old); err != nil {
+		t.Fatal(err)
+	}
+	frozen := slices.Clone(old)
+	for i := range frozen {
+		frozen[i].Close = old[len(old)-1].Close
+	}
+	if _, err := checkRevision(dir, "X", frozen); err == nil {
+		t.Fatal("flat revision with an unchanged final level passed validation")
+	}
 }
 
 func TestCheckRevision(t *testing.T) {
