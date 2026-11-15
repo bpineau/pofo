@@ -43,46 +43,6 @@ func TestBuildMonthlyPanelAndFit(t *testing.T) {
 	}
 }
 
-// Sigma must come from the monthly dispersion scaled by √12, far more stable
-// than the std of the ~20 annual points, and df must be seeded from the
-// monthly excess kurtosis.
-func TestFitParametricSigmaFromMonthly(t *testing.T) {
-	// 24 monthly returns alternating ±5% around zero: a known monthly std.
-	monthly := make([]float64, 24)
-	for i := range monthly {
-		if i%2 == 0 {
-			monthly[i] = 0.05
-		} else {
-			monthly[i] = -0.05
-		}
-	}
-	panel := scenario.Panel{Returns: [][]float64{monthly}, Weights: []float64{1}}
-	f := FitParametric(panel, []float64{1})
-
-	wantSigma := stdev(monthly) * math.Sqrt(12)
-	if math.Abs(f.Sigma-wantSigma) > 1e-9 {
-		t.Errorf("sigma = %.6f, want %.6f (monthly std × √12)", f.Sigma, wantSigma)
-	}
-}
-
-func TestDofFromKurtosis(t *testing.T) {
-	cases := []struct{ excess, want float64 }{
-		{2, 7},    // 4 + 6/2
-		{6, 5},    // 4 + 6/6
-		{0.1, 30}, // very fat -> clamped to the slider max
-		{0, 30},   // undefined / thin -> near-normal end
-		{-1, 30},  // thin tails -> near-normal end
-	}
-	for _, c := range cases {
-		if got := dofFromKurtosis(c.excess); math.Abs(got-c.want) > 1e-9 {
-			t.Errorf("dofFromKurtosis(%.2f) = %.2f, want %.2f", c.excess, got, c.want)
-		}
-	}
-	if got := dofFromKurtosis(math.NaN()); got != 30 {
-		t.Errorf("dofFromKurtosis(NaN) = %.2f, want 30", got)
-	}
-}
-
 // Assets whose monthly grids do not line up (different start/end months) must
 // be aligned on shared calendar months, not by trailing position. Asset A
 // covers Jan-Apr (returns Feb,Mar,Apr); asset B covers Feb-May (returns

@@ -153,8 +153,8 @@ func TestTaxControlsShipWithTheirDefaults(t *testing.T) {
 	group := js[strings.Index(js, `{title: "Taxes"`):]
 	group = group[:strings.Index(group, `{title: "Simulation"`)]
 	for _, want := range []string{
-		`r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.328, "pct",`,
-		`r("gainFrac", "Embedded gain in the capital", 0, 1, 0.05, 0.5, "pct",`,
+		`r("taxRate", "Tax on gains", 0, 0.40, 0.01, FIRE_DEFAULTS.taxRate, "pct",`,
+		`r("gainFrac", "Embedded gain in the capital", 0, 1, 0.05, FIRE_DEFAULTS.gainFrac, "pct",`,
 		`...fold("envelopes",`,
 		`r("peaCapital", "PEA capital", 0, 3000000, 10000, 0, "eur",`,
 		`r("avCapital", "Assurance-vie capital", 0, 3000000, 10000, 0, "eur",`,

@@ -9,6 +9,7 @@ import (
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
+	"github.com/bpineau/pofo/pkg/fire"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -162,28 +163,29 @@ type Result struct {
 // plan builds a decumul.Plan from the params, with a parametric source by
 // default (source() may override it for the portfolio models).
 func (pr Params) plan() decumul.Plan {
-	p := decumul.Plan{
-		Capital:    pr.Capital,
-		NeedAnnual: pr.NeedAnnual,
-		Years:      pr.Years,
-		Buffer:     decumul.BufferSleeve{Years: pr.BufferYears, RealReturn: pr.BufferReturn, RefillStopYear: pr.BufferStopYear},
-		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut, WRThreshold: pr.WRTrigger},
-		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
-		Inflation:  pr.Inflation,
-		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
-		Monthly:    pr.Monthly && pr.monthlyCapable(), // regime/pooled sources are annual
+	policy := fire.FixedReal
+	if pr.Guardrails {
+		policy = fire.GuytonKlinger
 	}
-	p.Cashflows = append(append(pr.pension(), pr.side()...), pr.flowCashflows()...)
+	// Request validation has already checked this shared subset. Broader web
+	// policies are layered below without changing the common kernel mapping.
+	p, _ := fire.BuildPlan(fire.PlanSpec{Capital: pr.Capital, AnnualSpending: pr.NeedAnnual, Years: pr.Years, Policy: policy,
+		BufferYears: pr.BufferYears, BufferRealReturn: pr.BufferReturn, TaxRate: pr.TaxRate, InitialGain: pr.GainFrac, Inflation: pr.Inflation,
+		Pension: &fire.Pension{AnnualAmount: pr.PensionAnnual, StartYear: pr.PensionYear, RealDrift: pr.PensionDrift}})
+	p.Buffer.RefillStopYear = pr.BufferStopYear
+	p.Flex = decumul.FlexRule{Threshold: .20, Cut: pr.FlexCut, WRThreshold: pr.WRTrigger}
+	p.Source = scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}
+	p.Monthly = pr.Monthly && pr.monthlyCapable()
+	p.Cashflows = append(append(p.Cashflows, pr.side()...), pr.flowCashflows()...)
 	p.Lumps = pr.lumps()
 	// Guardrails band centred on the initial withdrawal rate (±20%), with an
 	// optional incompressible floor bounding the cut spiral.
 	if pr.Guardrails && pr.Capital > 0 {
-		wr0 := pr.NeedAnnual / pr.Capital
 		if net := pr.NeedAnnual - flowAt(p.Cashflows, 0); pr.GKNet && net > 0 {
-			wr0 = net / pr.Capital // the band frames what the portfolio pays in year 0
+			wr0 := net / pr.Capital // the band frames what the portfolio pays in year 0
+			p.Guard.Upper, p.Guard.Lower = wr0*1.2, wr0*.8
 		}
-		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10,
-			Floor: pr.GKFloor * pr.NeedAnnual, Cap: pr.GKCap * pr.NeedAnnual, NetOfIncome: pr.GKNet}
+		p.Guard.Floor, p.Guard.Cap, p.Guard.NetOfIncome = pr.GKFloor*pr.NeedAnnual, pr.GKCap*pr.NeedAnnual, pr.GKNet
 	}
 	if pr.BufferRefill > 0 {
 		th := pr.BufferRefill
@@ -232,7 +234,9 @@ func (pr Params) plan() decumul.Plan {
 	// and the kernel ignores it without a Lifetime. Lifecycle attaches both
 	// (see annuity.go for why the fixed-horizon views cannot carry it).
 	p.SpendSchedule = pr.spendSchedule()
-	p.Envelopes = pr.envelopes()
+	if pr.PEACapital > 0 || pr.AVCapital > 0 {
+		p.Envelopes = pr.envelopes()
+	}
 	return p
 }
 
