@@ -250,3 +250,52 @@ one a window happened to produce. See `docs/specs/black-litterman-design.md`.
 ## Library research interface
 
 `Frontier` now returns structured MaxReturn candidates over explicit volatility caps; the HTML frontier chart remains a separate presentation concern. It uses the same heuristic solver, so a failed feasibility search is not a proof that no feasible point exists. `Spec.RiskBudgets` generalizes risk parity to positive requested Euler shares. `EvaluateWithRiskFree` and `FitEvaluate` report realized path statistics separately from Black-Litterman expected returns. All public solver entry points validate finite returns, cadence and typed options; unresolved named bounds/views are errors.
+
+## Numerical oracles
+
+`pkg/optimize/oracle_test.go` exercises public solves against references that
+use no optimizer search. Run `go test -v ./pkg/optimize -run
+'AnalyticAllocations|MinimumVariance|SharpeDoesNot|SharpeRejects|ThreeAssetGrid'`.
+
+Two orthogonal return rows have variances in ratio 1:4. Minimum variance puts
+80% in the first row; positive excess-return tangency puts 70.588235% there.
+Both are checked to 1e-5 in weight under common return multipliers 0.001,
+0.01, 1 and 10 (scaling the risk-free rate too). Minimum variance also checks
+floors of 10% per asset. Duplicating the first row and permuting the rows must
+preserve the other exposure's 20% weight; individual duplicate weights need
+not be unique. These cases exposed premature stopping on small unnormalized
+variances. The objective now scales by the largest diagonal variance.
+
+A flat cash row must not beat defined negative Sharpe ratios. An entirely
+constant panel has no defined Sharpe and is rejected by MaxSharpe, with or
+without bounds, for one or multiple assets. This changes only optimization
+of an undefined objective, not reporting of undefined measurements.
+
+A deterministic three-asset, 60-month fixture is enumerated at 1% weight
+increments (5,151 portfolios before constraints). Public `EvaluateWithRiskFree`
+measures each candidate, independently of the search. Results below are
+annual fractions except for the dimensionless Sharpe; smaller volatility
+and larger CAGR/Sharpe are better.
+
+| Problem | Solver | Best feasible grid point |
+|---|---:|---:|
+| Minimum volatility | 0.008324742 | 0.008351994 |
+| Maximum Sharpe, risk-free 2% | 2.946218194 | 2.931500304 |
+| Maximum CAGR, volatility cap 8% | 0.114798825 | 0.114475503 |
+| Maximum CAGR, drawdown cap 6% | 0.114943018 | 0.115107094 |
+| Minimum volatility, CAGR floor 7% | 0.030015481 | 0.030029129 |
+| Maximum CAGR, each weight in [32%,35%] | 0.092446096 | 0.092446096 |
+
+The drawdown case demonstrates the distinction between feasibility and
+optimality: the search meets the limit but loses 1.64 basis points of annual
+CAGR to a known feasible grid point. The regression pins a 2 bp deficit
+ceiling for this fixture; other scores have a 1e-4 numerical allowance.
+This is a measured limitation of the penalty search at a nonsmooth boundary,
+not evidence of infeasibility. No golden tolerance was widened.
+
+A finite grid supplies a lower bound on the maximum score, not the true
+continuous optimum. Passing these cases does not certify other histories,
+higher dimensions, extreme condition numbers or nonconvex objectives. The
+convex tangency transformation likewise does not turn finite-iteration
+numerical descent into an exact answer. These checks validate numerical
+behavior, not future investment performance.

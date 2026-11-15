@@ -572,6 +572,8 @@ func parseBound(s string, end bool) (time.Time, error) {
 // limits and the Result, is annualized at that cadence.
 // Returns must be finite and greater than -1. Bounds and views keyed by
 // identifier require Spec.Resolve first; an unapplied Train is an error.
+// MaxSharpe returns an error if the search finds no defined ratio; zero
+// volatility remains a valid result for objectives such as MinVolatility.
 func Solve(returns [][]float64, periodsPerYear float64, spec Spec) (Result, error) {
 	if err := validateSpec(spec, len(returns), false); err != nil {
 		return Result{}, err
@@ -587,6 +589,9 @@ func Solve(returns [][]float64, periodsPerYear float64, spec Spec) (Result, erro
 		res.Sharpe = math.NaN()
 		if res.Volatility > 0 {
 			res.Sharpe = (res.Return - spec.RiskFree) / res.Volatility
+		}
+		if spec.Objective == MaxSharpe && !finite(res.Sharpe) {
+			return Result{}, fmt.Errorf("max-sharpe: search found no allocation with a defined Sharpe ratio")
 		}
 		if spec.Objective == MaxSortino {
 			buf := make([]float64, len(returns[0]))
@@ -809,9 +814,18 @@ func solve(mu []float64, cov [][]float64, spec Spec) (Result, error) {
 		if float64(n)*maxW < 1-1e-9 {
 			return Result{}, fmt.Errorf("max-weight too low: %d assets cannot sum to 100%% under a %.0f%% cap", n, maxW*100)
 		}
+		// Normalize the objective, not the reported covariance. Absolute
+		// descent tolerances must not make small returns look like convergence.
+		varianceScale := 0.0
+		for i := range cov {
+			varianceScale = math.Max(varianceScale, cov[i][i])
+		}
+		if varianceScale == 0 {
+			varianceScale = 1
+		}
 		w = minimizeSimplex(
-			func(x []float64) float64 { return quad(cov, x) },
-			func(x []float64) []float64 { return scale(matVec(cov, x), 2) },
+			func(x []float64) float64 { return quad(cov, x) / varianceScale },
+			func(x []float64) []float64 { return scale(matVec(cov, x), 2/varianceScale) },
 			maxW, equalStart(n, maxW))
 	case MaxSharpe:
 		if float64(n)*maxW < 1-1e-9 {
@@ -822,6 +836,9 @@ func solve(mu []float64, cov [][]float64, spec Spec) (Result, error) {
 			excess[i] -= spec.RiskFree
 		}
 		w = maxSharpe(excess, cov, maxW)
+		if len(w) == 0 {
+			return Result{}, fmt.Errorf("max-sharpe: search found no allocation with a defined Sharpe ratio")
+		}
 	case RiskParity:
 		w = riskParity(cov, spec.RiskBudgets)
 	default:
@@ -833,15 +850,14 @@ func solve(mu []float64, cov [][]float64, spec Spec) (Result, error) {
 // maxSharpe maximizes the Sharpe ratio (risk-free 0) over the capped
 // simplex. The ratio is not concave in the weights, so several deterministic
 // starting points are tried and the best feasible Sharpe is kept. One of them
-// is the EXACT uncapped tangency portfolio (tangencyQP): without a cap that
-// seed is already the global optimum, and with one it starts the search in
-// the right neighbourhood.
+// solves the convex uncapped tangency problem (tangencyQP) numerically.
+// It supplies a useful seed, not a certificate of numerical optimality.
 func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 	n := len(mu)
 	neg := func(x []float64) float64 {
 		v := quad(cov, x)
 		if v <= 0 {
-			return 0
+			return math.Inf(1)
 		}
 		return -dot(mu, x) / math.Sqrt(v)
 	}
@@ -878,8 +894,7 @@ func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 		iv = normalize(iv)
 		starts = append(starts, projectCappedSimplex(iv, maxW))
 	}
-	// The exact uncapped tangency portfolio: the global optimum itself when
-	// no cap binds, and the best available seed when one does.
+	// A numerical solution of the uncapped tangency problem.
 	if qp, ok := tangencyQP(mu, cov); ok {
 		starts = append(starts, projectCappedSimplex(qp, maxW))
 	}
@@ -895,7 +910,7 @@ func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 	return best
 }
 
-// tangencyQP returns the exact long-only tangency portfolio (risk-free 0),
+// tangencyQP approximates the long-only tangency portfolio (risk-free 0),
 // reporting ok=false when no asset has a positive mean, which leaves the
 // transformation below without a feasible point.
 //
@@ -905,9 +920,9 @@ func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 //
 //	minimize yᵀΣy   subject to   muᵀy = 1, y ≥ 0
 //
-// which is convex (Σ is positive semi-definite over a polyhedron), so
-// projected gradient descent on it reaches the GLOBAL minimum; w = y/Σyᵢ maps
-// the solution back. See Cornuejols & Tutuncu, "Optimization Methods in
+// which is convex (Σ is positive semi-definite over a polyhedron).
+// w = y/Σyᵢ maps the numerical solution back. The finite iteration budget and
+// stopping tolerances do not certify convergence. See Cornuejols & Tutuncu, "Optimization Methods in
 // Finance", chapter 8.
 func tangencyQP(mu []float64, cov [][]float64) ([]float64, bool) {
 	best := math.Inf(-1)

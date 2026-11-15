@@ -149,6 +149,21 @@ period, with no fees or flows. A zero-variance Sharpe is undefined: NaN in
 Go, JSON null in both solver and evaluation results, including nested
 `FitEvaluation` and `FrontierPoint` values.
 
+For `MaxSharpe`, undefined ratios are excluded from the search: a flat cash
+line does not outrank negative but defined ratios. If the search finds no
+defined ratio, `Solve` returns an error. Zero volatility remains a legitimate
+answer for `MinVolatility` and a legitimate measurement for `Evaluate`.
+
+Minimum-variance descent normalizes its objective by the largest asset
+variance, so small return magnitudes do not trigger premature convergence.
+This does not regularize singular covariance matrices or change reported
+volatility. Duplicate assets can have nonunique individual weights.
+
+Analytical and exhaustive-grid checks are recorded in the
+[solver validation](../../specs/weight-search-design.md#numerical-oracles).
+The constrained search remains heuristic, including when `Feasible` is true:
+that flag checks limits, not closeness to the best possible objective.
+
 `Solve` and `SolveCWARP` reject a nonzero `Spec.Train`. After applying a
 parsed `train:` window, clear that field on the solver copy. This makes a
 forgotten date selection an error. The command's report handles it for you.
