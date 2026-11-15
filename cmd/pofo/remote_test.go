@@ -79,3 +79,16 @@ func TestAPIAndWebUseOneForeignAllowance(t *testing.T) {
 		t.Fatalf("independent quota: %d %s", w.Code, w.Body)
 	}
 }
+
+func TestRemoteDoesNotLogRequestedAssetIdentifiers(t *testing.T) {
+	for _, enabled := range []bool{false, true} {
+		client := marketdata.NewClient("")
+		logged := false
+		client.Logf = func(string, ...any) { logged = true }
+		newServer(&options{serveAPI: enabled}, client)
+		client.Logf("downloading %s", "PRIVATE-REQUEST-ID")
+		if logged == enabled {
+			t.Fatalf("enabled=%v source log retained=%v", enabled, logged)
+		}
+	}
+}
