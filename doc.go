@@ -213,6 +213,8 @@
 //   - pkg/decumul: decumulation/FIRE engine over a scenario.Source: ruin
 //     probability, FIRE outcome metrics, capital/buffer sizing and sweeps,
 //     with a thin embedded live UI under pkg/decumul/web.
+//   - pkg/fire: shared numerical FIRE plan building, calibration and six model sources.
+//   - pkg/remote: compact numerical operations, HTTP API and stateless MCP adapters.
 //   - pkg/replay: the same withdrawal rules run over the years as they
 //     actually happened, on a bundled real US 60/40, so a rule can be
 //     described by the life it delivered rather than by a failure

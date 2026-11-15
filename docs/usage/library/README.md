@@ -28,6 +28,8 @@ bundled data or the network.
 | rebuild a missing past | `simgen.Find`, `simgen.Validate` | [Backcasts](backcasts.md) |
 | draw charts or the report | `chart.Line`, `compare.Compute`, `report.Render` | [Rendering](rendering.md) |
 | plan a withdrawal (FIRE) | `decumul.Plan`, `scenario` sources, `replay.Run` | [FIRE](../fire.md#from-go) |
+| serve numerical HTTP/MCP operations | `remote.Service`, `remote.Handler` | [API and MCP](remote.md) |
+| prepare shared FIRE models | `fire.BuildPlan`, `fire.PrepareModel` | [FIRE builder](fire.md) |
 | export | `marketdata.WriteCSV` | [Loading data](loading.md#files-in-and-out) |
 
 ## A first program

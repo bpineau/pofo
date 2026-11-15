@@ -128,3 +128,11 @@ Two optional features exist for a public deploy, both off by default:
 
 A running server never contacts a search engine on its own, and without a
 beacon token the pages carry no analytics of any kind.
+
+## Numerical HTTP and MCP clients
+
+`-serve-api` enables `/api/v1/` and its OpenAPI document; `-serve-mcp` enables
+the stateless `/mcp` endpoint. Both are off by default and share the site's
+data client, foreign-ID allowance and computation admission. See the
+[numerical API guide](library/remote.md) for contracts, curl examples, browser
+origin configuration and deployment assumptions.

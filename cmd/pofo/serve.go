@@ -136,11 +136,12 @@ func specsLabel(specs []*portfolio.Spec) string {
 // server carries the constellation's shared state. render is a field so
 // tests can observe requests without running the real pipeline.
 type server struct {
-	opt      *options
-	client   *marketdata.Client
-	render   func(ctx context.Context, opt *options, specs []*portfolio.Spec) ([]byte, error)
-	sem      chan struct{}
-	examples map[string]portfolios.Info
+	opt       *options
+	client    *marketdata.Client
+	render    func(ctx context.Context, opt *options, specs []*portfolio.Spec) ([]byte, error)
+	sem       chan struct{}
+	workQueue chan struct{}
+	examples  map[string]portfolios.Info
 	// presets are the bundled builds the hub's composer offers, shared with
 	// every /view mount through viewPresets (computed once: the examples are
 	// embedded and immutable).
@@ -173,10 +174,14 @@ type server struct {
 }
 
 func newServer(opt *options, client *marketdata.Client) *server {
+	if client != nil && client.Controls == nil {
+		client.Controls = marketdata.NewControls(60, time.Minute, 10)
+	}
 	s := &server{
 		opt:        opt,
 		client:     client,
 		sem:        make(chan struct{}, viewParallel),
+		workQueue:  make(chan struct{}, 16),
 		examples:   knownExamples(),
 		presets:    viewPresets(),
 		fireByEx:   map[string]http.Handler{},
@@ -195,7 +200,8 @@ func newServer(opt *options, client *marketdata.Client) *server {
 // handler assembles the constellation mux.
 func (s *server) handler(b fireBuild) http.Handler {
 	mux := http.NewServeMux()
-	s.fireDefault = web.Handler(b.panel, b.labels, append(fireOptions(s.sourceLabel), b.options()...)...)
+	s.mountRemote(mux)
+	s.fireDefault = s.gatedFire(web.Handler(b.panel, b.labels, append(fireOptions(s.sourceLabel), b.options()...)...))
 	mux.HandleFunc("/", s.landing)
 	mux.HandleFunc("/visualizer", s.hub)
 	// The visualizer used to live at "/"; a trailing-slash form is close
@@ -392,14 +398,20 @@ func logAccess(w io.Writer, h http.Handler) http.Handler {
 		start := time.Now()
 		rec := &statusRecorder{ResponseWriter: rw, status: http.StatusOK}
 		h.ServeHTTP(rec, r)
+		uri, referrer, agent := r.RequestURI, r.Referer(), r.UserAgent()
+		if strings.HasPrefix(r.URL.Path, "/api/v1/") || r.URL.Path == "/mcp" {
+			uri = r.URL.Path
+			referrer = ""
+			agent = ""
+		}
 		fmt.Fprintf(w, "%s - - [%s] %q %d %d %q %q %s\n",
 			clientIP(r),
 			start.Format("02/Jan/2006:15:04:05 -0700"),
-			r.Method+" "+r.RequestURI+" "+r.Proto,
+			r.Method+" "+uri+" "+r.Proto,
 			rec.status,
 			rec.bytes,
-			r.Referer(),
-			r.UserAgent(),
+			referrer,
+			agent,
 			time.Since(start).Round(time.Millisecond),
 		)
 	})
@@ -624,12 +636,11 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	if ok {
 		return h
 	}
-	select {
-	case s.sem <- struct{}{}:
-		defer func() { <-s.sem }()
-	case <-ctx.Done():
+	release, err := s.acquireWork(ctx)
+	if err != nil {
 		return nil
 	}
+	defer release()
 	// Re-check under the lock now that we hold a build slot: a double-clicked
 	// cold link would otherwise build twice and occupy both shared slots.
 	s.fireMu.Lock()
@@ -641,7 +652,7 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	b := s.buildPanel(buildCtx, spec)
-	h = web.Handler(b.panel, b.labels, append(fireOptions("custom portfolio"), b.options()...)...)
+	h = s.gatedFire(web.Handler(b.panel, b.labels, append(fireOptions("custom portfolio"), b.options()...)...))
 	if panelIncomplete(b.panel, b.labels, buildCtx, len(spec.Holdings)) {
 		// The build is degraded or partial: serve this request but do NOT
 		// cache it, so a transient failure is not frozen into a permanently
@@ -691,12 +702,11 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	// The same build budget as a composed spec (fireForSpec): a wave of
 	// cold examples must not stack unbounded quote fetches, and a burst on
 	// one cold example builds it once.
-	select {
-	case s.sem <- struct{}{}:
-		defer func() { <-s.sem }()
-	case <-ctx.Done():
+	release, err := s.acquireWork(ctx)
+	if err != nil {
 		return nil
 	}
+	defer release()
 	s.fireMu.Lock()
 	h, ok = s.fireByEx[name]
 	s.fireMu.Unlock()
@@ -706,7 +716,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	b := s.buildPanel(buildCtx, spec)
-	h = web.Handler(b.panel, b.labels, append(fireOptions(name), b.options()...)...)
+	h = s.gatedFire(web.Handler(b.panel, b.labels, append(fireOptions(name), b.options()...)...))
 	if panelIncomplete(b.panel, b.labels, buildCtx, len(spec.Holdings)) {
 		// A degraded or partial build must not be cached, or a transient
 		// failure freezes this example into a permanently degraded or
@@ -749,14 +759,14 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 	if p, changed := readPrefs(r).merge(r.URL.Query()); changed {
 		http.SetCookie(w, p.cookie())
 	}
-	select {
-	case s.sem <- struct{}{}:
-		defer func() { <-s.sem }()
-	case <-r.Context().Done():
-		return
-	}
 	ctx, cancel := context.WithTimeout(r.Context(), viewTimeout)
 	defer cancel()
+	release, err := s.acquireWork(ctx)
+	if err != nil {
+		s.errorPageBack(w, http.StatusServiceUnavailable, "computation queue unavailable", back)
+		return
+	}
+	defer release()
 	page, err := s.render(ctx, vr.serverOptions(s.opt), vr.specs)
 	if err != nil {
 		if ctx.Err() != nil {
