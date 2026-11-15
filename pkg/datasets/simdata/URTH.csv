@@ -4,7 +4,8 @@
 # method: real MSCI World net TR (MSCIWORLD-USD refdata, monthly 1969→) with the daily shape of the MSCI World price index (^990100-USD-STRD, 1972→), less 0.24%/yr TER; without the refdata falls back to 0.60×VFINX+0.40×VTMGX (1999)
 # validation: corr=0.891 (weekly 0.967) beta=0.75 TE=7.8%/yr CAGR sim 11.70% vs real 12.14% (overlap 3692 d from 2012-01-12 to 2026-09-30) vs URTH
 # generated: 2026-11-15
-# simulated-before: 1972-01-03
+# fully-simulated: true
+# warnings: ["entire history is reconstructed, not real quotes"]
 date,close
 1969-12-31,10000.000000
 1970-01-31,9443.573872
