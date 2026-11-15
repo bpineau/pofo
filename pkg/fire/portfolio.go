@@ -16,6 +16,9 @@ import (
 type AssetSeries struct {
 	Weight float64            // fraction of the portfolio
 	Points []marketdata.Point // nominal closes in the report currency
+	// Junctions are definition changes in either the prices or their deflator.
+	// A monthly interval crossing one is excluded, never counted as a return.
+	Junctions []time.Time
 }
 
 // Coverage is what BuildMonthlyPanel kept of the history it was given, and
@@ -36,6 +39,8 @@ type Coverage struct {
 	// the scenario models chain consecutive months, so two runs joined
 	// across a hole would read as adjacent. Zero when the history is whole.
 	GapMonths int
+	// JunctionMonths counts distinct months excluded for definition changes.
+	JunctionMonths int
 
 	// Partial is the first day of an unfinished trailing month left out (a
 	// holding's last quote before that month's last weekday), zero when
@@ -48,6 +53,9 @@ type Coverage struct {
 // panel is the holdings' whole shared history.
 func (c Coverage) Notes() []string {
 	var out []string
+	if c.JunctionMonths > 0 {
+		out = append(out, fmt.Sprintf("%d month(s) crossing a price or inflation definition change are left out; those level jumps are not investment returns.", c.JunctionMonths))
+	}
 	if !c.DeflatorStart.IsZero() {
 		out = append(out, fmt.Sprintf("History before %s is left out: the inflation series starts there, and a real return needs the price level at both ends.",
 			c.DeflatorStart.Format("2006-01")))
@@ -70,8 +78,9 @@ func (c Coverage) Notes() []string {
 // the bootstrap captures intra-year regimes and the cohorts model has many
 // more windows.
 //
-// Four rules keep a month from being wrong, each reported in the Coverage:
+// Five rules keep a month from being wrong, each reported in the Coverage:
 // only genuine one-month returns count (a return spanning a hole is dropped);
+// intervals crossing AssetSeries.Junctions are excluded;
 // a holding's unfinished last month is dropped; a return starting before the
 // deflator's first date is dropped (it would be nominal, read as real); and
 // the panel is ONE contiguous run of months, the longest the holdings share,
@@ -90,6 +99,7 @@ func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.
 	perAsset := make([]map[int]float64, len(assets))
 	weights := make([]float64, len(assets))
 	counts := make(map[int]int)
+	junctionMonths := make(map[int]bool)
 	floor := hicp[0].Date
 	for i, a := range assets {
 		pts := lastPerMonth(a.Points)
@@ -102,10 +112,17 @@ func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.
 		}
 		rets := scenario.Deflate(pts, hicp)
 		m := make(map[int]float64, len(rets))
+	months:
 		for j, r := range rets {
 			key := monthKey(pts[j+1].Date)
 			if key != monthKey(pts[j].Date)+1 {
 				continue // not calendar-consecutive: a spanning return, drop it
+			}
+			for _, junction := range a.Junctions {
+				if junction.After(pts[j].Date) && !junction.After(pts[j+1].Date) {
+					junctionMonths[key] = true
+					continue months
+				}
 			}
 			if pts[j].Date.Before(floor) {
 				cov.DeflatorStart = floor // no price level at the start
@@ -117,6 +134,7 @@ func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.
 		perAsset[i] = m
 		weights[i] = a.Weight
 	}
+	cov.JunctionMonths = len(junctionMonths)
 	// Months covered by every asset, in ascending order.
 	var common []int
 	for key, c := range counts {

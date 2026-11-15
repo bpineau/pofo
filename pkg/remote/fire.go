@@ -185,7 +185,7 @@ func (s *Service) prepareMarket(ctx context.Context, in MarketInput, years int, 
 	var prov []Provenance
 	for _, h := range in.Holdings {
 		v := src[h.ID]
-		assets = append(assets, fire.AssetSeries{Weight: *h.WeightPct / 100, Points: v.Points})
+		assets = append(assets, fire.AssetSeries{Weight: *h.WeightPct / 100, Points: v.Points, Junctions: slices.Clone(v.Junctions)})
 		prov = append(prov, provenance(v))
 		warnings(r, v.Warnings, h.ID)
 	}
@@ -194,7 +194,9 @@ func (s *Service) prepareMarket(ctx context.Context, in MarketInput, years int, 
 		return m, nil, err
 	}
 	prov = append(prov, provenance(inflation))
+	warnings(r, inflation.DataWarnings(), "^HICP-FR")
 	for i := range assets {
+		assets[i].Junctions = append(assets[i].Junctions, inflation.Junctions...)
 		points := assets[i].Points
 		if len(points) > 0 && points[len(points)-1].Date.After(inflation.Last().Date) {
 			kept := points[:0:0]

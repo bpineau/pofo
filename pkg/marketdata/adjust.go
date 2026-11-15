@@ -32,6 +32,7 @@ func (s *Series) Deflate(index *Series, opt AdjustmentOptions) (*Series, error) 
 		return nil, err
 	}
 	out := s.clone()
+	out.inheritProvenance(index)
 	out.Dividends = nil
 	out.Warnings = append(out.Warnings, warnings...)
 	for i := range out.Points {
@@ -58,6 +59,7 @@ func (s *Series) Excess(cash *Series, opt AdjustmentOptions) (*Series, error) {
 		return nil, err
 	}
 	out := s.clone()
+	out.inheritProvenance(cash)
 	out.Dividends = nil
 	out.Warnings = append(out.Warnings, warnings...)
 	out.Points[0].Close = 1
@@ -97,7 +99,7 @@ func adjustmentLevels(s, index *Series, opt AdjustmentOptions) ([]float64, []str
 			}
 		}
 	}
-	warnings := slices.Clone(index.Warnings)
+	warnings := index.DataWarnings()
 	before := s.First().Date.Before(index.First().Date)
 	after := !knowsLevelAt(index.Last().Date, s.Last().Date)
 	if before || after {

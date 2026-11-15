@@ -106,7 +106,12 @@ func riskBudgetRows(r *column, meta map[string]suggest.Meta) []report.RiskRow {
 
 // pctShare formats a fraction as a percent share, at the one decimal the
 // comparison deserves and no more.
-func pctShare(v float64) string { return fmt.Sprintf("%.1f %%", 100*v) }
+func pctShare(v float64) string {
+	if math.IsNaN(v) || math.IsInf(v, 0) {
+		return "-"
+	}
+	return fmt.Sprintf("%.1f %%", 100*v)
+}
 
 // classSplit is one asset's look-through asset-class decomposition, as
 // fractions of that asset summing to 1: the per-holding form of

@@ -18,6 +18,11 @@ exactly as long as the plan contains just one full-horizon start window.
 Longer records add overlapping windows, not independent retirements; drawing
 more paths only reduces conditional simulation noise. The hover note reports
 both the available starts and the maximum number of non-overlapping windows.
+Portfolio preparation excludes months crossing a declared price or inflation
+definition change, then retains the longest consecutive run. Coverage notes
+report these exclusions. Library callers of `fire.BuildMonthlyPanel` supply
+both kinds of change in each holding's `AssetSeries.Junctions`; the web and
+remote adapters copy them from the loaded series.
 
 ```sh
 ./pofo -fire                                            # the simulator alone

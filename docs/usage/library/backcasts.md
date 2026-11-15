@@ -41,6 +41,10 @@ the first daily texture date is not the first observed quote of a fund.
 Only grafting the target's own quotes establishes that frontier. For example,
 IWDA's MSCI World texture starts in 1972, while its observed fund quotes start
 in 2009; the stored reconstruction alone has no observed fund segment.
+Blends retain reconstruction from every nonzero leg, including short legs.
+If any held leg is wholly reconstructed, the blend has no wholly observed
+tail. Deflation and arithmetic excess curves also inherit the provenance of
+the inflation or cash index they use. These qualifications survive CSV export.
 `ExtendBack` retains the donor's definition junctions through the splice date
 and qualifies copied warnings with the donor name. Consequently `NewPanel`
 still excludes a definition change instead of treating it as a market return.

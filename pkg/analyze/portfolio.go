@@ -257,6 +257,12 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 	_, monthly := sim.MonthlyContributions()
 	if att, err := metrics.Attribute(monthly); err == nil {
 		ps.Attribution = att
+		for _, share := range att.Return {
+			if math.IsNaN(share) {
+				warnings = append(warnings, "undefined return attribution: attributable contributions sum to zero")
+				break
+			}
+		}
 	} else {
 		warnings = append(warnings, fmt.Sprintf("no risk and return attribution: %v", err))
 	}
