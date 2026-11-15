@@ -1,6 +1,7 @@
 package scenario
 
 import (
+	"context"
 	"math"
 	"math/rand/v2"
 )
@@ -28,7 +29,9 @@ type Glidepath struct {
 func (g Glidepath) Len() int { return g.Periods }
 
 // Draw returns one blended real-return path.
-func (g Glidepath) Draw(rng *rand.Rand) Sequence {
+func (g Glidepath) Draw(rng *rand.Rand) Sequence { return g.drawContext(context.Background(), rng) }
+
+func (g Glidepath) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
 	eScale, bScale := g.EquitySigma, g.BondSigma
 	if g.Df > 2 {
 		f := math.Sqrt(g.Df / (g.Df - 2))
@@ -38,6 +41,9 @@ func (g Glidepath) Draw(rng *rand.Rand) Sequence {
 	comp := math.Sqrt(1 - rho*rho)
 	seq := make(Sequence, g.Periods)
 	for t := range seq {
+		if ctx.Err() != nil {
+			return nil
+		}
 		z1 := rng.NormFloat64()
 		z2 := rho*z1 + comp*rng.NormFloat64()
 		s := 1.0

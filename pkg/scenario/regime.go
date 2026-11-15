@@ -1,6 +1,7 @@
 package scenario
 
 import (
+	"context"
 	"math"
 	"math/rand/v2"
 )
@@ -110,7 +111,9 @@ type MarkovRegime struct {
 func (m MarkovRegime) Len() int { return m.Periods }
 
 // Draw returns one regime-switching path.
-func (m MarkovRegime) Draw(rng *rand.Rand) Sequence {
+func (m MarkovRegime) Draw(rng *rand.Rand) Sequence { return m.drawContext(context.Background(), rng) }
+
+func (m MarkovRegime) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
 	// Stationary probability of the bear state: the two off-diagonal flows
 	// balance, so pi_bear = P(calm->bear) / (P(calm->bear) + P(bear->calm)).
 	toBear, toCalm := 1-m.StayCalm, 1-m.StayBear
@@ -122,6 +125,9 @@ func (m MarkovRegime) Draw(rng *rand.Rand) Sequence {
 
 	seq := make(Sequence, m.Periods)
 	for i := range seq {
+		if ctx.Err() != nil {
+			return nil
+		}
 		if bear {
 			bear = rng.Float64() <= m.StayBear
 		} else {

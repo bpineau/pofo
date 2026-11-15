@@ -1,6 +1,7 @@
 package scenario
 
 import (
+	"context"
 	"math"
 	"math/rand/v2"
 )
@@ -31,12 +32,19 @@ func (p ParametricSource) Len() int { return p.Periods }
 
 // Draw returns one i.i.d. path.
 func (p ParametricSource) Draw(rng *rand.Rand) Sequence {
+	return p.drawContext(context.Background(), rng)
+}
+
+func (p ParametricSource) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
 	scale := p.Sigma
 	if p.Df > 2 {
 		scale = p.Sigma / math.Sqrt(p.Df/(p.Df-2))
 	}
 	seq := make(Sequence, p.Periods)
 	for i := range seq {
+		if ctx.Err() != nil {
+			return nil
+		}
 		r := p.Mu + scale*studentT(rng, p.Df)
 		if 1+r < 0 {
 			r = -1

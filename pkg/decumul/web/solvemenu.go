@@ -11,9 +11,10 @@ import (
 // human-readable instruction, and whether the target is reachable through it
 // alone.
 type SolverOption struct {
-	Lever string `json:"lever"` // what is moved (spend, capital, buffer, flex...)
-	Text  string `json:"text"`  // the instruction, for a human
-	OK    bool   `json:"ok"`    // the target is reachable through this lever alone
+	Lever  string              `json:"lever"`            // what is moved (spend, capital, buffer, flex...)
+	Text   string              `json:"text"`             // the instruction, for a human
+	OK     bool                `json:"ok"`               // the target is reachable through this lever alone
+	Status decumul.SolveStatus `json:"status,omitempty"` // bounded-search status, absent for the buffer grid
 }
 
 // SolverMenu answers "what do I need to keep ruin at my target?" per controllable
@@ -65,17 +66,20 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 	// is already met (headroom), below it when the plan is too aggressive. When
 	// the target is missed, the two other levers are solved alongside it.
 	var safe float64
+	var safeResult decumul.SolveResult
+	var safeNote string
 	var flex, buffer SolverOption
 	flexBase := base
 	flexBase.Flex.Threshold = 0.20
 	levers := []func(){
 		func() {
-			safe = fixedRule(base).SolveOn(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), draws, simWorkers)
+			safeResult, safeNote = solveOn(fixedRule(base), target, decumul.WithdrawalAxis(0, pr.Capital*0.15), draws)
+			safe = safeResult.Solution
 		},
 		// Temporary downturn cut (flex): keep the spend, accept a reversible cut.
 		func() {
-			cut := flexBase.SolveOn(target, decumul.FlexCutAxis(0, 0.60), draws, simWorkers)
-			flex = flexOption(flexBase, cut, target, draws)
+			cut, note := solveOn(flexBase, target, decumul.FlexCutAxis(0, 0.60), draws)
+			flex = flexOption(cut, note)
 		},
 		// Buffer: keep the spend, hold N years of cash (scan; ruin is non-monotonic).
 		func() { buffer = bufferOption(base, target, draws) },
@@ -84,6 +88,13 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 		levers = levers[:1]
 	}
 	concurrently(len(levers), func(i int) { levers[i]() })
+	if safeNote != "" {
+		menu.Options = append(menu.Options, SolverOption{Lever: "Fixed-rule spending", Text: safeNote, OK: safeResult.Status == decumul.SolveBoundarySatisfies, Status: safeResult.Status})
+		if !menu.Met {
+			menu.Options = append(menu.Options, flex, buffer)
+		}
+		return menu
+	}
 
 	// Met: the reach-the-target levers would all read "no change" (a 0% cut, a
 	// 0-year buffer), so report the spending headroom instead of a nonsense menu.
@@ -109,15 +120,12 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 
 // flexOption describes the smallest downturn cut reaching the target, checking
 // reachability at the solved depth.
-func flexOption(p decumul.Plan, cut, target float64, draws decumul.Draws) SolverOption {
-	q := p
-	q.Flex.Cut = cut
-	if q.RuinProbOn(draws, simWorkers) > target+0.01 {
-		return SolverOption{Lever: "Cut in downturns", OK: false,
-			Text: "Even a 60% downturn spending cut does not reach the target alone"}
+func flexOption(cut decumul.SolveResult, note string) SolverOption {
+	if cut.Status != decumul.SolveSolved {
+		return SolverOption{Lever: "Cut in downturns", OK: cut.Status == decumul.SolveBoundarySatisfies, Status: cut.Status, Text: note}
 	}
-	return SolverOption{Lever: "Cut in downturns", OK: true,
-		Text: fmt.Sprintf("Keep the spend but accept up to a %.0f%% cut in downturns (drawdowns over 20%%)", cut*100)}
+	return SolverOption{Lever: "Cut in downturns", OK: true, Status: cut.Status,
+		Text: fmt.Sprintf("Keep the spend but accept up to a %.0f%% cut in downturns (drawdowns over 20%%)", cut.Solution*100)}
 }
 
 // bufferOption finds the smallest cash buffer (in years) that reaches the target

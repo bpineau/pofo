@@ -1,6 +1,8 @@
 package decumul
 
 import (
+	"context"
+	"math"
 	"math/rand/v2"
 	"runtime"
 	"sync"
@@ -46,11 +48,31 @@ func (p Plan) Simulate(nPaths, workers int, seed uint64) Ensemble {
 	return p.SimulateOn(p.Draw(nPaths, workers, seed), workers)
 }
 
+// SimulateContext is Simulate with cancellation during draws and path steps.
+// Cancellation returns an empty ensemble and ctx.Err(), never partial results.
+func (p Plan) SimulateContext(ctx context.Context, nPaths, workers int, seed uint64) (Ensemble, error) {
+	d, err := p.DrawContext(ctx, nPaths, workers, seed)
+	if err != nil {
+		return Ensemble{}, err
+	}
+	return p.SimulateOnContext(ctx, d, workers)
+}
+
 // Draw samples nPaths return sequences from the plan's Source, and nPaths
 // household lifespans from its Lifetime when it has one, each path from its
 // own RNG stream of the seed, so the draws are identical whatever the worker
 // count and the same as Simulate's.
 func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
+	d, _ := p.DrawContext(context.Background(), nPaths, workers, seed)
+	return d
+}
+
+// DrawContext is Draw with cancellation between paths. Context-aware sources
+// also check cancellation inside a draw. It returns no partial draws on error.
+func (p Plan) DrawContext(ctx context.Context, nPaths, workers int, seed uint64) (Draws, error) {
+	if err := ctx.Err(); err != nil {
+		return Draws{}, err
+	}
 	d := Draws{Returns: make([]scenario.Sequence, nPaths)}
 	if p.Lifetime != nil {
 		d.Lives = make([]Lives, nPaths)
@@ -63,19 +85,32 @@ func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
 	// panel into one weighted history) is hoisted out of the path loop; the
 	// draws are byte-identical, the rng being consumed in the same order.
 	src := scenario.Prepare(p.Source)
-	forEachPath(nPaths, workers, func(_ int, lo func(func(int))) {
+	var drawErr error
+	var drawOnce sync.Once
+	forEachPathContext(ctx, nPaths, workers, func(_ int, lo func(func(int))) {
 		retPCG, lifePCG := new(rand.PCG), new(rand.PCG)
 		rng, lives := rand.New(retPCG), rand.New(lifePCG)
 		lo(func(i int) {
 			seedPath(retPCG, seed, i, 0)
-			d.Returns[i] = src.Draw(rng)
+			seq, err := scenario.DrawContext(ctx, src, rng)
+			if err != nil {
+				drawOnce.Do(func() { drawErr = err })
+				return
+			}
+			d.Returns[i] = seq
 			if d.Lives != nil {
 				seedPath(lifePCG, seed, i, lifeStream)
 				d.Lives[i] = sampler.draw(lives)
 			}
 		})
 	})
-	return d
+	if err := ctx.Err(); err != nil {
+		return Draws{}, err
+	}
+	if drawErr != nil {
+		return Draws{}, drawErr
+	}
+	return d, nil
 }
 
 // drawLives samples nPaths lifespans alone, for a Draws that arrived without
@@ -126,6 +161,17 @@ func splitmix64(x uint64) uint64 {
 // being run as if the household were immortal: reproducible, and never a
 // silent fixed horizon.
 func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
+	e, _ := p.SimulateOnContext(context.Background(), d, workers)
+	return e
+}
+
+// SimulateOnContext is SimulateOn with cancellation between paths and at
+// annual or monthly steps. Cancellation discards the partial ensemble.
+func (p Plan) SimulateOnContext(ctx context.Context, d Draws, workers int) (Ensemble, error) {
+	if err := ctx.Err(); err != nil {
+		return Ensemble{}, err
+	}
+	p.runContext = ctx
 	p, lives := p.forRun(d, workers)
 	paths := make([]PathResult, len(d.Returns))
 	// Every path's two series (Wealth and Spend) come out of ONE arena rather
@@ -134,7 +180,7 @@ func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
 	// went. The windows are disjoint, so the workers stay independent.
 	stride := seriesLen(p.Years)
 	arena := make([]float64, len(d.Returns)*stride)
-	forEachPath(len(d.Returns), workers, func(_ int, lo func(func(int))) {
+	forEachPathContext(ctx, len(d.Returns), workers, func(_ int, lo func(func(int))) {
 		lo(func(i int) {
 			var lv Lives
 			if lives != nil {
@@ -143,7 +189,10 @@ func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
 			paths[i] = p.runPath(d.Returns[i], lv, arena[i*stride:(i+1)*stride:(i+1)*stride])
 		})
 	})
-	return Ensemble{Paths: paths, Years: p.Years}
+	if err := ctx.Err(); err != nil {
+		return Ensemble{}, err
+	}
+	return Ensemble{Paths: paths, Years: p.Years}, nil
 }
 
 // forRun is what a driver runs d under: the plan with the per-year tables its
@@ -171,13 +220,25 @@ func (p Plan) RuinProb(nPaths, workers int, seed uint64) float64 {
 // not the kernel, was the cost. Here each worker runs its paths through one
 // reused scratch window and keeps only a count.
 func (p Plan) RuinProbOn(d Draws, workers int) float64 {
+	r, _ := p.RuinProbOnContext(context.Background(), d, workers)
+	return r
+}
+
+// RuinProbOnContext is RuinProbOn with cancellation between paths and during
+// path steps. On cancellation the returned estimate is NaN with ctx.Err().
+// Like RuinProbOn, an empty draw set retains its historical zero estimate.
+func (p Plan) RuinProbOnContext(ctx context.Context, d Draws, workers int) (float64, error) {
+	if err := ctx.Err(); err != nil {
+		return math.NaN(), err
+	}
+	p.runContext = ctx
 	n := len(d.Returns)
 	if n == 0 {
-		return 0
+		return 0, nil
 	}
 	p, lives := p.forRun(d, workers)
 	counts := make([]int, max(workers, 1))
-	forEachPath(n, workers, func(w int, lo func(func(int))) {
+	forEachPathContext(ctx, n, workers, func(w int, lo func(func(int))) {
 		// The monthly kernel accumulates into Spend, so the window is cleared
 		// before every path, as a fresh arena window would be.
 		buf := make([]float64, seriesLen(p.Years))
@@ -198,7 +259,10 @@ func (p Plan) RuinProbOn(d Draws, workers int) float64 {
 	for _, c := range counts {
 		ruined += c
 	}
-	return float64(ruined) / float64(n)
+	if err := ctx.Err(); err != nil {
+		return math.NaN(), err
+	}
+	return float64(ruined) / float64(n), nil
 }
 
 // ruinAbove reports RuinProbOn(d, workers) > target, the one bit a bisection
@@ -271,6 +335,8 @@ func aggregateWorkers(n int) int {
 // is reused at every capital so Monte-Carlo noise does not break
 // monotonicity. Buffer.Years scales with NeedAnnual, not with capital, so
 // only Capital varies between evaluations.
+// It retains historical midpoint semantics without checking bounds or
+// feasibility. Use SolveWithContext with CapitalAxis for a verified result.
 func (p Plan) CapitalForRuin(target, lo, hi float64, nPaths, workers int, seed uint64) float64 {
 	shared := p.Draw(nPaths, workers, seed) // Capital affects neither the returns nor the lifespans
 	for i := 0; i < 18; i++ {
@@ -316,6 +382,10 @@ func (e Ensemble) RuinProb() float64 {
 // others; claimed chunks keep every core busy to the end, and consecutive
 // indices keep two goroutines off the same cache lines of the results.
 func forEachPath(n, workers int, body func(w int, loop func(func(int)))) {
+	forEachPathContext(context.Background(), n, workers, body)
+}
+
+func forEachPathContext(ctx context.Context, n, workers int, body func(w int, loop func(func(int)))) {
 	workers = max(workers, 1)
 	// A chunk small enough to balance the tail, large enough that the
 	// counter is touched a few hundred times a run rather than once a path.
@@ -334,6 +404,9 @@ func forEachPath(n, workers int, body func(w int, loop func(func(int)))) {
 						return
 					}
 					for i := lo; i < min(hi, int64(n)); i++ {
+						if ctx.Err() != nil {
+							return
+						}
 						f(int(i))
 					}
 				}

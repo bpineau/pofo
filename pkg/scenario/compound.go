@@ -1,6 +1,9 @@
 package scenario
 
-import "math/rand/v2"
+import (
+	"context"
+	"math/rand/v2"
+)
 
 // Annualize compounds consecutive groups of `group` periodic returns into one
 // coarser return each: out[k] = Π(1+s[k*group+j]) − 1 for j in [0,group). A
@@ -51,4 +54,26 @@ func (c Compounded) prepare() Source {
 // Draw compounds one inner path into the coarser frequency.
 func (c Compounded) Draw(rng *rand.Rand) Sequence {
 	return Annualize(c.Inner.Draw(rng), c.Group)
+}
+
+func (c Compounded) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
+	seq, err := DrawContext(ctx, c.Inner, rng)
+	if err != nil {
+		return nil
+	}
+	if c.Group < 1 {
+		return seq
+	}
+	out := make(Sequence, len(seq)/c.Group)
+	for k := range out {
+		prod := 1.0
+		for j := range c.Group {
+			if ctx.Err() != nil {
+				return nil
+			}
+			prod *= 1 + seq[k*c.Group+j]
+		}
+		out[k] = prod - 1
+	}
+	return out
 }

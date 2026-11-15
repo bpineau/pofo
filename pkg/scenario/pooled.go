@@ -1,6 +1,9 @@
 package scenario
 
-import "math/rand/v2"
+import (
+	"context"
+	"math/rand/v2"
+)
 
 // PooledBootstrap resamples contiguous blocks from a POOL of separate history
 // series, never crossing a series boundary within a block. Each block draws a
@@ -38,6 +41,10 @@ func (p PooledBootstrap) Len() int { return p.Periods }
 // Draw returns one pooled resampled path. Empty series are skipped; if the pool
 // holds no usable series it returns a zero path.
 func (p PooledBootstrap) Draw(rng *rand.Rand) Sequence {
+	return p.drawContext(context.Background(), rng)
+}
+
+func (p PooledBootstrap) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
 	out := make(Sequence, p.Periods)
 	cont := 0.0 // MeanBlock 1 (or less): every period a fresh draw
 	if p.MeanBlock > 1 {
@@ -59,6 +66,9 @@ func (p PooledBootstrap) Draw(rng *rand.Rand) Sequence {
 		return out
 	}
 	for t := 0; t < p.Periods; t++ {
+		if ctx.Err() != nil {
+			return nil
+		}
 		if cur == nil || idx >= len(cur) || (t > 0 && rng.Float64() >= cont) {
 			pick()
 		}

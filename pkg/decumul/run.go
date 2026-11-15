@@ -232,6 +232,9 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 	// the ledger-free kernel never zeroes it.
 	var row LedgerYear
 	for k := 0; k < end; k++ {
+		if p.canceled() {
+			return PathResult{}
+		}
 		if yearlyTax {
 			pks.newYear()
 		}

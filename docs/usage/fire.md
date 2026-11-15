@@ -66,6 +66,20 @@ The same page runs inside the web app at `/firesimulator/`
 
 ### Reading it honestly
 
+The strip, planning curves and solver menu distinguish a verified crossing
+from a search boundary. A spending result at the 15%-of-capital upper bound
+is labeled as a bound; a capital target outside the 200000 to 6000000 search
+interval is unavailable. These are search limits, not universal economic
+limits. Web solves retain eighteen halvings and keep the old final midpoint
+only when it satisfies the target; otherwise they select the feasible side.
+The risk-guardrail table first searches up to 60% of capital, then extends a
+saturated bracket to 101%: on its pension-free plan, withdrawing more than
+initial wealth fails before any return. This prevents the final one-year
+safe rate from being clipped to 60%.
+
+Undefined metrics appear as `n/a`, including a worst-decade return without a
+complete decade and an effective tax rate without gross withdrawals.
+
 Read ruin probabilities as orders of magnitude, and compare models rather
 than trusting one. The defaults were chosen to be cautious on purpose:
 
@@ -144,6 +158,46 @@ indexed on prices, `-0.005` one that loses half a point a year, which on a
 1 M plan spending 52 000 a year with a 24 000 pension raises ruin from 21 %
 to 27 % and lowers the spending at 5 % ruin from 43 500 to 41 500 a year
 (`decumul.ExampleCashflow_drift`).
+
+For request-scoped work use `DrawContext`, `SimulateContext`,
+`SimulateOnContext` and `RuinProbOnContext`: cancellation stops draws and
+path steps and returns no partial result. `scenario.DrawContext` checks
+built-in sources between periods; custom sources can provide their own
+context-aware draw method. Otherwise an in-progress custom draw must finish
+before cancellation can return.
+
+Use `SolveWithContext` or `SolveOnContext` for a verified bounded solve.
+`SolveResult.Status` is `solved`, `boundary_satisfies`, or
+`target_unreachable_in_bounds`; the last has a NaN solution (JSON null).
+The default amount tolerance is the greater of 10 units and 0.1% of the
+feasible candidate. `SolveOptions` can set absolute/relative tolerances or
+an exact halving count independently of Monte-Carlo sampling error.
+`MCStandardErrorPP` is in percentage points and describes the sampled model,
+not model uncertainty or a guarantee after choosing a candidate on those
+same draws. Zero observed failures are not proof of zero risk. The scalar
+`Solve`, `SolveOn` and `CapitalForRuin` retain their historical midpoint
+semantics and cannot establish feasibility.
+
+An axis must be monotonic and rebuild candidate-dependent rule settings.
+Fixed-real capital grids include capped buffers, pension timing and nominal
+gain taxes. Guyton-Klinger capital searches are not generally monotonic:
+re-centering the bands does not prevent a larger initial capital from raising
+the sampled failure rate. Compare adaptive plans by simulation instead of
+claiming a bracketed global minimum.
+
+`Ensemble.Outcome` reports NaN (JSON null) for every metric on an empty
+ensemble and for decade metrics without a complete positive-start decade.
+Its effective-tax rate is the median of tax divided by gross withdrawals,
+over paths with positive gross withdrawals only; it is NaN if none qualify.
+Median cumulative tax still includes zero-tax paths.
+
+`SpendStats` reports NaN for conditional cut timing/duration when no path cut,
+and `SpendCV` reports NaN without observations or with zero mean spending.
+For a fixed-horizon household view, `Plan.HouseholdSpendBands` and
+`Plan.HouseholdSpendCV` add the plan's deterministic cashflows to delivered
+portfolio spending. They reuse the ensemble, include pensions in the year
+they begin, and reject mortality-dependent plans whose individual incomes
+cannot be recovered from the ensemble alone.
 
 Money that arrives or leaves once is a `Lump`, not a one-year `Cashflow`:
 a lump coming in is invested and compounds, a lump going out is a sale that

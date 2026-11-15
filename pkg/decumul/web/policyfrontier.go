@@ -5,6 +5,8 @@ import (
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/replay"
 	"github.com/bpineau/pofo/pkg/scenario"
+	"math"
+	"strings"
 )
 
 // PolicyFrontierResult is the decumulation trade-off chart: each withdrawal
@@ -67,10 +69,23 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 			Color: pol.Color,
 		}
 	})
+	var undefined []string
+	defined := pts[:0]
+	for _, p := range pts {
+		if math.IsNaN(p.X) || math.IsInf(p.X, 0) {
+			undefined = append(undefined, p.Label)
+			continue
+		}
+		defined = append(defined, p)
+	}
 	svg := darkScatter(chart.Options{Width: 720, Height: 360},
-		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
+		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", defined)
+	note := "Same plan, seven spending rules, under the selected return model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes."
+	if len(undefined) > 0 {
+		note += " Undefined spending volatility (no surviving spending sample or zero mean), omitted: " + strings.Join(undefined, ", ") + "."
+	}
 	return PolicyFrontierResult{
 		SVG:  svg,
-		Note: "Same plan, seven spending rules, under the selected return model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
+		Note: note,
 	}
 }

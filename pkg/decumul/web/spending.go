@@ -46,7 +46,7 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 	}
 
 	cards := []Card{
-		{Label: "Paths ever cut", Value: fmt.Sprintf("%.0f%%", s.EverCutShare*100)},
+		{Label: "Paths ever cut", Value: fmtMetric("%.0f%%", s.EverCutShare*100)},
 		{Label: "First cut (median year)", Value: firstCutText(s.EverCutShare, s.FirstCutMedian)},
 		{Label: "Years lived cut (median)", Value: cutYearsText(s.EverCutShare, s.CutYearsMedian)},
 		{Label: "Years lived cut (p90)", Value: cutYearsText(s.EverCutShare, s.CutYearsP90)},
@@ -84,7 +84,7 @@ func firstCutText(share, year float64) string {
 	if share == 0 {
 		return "-"
 	}
-	return fmt.Sprintf("year %.0f", year)
+	return fmtMetric("year %.0f", year)
 }
 
 // cutYearsText formats a cut-years figure, or a dash when no path cut.
@@ -92,7 +92,7 @@ func cutYearsText(share, years float64) string {
 	if share == 0 {
 		return "-"
 	}
-	return fmt.Sprintf("%.0f y", years)
+	return fmtMetric("%.0f y", years)
 }
 
 // floorText is the p5 spending at the given year: the bad-case standard of

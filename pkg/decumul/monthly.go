@@ -83,6 +83,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 
 	empty := false // the portfolio ran dry: the years left are accounted, not simulated
 	for k := 0; k < end && !empty; k++ {
+		if p.canceled() {
+			return PathResult{}
+		}
 		// The ratchet, the annuity purchase and stateful taxes stay yearly
 		// decisions, taken at the start of each year against current wealth.
 		pks.newYear()
@@ -118,6 +121,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 		// A NetOfIncome band re-centres once, on the year's first month.
 		recentre := guardM.NetOfIncome && k > 0 && p.incomeStep(k)
 		for m := range 12 {
+			if p.canceled() {
+				return PathResult{}
+			}
 			total := pks.total() + buffer
 			if total <= 0 {
 				// The rest of this year is unfunded unless the income covers

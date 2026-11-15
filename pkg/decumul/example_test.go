@@ -1,12 +1,26 @@
 package decumul_test
 
 import (
+	"context"
 	"fmt"
 	"math"
 
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
+
+func ExamplePlan_SolveOnContext() {
+	p := decumul.Plan{Capital: 1_000_000, Years: 10}
+	draws := decumul.Draws{Returns: []scenario.Sequence{make(scenario.Sequence, 10)}}
+	r, err := p.SolveOnContext(context.Background(), 0,
+		decumul.WithdrawalAxis(0, 200_000), draws, 1,
+		decumul.SolveOptions{AbsoluteTolerance: 1})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s: %.0f a year, ruin %.0f%%\n", r.Status, r.Solution, 100*r.RuinProb)
+	// Output: solved: 100000 a year, ruin 0%
+}
 
 // The fixed horizon: a household of 60 with a million, spending 32 k a year in
 // real terms over 35 years, taxed at the French flat rate on realised gains.

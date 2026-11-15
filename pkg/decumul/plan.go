@@ -1,6 +1,7 @@
 package decumul
 
 import (
+	"context"
 	"math"
 
 	"github.com/bpineau/pofo/pkg/scenario"
@@ -106,6 +107,14 @@ type BufferSleeve struct {
 	RefillThreshold *float64 // nil = refill whenever not drawing; else refill only while drawdown <= it
 }
 
+// DefaultBufferDrawThreshold is the wealth drawdown fraction that taps a
+// buffer with no explicit DrawThreshold.
+const DefaultBufferDrawThreshold = 0.10
+
+// DefaultBufferRefillCap is the maximum fraction of growth wealth moved into
+// the buffer each year when RefillCap is unset.
+const DefaultBufferRefillCap = 0.50
+
 // refillsAt reports whether the buffer is still refilled in the given year,
 // implementing the glidepath cutoff.
 func (b BufferSleeve) refillsAt(year int) bool {
@@ -115,7 +124,7 @@ func (b BufferSleeve) refillsAt(year int) bool {
 // drawThreshold resolves DrawThreshold, applying the 0.10 default when unset.
 func (b BufferSleeve) drawThreshold() float64 {
 	if b.DrawThreshold == nil {
-		return 0.10
+		return DefaultBufferDrawThreshold
 	}
 	return *b.DrawThreshold
 }
@@ -129,7 +138,7 @@ func (b BufferSleeve) refillsBelow(dd float64) bool {
 // refillCap resolves RefillCap, applying the 0.50 default when unset.
 func (b BufferSleeve) refillCap() float64 {
 	if b.RefillCap == nil {
-		return 0.50
+		return DefaultBufferRefillCap
 	}
 	return *b.RefillCap
 }
@@ -436,8 +445,11 @@ type Plan struct {
 	// a run; nil = compute them in the kernel. Only an ensemble driver sets
 	// it, on its own copy of the plan (see withTables), so a table can never
 	// outlive the fields it was computed from.
-	tables *yearTables
+	tables     *yearTables
+	runContext context.Context // set only on a driver's private plan copy
 }
+
+func (p *Plan) canceled() bool { return p.runContext != nil && p.runContext.Err() != nil }
 
 // yearTables are the per-year figures a plan without a Lifetime shares across
 // all its paths: every member is alive to the horizon and no annuity is ever

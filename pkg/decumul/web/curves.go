@@ -1,9 +1,12 @@
 package web
 
 import (
+	"fmt"
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/scenario"
+	"math"
+	"strings"
 )
 
 // CurvesResult carries the two planning curves: the safe withdrawal rate as
@@ -53,6 +56,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 	// Every point of both curves is its own solve, independent of the others,
 	// so they all run at once (concurrently).
 	nh := len(curveHorizons)
+	notes := make([]string, len(models)*nh+9)
 	series := make([]chart.XYSeries, len(models))
 	for i, m := range models {
 		series[i] = chart.XYSeries{Name: m.name, Xs: make([]float64, nh), Ys: make([]float64, nh), Color: chart.PaletteColor(m.slot)}
@@ -64,9 +68,15 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		p.Monthly = false
 		p.Years = years
 		p.Source = models[i].source(years)
-		safe := p.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), paths, simWorkers, seed)
-		series[i].Xs[j], series[i].Ys[j] = float64(years), safe/pr.Capital*100
+		safe, note := solveOn(p, target, decumul.WithdrawalAxis(0, pr.Capital*0.15), p.Draw(paths, simWorkers, seed))
+		if note != "" {
+			notes[k] = fmt.Sprintf("%s, %dy: %s", models[i].name, years, note)
+		}
+		series[i].Xs[j], series[i].Ys[j] = float64(years), safe.Solution/pr.Capital*100
 	})
+	for i := range series {
+		series[i].Xs, series[i].Ys = definedPairs(series[i].Xs, series[i].Ys)
+	}
 	horizonSVG := darkMultiLine(
 		chart.Options{Title: "Safe withdrawal rate vs horizon (at your target ruin)", Width: 720, Height: 360},
 		"Horizon (years)", "Safe WR %", series,
@@ -83,14 +93,35 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		p.NeedAnnual = spends[j]
 		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 		// Ruin falls as capital rises: the smallest capital meeting the target.
-		cap := p.Solve(target, decumul.CapitalAxis(solveLo, solveHi), paths, simWorkers, seed)
-		xs[j], ys[j] = spends[j]/1000, cap/1e6
+		cap, note := solveOn(p, target, decumul.CapitalAxis(solveLo, solveHi), p.Draw(paths, simWorkers, seed))
+		if note != "" {
+			notes[len(models)*nh+j] = fmt.Sprintf("Spending %.0f: %s", spends[j], note)
+		}
+		xs[j], ys[j] = spends[j]/1000, cap.Solution/1e6
 	})
+	xs, ys = definedPairs(xs, ys)
 	capitalSVG := darkMultiLine(
 		chart.Options{Title: "Capital required vs spending (central model, target ruin)", Width: 720, Height: 360},
 		"Net spending k€/yr", "Required capital M€",
 		[]chart.XYSeries{{Name: "", Xs: xs, Ys: ys, Color: chart.PaletteColor(0)}},
 		chart.Marker{Axis: 'x', Value: pr.NeedAnnual / 1000, Label: "your plan"},
 	)
-	return CurvesResult{HorizonSVG: horizonSVG, CapitalSVG: capitalSVG}
+	var limitations []string
+	for _, note := range notes {
+		if note != "" {
+			limitations = append(limitations, note)
+		}
+	}
+	return CurvesResult{HorizonSVG: horizonSVG, CapitalSVG: capitalSVG, Note: strings.Join(limitations, " ")}
+}
+
+func definedPairs(xs, ys []float64) ([]float64, []float64) {
+	x, y := make([]float64, 0, len(xs)), make([]float64, 0, len(ys))
+	for i, v := range ys {
+		if !math.IsNaN(v) && !math.IsInf(v, 0) {
+			x = append(x, xs[i])
+			y = append(y, v)
+		}
+	}
+	return x, y
 }
