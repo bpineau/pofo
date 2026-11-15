@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/bpineau/pofo/pkg/fire"
 	"github.com/bpineau/pofo/pkg/firebook"
 	"github.com/bpineau/pofo/pkg/scenario"
 	"github.com/bpineau/pofo/pkg/webui"
@@ -177,6 +178,8 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	// propagate on the next request with no manual purge. theme.css/fonts.css
 	// come from pkg/webui and are versioned the same way.
 	page := strings.Replace(string(indexRaw), "<!--topnav-->", renderTopnav(cfg.nav), 1)
+	defaults, _ := json.Marshal(sharedDefaults())
+	page = strings.Replace(page, "<!--fire-defaults-->", "<script>const FIRE_DEFAULTS = "+string(defaults)+";</script>", 1)
 	page = fingerprintRefs(page, sub, webui.CSS, webui.FontsCSS)
 	indexPage := []byte(page)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -389,4 +392,12 @@ func setImmutableIfVersioned(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Has("v") {
 		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 	}
+}
+
+// sharedDefaults supplies the browser's common planning assumptions from the
+// same definition as other numerical consumers. Explicit posted zeros remain
+// untouched; these values only initialize controls for a new browser plan.
+func sharedDefaults() map[string]any {
+	d := fire.Defaults()
+	return map[string]any{"bufferYears": d.BufferYears, "bufferReturn": d.BufferRealReturn, "taxRate": d.TaxRate, "gainFrac": d.InitialGain, "inflation": d.Inflation, "taxAssumption": fire.TaxAssumptionLabel, "taxAssumptionYear": fire.TaxAssumptionYear}
 }

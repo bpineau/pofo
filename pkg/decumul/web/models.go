@@ -6,6 +6,7 @@ import (
 	"math"
 
 	"github.com/bpineau/pofo/pkg/decumul"
+	"github.com/bpineau/pofo/pkg/fire"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -88,47 +89,31 @@ func Models(pr Params, panel *scenario.Panel) ModelsResult {
 // below two years, resampling a handful of months manufactures absurd
 // full-length retirements (a few lucky months compounded 40 years), so the
 // Historical/Block-bootstrap columns are dropped rather than shown wrong.
-const minPanelMonths = 24
+const minPanelMonths = fire.MinPanelMonths
 
 // modelSources builds the ordered model set: the data-driven columns first (when
 // a panel and weights are available and the cohorts model has enough windows),
 // then the synthetic family from optimistic to conservative.
 func modelSources(pr Params, panel *scenario.Panel) []namedSource {
-	var out []namedSource
 	if panel != nil && panel.Periods() < minPanelMonths {
-		panel = nil // too short to resample honestly
+		panel = nil
 	}
+	market := fire.MarketSpec{Mu: pr.Mu, Sigma: pr.Sigma, Nu: pr.Df, Panel: panel, Weights: normalize(pr.Weights), CAPE: pr.CapeAdjust}
+	ids := []string{fire.Central, fire.Stress, fire.BroadSample, fire.LostDecade}
 	if panel != nil {
-		w := pr.Weights
-		if w == nil {
-			w = panel.Weights
-		}
-		months := pr.Years * 12
-		cohorts := scenario.HistoricalCohorts{Panel: *panel, Weights: w, Periods: months}
-		if cohorts.Count() > 0 {
-			out = append(out, namedSource{"Historical windows",
-				"Replays this portfolio's actual return sequences (every historical start date, no resampling). Honest but limited: a short history holds few independent retirements, so it tends to look optimistic for long horizons.",
-				scenario.Compounded{Inner: cohorts, Group: 12}})
-		}
-		out = append(out, namedSource{"Block bootstrap",
-			"Resamples multi-year blocks of this portfolio's OWN monthly real returns at your live weights, preserving clustered bear markets and cross-asset correlation. Data-driven: the mu/sigma/df sliders have no effect here. Manufactures many full-length retirements from a short history, but stays anchored to that one favourable window.",
-			scenario.Compounded{Inner: scenario.StationaryBootstrap{Panel: *panel, Weights: w, MeanBlock: 24, Periods: months}, Group: 12}})
+		ids = append([]string{fire.Historical, fire.Bootstrap}, ids...)
 	}
-	cMu, cSigma, cDf := centralParams(pr, panel)
-	out = append(out,
-		namedSource{"Student-t",
-			"The central case to plan on: synthetic i.i.d. annual real returns generated from the three sliders (mu, sigma, tail df), which in portfolio mode are seeded from your holdings' fitted statistics, never their actual sequence of years. When the history is shorter than the horizon the values are blended toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
-			centralSource(pr, cMu, cSigma, cDf, pr.Years)},
-		namedSource{"Sequence stress",
-			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged, but bear years are also 1.5× more volatile, so this column stresses mostly the ordering, not the ordering alone. Read it as the downside if the sequence is unlucky.",
-			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
-		namedSource{"Broad-sample",
-			"The empirical century: a 60/40 domestic stock/bond portfolio (the broad-sample SWR literature's baseline, Anarkulova et al.) block-bootstrapped from the actual 1870-2020 record of 16 developed markets (Jorda-Schularick-Taylor), resampling runs of single countries. Fully data-driven and fully external: it ignores both your portfolio and the sliders, and it carries the real disasters (1929-32, the inflationary 1970s, Japan post-1990) that cause ruin, on bonds as well as stocks.",
-			broadSampleSource(pr.Years)},
-		namedSource{"Lost decade",
-			"Japan-style tail: a very sticky, deep bear averaging a whole decade, layered on your mean. Unlike Sequence stress this lowers the realised return too, modelling a prolonged real drawdown (Japanese equities 1990-2010). The grimmest planning model, the scenario where a retirement begins inside a lost decade.",
-			scenario.NewLostDecadeRegime(cMu, cSigma, cDf, pr.Years)},
-	)
+	var out []namedSource
+	for _, id := range ids {
+		model, err := fire.PrepareModel(id, market, pr.Years)
+		if err != nil {
+			continue
+		} // the web intentionally omits unavailable historical columns
+		if id == fire.Central && pr.Glidepath {
+			model.Source = centralSource(pr, model.EffectiveMu, model.EffectiveSigma, model.EffectiveNu, pr.Years)
+		}
+		out = append(out, namedSource{model.Name, model.Description, model.Source})
+	}
 	return out
 }
 
@@ -197,22 +182,8 @@ func centralSource(pr Params, mu, sigma, df float64, periods int) scenario.Sourc
 // history it returns the fitted values unchanged. This pulls the rosy short-run
 // fit toward a believable middle rather than leaving the central case optimistic.
 func centralParams(pr Params, panel *scenario.Panel) (mu, sigma, df float64) {
-	mu, sigma, df = pr.Mu, pr.Sigma, pr.Df
-	// Anchor the central return to today's valuation: at a rich CAPE the next
-	// decade's real return is compressed, so the whole-horizon central mean is
-	// set to the CAPE-implied return rather than the fund's rosy history. This
-	// overrides the slider mean and the panel blend below.
-	if pr.CapeAdjust {
-		return capeAdjustedMu(sigma), sigma, df
-	}
-	if panel == nil || pr.Years <= 0 {
-		return
-	}
-	histYears := float64(panel.Periods() / 12)
-	s := (float64(pr.Years) - histYears) / float64(pr.Years)
-	s = math.Max(0, math.Min(s, 0.5))
-	blend := func(fit, prior float64) float64 { return (1-s)*fit + s*prior }
-	return blend(mu, consMu), blend(sigma, consSigma), blend(df, consDf)
+	mu, sigma, df, _ = fire.CentralParameters(fire.MarketSpec{Mu: pr.Mu, Sigma: pr.Sigma, Nu: pr.Df, Panel: panel, CAPE: pr.CapeAdjust}, pr.Years)
+	return
 }
 
 // evalModel runs one model: ruin and median wealth at the planned spend (under
@@ -293,17 +264,3 @@ func verdict(models []ModelStat, pr Params, target float64) string {
 		central.SafeSpend/1000, central.SafeWR*100, (1-target)*100,
 		pr.NeedAnnual/1000, pr.NeedAnnual/pr.Capital*100)
 }
-
-// Conservative broad-sample prior: a cautious, forward-looking world-equity real
-// model used regardless of the portfolio's own rosy history. The pessimism is in
-// the tails, the volatility and the sequence clustering, NOT in an implausibly
-// low average return: consMu is the arithmetic mean of a regime whose blended
-// real geometric return lands near ~3.5% (a forward haircut on the ~4.5-5% DMS
-// world-equity history), with fat tails and persistent drawdowns. Sources: DMS
-// world real equity, broad-sample SWR evidence (Anarkulova, Cederburg &
-// O'Doherty). It deliberately does not assume equities barely grow.
-const (
-	consMu    = 0.045 // arithmetic; blended geometric ~3.5% real under the regime
-	consSigma = 0.13
-	consDf    = 4
-)
