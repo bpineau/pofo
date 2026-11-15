@@ -829,7 +829,7 @@ func runChecks(dir string, gov, govSynth, govDaily, govLong, govLongSynth, govLo
 		corr := monthlyCorr(gov, bund, date(2005, 1), to)
 		log.Printf("check EUROGOV-EUR vs BUND-EUR: CAGR 1999-2010 %.2f%% vs %.2f%% (gap %+.2f), monthly corr 2005-2010 %.3f",
 			ce*100, cb*100, (ce-cb)*100, corr)
-		if corr < 0.90 || math.Abs(ce-cb) > 0.01 {
+		if !(corr >= 0.90) || math.Abs(ce-cb) > 0.01 {
 			fail("the euro-area and German reconstructions diverge over the years their spreads were thin")
 		}
 	}

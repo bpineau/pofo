@@ -27,6 +27,12 @@ client fallback then add an unknown-boundary warning. Show the warnings.
 The client preserves a recorded frontier when real downloads fail or cover
 a shorter history; it never substitutes the file's last date for inception.
 
+`analyze.SeriesSource` honors `FetchOptions.NoSim`: it retains only the
+observed tail of a history with a known frontier and rejects a wholly
+reconstructed history. A wholly reconstructed benchmark is unavailable for
+relative statistics, with a warning. Reports and suggestions mark such
+histories as reconstructed even though they have no frontier date.
+
 Generation persists known frontiers, the fully simulated flag, warnings and
 definition junctions. Recipes that provide no evidence of a frontier remain
 explicitly unknown. No inception date is guessed from today's catalog.

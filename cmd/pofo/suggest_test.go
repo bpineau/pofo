@@ -2,13 +2,36 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"strings"
 	"testing"
 
 	"github.com/bpineau/pofo/pkg/datasets"
+	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/suggest"
 )
+
+func TestCandidatesMarkWhollyReconstructedHistory(t *testing.T) {
+	const id = "IE00B4L5Y983" // iShares Core MSCI World
+	m := catalogMeta(t)[id]
+	fw := suggest.RegimeFramework()
+	s, err := marketdata.Bundled("IWDASIM")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := marketdata.NewClient("")
+	c.Offline = true
+	candidates := buildCandidates(context.Background(), c, &options{fw: fw},
+		map[string]suggest.Meta{id: m}, fw.Classify(m), nil, nil,
+		[]*marketdata.Series{s}, []float64{1})
+	if len(candidates) != 1 {
+		t.Fatalf("got %d candidates, want one", len(candidates))
+	}
+	if !candidates[0].Simulated {
+		t.Fatal("wholly reconstructed candidate not marked")
+	}
+}
 
 // catalogMeta loads the embedded catalog metadata, the map every coverage
 // path reads.

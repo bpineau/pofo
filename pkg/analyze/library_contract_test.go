@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -120,6 +121,36 @@ func TestSeriesSourceAndOptions(t *testing.T) {
 	}
 	if _, err := src.FetchExtended(context.Background(), "missing", marketdata.FetchOptions{}); err == nil {
 		t.Fatal("unknown identifier accepted")
+	}
+}
+
+func TestSeriesSourceNoSim(t *testing.T) {
+	s, err := marketdata.Bundled("IWDASIM") // iShares Core MSCI World, IE00B4L5Y983
+	if err != nil {
+		t.Fatal(err)
+	}
+	src := analyze.SeriesSource{"IWDASIM": s}
+	if _, err := src.FetchExtended(context.Background(), "IWDASIM", marketdata.FetchOptions{NoSim: true}); err == nil {
+		t.Fatal("NoSim returned a wholly reconstructed bundle")
+	}
+	study, err := analyze.Series(s, s, analyze.Options{})
+	if err != nil || study.Relative != nil || !strings.Contains(strings.Join(study.Warnings, " "), "no relative statistics") {
+		t.Fatalf("reconstructed benchmark must be unavailable with a warning: %v", err)
+	}
+	got, err := src.FetchExtended(context.Background(), "IWDASIM", marketdata.FetchOptions{})
+	if err != nil || got.Len() != s.Len() || !got.FullySimulated {
+		t.Fatalf("explicit reconstruction changed: %v", err)
+	}
+	partial := *s
+	partial.FullySimulated = false
+	partial.SimulatedBefore = s.Points[len(s.Points)-3].Date
+	src["partial"] = &partial
+	got, err = src.FetchExtended(context.Background(), "partial", marketdata.FetchOptions{NoSim: true})
+	if err != nil || got.Len() != 3 || !got.First().Date.Equal(partial.SimulatedBefore) {
+		t.Fatalf("observed tail was not preserved: %v", err)
+	}
+	if !s.FullySimulated || !s.SimulatedBefore.IsZero() {
+		t.Fatal("source provenance was mutated")
 	}
 }
 

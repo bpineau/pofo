@@ -5,6 +5,8 @@ In particular, a constant return series has no Pearson correlation, and
 an identical benchmark has zero tracking error but an undefined information
 ratio. Zero correlation means measured absence of linear association, not
 missing variation. Correlation matrices retain NaN in the affected entries.
+Validation gates must require a defined passing value, for example
+`!(corr >= minimum)` to reject: `corr < minimum` alone does not reject NaN.
 
 `pkg/metrics` computes risk and return statistics on plain slices of dates
 and values, so it works on any series, including one you built yourself.

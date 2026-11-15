@@ -267,7 +267,7 @@ func checkRevision(dir, id string, pts []marketdata.Point) (string, error) {
 	c, gap := metrics.Corr(ro, rn), byDate[last.Date]/last.Close-1
 	out := fmt.Sprintf("%d bundled days, daily-return correlation %.5f, level at %s %+.2f %%, %d new days",
 		old.Len(), c, last.Date.Format(time.DateOnly), gap*100, len(pts)-old.Len())
-	if c < minRevisionCorr {
+	if !(c >= minRevisionCorr) {
 		return "", fmt.Errorf("%s: a daily-return correlation of %.5f with the bundled file is another series", out, c)
 	}
 	if math.Abs(gap) > maxRevisionGap {
@@ -286,7 +286,7 @@ func checkAgainstFund(pts, fund []marketdata.Point) (string, error) {
 	}
 	c, gap := metrics.Corr(a, b), (annualized(a)-annualized(b))*100
 	out := fmt.Sprintf("%d months, monthly correlation %.3f, %+.2f pts/yr above the fund (gross of its costs)", months, c, gap)
-	if c < minFundCorr {
+	if !(c >= minFundCorr) {
 		return "", fmt.Errorf("%s: below the %.2f floor", out, minFundCorr)
 	}
 	if gap < fundGapLo || gap > fundGapHi {
@@ -305,7 +305,7 @@ func checkAgainstAnchors(pts, anchors []marketdata.Point) (string, error) {
 	}
 	c, ratio := metrics.Corr(a, b), stdev(a)/stdev(b)
 	out := fmt.Sprintf("%d months, monthly correlation %.3f, volatility ratio %.2f", months, c, ratio)
-	if c < minAnchorCorr {
+	if !(c >= minAnchorCorr) {
 		return "", fmt.Errorf("%s: below the %.2f floor", out, minAnchorCorr)
 	}
 	if ratio < anchorVolLo || ratio > anchorVolHi {
