@@ -177,12 +177,6 @@ func newServer(opt *options, client *marketdata.Client) *server {
 	if client != nil && client.Controls == nil {
 		client.Controls = marketdata.NewControls(60, time.Minute, 10)
 	}
-	if client != nil && (opt.serveAPI || opt.serveMCP) {
-		// One shared client serves all surfaces. Its diagnostic messages contain
-		// requested identifiers, so remote-enabled servers report aggregate costs
-		// instead; substantive data qualifications remain in operation warnings.
-		client.Logf = func(string, ...any) {}
-	}
 	s := &server{
 		opt:        opt,
 		client:     client,
@@ -207,7 +201,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 func (s *server) handler(b fireBuild) http.Handler {
 	mux := http.NewServeMux()
 	s.mountRemote(mux)
-	s.fireDefault = s.gatedFire(web.Handler(b.panel, b.labels, append(fireOptions(s.sourceLabel), b.options()...)...))
+	s.fireDefault = web.Handler(b.panel, b.labels, append(fireOptions(s.sourceLabel), b.options()...)...)
 	mux.HandleFunc("/", s.landing)
 	mux.HandleFunc("/visualizer", s.hub)
 	// The visualizer used to live at "/"; a trailing-slash form is close
@@ -658,7 +652,7 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	b := s.buildPanel(buildCtx, spec)
-	h = s.gatedFire(web.Handler(b.panel, b.labels, append(fireOptions("custom portfolio"), b.options()...)...))
+	h = web.Handler(b.panel, b.labels, append(fireOptions("custom portfolio"), b.options()...)...)
 	if panelIncomplete(b.panel, b.labels, buildCtx, len(spec.Holdings)) {
 		// The build is degraded or partial: serve this request but do NOT
 		// cache it, so a transient failure is not frozen into a permanently
@@ -722,7 +716,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	b := s.buildPanel(buildCtx, spec)
-	h = s.gatedFire(web.Handler(b.panel, b.labels, append(fireOptions(name), b.options()...)...))
+	h = web.Handler(b.panel, b.labels, append(fireOptions(name), b.options()...)...)
 	if panelIncomplete(b.panel, b.labels, buildCtx, len(spec.Holdings)) {
 		// A degraded or partial build must not be cached, or a transient
 		// failure freezes this example into a permanently degraded or

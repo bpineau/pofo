@@ -49,10 +49,10 @@ func planInput(in *PlanInput, axis string, r *Result) (fire.PlanSpec, error) {
 		return p, &Error{Code: "unsupported_configuration", Message: "solve_fire supports fixed_real only: adaptive capital risk is not monotone. Use simulate_fire for adaptive plans or its fixed-rule safe_spending reference.", Path: "plan.policy"}
 	}
 	p.BufferYears = def(in.BufferYears, p.BufferYears, "plan.buffer_years", r)
-	p.BufferRealReturn = def(in.BufferRealReturnPct, p.BufferRealReturn*100, "plan.buffer_real_return_pct", r) / 100
-	p.TaxRate = def(in.TaxRatePct, p.TaxRate*100, "plan.tax_rate_pct", r) / 100
-	p.InitialGain = def(in.InitialGainPct, p.InitialGain*100, "plan.initial_gain_pct", r) / 100
-	p.Inflation = def(in.InflationPct, p.Inflation*100, "plan.inflation_pct", r) / 100
+	p.BufferRealReturn = def(in.BufferRealReturnPct, assumptionPct(p.BufferRealReturn), "plan.buffer_real_return_pct", r) / 100
+	p.TaxRate = def(in.TaxRatePct, assumptionPct(p.TaxRate), "plan.tax_rate_pct", r) / 100
+	p.InitialGain = def(in.InitialGainPct, assumptionPct(p.InitialGain), "plan.initial_gain_pct", r) / 100
+	p.Inflation = def(in.InflationPct, assumptionPct(p.Inflation), "plan.inflation_pct", r) / 100
 	if !finiteRange(p.BufferYears, 0, 100) || !finiteRange(p.BufferRealReturn, -.99, 1) || (!finiteRange(p.TaxRate, 0, 1) || p.TaxRate == 1) || !finiteRange(p.InitialGain, 0, 1) || !finiteRange(p.Inflation, 0, .2) {
 		return p, invalid("plan", "Invalid buffer, tax, gain or inflation assumptions; see the contract ranges.")
 	}
@@ -80,8 +80,13 @@ func planInput(in *PlanInput, axis string, r *Result) (fire.PlanSpec, error) {
 	return p, nil
 }
 func finiteRange(v, lo, hi float64) bool { return !math.IsNaN(v) && v >= lo && v <= hi }
+
+// assumptionPct removes binary conversion noise at the displayed assumptions
+// boundary (12 decimal places in percent). Computed outcomes remain untouched.
+func assumptionPct(fraction float64) float64 { return math.Round(fraction*1e14) / 1e12 }
+
 func effectivePlan(p fire.PlanSpec) EffectivePlan {
-	in := PlanInput{Capital: ptr(p.Capital), AnnualSpending: ptr(p.AnnualSpending), HorizonYears: ptr(p.Years), Policy: ptr(p.Policy), BufferYears: ptr(p.BufferYears), BufferRealReturnPct: ptr(p.BufferRealReturn * 100), TaxRatePct: ptr(p.TaxRate * 100), InitialGainPct: ptr(p.InitialGain * 100), InflationPct: ptr(p.Inflation * 100)}
+	in := PlanInput{Capital: ptr(p.Capital), AnnualSpending: ptr(p.AnnualSpending), HorizonYears: ptr(p.Years), Policy: ptr(p.Policy), BufferYears: ptr(p.BufferYears), BufferRealReturnPct: ptr(assumptionPct(p.BufferRealReturn)), TaxRatePct: ptr(assumptionPct(p.TaxRate)), InitialGainPct: ptr(assumptionPct(p.InitialGain)), InflationPct: ptr(assumptionPct(p.Inflation))}
 	if p.Pension != nil {
 		in.Pension = &Pension{ptr(p.Pension.AnnualAmount), ptr(p.Pension.StartYear), ptr(p.Pension.RealDrift * 100)}
 	}

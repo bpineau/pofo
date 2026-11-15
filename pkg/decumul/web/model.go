@@ -160,18 +160,26 @@ type Result struct {
 	RecoverySVG   string `json:"recoverySvg"`   // years-to-recover histogram
 }
 
-// plan builds a decumul.Plan from the params, with a parametric source by
-// default (source() may override it for the portfolio models).
-func (pr Params) plan() decumul.Plan {
+// sharedPlan builds and validates the common kernel subset. Both HTTP
+// validation and the broader web-policy mapping use this exact constructor.
+func (pr Params) sharedPlan() (decumul.Plan, error) {
 	policy := fire.FixedReal
 	if pr.Guardrails {
 		policy = fire.GuytonKlinger
 	}
-	// Request validation has already checked this shared subset. Broader web
-	// policies are layered below without changing the common kernel mapping.
-	p, _ := fire.BuildPlan(fire.PlanSpec{Capital: pr.Capital, AnnualSpending: pr.NeedAnnual, Years: pr.Years, Policy: policy,
+	return fire.BuildPlan(fire.PlanSpec{Capital: pr.Capital, AnnualSpending: pr.NeedAnnual, Years: pr.Years, Policy: policy,
 		BufferYears: pr.BufferYears, BufferRealReturn: pr.BufferReturn, TaxRate: pr.TaxRate, InitialGain: pr.GainFrac, Inflation: pr.Inflation,
 		Pension: &fire.Pension{AnnualAmount: pr.PensionAnnual, StartYear: pr.PensionYear, RealDrift: pr.PensionDrift}})
+}
+
+// plan requires validated parameters. HTTP validation calls the same shared
+// builder and returns its error before computation. An invalid programmatic
+// call must not turn a rejected plan into a successful zero-ruin simulation.
+func (pr Params) plan() decumul.Plan {
+	p, err := pr.sharedPlan()
+	if err != nil {
+		panic(err)
+	}
 	p.Buffer.RefillStopYear = pr.BufferStopYear
 	p.Flex = decumul.FlexRule{Threshold: .20, Cut: pr.FlexCut, WRThreshold: pr.WRTrigger}
 	p.Source = scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}

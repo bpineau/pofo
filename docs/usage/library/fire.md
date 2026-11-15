@@ -78,6 +78,11 @@ basis. Broad-sample is not a simulation of the supplied allocation.
 
 ## Reusing draws and solving
 
+Server handlers call `fire.Acquire(ctx)` and defer the returned release function
+after successful admission. The web simulator, HTTP API and MCP share this
+process-wide capacity (`max(2, GOMAXPROCS/2)` computations). Pending requests
+wait until admitted or cancelled; the visualizer uses separate capacity.
+
 Call `DrawContext` once, then reuse its `Draws` in `SimulateOnContext`,
 `RuinProbOnContext` and `SolveOnContext`. Worker count does not affect draw
 order or successful results. Cancellation discards partial results; custom

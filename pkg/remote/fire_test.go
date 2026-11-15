@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -12,6 +13,25 @@ import (
 )
 
 const parametric = `"market":{"mode":"parametric","real_mean_return_pct":4,"annual_volatility_pct":15,"degrees_of_freedom":5}`
+
+func TestSimulationAssumptionsReadable(t *testing.T) {
+	r, err := New(nil, "test").Execute(context.Background(), "simulate_fire", []byte(`{"plan":{"capital":800000,"annual_spending":30000,"horizon_years":2},`+parametric+`,"paths":100,"models":["central","stress","broad_sample","lost_decade"]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, d := range r.Meta.Defaulted {
+		if d.Path == "plan.tax_rate_pct" && d.Value != 32.8 {
+			t.Errorf("tax default: %#v", d.Value)
+		}
+	}
+	b, err := json.Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(b), "32.800000000000004") || strings.Contains(string(b), "sliders") {
+		t.Errorf("unreadable projection: %s", b)
+	}
+}
 
 func TestSimulationDirectParityAndDefaults(t *testing.T) {
 	s := New(nil, "test")

@@ -91,20 +91,3 @@ func (s *server) acquireWork(ctx context.Context) (func(), error) {
 		return nil, ctx.Err()
 	}
 }
-func (s *server) gatedFire(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			h.ServeHTTP(w, r)
-			return
-		}
-		ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
-		defer cancel()
-		release, err := s.acquireWork(ctx)
-		if err != nil {
-			http.Error(w, "Computation queue unavailable", http.StatusServiceUnavailable)
-			return
-		}
-		defer release()
-		h.ServeHTTP(w, r.WithContext(ctx))
-	})
-}

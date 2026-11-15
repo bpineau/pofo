@@ -50,6 +50,34 @@ func TestRemoteSharesViewGateAndBoundsQueue(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestFirePageBurstDoesNotUseViewQueue(t *testing.T) {
+	for _, enabled := range []bool{false, true} {
+		s := newServer(&options{serveAPI: enabled}, marketdata.NewClient(""))
+		// A busy visualizer must not reject any section of a FIRE page.
+		for range cap(s.sem) {
+			s.sem <- struct{}{}
+		}
+		for range cap(s.workQueue) {
+			s.workQueue <- struct{}{}
+		}
+		h := s.handler(fireBuild{})
+		results := make(chan int, 48)
+		for range 48 {
+			go func() {
+				r := httptest.NewRequest("POST", "/firesimulator/api/models", strings.NewReader(`{"capital":800000,"needAnnual":25000,"years":5,"nPaths":16,"mu":0.04,"sigma":0.12,"df":5}`))
+				w := httptest.NewRecorder()
+				h.ServeHTTP(w, r)
+				results <- w.Code
+			}()
+		}
+		for range 48 {
+			if code := <-results; code != 200 {
+				t.Errorf("API=%v: status %d", enabled, code)
+			}
+		}
+	}
+}
 func TestRemoteAccessLogRedacts(t *testing.T) {
 	var log bytes.Buffer
 	h := logAccess(&log, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(200) }))
@@ -80,14 +108,14 @@ func TestAPIAndWebUseOneForeignAllowance(t *testing.T) {
 	}
 }
 
-func TestRemoteDoesNotLogRequestedAssetIdentifiers(t *testing.T) {
+func TestRemotePreservesMarketDataDiagnostics(t *testing.T) {
 	for _, enabled := range []bool{false, true} {
 		client := marketdata.NewClient("")
 		logged := false
 		client.Logf = func(string, ...any) { logged = true }
 		newServer(&options{serveAPI: enabled}, client)
 		client.Logf("downloading %s", "PRIVATE-REQUEST-ID")
-		if logged == enabled {
+		if !logged {
 			t.Fatalf("enabled=%v source log retained=%v", enabled, logged)
 		}
 	}

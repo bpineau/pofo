@@ -7,10 +7,12 @@ import (
 	"math"
 	"net/http"
 	"net/http/httptest"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/fire"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -247,5 +249,36 @@ func TestAPIRejectsInputsOutsideTheModelDomain(t *testing.T) {
 		strings.NewReader(`{"capital":600000,"needAnnual":24000,"years":42,"nPaths":200,"mu":0.05,"sigma":0.11,"df":5}`)))
 	if rec.Code != http.StatusOK {
 		t.Errorf("a slider-range plan: status %d %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestAPIRejectsInvalidSharedPlan(t *testing.T) {
+	h := Handler(nil, nil)
+	for _, field := range []string{`"taxRate":1`, `"taxRate":-0.1`, `"bufferReturn":-1`} {
+		for _, path := range []string{"/api/models", "/api/sim", "/api/spending"} {
+			body := `{"capital":800000,"needAnnual":25000,"years":5,"nPaths":16,` + field + `}`
+			w := httptest.NewRecorder()
+			h.ServeHTTP(w, httptest.NewRequest("POST", path, strings.NewReader(body)))
+			if w.Code != 400 {
+				t.Errorf("%s %s: status %d, want 400", path, field, w.Code)
+			}
+		}
+	}
+}
+
+func TestWebWaitsOnSharedFIRECapacity(t *testing.T) {
+	for range max(2, runtime.GOMAXPROCS(0)/2) {
+		release, err := fire.Acquire(context.Background())
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer release()
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
+	defer cancel()
+	w := httptest.NewRecorder()
+	Handler(nil, nil).ServeHTTP(w, httptest.NewRequest("POST", "/api/models", strings.NewReader(`{"years":2,"nPaths":16}`)).WithContext(ctx))
+	if w.Code != http.StatusServiceUnavailable || ctx.Err() == nil {
+		t.Fatalf("web bypassed shared FIRE capacity: %d", w.Code)
 	}
 }

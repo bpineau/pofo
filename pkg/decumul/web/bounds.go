@@ -1,10 +1,11 @@
 package web
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-	"runtime"
 
+	"github.com/bpineau/pofo/pkg/fire"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -24,24 +25,6 @@ const (
 	maxYears     = 100
 	maxBodyBytes = 64 << 10
 )
-
-// simParallel bounds how many simulation requests compute at once. Each of
-// them already fans out over simWorkers goroutines (one per core), so beyond
-// a couple of concurrent requests the machine is saturated and extra ones
-// only add memory. The page fires its dozen endpoints per render, so this is
-// a queue, not a rejection: a request waits for a slot until its client
-// gives up (the request context), and a caller that has gone away is turned
-// down with 503 rather than computed for nobody.
-//
-// The bound is the PROCESS's, shared by every Handler: the -serve
-// constellation mounts one per example and per composed portfolio, and a
-// gate apiece would multiply the budget by the number of mounts a burst
-// spreads over.
-var simParallel = max(2, runtime.GOMAXPROCS(0)/2)
-
-// processGate is the one simGate every Handler waits on (withSimGate
-// substitutes another in tests).
-var processGate = newSimGate(simParallel)
 
 // bounded returns pr with every size-like field clamped into its bound.
 // Negative counts fall back to zero, which the endpoints read as "default".
@@ -127,6 +110,9 @@ func (pr Params) validateDomain() error {
 		{"sigma", pr.Sigma, 0, maxVol},
 		{"df", pr.Df, 0, maxTailDf},
 		{"bufferReturn", pr.BufferReturn, -maxRate, maxRate},
+		{"taxRate", pr.TaxRate, 0, 1},
+		{"gainFrac", pr.GainFrac, 0, 1},
+		{"inflation", pr.Inflation, 0, .2},
 		{"spendDrift", pr.SpendDrift, -maxRate, maxRate},
 		{"capital", pr.Capital, 0, maxMoney},
 		{"needAnnual", pr.NeedAnnual, 0, maxMoney},
@@ -138,16 +124,35 @@ func (pr Params) validateDomain() error {
 			return fmt.Errorf("%s = %g is outside the model's domain [%g, %g]", f.name, f.v, f.lo, f.hi)
 		}
 	}
-	return nil
+	if pr.TaxRate == 1 {
+		return fmt.Errorf("taxRate must be below 1")
+	}
+	if pr.BufferReturn == -1 {
+		return fmt.Errorf("bufferReturn must be above -1")
+	}
+	_, err := pr.sharedPlan()
+	return err
 }
 
 func clamp[T int | float64](v, lo, hi T) T {
 	return min(max(v, lo), hi)
 }
 
-// simGate serialises the heavy endpoints behind simParallel slots. It is a
-// small type rather than a bare channel so the handler reads as intent.
+// simGate substitutes a private capacity in tests. A nil gate delegates to
+// fire.Acquire, the process-wide queue shared with numerical transports.
 type simGate chan struct{}
+
+func (g simGate) wait(ctx context.Context) (func(), error) {
+	if g == nil {
+		return fire.Acquire(ctx)
+	}
+	select {
+	case g <- struct{}{}:
+		return g.release, nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
 
 func newSimGate(n int) simGate { return make(simGate, n) }
 

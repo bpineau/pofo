@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/fs"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -224,7 +225,10 @@ func def[T any](p *T, v T, path string, r *Result) T {
 	return v
 }
 func warn(r *Result, code, msg, path string) {
-	r.Warnings = append(r.Warnings, Warning{code, msg, path})
+	w := Warning{code, msg, path}
+	if !slices.Contains(r.Warnings, w) {
+		r.Warnings = append(r.Warnings, w)
+	}
 }
 func warnings(r *Result, ws []string, path string) {
 	for _, w := range ws {

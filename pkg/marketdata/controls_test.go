@@ -4,12 +4,36 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
 )
+
+type controlTransportFunc func(*http.Request) (*http.Response, error)
+
+func (f controlTransportFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+func TestCoalescedWorkHasNoShorterIndependentDeadline(t *testing.T) {
+	c := NewClient("")
+	c.Controls = NewControls(0, 0, 0)
+	c.HTTP.Timeout = 0
+	c.HTTP.Transport = controlTransportFunc(func(r *http.Request) (*http.Response, error) {
+		if deadline, ok := r.Context().Deadline(); ok {
+			t.Errorf("flight imposed a deadline independent of its waiters: %v", deadline)
+		}
+		body := chartJSON("VOO", testDays(3), []float64{100, 101, 102})
+		return &http.Response{StatusCode: 200, Header: make(http.Header), Body: io.NopCloser(strings.NewReader(body)), Request: r}, nil
+	})
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer cancel()
+	if _, err := c.FetchExtended(ctx, "VOO", FetchOptions{From: testDays(1)[0], NoConvert: true, ExactOnly: true}); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestCacheOnlyBlocksAllHTTP(t *testing.T) {
 	var calls atomic.Int32

@@ -99,7 +99,7 @@ func PrepareModel(model string, m MarketSpec, years int) (PreparedModel, error) 
 		r.Basis = "portfolio_history"
 		if model == Bootstrap {
 			r.Name = "Block bootstrap"
-			r.Description = "Resamples multi-year blocks of this portfolio's OWN monthly real returns at your live weights, preserving clustered bear markets and cross-asset correlation. Data-driven: the mu/sigma/df sliders have no effect here. Manufactures many full-length retirements from a short history, but stays anchored to that one favourable window."
+			r.Description = "Resamples multi-year blocks of this portfolio's own monthly real returns at the supplied weights, preserving clustered bear markets and cross-asset correlation. Data-driven: parametric mu/sigma/df inputs have no effect here. Manufactures many full-length retirements from a short history, but stays anchored to that one favourable window."
 			r.Source = scenario.Compounded{Inner: scenario.StationaryBootstrap{Panel: *m.Panel, Weights: m.Weights, MeanBlock: 24, Periods: years * 12}, Group: 12}
 		} else {
 			c := scenario.HistoricalCohorts{Panel: *m.Panel, Weights: m.Weights, Periods: years * 12}
@@ -114,7 +114,7 @@ func PrepareModel(model string, m MarketSpec, years int) (PreparedModel, error) 
 	case BroadSample:
 		r.Name = "Broad-sample"
 		r.Basis = "external_reference"
-		r.Description = "The empirical century: a 60/40 domestic stock/bond portfolio (the broad-sample SWR literature's baseline, Anarkulova et al.) block-bootstrapped from the actual 1870-2020 record of 16 developed markets (Jorda-Schularick-Taylor), resampling runs of single countries. Fully data-driven and fully external: it ignores both your portfolio and the sliders, and it carries the real disasters (1929-32, the inflationary 1970s, Japan post-1990) that cause ruin, on bonds as well as stocks."
+		r.Description = "The empirical century: a 60/40 domestic stock/bond portfolio (the broad-sample SWR literature's baseline, Anarkulova et al.) block-bootstrapped from the actual 1870-2020 record of 16 developed markets (Jorda-Schularick-Taylor), resampling runs of single countries. Fully data-driven and fully external: it ignores both the supplied portfolio and the parametric inputs, and it carries the real disasters (1929-32, the inflationary 1970s, Japan post-1990) that cause ruin, on bonds as well as stocks."
 		r.Source = BroadSampleSource(years)
 	case Central, Stress, LostDecade:
 		if !finite(m.Mu) || !finite(m.Sigma) || m.Sigma < 0 || !finite(m.Nu) || m.Nu < 0 {
@@ -137,7 +137,7 @@ func PrepareModel(model string, m MarketSpec, years int) (PreparedModel, error) 
 		switch model {
 		case Central:
 			r.Name = "Student-t"
-			r.Description = "The central case to plan on: synthetic i.i.d. annual real returns generated from the three sliders (mu, sigma, tail df), which in portfolio mode are seeded from your holdings' fitted statistics, never their actual sequence of years. When the history is shorter than the horizon the values are blended toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk)."
+			r.Description = "The central case to plan on: synthetic i.i.d. annual real returns generated from parametric inputs (mu, sigma, tail df), which in portfolio mode are seeded from the holdings' fitted statistics, never their actual sequence of years. When the history is shorter than the horizon the values are blended toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk)."
 			r.Source = scenario.ParametricSource{Mu: mu, Sigma: sigma, Df: nu, Periods: years}
 		case Stress:
 			r.Name = "Sequence stress"
