@@ -43,13 +43,22 @@ func TestBundled(t *testing.T) {
 	}
 }
 
-func TestBundledLegacyReconstructionBoundary(t *testing.T) {
+func TestBundledReconstructionBoundary(t *testing.T) {
 	s, err := Bundled("IWDASIM")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !s.SimulatedBefore.IsZero() || !strings.Contains(strings.Join(s.Warnings, " "), "boundary is unknown") {
-		t.Errorf("legacy reconstruction lacks honest provenance: boundary=%v warnings=%v", s.SimulatedBefore, s.Warnings)
+	// A refresh may replace a legacy file with one declaring its boundary.
+	raw, found, err := ReadSimdataFS(datasets.Simdata(), CanonicalID("IWDA"))
+	if err != nil || !found {
+		t.Fatalf("read embedded reconstruction: found=%v err=%v", found, err)
+	}
+	if !s.SimulatedBefore.Equal(raw.SimulatedBefore) || s.FullySimulated != raw.FullySimulated {
+		t.Errorf("bundled reconstruction lost its declared provenance")
+	}
+	unknown := raw.SimulatedBefore.IsZero() && !raw.FullySimulated
+	if strings.Contains(strings.Join(s.Warnings, " "), "boundary is unknown") != unknown {
+		t.Errorf("reconstruction provenance: boundary=%v fully=%v warnings=%v", s.SimulatedBefore, s.FullySimulated, s.Warnings)
 	}
 	ref, err := Bundled("TREASURY-LONG-YIELD")
 	if err != nil {

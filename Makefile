@@ -10,7 +10,7 @@ PKGS       = $(shell $(GO) list -e ./... | grep -v -e '/scratch$$' -e '/scratch/
 # The Go files gofmt checks, scratch/ left out for the same reason.
 GOFILES    = $(shell find . -name '*.go' -not -path './scratch/*')
 # Local staticcheck if available, otherwise a pinned version via `go run`.
-STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2026.2.1")
+STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2026.2.2")
 
 .DEFAULT_GOAL := build
 
