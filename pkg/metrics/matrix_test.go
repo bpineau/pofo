@@ -34,8 +34,8 @@ func TestCorrKnownValues(t *testing.T) {
 		"one point":  Corr([]float64{1}, []float64{2}),
 		"empty":      Corr(nil, nil),
 	} {
-		if c != 0 {
-			t.Errorf("%s: Corr = %v, want 0", name, c)
+		if !math.IsNaN(c) {
+			t.Errorf("%s: Corr = %v, want NaN", name, c)
 		}
 	}
 }
@@ -65,7 +65,7 @@ func TestCorrelationMatrix(t *testing.T) {
 
 func TestCorrelationMatrixConstantAsset(t *testing.T) {
 	m := must(CorrelationMatrix([][]float64{{0.01, -0.01, 0.02}, {0, 0, 0}}))
-	if m[0][0] != 1 || m[1][1] != 0 || m[0][1] != 0 || m[1][0] != 0 {
+	if m[0][0] != 1 || !math.IsNaN(m[1][1]) || !math.IsNaN(m[0][1]) || !math.IsNaN(m[1][0]) {
 		t.Errorf("constant asset: %v", m)
 	}
 }
@@ -101,8 +101,8 @@ func TestMatricesEdgeCases(t *testing.T) {
 			}
 		}
 	}
-	if m := must(CorrelationMatrix([][]float64{{0.01}, {0.02}})); m[0][0] != 0 || m[0][1] != 0 {
-		t.Errorf("one period: correlation %v, want zeros", m)
+	if m := must(CorrelationMatrix([][]float64{{0.01}, {0.02}})); !math.IsNaN(m[0][0]) || !math.IsNaN(m[0][1]) {
+		t.Errorf("one period: correlation %v, want NaNs", m)
 	}
 	for name, fn := range map[string]func([][]float64) ([][]float64, error){
 		"CorrelationMatrix": CorrelationMatrix, "Covariance": Covariance,

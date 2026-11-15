@@ -124,7 +124,7 @@ func checkSolution(r Result, n int) error {
 	if err := checkWeights(r.Weights, n, false); err != nil {
 		return fmt.Errorf("solver could not produce a finite allocation: %w", err)
 	}
-	if !finite(r.Return) || !finite(r.Volatility) || !finite(r.Sharpe) || !finite(r.CAGR) {
+	if !finite(r.Return) || !finite(r.Volatility) || (!finite(r.Sharpe) && !(r.Volatility == 0 && math.IsNaN(r.Sharpe))) || !finite(r.CAGR) {
 		return fmt.Errorf("solver statistics overflow")
 	}
 	return nil

@@ -8,12 +8,12 @@ import (
 // Corr is the Pearson correlation of two equal-length samples, a number in
 // [-1, 1]. The samples are whatever the caller pairs, usually the per-period
 // returns of two assets on one calendar (fractions, though correlation does
-// not depend on the unit). It is 0 when the lengths differ, when there are
+// not depend on the unit). It is NaN when the lengths differ, when there are
 // fewer than two points, or when either sample is constant: with no variance
 // there is no co-movement to measure.
 func Corr(a, b []float64) float64 {
 	if len(a) != len(b) || len(a) < 2 {
-		return 0
+		return math.NaN()
 	}
 	ma, mb := Mean(a), Mean(b)
 	var cov, va, vb float64
@@ -24,7 +24,7 @@ func Corr(a, b []float64) float64 {
 		vb += db * db
 	}
 	if va == 0 || vb == 0 {
-		return 0
+		return math.NaN()
 	}
 	return cov / math.Sqrt(va*vb)
 }
@@ -34,7 +34,7 @@ func Corr(a, b []float64) float64 {
 // asset's per-period returns (fractions) on ONE calendar, which is what
 // marketdata.Panel.R produces. The matrix is symmetric, its diagonal
 // is 1, except for an asset whose returns are constant, whose whole row and
-// column read 0 as Corr says. It is an error when the rows differ in length:
+// column read NaN as Corr says. It is an error when the rows differ in length:
 // periods that are not the same periods pair into no number at all (build
 // the rows on shared return intervals, through marketdata.NewPanel, first).
 func CorrelationMatrix(returns [][]float64) ([][]float64, error) {
@@ -43,6 +43,7 @@ func CorrelationMatrix(returns [][]float64) ([][]float64, error) {
 	}
 	out := squareMatrix(len(returns))
 	for i := range returns {
+		out[i][i] = math.NaN()
 		if sampleStdev(returns[i]) > 0 {
 			out[i][i] = 1
 		}

@@ -43,8 +43,8 @@ type PairOptions struct {
 // the calendar years at any cadence, read off each series' close at or
 // before each bound; Monthly on the calendar months both quote; Daily on the
 // dates both quote, only when both are finer than monthly. A figure that
-// cannot be measured is left zero (a nil block, an empty list) and Warnings
-// says why, so every value marshals to JSON as a number.
+// cannot be measured has a nil block or an empty list and Warnings says why.
+// Undefined ratios within a measured block are NaN, serialized as JSON null.
 type PairStudy struct {
 	A, B PairSide // the candidate and the reference
 

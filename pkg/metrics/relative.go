@@ -131,7 +131,7 @@ func VsBenchmark(dates []time.Time, values []float64, benchDates []time.Time, be
 	if varb == 0 {
 		return Relative{}, false
 	}
-	var r Relative
+	r := Relative{InfoRatio: math.NaN()}
 	ppy := p.cadence()
 	r.Beta = cov / varb
 	r.Alpha = (mp - r.Beta*mb) * ppy

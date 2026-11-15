@@ -187,6 +187,8 @@ claiming a bracketed global minimum.
 
 `Ensemble.Outcome` reports NaN (JSON null) for every metric on an empty
 ensemble and for decade metrics without a complete positive-start decade.
+`Ensemble.LifeOutcome` also reports NaN on an empty ensemble, and its mean
+income is undefined when no spending year was lived.
 Its effective-tax rate is the median of tax divided by gross withdrawals,
 over paths with positive gross withdrawals only; it is NaN if none qualify.
 Median cumulative tax still includes zero-tax paths.

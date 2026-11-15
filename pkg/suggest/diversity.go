@@ -31,7 +31,7 @@ func std(xs []float64) float64 {
 
 // Correlation is the Pearson correlation of two equal-length series. It
 // delegates to metrics.Corr, the one Pearson correlation of the tree, and is
-// kept for its callers: 0 when either series is constant or lengths differ.
+// kept for its callers: NaN when either series is constant or lengths differ.
 func Correlation(a, b []float64) float64 { return metrics.Corr(a, b) }
 
 // DiversificationRatio is (sum of weighted asset volatilities) / (portfolio

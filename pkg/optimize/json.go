@@ -74,3 +74,11 @@ func (r Result) MarshalJSON() ([]byte, error) {
 		Sortino: jsonNumber(r.Sortino), ReturnToMaxDD: jsonNumber(r.ReturnToMaxDD), Ulcer: jsonNumber(r.Ulcer), Worst5y: jsonNumber(r.Worst5y), CWARP: jsonNumber(r.CWARP), CAGR: jsonNumber(r.CAGR), Lambda: jsonNumber(r.Lambda),
 		Implied: jsonNumbers(r.Implied), Posterior: jsonNumbers(r.Posterior)})
 }
+
+// MarshalJSON preserves undefined performance statistics as null, including
+// inside FitEvaluation and FrontierPoint results.
+func (p Performance) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct{ CAGR, Volatility, MaxDrawdown, Sharpe *float64 }{
+		jsonNumber(p.CAGR), jsonNumber(p.Volatility), jsonNumber(p.MaxDrawdown), jsonNumber(p.Sharpe),
+	})
+}

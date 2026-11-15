@@ -44,7 +44,7 @@ func Redundancies(holdings []Holding, returns [][]float64, threshold float64) []
 			}
 			c := Correlation(returns[i], returns[j])
 			corr[[2]int{i, j}] = c
-			if c < threshold {
+			if !(c >= threshold) {
 				continue
 			}
 			if ri, rj := find(i), find(j); ri != rj {
