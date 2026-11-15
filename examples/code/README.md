@@ -41,6 +41,7 @@ to standard output.
 | [simulate](simulate.go) | How does this portfolio file behave, holding by holding? | `go run examples/code/simulate.go examples/portfolios/golden-butterfly.txt` |
 | [optimize](optimize.go) | What weights would an objective pick for these holdings? | `go run examples/code/optimize.go -objective min-volatility,max-weight:40 examples/portfolios/golden-butterfly.txt` |
 | [fire](fire.go) | Can this capital fund this spending, and what spending is safe? | `go run examples/code/fire.go -capital 1200000 -spend 42000 -years 40` |
+| [fireholdout](fireholdout.go) | How do training-only FIRE distributions compare with later realized history? | `go run examples/code/fireholdout.go -train 20 -years 20 > /tmp/holdout.json` |
 | [replay](replay.go) | What life would each withdrawal rule have given from that year? | `go run examples/code/replay.go -start 1966 -years 35` |
 | [export](export.go) | How do I get this data into another tool? | `go run examples/code/export.go -monthly -o /tmp/series.csv IWDA XAUUSD-LBMA` |
 

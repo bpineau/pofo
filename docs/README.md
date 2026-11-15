@@ -24,6 +24,7 @@ package's design is its godoc (`go doc ./pkg/<name>`).
 | [`catbond-sleeve-design.md`](specs/catbond-sleeve-design.md) | the insurance-linked reference and fund backcasts, the euro hedge, what a cat bond sleeve does to a decumulation book |
 | [`decumul-performance.md`](specs/decumul-performance.md) | the FIRE Monte Carlo's performance record: the bit-for-bit invariant, how a change is proven harmless, what the profiler found, what was refused |
 | [`fire-model-sensitivity.md`](specs/fire-model-sensitivity.md) | historical coverage, overlapping cohorts and measured sensitivity to calibration, bootstrap blocks and return assumptions |
+| [`fire-holdout-validation.md`](specs/fire-holdout-validation.md) | rolling training/test FIRE diagnostics, realized quantile misses, ruin and limits of overlapping historical evidence |
 | [`eres-fcpe-design.md`](specs/eres-fcpe-design.md) | the employee-savings funds: the airfund NAV feed, the donor-chain reconstruction, the NAV-timing finding behind the nowcast |
 | [`fire-book-design.md`](specs/fire-book-design.md) | the French FIRE book: architecture, writing and style conventions, table of contents, how to add an article |
 | [`fire-book-en-edition-design.md`](specs/fire-book-en-edition-design.md) | the English edition: Edition value, slugs, source stamps, drift report, how France-specific passages were adapted |
