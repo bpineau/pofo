@@ -30,6 +30,17 @@
 //     each On them ([Plan.SimulateOn], [Plan.RuinProbOn], [Plan.SolveOn]).
 //     When only the ruin is read, [Plan.RuinProb] and [Plan.RuinProbOn] skip
 //     building the Ensemble altogether.
+//   - Request-scoped work uses [Plan.DrawContext], [Plan.SimulateContext],
+//     [Plan.SimulateOnContext] and [Plan.RuinProbOnContext]. They discard partial
+//     results on cancellation. [Plan.SolveOnContext] and [Plan.SolveWithContext]
+//     report endpoint feasibility, a verified candidate and search precision;
+//     use these to distinguish a crossed target from a saturated bound.
+//
+// Undefined [Outcome] statistics are NaN in Go and null in JSON. This includes
+// every statistic for an empty ensemble, decade returns without a complete
+// positive-start decade, and effective tax without positive gross withdrawals.
+// The effective-tax median excludes zero-withdrawal paths; cumulative tax
+// includes their genuine zero tax payments.
 //
 // # Performance and determinism
 //

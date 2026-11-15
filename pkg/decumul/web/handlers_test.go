@@ -23,7 +23,6 @@ var simEndpoints = map[string]string{
 	"/api/frontier":       "frontierSvg",
 	"/api/policyfrontier": "policyFrontierSvg",
 	"/api/solvemenu":      "options",
-	"/api/solve":          "requiredCapital",
 	"/api/spending":       "spendingSvg",
 	"/api/decade":         "decadeSvg",
 	"/api/vintages":       "vintagesSvg",

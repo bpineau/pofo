@@ -37,4 +37,7 @@
 // weighted history at every Draw, which Prepare hoists out. The prepared
 // source draws byte-identical paths, and a source with nothing to hoist comes
 // back unchanged.
+// [DrawContext] preserves the same draws while checking cancellation between
+// periods in built-in sources. Custom sources can implement a context-aware
+// draw method; otherwise cancellation waits for their current Draw to return.
 package scenario

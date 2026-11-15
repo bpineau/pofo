@@ -80,7 +80,7 @@ type Params struct {
 	tableMu, tableSigma, tableDf float64
 	panel                        *scenario.Panel
 	Model                        string  `json:"model"`          // "parametric" (default), "bootstrap", "cohorts"
-	TargetRuin                   float64 `json:"targetRuin"`     // solve target (fraction), used by /api/solve
+	TargetRuin                   float64 `json:"targetRuin"`     // solve target (fraction), used by planning solves
 	Monthly                      bool    `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
 	Regime                       bool    `json:"regime"`         // stress: cluster bad years (Markov regime source, annual)
 	BufferStopYear               int     `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
@@ -552,10 +552,10 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 			{Label: "Terminal wealth (p50)", Value: fmtWealth(o.TerminalP50)},
 			{Label: "Terminal wealth (p5)", Value: fmtWealth(o.TerminalP5)},
 			{Label: "Median years underwater", Value: fmt.Sprintf("%.0f y", o.MedianYearsUnderwater)},
-			{Label: "Worst 10y real CAGR (surviving p5)", Value: fmt.Sprintf("%.1f%%/yr", so.Worst10yP5*100)},
-			{Label: "Worst drawdown (surviving 5%)", Value: fmt.Sprintf("%.1f%%", so.CDaR*100)},
+			{Label: "Worst 10y real CAGR (surviving p5)", Value: fmtMetric("%.1f%%/yr", so.Worst10yP5*100)},
+			{Label: "Worst drawdown (surviving 5%)", Value: fmtMetric("%.1f%%", so.CDaR*100)},
 			{Label: "Median cumulative tax", Value: fmtWealth(o.MedianCumTax)},
-			{Label: "Effective tax rate", Value: fmt.Sprintf("%.1f%%", o.EffectiveTaxRate*100)},
+			{Label: "Effective tax rate", Value: fmtMetric("%.1f%%", o.EffectiveTaxRate*100)},
 		},
 		// Two single-axis panels sharing the x axis instead of a dual-axis
 		// chart: each curve gets its own honest scale, so the interior
@@ -586,57 +586,24 @@ func survivors(e decumul.Ensemble) decumul.Ensemble {
 // fmtWealth renders a real-euro amount with a readable unit: M€ with two
 // decimals from a million up, k€ below.
 func fmtWealth(v float64) string {
+	if math.IsNaN(v) || math.IsInf(v, 0) {
+		return "n/a"
+	}
 	if v >= 1e6 || v <= -1e6 {
 		return fmt.Sprintf("%.2f M€", v/1e6)
 	}
 	return fmt.Sprintf("%.0f k€", v/1000)
 }
 
-// SolveResult answers the two "solve" questions for a scenario: the capital
-// needed to hit a target ruin, and the ruin-minimising buffer at the current
-// capital. Note carries a caveat when the model cannot answer (e.g. cohorts).
-type SolveResult struct {
-	Note            string  `json:"note"`            // caveat when the model cannot answer
-	TargetRuin      float64 `json:"targetRuin"`      // requested ruin target (fraction)
-	RequiredCapital float64 `json:"requiredCapital"` // smallest capital meeting the target
-	BestBufferYears float64 `json:"bestBufferYears"` // ruin-minimising buffer at current capital
-	BestBufferRuin  float64 `json:"bestBufferRuin"`  // ruin at that buffer
+func fmtMetric(format string, v float64) string {
+	if math.IsNaN(v) || math.IsInf(v, 0) {
+		return "n/a"
+	}
+	return fmt.Sprintf(format, v)
 }
 
-// capital search bounds for the solver, generous around the slider range.
+// Capital search bounds shared by the planning curves.
 const solveLo, solveHi = 200000.0, 6000000.0
-
-// Solve answers the capital and buffer solve questions for the params. A target
-// of 0 defaults to 5% ruin.
-func Solve(pr Params, panel *scenario.Panel) SolveResult {
-	if pr.NPaths == 0 {
-		pr.NPaths = 5000
-	}
-	target := pr.TargetRuin
-	if target <= 0 {
-		target = 0.05
-	}
-	if note := cohortsNote(pr, panel); note != "" {
-		return SolveResult{Note: note}
-	}
-	p := pr.plan()
-	p.Source = pr.source(panel)
-	seed := uint64(7)
-	// The two answers are independent: solve them at once.
-	res := SolveResult{TargetRuin: target}
-	var err error
-	concurrently(2, func(i int) {
-		if i == 0 {
-			res.BestBufferYears, res.BestBufferRuin, err = p.BestBuffer([]float64{0, 1, 2, 3, 4, 5, 6, 8, 10}, pr.NPaths, simWorkers, seed)
-			return
-		}
-		res.RequiredCapital = p.CapitalForRuin(target, solveLo, solveHi, pr.NPaths, simWorkers, seed)
-	})
-	if err != nil {
-		return SolveResult{Note: err.Error()}
-	}
-	return res
-}
 
 // ruinSeries is the ruin-probability curve (%) against buffer years. The name
 // stays empty: the panel title carries it, so no one-entry legend is drawn.

@@ -1,6 +1,7 @@
 package decumul
 
 import (
+	"encoding/json"
 	"math"
 
 	"github.com/bpineau/pofo/pkg/metrics"
@@ -15,6 +16,7 @@ import (
 // "Lived" is literal: with a Plan.Lifetime, years after the household is gone
 // are not zero-income years, they are no years at all, and counting them would
 // report an income collapse that nobody experienced.
+// An empty lived sample or a zero mean has undefined CV and returns NaN.
 func (e Ensemble) SpendCV() float64 {
 	_, cv := e.spendMoments()
 	return cv
@@ -32,11 +34,11 @@ func (e Ensemble) spendMoments() (mean, cv float64) {
 		}
 	}
 	if n == 0 {
-		return 0, 0
+		return math.NaN(), math.NaN()
 	}
 	mean = sum / float64(n)
 	if mean == 0 {
-		return 0, 0
+		return 0, math.NaN()
 	}
 	var v float64
 	for _, p := range e.Paths {
@@ -61,8 +63,11 @@ type SpendStats struct {
 
 // SpendStats computes the bundle; the medians are conditional on cutting at
 // least once (they answer "if I have to cut, when and for how long?").
+// With no cutting paths the conditional figures are NaN, not zero years.
+// An empty ensemble has NaN in every field. JSON encodes NaN as null.
 func (e Ensemble) SpendStats() SpendStats {
-	var s SpendStats
+	nan := math.NaN()
+	s := SpendStats{nan, nan, nan, nan}
 	if len(e.Paths) == 0 {
 		return s
 	}
@@ -80,6 +85,11 @@ func (e Ensemble) SpendStats() SpendStats {
 		s.CutYearsMedian, s.CutYearsP90 = q[0], q[1]
 	}
 	return s
+}
+
+// MarshalJSON writes undefined conditional spending estimates as null.
+func (s SpendStats) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct{ EverCutShare, FirstCutMedian, CutYearsMedian, CutYearsP90 jsonNumber }{jsonNumber(s.EverCutShare), jsonNumber(s.FirstCutMedian), jsonNumber(s.CutYearsMedian), jsonNumber(s.CutYearsP90)})
 }
 
 // SpendBands returns per-year quantiles of the delivered spending across

@@ -1,10 +1,48 @@
 package decumul
 
 import (
+	"encoding/json"
 	"math"
 	"math/rand/v2"
 	"testing"
 )
+
+func TestOutcomeUndefined(t *testing.T) {
+	empty := Ensemble{}.Outcome()
+	for _, v := range []float64{empty.RuinProb, empty.TerminalP5, empty.TerminalP50, empty.MedianYearsUnderwater, empty.Worst10yCAGR, empty.Worst10yP5, empty.CDaR, empty.MedianCumTax, empty.EffectiveTaxRate} {
+		if !math.IsNaN(v) {
+			t.Errorf("empty statistic = %v, want NaN", v)
+		}
+	}
+	o := (Ensemble{Years: 1, Paths: []PathResult{{Wealth: []float64{100, 100}}}}).Outcome()
+	if !math.IsNaN(o.Worst10yCAGR) || !math.IsNaN(o.Worst10yP5) || !math.IsNaN(o.EffectiveTaxRate) {
+		t.Fatalf("undefined short/no-withdrawal outcome: %+v", o)
+	}
+	if o.MedianCumTax != 0 {
+		t.Fatalf("genuine zero tax = %v", o.MedianCumTax)
+	}
+	b, err := json.Marshal(o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fields map[string]any
+	if err := json.Unmarshal(b, &fields); err != nil {
+		t.Fatal(err)
+	}
+	if fields["Worst10yCAGR"] != nil || fields["EffectiveTaxRate"] != nil {
+		t.Fatalf("undefined JSON = %s", b)
+	}
+}
+
+func TestOutcomeTaxDefinedPopulation(t *testing.T) {
+	o := (Ensemble{Years: 1, Paths: []PathResult{
+		{Wealth: []float64{100, 100}}, {Wealth: []float64{100, 100}},
+		{Wealth: []float64{100, 100}, Withdrawn: 80, TaxPaid: 20},
+	}}).Outcome()
+	if o.EffectiveTaxRate != 0.2 {
+		t.Errorf("tax ratio = %v, want median of defined ratios 0.2", o.EffectiveTaxRate)
+	}
+}
 
 // A single total-loss path drives the min worst-decade CAGR to -100%, but the
 // robust p5 worst-decade must not be dragged all the way down by it.

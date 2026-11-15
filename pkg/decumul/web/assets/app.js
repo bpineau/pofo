@@ -807,6 +807,7 @@ async function runSlow() {
     if (!fresh(id)) return;
     setSVG("horizonSvg", r.horizonSvg);
     setSVG("capitalSvg", r.capitalSvg);
+	 document.getElementById("curvesNote").textContent = r.note || "";
   } catch (e) { /* keep the previous curves */ }
 }
 
@@ -1456,7 +1457,7 @@ async function renderModels(b, id) {
     m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`);
   const spendRow = row("Safe spend, no flex",
     "The most you could spend per year and still keep ruin at your acceptable level, under this model. Always solved on the FIXED rule, whatever adaptive rule you selected: a rule that rebases spending on wealth makes ruin non-monotonic in the withdrawal, so the solve would be ill-defined. Everything else (capital, buffer, pension, side income, taxes) is your plan. The gap between this figure and your planned spend is what your flexibility is buying; section 04 shows what it costs in lived income.",
-    m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(m.safeWR < 0.01 ? 2 : 1)}%</span>`);
+    m => m.safeSpend == null ? `<span data-help="${esc(m.solveNote || "Unavailable")}">n/a</span>` : `${m.solveStatus === "boundary_satisfies" ? "≥ " : ""}${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(m.safeWR < 0.01 ? 2 : 1)}%${m.solveStatus === "boundary_satisfies" ? " (bound)" : ""}</span>`);
   const wealthRow = row("Median wealth",
     "Median real wealth left at the end of the horizon, at your planned spend.",
     m => fmtW(m.medianWealth));
@@ -1546,7 +1547,10 @@ async function renderFrontier(b, id) {
 async function renderPolicyFrontier(b, id) {
   try {
     const r = await post("/api/policyfrontier", b);
-    if (fresh(id)) setSVG("policyFrontierSvg", r.policyFrontierSvg);
+    if (fresh(id)) {
+      setSVG("policyFrontierSvg", r.policyFrontierSvg);
+      document.getElementById("policyFrontierNote").textContent = r.note || "";
+    }
   } catch (e) { /* keep the previous chart */ }
 }
 

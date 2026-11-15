@@ -343,7 +343,6 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	post("/api/frontier", func(pr Params) any { return Frontier(pr, panel) })
 	post("/api/policyfrontier", func(pr Params) any { return PolicyFrontier(pr, panel) })
 	post("/api/solvemenu", func(pr Params) any { return SolveMenu(pr, panel) })
-	post("/api/solve", func(pr Params) any { return Solve(pr, panel) })
 	post("/api/spending", func(pr Params) any { return Spending(pr, panel) })
 	post("/api/decade", func(pr Params) any { return Decade(pr, panel) })
 	post("/api/vintages", func(pr Params) any { return Vintages(pr, panel) })

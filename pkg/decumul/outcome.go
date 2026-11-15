@@ -1,6 +1,7 @@
 package decumul
 
 import (
+	"encoding/json"
 	"math"
 	"slices"
 
@@ -20,16 +21,20 @@ type Outcome struct {
 	TerminalP5            float64 // 5th-percentile terminal wealth (0 for ruined)
 	TerminalP50           float64 // median terminal wealth
 	MedianYearsUnderwater float64 // median years spent below the prior real high
-	Worst10yCAGR          float64 // worst (min) rolling 10-year real CAGR across all paths
-	Worst10yP5            float64 // 5th-percentile of paths' worst 10-year real CAGR (robust)
+	Worst10yCAGR          float64 // worst rolling 10-year real CAGR; NaN without a defined decade
+	Worst10yP5            float64 // p5 of defined paths' worst 10-year CAGR; NaN without one
 	CDaR                  float64 // mean of the worst 5% path drawdowns (0.30 = 30%)
 	MedianCumTax          float64 // median cumulative tax paid over a path
-	EffectiveTaxRate      float64 // median per-path tax / gross withdrawn (0.15 = 15%)
+	EffectiveTaxRate      float64 // median tax / gross withdrawn over paths with positive gross withdrawals; NaN if none
 }
 
-// Outcome computes the bundle.
+// Outcome computes the bundle. An empty ensemble has NaN in every field.
+// Tax ratios exclude paths with zero gross withdrawals; cumulative tax includes
+// every path, including genuine zero tax. Decade statistics include only paths
+// with a complete ten-year window starting at positive wealth.
 func (e Ensemble) Outcome() Outcome {
-	var o Outcome
+	nan := math.NaN()
+	o := Outcome{nan, nan, nan, nan, nan, nan, nan, nan, nan}
 	if len(e.Paths) == 0 {
 		return o
 	}
@@ -51,6 +56,7 @@ func (e Ensemble) Outcome() Outcome {
 			underwater[i] = float64(under)
 			maxDDs[i] = dd
 			taxes[i] = p.TaxPaid
+			taxRates[i] = math.NaN()
 			if gross := p.Withdrawn + p.TaxPaid; gross > 0 {
 				taxRates[i] = p.TaxPaid / gross
 			}
@@ -58,8 +64,12 @@ func (e Ensemble) Outcome() Outcome {
 		})
 	})
 	worsts := make([]float64, 0, len(e.Paths))
+	definedTaxRates := make([]float64, 0, len(e.Paths))
 	ruined := 0
 	for i := range e.Paths {
+		if !math.IsNaN(taxRates[i]) {
+			definedTaxRates = append(definedTaxRates, taxRates[i])
+		}
 		if e.Paths[i].Ruined {
 			ruined++
 		}
@@ -80,9 +90,31 @@ func (e Ensemble) Outcome() Outcome {
 		o.Worst10yP5 = metrics.Quantiles(worsts, 0.05)[0]
 	}
 	o.MedianCumTax = metrics.Quantiles(taxes, 0.50)[0]
-	o.EffectiveTaxRate = metrics.Quantiles(taxRates, 0.50)[0]
+	if len(definedTaxRates) > 0 {
+		o.EffectiveTaxRate = metrics.Quantiles(definedTaxRates, 0.50)[0]
+	}
 	o.CDaR = conditionalTail(maxDDs, 0.05)
 	return o
+}
+
+type jsonNumber float64
+
+func (v jsonNumber) MarshalJSON() ([]byte, error) {
+	if math.IsNaN(float64(v)) || math.IsInf(float64(v), 0) {
+		return []byte("null"), nil
+	}
+	return json.Marshal(float64(v))
+}
+
+// MarshalJSON writes undefined and non-finite metrics as null, preserving
+// genuine zero measurements and the exported field names.
+func (o Outcome) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		RuinProb, TerminalP5, TerminalP50, MedianYearsUnderwater       jsonNumber
+		Worst10yCAGR, Worst10yP5, CDaR, MedianCumTax, EffectiveTaxRate jsonNumber
+	}{jsonNumber(o.RuinProb), jsonNumber(o.TerminalP5), jsonNumber(o.TerminalP50),
+		jsonNumber(o.MedianYearsUnderwater), jsonNumber(o.Worst10yCAGR), jsonNumber(o.Worst10yP5),
+		jsonNumber(o.CDaR), jsonNumber(o.MedianCumTax), jsonNumber(o.EffectiveTaxRate)})
 }
 
 // pathPeakStats walks a wealth path once for the two statistics that read the

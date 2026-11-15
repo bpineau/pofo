@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 
@@ -8,31 +9,35 @@ import (
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
-// Conservative broad-sample prior: a cautious, forward-looking world-equity real
-// model used regardless of the portfolio's own rosy history. The pessimism is in
-// the tails, the volatility and the sequence clustering, NOT in an implausibly
-// low average return: consMu is the arithmetic mean of a regime whose blended
-// real geometric return lands near ~3.5% (a forward haircut on the ~4.5-5% DMS
-// world-equity history), with fat tails and persistent drawdowns. Sources: DMS
-// world real equity, broad-sample SWR evidence (Anarkulova, Cederburg &
-// O'Doherty). It deliberately does not assume equities barely grow.
-const (
-	consMu    = 0.045 // arithmetic; blended geometric ~3.5% real under the regime
-	consSigma = 0.13
-	consDf    = 4
-)
-
 // ModelStat is one return model's outcome in the comparison strip. It separates
 // epistemic uncertainty (which model) from the aleatory Monte-Carlo noise inside
 // each model. SafeWR/SafeSpend are the withdrawal that meets the target ruin
 // under this model; Ruin/MedianWealth are evaluated at the user's planned spend.
 type ModelStat struct {
-	Name         string  `json:"name"`         // the return model
-	Ruin         float64 `json:"ruin"`         // fraction, at the planned spend
-	SafeWR       float64 `json:"safeWR"`       // fraction, safe spend / capital
-	SafeSpend    float64 `json:"safeSpend"`    // euros/yr meeting the target ruin
-	MedianWealth float64 `json:"medianWealth"` // median terminal real wealth
-	Help         string  `json:"help"`         // plain-language hover explanation
+	Name         string              `json:"name"`         // the return model
+	Ruin         float64             `json:"ruin"`         // fraction, at the planned spend
+	SafeWR       float64             `json:"safeWR"`       // fraction, safe spend / capital
+	SafeSpend    float64             `json:"safeSpend"`    // euros/yr meeting the target ruin
+	MedianWealth float64             `json:"medianWealth"` // median terminal real wealth
+	Help         string              `json:"help"`         // plain-language hover explanation
+	SolveStatus  decumul.SolveStatus `json:"solveStatus"`  // feasibility or search boundary
+	SolveNote    string              `json:"solveNote"`    // limitation when no crossing was bracketed
+}
+
+// MarshalJSON represents unavailable safe-spending figures as null.
+func (m ModelStat) MarshalJSON() ([]byte, error) {
+	type plain ModelStat
+	number := func(v float64) *float64 {
+		if math.IsNaN(v) || math.IsInf(v, 0) {
+			return nil
+		}
+		return &v
+	}
+	return json.Marshal(struct {
+		plain
+		SafeWR    *float64 `json:"safeWR"`
+		SafeSpend *float64 `json:"safeSpend"`
+	}{plain(m), number(m.SafeWR), number(m.SafeSpend)})
 }
 
 // ModelsResult is the multi-model comparison: the per-model stats, the target
@@ -221,12 +226,14 @@ func evalModel(base decumul.Plan, ns namedSource, capital, target float64, nPath
 	p := base
 	p.Source = ns.source
 
-	o := p.Simulate(nPaths, simWorkers, seed).Outcome()
-	safe := fixedRule(p).Solve(target, decumul.WithdrawalAxis(0, capital*0.15), nPaths, simWorkers, seed)
+	draws := p.Draw(nPaths, simWorkers, seed)
+	o := p.SimulateOn(draws, simWorkers).Outcome()
+	solve, note := solveOn(fixedRule(p), target, decumul.WithdrawalAxis(0, capital*0.15), draws)
 	return ModelStat{
-		Name: ns.name, Help: ns.help,
+		Name: ns.name, Help: ns.help + " " + note,
 		Ruin: o.RuinProb, MedianWealth: o.TerminalP50,
-		SafeSpend: safe, SafeWR: safe / capital,
+		SafeSpend: solve.Solution, SafeWR: solve.Solution / capital,
+		SolveStatus: solve.Status, SolveNote: note,
 	}
 }
 
@@ -279,7 +286,24 @@ func verdict(models []ModelStat, pr Params, target float64) string {
 	if central.Name == "" || pr.Capital == 0 {
 		return ""
 	}
+	if central.SolveNote != "" {
+		return central.SolveNote
+	}
 	return fmt.Sprintf("Safe spend ≈ %.0f k€/yr (%.1f%%) at %.0f%% success · you plan %.0f k€ (%.1f%%)",
 		central.SafeSpend/1000, central.SafeWR*100, (1-target)*100,
 		pr.NeedAnnual/1000, pr.NeedAnnual/pr.Capital*100)
 }
+
+// Conservative broad-sample prior: a cautious, forward-looking world-equity real
+// model used regardless of the portfolio's own rosy history. The pessimism is in
+// the tails, the volatility and the sequence clustering, NOT in an implausibly
+// low average return: consMu is the arithmetic mean of a regime whose blended
+// real geometric return lands near ~3.5% (a forward haircut on the ~4.5-5% DMS
+// world-equity history), with fat tails and persistent drawdowns. Sources: DMS
+// world real equity, broad-sample SWR evidence (Anarkulova, Cederburg &
+// O'Doherty). It deliberately does not assume equities barely grow.
+const (
+	consMu    = 0.045 // arithmetic; blended geometric ~3.5% real under the regime
+	consSigma = 0.13
+	consDf    = 4
+)

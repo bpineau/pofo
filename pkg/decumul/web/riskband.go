@@ -144,10 +144,15 @@ func (pr Params) safeRateAt(years int, target float64) float64 {
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
 		Source:     src,
 	}
-	// A one-year horizon has no risk to speak of: the whole pot is spendable,
-	// and the solver's upper bound would clip an answer of 100 %.
-	safe := p.Solve(target, decumul.WithdrawalAxis(0, unit*0.60), riskSolvePaths, simWorkers, 11)
-	return safe / unit
+	draws := p.Draw(riskSolvePaths, simWorkers, 11)
+	solved, _ := solveOn(p, target, decumul.WithdrawalAxis(0, unit*0.60), draws)
+	if solved.Status == decumul.SolveBoundarySatisfies {
+		// With no income and begin-of-year withdrawals, spending more than
+		// the entire initial pot fails on every path before any return. Thus
+		// 101% is a finite failing bracket for every target below 100%.
+		solved, _ = solveOn(p, target, decumul.WithdrawalAxis(0, unit*1.01), draws)
+	}
+	return solved.Solution / unit
 }
 
 // interpRate reads the table's anchors (horizons descending) at one remaining

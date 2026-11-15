@@ -1,6 +1,7 @@
 package scenario
 
 import (
+	"context"
 	"math"
 	"math/rand/v2"
 )
@@ -38,7 +39,11 @@ func (b BlockBootstrap) Len() int { return b.Periods }
 
 // Draw returns one resampled path.
 func (b BlockBootstrap) Draw(rng *rand.Rand) Sequence {
-	return blocks(rng, b.history(), max(b.BlockLen, 1), b.Periods, func() bool { return false })
+	return b.drawContext(context.Background(), rng)
+}
+
+func (b BlockBootstrap) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
+	return blocks(ctx, rng, b.history(), max(b.BlockLen, 1), b.Periods, func() bool { return false })
 }
 
 // StationaryBootstrap is a block bootstrap with random block lengths drawn
@@ -75,17 +80,21 @@ func (s StationaryBootstrap) Len() int { return s.Periods }
 
 // Draw returns one resampled path.
 func (s StationaryBootstrap) Draw(rng *rand.Rand) Sequence {
+	return s.drawContext(context.Background(), rng)
+}
+
+func (s StationaryBootstrap) drawContext(ctx context.Context, rng *rand.Rand) Sequence {
 	pNew := 1.0
 	if s.MeanBlock > 1 {
 		pNew = 1 / s.MeanBlock
 	}
-	return blocks(rng, s.history(), math.MaxInt, s.Periods, func() bool { return rng.Float64() < pNew })
+	return blocks(ctx, rng, s.history(), math.MaxInt, s.Periods, func() bool { return rng.Float64() < pNew })
 }
 
 // blocks builds a path of n periods by copying from hist starting at random
 // indices. A new block starts when the running block reaches blockLen or
 // restart() returns true. hist is treated circularly.
-func blocks(rng *rand.Rand, hist Sequence, blockLen, n int, restart func() bool) Sequence {
+func blocks(ctx context.Context, rng *rand.Rand, hist Sequence, blockLen, n int, restart func() bool) Sequence {
 	out := make(Sequence, 0, n)
 	h := len(hist)
 	if h == 0 {
@@ -93,6 +102,9 @@ func blocks(rng *rand.Rand, hist Sequence, blockLen, n int, restart func() bool)
 	}
 	pos, left := rng.IntN(h), blockLen
 	for len(out) < n {
+		if ctx.Err() != nil {
+			return nil
+		}
 		if left == 0 || restart() {
 			pos, left = rng.IntN(h), blockLen
 		}

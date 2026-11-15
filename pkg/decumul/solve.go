@@ -55,6 +55,9 @@ func FlexCutAxis(lo, hi float64) SolveAxis {
 // afford at the target (e.g. the safe spending); for a decreasing axis it is the
 // least needed to reach it (e.g. the required capital, or the downturn cut that
 // brings ruin down to target).
+// This compatibility API always returns the final midpoint after 18 halvings,
+// even if no crossing is bracketed or that midpoint exceeds target. Use
+// SolveWithContext to distinguish feasibility and search boundaries.
 func (p Plan) Solve(target float64, axis SolveAxis, nPaths, workers int, seed uint64) float64 {
 	return p.SolveOn(target, axis, p.Draw(nPaths, workers, seed), workers)
 }
@@ -64,6 +67,7 @@ func (p Plan) Solve(target float64, axis SolveAxis, nPaths, workers int, seed ui
 // paths are drawn once instead of once per call, and every answer reads the
 // same futures. The axis must not change what the draws depend on (the
 // Source, the Lifetime), which none of the axes above does.
+// Like Solve, it neither checks endpoint feasibility nor verifies its midpoint.
 func (p Plan) SolveOn(target float64, axis SolveAxis, shared Draws, workers int) float64 {
 	lo, hi := axis.Lo, axis.Hi
 	for range solveSteps {
