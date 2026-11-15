@@ -79,6 +79,7 @@ have a zero risk-free rate in their own units.
 CashIndex accrues an annual nominal percent rate on actual calendar days,
 compounded daily with an explicit denominator. Negative rates are allowed when
 each day's capital remains positive. Changes between output dates are included.
+The rate series' reconstruction/estimate flags and data warnings are retained.
 The input must already be a nominal accrual rate: a Treasury bill discount yield
 requires its instrument-specific conversion first. Published cash total-return
 indices, such as EURCASH-EUR, avoid that conversion when available.

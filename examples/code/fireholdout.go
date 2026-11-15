@@ -131,7 +131,8 @@ func referencePanel() (*marketdata.Panel, error) {
 		return nil, err
 	}
 	// Scenario models need an unbroken monthly sequence. Never silently
-	// chain across a dropped period, including a future reference junction.
+	// chain across a dropped period. Reference exposes no junction metadata;
+	// definition changes that preserve dates must be handled upstream.
 	for i := 1; i < len(p.Ends); i++ {
 		if !p.Starts[i].Equal(p.Ends[i-1]) {
 			return nil, fmt.Errorf("reference gap before %s", p.Ends[i].Format("2006-01-02"))

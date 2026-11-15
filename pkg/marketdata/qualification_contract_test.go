@@ -64,3 +64,35 @@ func TestAdjustmentsRetainIndexQualifications(t *testing.T) {
 		t.Fatal("mutated source metadata")
 	}
 }
+
+func TestCashIndexRetainsRateQualificationsThroughExcess(t *testing.T) {
+	for _, fully := range []bool{false, true} {
+		rates := &Series{Symbol: "RATE", Currency: "EUR", FullySimulated: fully,
+			EstimatedFrom: d(2020, 1, 8), FXExtrapolatedBefore: d(2020, 1, 7),
+			Points: []Point{{d(2020, 1, 6), 2}, {d(2020, 1, 8), 2}},
+		}
+		if !fully {
+			rates.SimulatedBefore = d(2020, 1, 7)
+		}
+		asset := &Series{Symbol: "ASSET", Currency: "EUR", Points: []Point{{d(2020, 1, 6), 100}, {d(2020, 1, 7), 102}, {d(2020, 1, 8), 101}}}
+		cash, err := CashIndex(rates, []time.Time{d(2020, 1, 6), d(2020, 1, 7), d(2020, 1, 8)}, Actual365)
+		if err != nil {
+			t.Fatal(err)
+		}
+		excess, err := asset.Excess(cash, AdjustmentOptions{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, out := range []*Series{cash, excess} {
+			if out.FullySimulated != fully || !out.SimulatedBefore.Equal(rates.SimulatedBefore) || !out.EstimatedFrom.Equal(rates.EstimatedFrom) || !out.FXExtrapolatedBefore.Equal(rates.FXExtrapolatedBefore) {
+				t.Errorf("%s dropped rate qualifications: fully=%v before=%v estimate=%v FX=%v", out.Symbol, out.FullySimulated, out.SimulatedBefore, out.EstimatedFrom, out.FXExtrapolatedBefore)
+			}
+			if len(out.Warnings) < len(rates.DataWarnings()) {
+				t.Errorf("%s lost implicit rate warnings: %v", out.Symbol, out.Warnings)
+			}
+		}
+		if len(rates.Warnings) != 0 || asset.FullySimulated || !asset.SimulatedBefore.IsZero() {
+			t.Fatal("mutated an input")
+		}
+	}
+}
