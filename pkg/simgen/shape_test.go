@@ -2,7 +2,9 @@ package simgen
 
 import (
 	"errors"
+	"fmt"
 	"math"
+	"slices"
 	"testing"
 	"time"
 
@@ -92,6 +94,9 @@ func TestMSCIWorldBlendsDailyShape(t *testing.T) {
 	if len(got.Points) < 4000 {
 		t.Fatalf("points = %d, want daily density in the shape era", len(got.Points))
 	}
+	if !got.FullySimulated || !got.SimulatedBefore.IsZero() {
+		t.Errorf("daily texture mistaken for observed target quotes: fully=%v frontier=%v", got.FullySimulated, got.SimulatedBefore)
+	}
 	// The monthly prefix (1969-12 -> 1990) is preserved as-is in front.
 	if p := got.Points[0]; !p.Date.Equal(net.Points[0].Date) || math.Abs(p.Close-100) > 1e-9 {
 		t.Errorf("first = %+v, want the 1969-12 anchor at 100", p)
@@ -105,6 +110,40 @@ func TestMSCIWorldBlendsDailyShape(t *testing.T) {
 	rate, _, ok := got.At(at)
 	if !ok || math.Abs(rate-want)/want > 1e-9 {
 		t.Errorf("1990-03 level = %v, want %v (net anchor preserved)", rate, want)
+	}
+}
+
+func TestShapedIndexWithoutShapeIsStillReconstructed(t *testing.T) {
+	for _, n := range []int{2, 400} {
+		t.Run(fmt.Sprint(n), func(t *testing.T) {
+			anchor := mkSeries("ANCHOR", n, 0.001)
+			anchor.SimulatedBefore = day(1) // provenance of a component, not the target
+			anchor.Junctions = []time.Time{day(1)}
+			anchor.Warnings = []string{"reference coverage caveat"}
+			fallback := func(Fetcher, time.Time) (*marketdata.Series, error) { return anchor, nil }
+			build := shapedIndex("ANCHOR", "MISSING", 0, fallback)
+			got, err := build(fakeFetcher{"ANCHOR": anchor}, time.Time{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !got.FullySimulated || !got.SimulatedBefore.IsZero() {
+				t.Errorf("fully=%v frontier=%v", got.FullySimulated, got.SimulatedBefore)
+			}
+			if anchor.FullySimulated || !anchor.SimulatedBefore.Equal(day(1)) {
+				t.Error("builder changed the source's provenance")
+			}
+			if !slices.Equal(got.Points, anchor.Points) {
+				t.Error("provenance correction changed prices")
+			}
+			if !slices.Equal(got.Junctions, anchor.Junctions) || !slices.Equal(got.Warnings, anchor.Warnings) {
+				t.Error("provenance correction lost reference qualifications")
+			}
+			real := &marketdata.Series{Points: []marketdata.Point{{Date: day(n - 1), Close: 200}, {Date: day(n), Close: 201}}}
+			grafted := Splice(real, got)
+			if grafted.FullySimulated || !grafted.SimulatedBefore.Equal(real.First().Date) || len(grafted.Points) != n+1 {
+				t.Errorf("real graft lost its frontier or proxy: %+v", grafted)
+			}
+		})
 	}
 }
 

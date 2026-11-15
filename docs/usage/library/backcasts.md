@@ -30,6 +30,11 @@ a shorter history; it never substitutes the file's last date for inception.
 Generation persists known frontiers, the fully simulated flag, warnings and
 definition junctions. Recipes that provide no evidence of a frontier remain
 explicitly unknown. No inception date is guessed from today's catalog.
+Daily-shaped index recipes mark the whole constructed path as simulated:
+the first daily texture date is not the first observed quote of a fund.
+Only grafting the target's own quotes establishes that frontier. For example,
+IWDA's MSCI World texture starts in 1972, while its observed fund quotes start
+in 2009; the stored reconstruction alone has no observed fund segment.
 `ExtendBack` retains the donor's definition junctions through the splice date
 and qualifies copied warnings with the donor name. Consequently `NewPanel`
 still excludes a definition change instead of treating it as a market return.
