@@ -3,7 +3,8 @@
 # name: GAM Star Cat Bond EUR hedged (backcast)
 # method: the EUR-hedged ILS fund composite (see ILSFUNDE), rescaled to the class's own monthly volatility and then lifted to its ongoing charge, spliced behind the fund's real NAVs; monthly before 2011-10, the fund's own weekly cadence after
 # validation: corr=0.354 (weekly 0.800) beta=0.34 TE=3.1%/yr CAGR sim 2.67% vs real 4.33% (overlap 1001 d from 2011-10-31 to 2026-08-31) vs IE00B3Q8M574
-# generated: 2026-10-24
+# generated: 2026-11-15
+# simulated-before: 2011-10-31
 date,close
 2005-12-31,7.767073
 2006-01-02,7.768677
@@ -2571,3 +2572,17 @@ date,close
 2026-10-20,19.014500
 2026-10-21,19.018200
 2026-10-22,19.019900
+2026-10-23,19.026000
+2026-10-27,19.041100
+2026-10-28,19.044100
+2026-10-29,19.045300
+2026-10-30,19.027700
+2026-11-02,19.039200
+2026-11-03,19.041800
+2026-11-04,19.045000
+2026-11-05,19.047300
+2026-11-06,19.047600
+2026-11-09,19.058800
+2026-11-10,19.063100
+2026-11-11,19.067100
+2026-11-12,19.069400
