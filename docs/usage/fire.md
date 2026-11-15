@@ -1,5 +1,12 @@
 # FIRE and decumulation
 
+For a reproducible check against later realized history, run
+`go run examples/code/fireholdout.go -train 20 -years 20` from the module
+root. It fits only on each origin's preceding history and emits JSON with
+held-out outcomes, predictive quantiles and ruin probabilities. Its
+[protocol and measured limits](../specs/fire-holdout-validation.md) distinguish
+retrospective model diagnostics from validated forecasts.
+
 The decumulation engine answers one question: can this capital fund this
 spending, for how long, and with what chance of running out? It works in
 three places: a web simulator, two example scripts and a Go library. The
