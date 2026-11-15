@@ -33,9 +33,12 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 COPY . .
 
 ENV CGO_ENABLED=0 GOOS=linux
+# The context excludes .git, so Go records no VCS revision: the release
+# workflow passes it here, and the numerical API reports it as engine_version.
+ARG POFO_VERSION=
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    go build -trimpath -ldflags="-s -w" -o /out/pofo ./cmd/pofo
+    go build -trimpath -ldflags="-s -w -X main.buildVersion=${POFO_VERSION}" -o /out/pofo ./cmd/pofo
 
 # ---------- 2. runtime stage ----------
 FROM alpine:${ALPINE_VERSION} AS runtime

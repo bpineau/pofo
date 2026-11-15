@@ -14,7 +14,17 @@ import (
 
 type remoteClientKey struct{}
 
+// buildVersion identifies a build made without VCS metadata, such as the
+// container image, whose context excludes .git. It is set with
+// -ldflags "-X main.buildVersion=<tag>@<commit>" and wins when non-empty.
+var buildVersion string
+
+// engineVersion is the build identity reported by the numerical API and MCP:
+// buildVersion, else the module version and VCS revision Go recorded.
 func engineVersion() string {
+	if buildVersion != "" {
+		return buildVersion
+	}
 	if b, ok := debug.ReadBuildInfo(); ok {
 		rev := b.Main.Version
 		for _, v := range b.Settings {

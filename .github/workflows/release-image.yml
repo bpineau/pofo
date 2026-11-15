@@ -57,6 +57,8 @@ jobs:
           pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            POFO_VERSION=${{ github.ref_name }}@${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
