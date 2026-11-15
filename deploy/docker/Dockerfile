@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1
 # pofo: a minimal static runtime image (multi-stage).
 #
 # Build:  DOCKER_BUILDKIT=1 docker build -f deploy/docker/Dockerfile -t pofo:latest .
