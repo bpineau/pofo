@@ -2,8 +2,9 @@
 # id: WPEA
 # name: iShares MSCI World Swap PEA: MSCI World net TR in EUR (1971 with -refdata)
 # method: iShares Core MSCI World net TR in USD (real IWDA from 2009, MSCIWORLD-USD refdata + ^990100-USD-STRD daily shape before, 0.20%/yr TER) converted USD->EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971); real WPEA grafted from 2024
-# validation: corr=0.890 (weekly 0.932) beta=0.91 TE=6.7%/yr CAGR sim 15.05% vs real 14.90% (overlap 641 d from 2024-04-02 to 2026-10-23) vs WPEA
-# generated: 2026-10-24
+# validation: corr=0.893 (weekly 0.934) beta=0.91 TE=6.6%/yr CAGR sim 14.85% vs real 14.75% (overlap 656 d from 2024-04-02 to 2026-11-13) vs WPEA
+# generated: 2026-11-15
+# simulated-before: 2024-04-02
 date,close
 1971-01-31,0.076577
 1971-02-28,0.077428
@@ -14069,3 +14070,18 @@ date,close
 2026-10-21,7.191000
 2026-10-22,7.121000
 2026-10-23,7.118000
+2026-10-26,7.152000
+2026-10-27,7.210000
+2026-10-28,7.219000
+2026-10-29,7.205000
+2026-10-30,7.104000
+2026-11-02,7.119000
+2026-11-03,7.069000
+2026-11-04,7.158000
+2026-11-05,7.004000
+2026-11-06,6.977000
+2026-11-09,7.042000
+2026-11-10,7.053000
+2026-11-11,7.176000
+2026-11-12,7.207000
+2026-11-13,7.151000
