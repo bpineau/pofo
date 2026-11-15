@@ -27,6 +27,12 @@ five read-only tools. It deliberately returns one compact JSON text block,
 without `structuredContent` or `outputSchema`. GET `/mcp` returns 405; there
 are no SSE streams, sessions, resources, tasks or stored portfolios.
 
+FIRE schemas keep all input properties on their containing object. Conditional
+requirements use JSON Schema `if`/`then`/`else`: portfolio versus parametric
+market inputs, and the known amount versus the solved amount. Partial `oneOf`
+branches can hide the shared fields from clients that generate tool argument
+types from those branches. Runtime validation remains authoritative.
+
 ```sh
 curl 'http://127.0.0.1:8787/api/v1/assets/search?query=IWDA&limit=5'
 curl -H 'Content-Type: application/json' \
@@ -74,6 +80,15 @@ trailing JSON and unsupported configurations are errors. Optional pointers
 preserve explicit zero. `meta.defaulted` names every filled default; engine
 and dataset revisions identify the computation. Defaults may change with a
 new build, so supply explicit assumptions for stable inputs.
+
+`pkg/remote/testdata/consumer_cases.json` holds 24 consumer prompts with explicit
+calls and expected interpretations. `TestConsumerCorpus` checks them through
+the Go service, HTTP and MCP against deterministic fixtures: identity, observed
+versus reconstructed history, percentage units, explicit zeros, undefined
+statistics, shared windows, model basis, bounded solves and rejected inputs.
+This is a transport and numerical contract corpus. It does not measure an
+LLM's ability to choose a call or explain its result; that requires running
+the prompts with a named model and grading its actual responses separately.
 
 Asset/portfolio returns are nominal. CAGR is geometric annual growth;
 volatility annualizes periodic standard deviation at the reported cadence;

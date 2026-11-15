@@ -131,19 +131,22 @@ func inputSchema(o operation) map[string]any {
 	case "solve_fire":
 		plan := p["plan"].(map[string]any)
 		plan["properties"].(map[string]any)["policy"] = enum("fixed_real")
-		var axes []any
-		for _, axis := range []string{"capital", "annual_spending"} {
-			other := "capital"
-			if axis == "capital" {
-				other = "annual_spending"
-			}
-			axes = append(axes, map[string]any{"properties": map[string]any{"solve_for": map[string]any{"const": axis}, "plan": map[string]any{"required": []string{other}, "not": map[string]any{"required": []string{axis}}}}})
+		constraint := func(required, omitted string) map[string]any {
+			return map[string]any{"properties": map[string]any{"plan": map[string]any{"required": []string{required}, "not": map[string]any{"required": []string{omitted}}}}}
 		}
-		s["oneOf"] = axes
+		// Keep all fields in the object shape: consumers that render oneOf
+		// as a union can lose the sibling properties of partial branches.
+		s["if"] = discriminator("solve_for", "capital")
+		s["then"] = constraint("annual_spending", "capital")
+		s["else"] = constraint("capital", "annual_spending")
 	}
 	return s
 }
 func enum(xs ...string) map[string]any { return map[string]any{"type": "string", "enum": xs} }
+
+func discriminator(field, value string) map[string]any {
+	return map[string]any{"properties": map[string]any{field: map[string]any{"const": value}}, "required": []string{field}}
+}
 func decorateSchema(s map[string]any) {
 	props, _ := s["properties"].(map[string]any)
 	for name, v := range props {
@@ -160,10 +163,10 @@ func decorateSchema(s map[string]any) {
 				}
 				return map[string]any{"anyOf": choices}
 			}
-			p["oneOf"] = []any{
-				map[string]any{"properties": map[string]any{"mode": map[string]any{"const": "parametric"}}, "required": []string{"real_mean_return_pct", "annual_volatility_pct", "degrees_of_freedom"}, "not": forbidden("holdings", "history", "data_policy", "from", "to")},
-				map[string]any{"properties": map[string]any{"mode": map[string]any{"const": "portfolio"}}, "required": []string{"holdings"}, "not": forbidden("real_mean_return_pct", "annual_volatility_pct", "degrees_of_freedom")},
-			}
+			p["description"] = "Parametric mode requires real_mean_return_pct, annual_volatility_pct and degrees_of_freedom. Portfolio mode requires holdings and fits those parameters. Do not mix the two sets."
+			p["if"] = discriminator("mode", "parametric")
+			p["then"] = map[string]any{"required": []string{"real_mean_return_pct", "annual_volatility_pct", "degrees_of_freedom"}, "not": forbidden("holdings", "history", "data_policy", "from", "to")}
+			p["else"] = map[string]any{"required": []string{"holdings"}, "not": forbidden("real_mean_return_pct", "annual_volatility_pct", "degrees_of_freedom")}
 		case "mode":
 			p["enum"] = []string{"parametric", "portfolio"}
 		case "history":
@@ -174,6 +177,7 @@ func decorateSchema(s map[string]any) {
 			p["enum"] = []string{"fixed_real", "guyton_klinger"}
 		case "solve_for":
 			p["enum"] = []string{"annual_spending", "capital"}
+			p["description"] = "Omit this amount from plan; supply the other amount and horizon_years."
 		case "model":
 			p["enum"] = modelNames
 		case "models":

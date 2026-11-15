@@ -1934,15 +1934,28 @@ func sp500Index(annualFee float64, fallback func(Fetcher, time.Time) (*marketdat
 func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		anchor, err := f.Fetch(anchorID, from)
+		var out *marketdata.Series
 		if err != nil || anchor == nil || len(anchor.Points) <= 300 {
-			return fallback(f, from)
+			out, err = fallback(f, from)
+		} else {
+			out = anchor
+			if shape, serr := f.Fetch(shapeID, shapeStart(anchor, from)); serr == nil && shape != nil && len(shape.Points) > 300 {
+				shape.Points = despike(shape.Points)
+				out = shapedSeries(alignMonthEnd(anchorID, anchor, shape), shape)
+			}
+			out, err = afterFee(out, annualFee)
 		}
-		out := anchor
-		if shape, serr := f.Fetch(shapeID, shapeStart(anchor, from)); serr == nil && shape != nil && len(shape.Points) > 300 {
-			shape.Points = despike(shape.Points)
-			out = shapedSeries(alignMonthEnd(anchorID, anchor, shape), shape)
+		if err != nil {
+			return nil, err
 		}
-		return afterFee(out, annualFee)
+		// A texture's first daily point is not the target's first real quote.
+		// This whole output is constructed; only a later target graft can
+		// establish its real frontier. Copy even with no fee or daily shape,
+		// when out can still be the fetcher's shared reference series.
+		cp := *out
+		cp.SimulatedBefore = time.Time{}
+		cp.FullySimulated = true
+		return &cp, nil
 	}
 }
 
