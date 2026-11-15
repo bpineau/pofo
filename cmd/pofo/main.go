@@ -75,6 +75,9 @@ type options struct {
 	// client, and the whole process, may have resolved upstream per hour.
 	// A zero foreignPerHour leaves the feature off, and only catalog
 	// identifiers are accepted from the web (see cmd/pofo/foreign.go).
+	serveAPI             bool
+	serveMCP             bool
+	serveOrigins         string
 	foreignPerHour       int
 	foreignGlobalPerHour int
 	// exactForeign resolves identifiers outside the bundled catalog exactly,
@@ -168,6 +171,9 @@ func run(ctx context.Context, argv []string) error {
 	indexNow := fs.String("indexnow", "", "submit every published URL of this origin (e.g. https://example.org) to the IndexNow search engines, then exit; needs -indexnow-key")
 	fs.StringVar(&opt.indexNowKey, "indexnow-key", "", "IndexNow ownership key: with -serve, serve it at /<key>.txt; with -indexnow, sign the submission with it (empty = read POFO_INDEXNOW_KEY from the environment; both empty = feature off)")
 	fs.StringVar(&opt.cfBeaconToken, "cf-beacon-token", "", "Cloudflare Web Analytics site token: with -serve or -fire, put the cookieless beacon on every HTML page (empty = read POFO_CF_BEACON_TOKEN from the environment; both empty = feature off)")
+	fs.BoolVar(&opt.serveAPI, "serve-api", false, "with -serve: enable the read-only numerical HTTP API at /api/v1/")
+	fs.BoolVar(&opt.serveMCP, "serve-mcp", false, "with -serve: enable the stateless MCP endpoint at /mcp")
+	fs.StringVar(&opt.serveOrigins, "serve-origins", "", "with -serve-api/-serve-mcp: comma-separated exact allowed browser origins (default none)")
 	fs.IntVar(&opt.foreignPerHour, "serve-foreign-per-hour", 10, "with -serve: how many identifiers outside the bundled catalog one client may have fetched from the quote sources per hour (0 = refuse them all, catalog only)")
 	fs.IntVar(&opt.foreignGlobalPerHour, "serve-foreign-global-per-hour", 60, "with -serve: the same budget for the whole process, all clients together")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")

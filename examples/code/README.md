@@ -65,3 +65,7 @@ answers which question, a complete program, the units table), and every
 package's `go doc` page opens on the calls to start with. What turns out to
 be worth keeping becomes a script here, a `pofo` mode, or library code with
 tests.
+
+For compact operation results, run `go run examples/code/numerical.go -h`.
+It calls the same `remote.Service` used by the optional HTTP/MCP endpoints.
+The default catalog search needs no network access.
