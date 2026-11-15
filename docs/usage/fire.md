@@ -13,6 +13,12 @@ purchasing power after forty years.
 
 ## The simulator
 
+The history badge describes coverage, not forecast confidence. A history
+exactly as long as the plan contains just one full-horizon start window.
+Longer records add overlapping windows, not independent retirements; drawing
+more paths only reduces conditional simulation noise. The hover note reports
+both the available starts and the maximum number of non-overlapping windows.
+
 ```sh
 ./pofo -fire                                            # the simulator alone
 ./pofo -fire examples/portfolios/fire-decumulation-core.txt   # seeded from a portfolio

@@ -1405,8 +1405,8 @@ async function renderModels(b, id) {
   document.getElementById("verdict").textContent = r.verdict || "";
   const conf = document.getElementById("confidence");
   const cap = s => s ? s[0] + s.slice(1).toLowerCase() : "";
-  conf.textContent = r.confidence ? `Confidence: ${cap(r.confidence)}` : "";
-  if (r.confNote) conf.setAttribute("data-help", r.confNote);
+  conf.textContent = r.historyCoverage ? `History: ${cap(r.historyCoverage)}` : "";
+  if (r.historyNote) conf.setAttribute("data-help", r.historyNote);
   else conf.removeAttribute("data-help");
   const ms = r.models || [];
   // The selected column drives the hero readout and every detail section;
