@@ -150,6 +150,8 @@ func decorateSchema(s map[string]any) {
 		p := v.(map[string]any)
 		decorateSchema(p)
 		switch name {
+		case "asset_class":
+			p["enum"] = append([]string{""}, assetClasses()...)
 		case "market":
 			forbidden := func(names ...string) map[string]any {
 				var choices []any

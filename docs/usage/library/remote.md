@@ -39,9 +39,10 @@ curl -H 'Content-Type: application/json' \
 
 All money and allocations belong in POST bodies. Responses are `no-store`.
 New-route access logs omit query strings, referrers, user-agent strings and
-bodies. With either remote endpoint enabled, shared market-data diagnostic
-logging is also disabled because it contains requested identifiers; aggregate
-cost events and response warnings remain available. No share URL is generated and no submitted portfolio is persisted.
+bodies. Market-data diagnostics remain enabled, including asset identifiers and
+fallback warnings; they do not log submitted allocations, labels, capital or
+spending. Aggregate operation costs and response warnings remain available.
+No share URL is generated and no submitted portfolio is persisted.
 
 ## Direct Go use
 
@@ -143,7 +144,8 @@ and `outcome_metrics` reuse the same ensemble. Full paths are never returned.
 | Seed | integer 0 through `2^53-1` |
 | FIRE work | 60 million path-steps including generation and solves |
 | Per-client operation admission | 60/minute, burst 10 |
-| Shared server computations / waiting queue | 2 / 16 |
+| Asset/portfolio computations / waiting queue (shared with `/view`) | 2 / 16 |
+| FIRE computations (shared with the web simulator) | `max(2, GOMAXPROCS/2)`, cancellable waiting |
 | API/MCP deadline | 60 seconds, including queue wait |
 | Request-triggered upstream HTTP | 60/minute, burst 10, including retries/redirects |
 | New foreign IDs | default 10/client/hour, 60/process/hour, shared with web |
@@ -152,7 +154,8 @@ and `outcome_metrics` reuse the same ensemble. Full paths are never returned.
 and refuses stale cache fallbacks. Bundled snapshots remain available and are
 identified by the dataset revision. `cached_or_fetch` permits bounded retrieval;
 existing upstream fallback warnings remain visible. Simultaneous identical
-fetches coalesce; one cancelled waiter does not cancel another. Unknown IDs
+fetches coalesce; one cancelled waiter does not cancel another, and shared work
+stops when the last waiter leaves rather than at a separate flight deadline. Unknown IDs
 are negative-cached for five minutes with a bounded table; outages are not.
 
 `-serve-origins` accepts comma-separated exact browser origins. Cross-origin

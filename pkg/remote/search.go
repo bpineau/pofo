@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"maps"
 	"slices"
 	"strings"
 	"sync"
@@ -15,6 +16,15 @@ import (
 )
 
 var catalog = sync.OnceValue(datasets.Catalog)
+var assetClasses = sync.OnceValue(func() []string {
+	classes := map[string]bool{}
+	for _, a := range catalog() {
+		if a.AssetClass != "" {
+			classes[a.AssetClass] = true
+		}
+	}
+	return slices.Sorted(maps.Keys(classes))
+})
 var extensions = sync.OnceValue(func() map[string]bool {
 	out := map[string]bool{}
 	for _, id := range marketdata.BundledIDs() {
@@ -55,7 +65,7 @@ func (s *Service) search(in SearchInput, r *Result) (SearchData, error) {
 		currencies[a.Currency] = true
 	}
 	if in.AssetClass != "" && !classes[in.AssetClass] {
-		return out, invalid("asset_class", "Unknown catalog asset class.")
+		return out, invalid("asset_class", "Unknown catalog asset class; valid values: "+strings.Join(assetClasses(), ", ")+".")
 	}
 	if in.Currency != "" && !currencies[in.Currency] {
 		return out, invalid("currency", "Unknown catalog quote currency.")

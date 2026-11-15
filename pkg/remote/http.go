@@ -16,6 +16,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/fire"
 )
 
 // Event records costs without request contents, query strings, identifiers or amounts.
@@ -35,7 +37,8 @@ type HTTPOptions struct {
 	Origins []string // Origins lists exact permitted browser origins.
 	// ClientID must implement the deployment's trusted proxy policy. Nil uses socket IP.
 	ClientID func(*http.Request) string
-	// Acquire shares a bounded computation queue with other server surfaces.
+	// Acquire shares a bounded asset/portfolio queue with other server surfaces.
+	// FIRE operations instead use fire.Acquire, shared with the web simulator.
 	// It returns a release function, called exactly once after successful acquisition.
 	// Nil uses a private gate with two active requests and sixteen waiting.
 	Acquire func(context.Context) (func(), error)
@@ -99,7 +102,7 @@ func (h *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	h.api(w, r)
 }
-func (h *httpServer) admit(r *http.Request) (func(), error) {
+func (h *httpServer) admit(r *http.Request, operation string) (func(), error) {
 	key := ""
 	if h.opt.ClientID != nil {
 		key = h.opt.ClientID(r)
@@ -131,9 +134,13 @@ func (h *httpServer) admit(r *http.Request) (func(), error) {
 	}
 	b.tokens--
 	h.mu.Unlock()
-	if h.opt.Acquire != nil {
+	acquire := h.opt.Acquire
+	if operation == "simulate_fire" || operation == "solve_fire" {
+		acquire = fire.Acquire
+	}
+	if acquire != nil {
 		start := time.Now()
-		release, err := h.opt.Acquire(r.Context())
+		release, err := acquire(r.Context())
 		if cost, ok := r.Context().Value(costKey{}).(*requestCost); ok {
 			cost.wait = time.Since(start)
 		}
@@ -142,7 +149,7 @@ func (h *httpServer) admit(r *http.Request) (func(), error) {
 	return func() {}, nil
 }
 func (h *httpServer) execute(r *http.Request, name string, input []byte) (*Result, error) {
-	release, err := h.admit(r)
+	release, err := h.admit(r, name)
 	if err != nil {
 		return nil, err
 	}

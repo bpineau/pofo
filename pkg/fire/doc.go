@@ -10,6 +10,8 @@
 // taxable-account planning rate, not universal legal rates. Explicit zeros are
 // preserved. Set the returned plan's Source from PrepareModel and use decumul's
 // context-aware drawing, simulation and structured solving methods.
+// Server handlers use Acquire to share process-wide computation capacity;
+// it queues concurrent page sections until admitted or cancelled.
 //
 // All money is in starting purchasing power. Rates and weights are fractions;
 // Mu is an arithmetic annual real mean, Sigma annual volatility, and Nu the

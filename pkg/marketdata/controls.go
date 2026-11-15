@@ -25,6 +25,9 @@ func cacheOnly(ctx context.Context) bool { b, _ := ctx.Value(cacheOnlyKey{}).(bo
 // Configure it before use; the zero value coalesces fetches without rate limiting.
 // Unknown-identifier failures are cached for five minutes (at most 1024).
 // Temporary outages are not negative-cached; no credentials are retained.
+// Each waiter keeps its own deadline. Shared work is cancelled when the last
+// waiter leaves, with no independent shorter timeout; Client.HTTP still bounds
+// individual provider requests.
 type Controls struct {
 	mu       sync.Mutex
 	rate     float64
@@ -155,7 +158,7 @@ func (c *Client) coalesced(ctx context.Context, id string, opt FetchOptions) (*S
 	}
 	f := ctrl.flights[key]
 	if f == nil {
-		work, cancel := context.WithTimeout(context.WithoutCancel(ctx), 60*time.Second)
+		work, cancel := context.WithCancel(context.WithoutCancel(ctx))
 		f = &flight{done: make(chan struct{}), cancel: cancel}
 		ctrl.flights[key] = f
 		go func() {

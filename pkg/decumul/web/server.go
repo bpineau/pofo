@@ -62,7 +62,7 @@ type handlerConfig struct {
 	beaconToken string
 	notes       []string
 	embedded    bool
-	gate        simGate // nil = processGate, the one budget every Handler shares
+	gate        simGate // nil = fire.Acquire, shared with numerical transports
 }
 
 // Option configures Handler.
@@ -158,9 +158,6 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	var cfg handlerConfig
 	for _, o := range opts {
 		o(&cfg)
-	}
-	if cfg.gate == nil {
-		cfg.gate = processGate
 	}
 	mux := http.NewServeMux()
 	// The index page carries a "<!--topnav-->" placeholder; splice the
@@ -316,11 +313,12 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			if !cfg.gate.acquire(r) {
+			release, err := cfg.gate.wait(r.Context())
+			if err != nil {
 				http.Error(w, "busy", http.StatusServiceUnavailable)
 				return
 			}
-			defer cfg.gate.release()
+			defer release()
 			// The risk-based guardrail's table is solved on the page's own
 			// central assumptions (blended toward the prior on a short
 			// history, CAPE-anchored when the anchor is on), which only the

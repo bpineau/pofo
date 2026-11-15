@@ -243,7 +243,10 @@ Library clients opt into outbound admission and fetch coalescing by assigning
 `client.Controls = marketdata.NewControls(60, time.Minute, 10)` before use.
 The quota counts actual HTTP requests, including redirects, retries, Yahoo
 authentication and auxiliary sources. Concurrent identical fetches share work;
-one cancelled caller does not cancel remaining waiters. Unknown identifiers
+one cancelled caller does not cancel remaining waiters. Each waiter keeps its
+own deadline, and the last departing waiter cancels the shared work. There is
+no shorter flight timeout; the HTTP client's per-request timeout still applies.
+Unknown identifiers
 are cached for five minutes (at most 1024 failures), temporary outages are not.
 
 `marketdata.WithCacheOnly(ctx)` forbids network work throughout a request and
