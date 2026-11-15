@@ -52,3 +52,22 @@ func TestNonzeroConstantMoments(t *testing.T) {
 		t.Fatal("roundoff created variation in a constant sample")
 	}
 }
+
+func TestZeroTotalContributionHasUndefinedReturnShares(t *testing.T) {
+	a, err := Attribute([][]float64{{.125, -.125}, {0, 0}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if a.Risk[0] != 1 || a.Risk[1] != 0 {
+		t.Fatalf("lost measurable risk: %+v", a)
+	}
+	for _, v := range a.Return {
+		if !math.IsNaN(v) {
+			t.Fatalf("zero denominator became a measured return share: %+v", a)
+		}
+	}
+	b, err := json.Marshal(a)
+	if err != nil || !strings.Contains(string(b), `"Return":[null,null]`) {
+		t.Fatalf("JSON=%s err=%v", b, err)
+	}
+}

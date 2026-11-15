@@ -3,6 +3,7 @@ package marketdata
 import (
 	"fmt"
 	"slices"
+	"time"
 )
 
 // DataWarnings returns a detached, deduplicated copy of Warnings plus known
@@ -42,4 +43,22 @@ func appendWarning(dst []string, warning string) []string {
 		return append(dst, warning)
 	}
 	return dst
+}
+
+// inheritProvenance qualifies a curve that depends on both histories. A
+// wholly reconstructed input leaves no fully observed portion of the result,
+// even when the other input has a known real-quote frontier.
+func (s *Series) inheritProvenance(input *Series) {
+	s.FullySimulated = s.FullySimulated || input.FullySimulated
+	if s.FullySimulated {
+		s.SimulatedBefore = time.Time{}
+	} else if input.SimulatedBefore.After(s.SimulatedBefore) {
+		s.SimulatedBefore = input.SimulatedBefore
+	}
+	if !input.EstimatedFrom.IsZero() && (s.EstimatedFrom.IsZero() || input.EstimatedFrom.Before(s.EstimatedFrom)) {
+		s.EstimatedFrom = input.EstimatedFrom
+	}
+	if input.FXExtrapolatedBefore.After(s.FXExtrapolatedBefore) {
+		s.FXExtrapolatedBefore = input.FXExtrapolatedBefore
+	}
 }

@@ -11,7 +11,8 @@ var ErrNoContributions = errors.New("metrics: no usable contribution series")
 
 // Attribution splits one portfolio quantity across its holdings. Shares are
 // fractions of the portfolio total (0.25 = 25 %) in the input's asset order,
-// and they sum to 1 by construction.
+// and defined shares sum to 1. Return shares are NaN when the attributable
+// contributions sum to zero; risk shares can still be measured in that case.
 type Attribution struct {
 	Risk   []float64 // share of the portfolio's variance (Euler decomposition)
 	Return []float64 // share of the portfolio's realized return
@@ -87,6 +88,8 @@ func Attribute(contrib [][]float64) (Attribution, error) {
 		}
 		if total != 0 {
 			att.Return[i] = sum / total
+		} else {
+			att.Return[i] = math.NaN()
 		}
 	}
 

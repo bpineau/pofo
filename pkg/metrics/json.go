@@ -54,3 +54,18 @@ func (r Regression) MarshalJSON() ([]byte, error) {
 		R2, ResidualSD jsonNumber
 	}{plain(r), jsonNumber(r.R2), jsonNumber(r.ResidualSD)})
 }
+
+// MarshalJSON preserves undefined attribution shares as null.
+func (a Attribution) MarshalJSON() ([]byte, error) {
+	numbers := func(xs []float64) []jsonNumber {
+		if xs == nil {
+			return nil
+		}
+		out := make([]jsonNumber, len(xs))
+		for i, v := range xs {
+			out[i] = jsonNumber(v)
+		}
+		return out
+	}
+	return json.Marshal(struct{ Risk, Return []jsonNumber }{numbers(a.Risk), numbers(a.Return)})
+}

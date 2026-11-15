@@ -135,7 +135,10 @@ func firePanel(ctx context.Context, opt *options, c *marketdata.Client, specs []
 				continue
 			}
 			b.labels = append(b.labels, h.ID)
-			assets = append(assets, web.AssetSeries{Weight: h.Weight, Points: s.Points})
+			assets = append(assets, web.AssetSeries{Weight: h.Weight, Points: s.Points, Junctions: append([]time.Time(nil), s.Junctions...)})
+			for _, warning := range s.DataWarnings() {
+				b.notes = append(b.notes, h.ID+": "+warning)
+			}
 		}
 		if len(missing) > 0 {
 			b.notes = append(b.notes, fmt.Sprintf("No historical panel: %s could not be read, and the other holdings alone are another portfolio.",
@@ -148,6 +151,10 @@ func firePanel(ctx context.Context, opt *options, c *marketdata.Client, specs []
 			b.notes = append(b.notes, "No historical panel: the inflation series could not be read.")
 			return b
 		}
+		for i := range assets {
+			assets[i].Junctions = append(assets[i].Junctions, hicp.Junctions...)
+		}
+		b.notes = append(b.notes, hicp.DataWarnings()...)
 		pnl, cov, err := web.BuildMonthlyPanel(assets, hicp.Points)
 		if err != nil {
 			log.Printf("warning: fire: no historical panel: %v", err)

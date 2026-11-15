@@ -5,6 +5,9 @@ In particular, a constant return series has no Pearson correlation, and
 an identical benchmark has zero tracking error but an undefined information
 ratio. Zero correlation means measured absence of linear association, not
 missing variation. Correlation matrices retain NaN in the affected entries.
+Return attribution shares are also undefined when the attributable
+contributions sum to zero. Risk shares remain available when their variance
+is measurable; structured JSON reports the undefined return shares as null.
 Validation gates must require a defined passing value, for example
 `!(corr >= minimum)` to reject: `corr < minimum` alone does not reject NaN.
 

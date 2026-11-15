@@ -9,7 +9,7 @@ func (p *Panel) mixMetadata(id string, weights map[string]float64) (map[string]*
 	for key, s := range p.meta {
 		meta[key] = s
 	}
-	mix := &Series{Symbol: id, Source: "blend", FullySimulated: true}
+	mix := &Series{Symbol: id, Source: "blend"}
 	unknown := false
 	for _, key := range p.IDs {
 		if weights[key] == 0 {
@@ -18,10 +18,9 @@ func (p *Panel) mixMetadata(id string, weights map[string]float64) (map[string]*
 		s := p.meta[key]
 		if s == nil {
 			unknown = true
-			mix.FullySimulated = false
 			continue
 		}
-		mix.FullySimulated = mix.FullySimulated && s.FullySimulated
+		mix.inheritProvenance(s)
 		if s.Currency == "" {
 			unknown = true
 		} else if mix.Currency == "" {
@@ -31,15 +30,6 @@ func (p *Panel) mixMetadata(id string, weights map[string]float64) (map[string]*
 		}
 		for _, w := range s.Warnings {
 			mix.Warnings = append(mix.Warnings, key+": "+w)
-		}
-		if s.SimulatedBefore.After(mix.SimulatedBefore) {
-			mix.SimulatedBefore = s.SimulatedBefore
-		}
-		if !s.EstimatedFrom.IsZero() && (mix.EstimatedFrom.IsZero() || s.EstimatedFrom.Before(mix.EstimatedFrom)) {
-			mix.EstimatedFrom = s.EstimatedFrom
-		}
-		if s.FXExtrapolatedBefore.After(mix.FXExtrapolatedBefore) {
-			mix.FXExtrapolatedBefore = s.FXExtrapolatedBefore
 		}
 	}
 	if unknown {
