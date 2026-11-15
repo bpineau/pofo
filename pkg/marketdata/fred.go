@@ -53,17 +53,17 @@ func (c *Client) fetchFREDRate(ctx context.Context, id string) ([]Point, error) 
 }
 
 func (c *Client) fredSeries(ctx context.Context, id string, keepNonPositive bool) ([]Point, error) {
-	if c.Offline {
+	if c.Offline || cacheOnly(ctx) {
 		return nil, ErrOffline
 	}
 	u := fmt.Sprintf("%s/graph/fredgraph.csv?id=%s", c.FredBase, url.QueryEscape(id))
-	req, err := http.NewRequest(http.MethodGet, u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("User-Agent", fredUserAgent)
 	req.Header.Set("Accept", "text/csv,*/*")
-	resp, err := fredHTTP.Do(req)
+	resp, err := c.requestHTTP(fredHTTP, req)
 	if err != nil {
 		return nil, err
 	}

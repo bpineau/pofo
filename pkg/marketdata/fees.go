@@ -39,6 +39,9 @@ func (c *Client) Fees(ctx context.Context, id string) (ter float64, ok bool) {
 	if e, found := c.feesLookup(canonical); found && time.Since(e.AsOf) < feesMaxAge {
 		return e.TER, e.TER >= 0
 	}
+	if cacheOnly(ctx) {
+		return 0, false
+	}
 	ter, src, err := c.fetchFees(ctx, canonical)
 	if err != nil {
 		c.Logf("fees unknown for %s (%v)", canonical, err)
