@@ -42,14 +42,14 @@ func (m ModelStat) MarshalJSON() ([]byte, error) {
 }
 
 // ModelsResult is the multi-model comparison: the per-model stats, the target
-// ruin they were solved against, a single confidence badge about the data
-// backing the historical models, and the central-case verdict sentence.
+// ruin they were solved against, the history's horizon coverage, and the
+// central-case verdict sentence. Coverage is not forecast confidence.
 type ModelsResult struct {
-	Models     []ModelStat `json:"models"`     // one per return model, in strip order
-	TargetRuin float64     `json:"targetRuin"` // the ruin target solved against (fraction)
-	Confidence string      `json:"confidence"` // HIGH | MEDIUM | LOW
-	ConfNote   string      `json:"confNote"`   // one-line reason
-	Verdict    string      `json:"verdict"`    // central-case headline
+	Models          []ModelStat `json:"models"`          // one per return model, in strip order
+	TargetRuin      float64     `json:"targetRuin"`      // the ruin target solved against (fraction)
+	HistoryCoverage string      `json:"historyCoverage"` // PARAMETRIC | SHORT | FULL HORIZON
+	HistoryNote     string      `json:"historyNote"`     // observation count and its interpretation
+	Verdict         string      `json:"verdict"`         // central-case headline
 }
 
 // namedSource pairs a return model with its label and hover help.
@@ -80,7 +80,7 @@ func Models(pr Params, panel *scenario.Panel) ModelsResult {
 	concurrently(len(sources), func(i int) {
 		res.Models[i] = evalModel(base, sources[i], pr.Capital, target, pr.NPaths)
 	})
-	res.Confidence, res.ConfNote = confidence(pr, panel)
+	res.HistoryCoverage, res.HistoryNote = historyCoverage(pr, panel)
 	res.Verdict = verdict(res.Models, pr, target)
 	return res
 }
@@ -225,23 +225,17 @@ func fixedRule(p decumul.Plan) decumul.Plan {
 	return p
 }
 
-// confidence rates how much the data-backed models can be trusted at the chosen
-// horizon: a fund history shorter than the horizon holds no independent
-// full-length retirement, so the historical figures are optimistic about
-// long-horizon sequence risk.
-func confidence(pr Params, panel *scenario.Panel) (level, note string) {
-	if panel == nil {
-		return "MEDIUM", "Parametric models only (no portfolio loaded); the figures are assumption-driven, not data-backed."
+// historyCoverage counts available full-horizon windows without treating
+// overlapping cohorts or repeated Monte Carlo draws as independent evidence.
+func historyCoverage(pr Params, panel *scenario.Panel) (level, note string) {
+	if panel == nil || panel.Periods() < minPanelMonths || pr.Years <= 0 {
+		return "PARAMETRIC", "Portfolio history is absent or insufficient for history-based models. Parametric assumptions and external stress references do not establish forecast confidence."
 	}
-	histYears := panel.Periods() / 12
-	switch {
-	case histYears >= pr.Years:
-		return "HIGH", fmt.Sprintf("Fund history %dy covers the %dy horizon.", histYears, pr.Years)
-	case histYears*3 >= pr.Years:
-		return "MEDIUM", fmt.Sprintf("History %dy vs %dy horizon: the history-based columns (Historical, Block bootstrap) reflect one favourable window and read optimistic; Conservative is a deliberate broad-sample worst case. Plan near the central columns, between the two.", histYears, pr.Years)
-	default:
-		return "LOW", fmt.Sprintf("History %dy is short vs the %dy horizon: the history-based columns are unreliable here. Weight the central (Student-t/Regime) and Conservative columns.", histYears, pr.Years)
+	months, horizon := panel.Periods(), pr.Years*12
+	if months < horizon {
+		return "SHORT", fmt.Sprintf("%d months of portfolio history: no complete %d-year window. Bootstrap reuses this limited record; more paths do not add historical evidence. This is not a confidence level.", months, pr.Years)
 	}
+	return "FULL HORIZON", fmt.Sprintf("%d months of portfolio history; full-horizon start windows: %d (overlapping). At most %d non-overlapping %d-year windows fit. Non-overlap does not establish independence or future reliability. This is not a confidence level.", months, months-horizon+1, months/horizon, pr.Years)
 }
 
 // verdict is the central-case headline: the safe spend (in euros and as a rate)

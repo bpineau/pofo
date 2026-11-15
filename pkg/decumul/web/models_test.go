@@ -96,8 +96,8 @@ func TestModelsWithPanelAddsHistorical(t *testing.T) {
 			t.Errorf("expected model %q with a panel", n)
 		}
 	}
-	if res.Confidence == "" {
-		t.Errorf("expected a confidence level")
+	if res.HistoryCoverage == "" {
+		t.Errorf("expected history coverage")
 	}
 	if res.Verdict == "" {
 		t.Errorf("expected a verdict line")
