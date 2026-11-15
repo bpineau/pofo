@@ -39,7 +39,9 @@ curl -H 'Content-Type: application/json' \
 
 All money and allocations belong in POST bodies. Responses are `no-store`.
 New-route access logs omit query strings, referrers, user-agent strings and
-bodies. No share URL is generated and no submitted portfolio is persisted.
+bodies. With either remote endpoint enabled, shared market-data diagnostic
+logging is also disabled because it contains requested identifiers; aggregate
+cost events and response warnings remain available. No share URL is generated and no submitted portfolio is persisted.
 
 ## Direct Go use
 

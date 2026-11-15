@@ -177,6 +177,12 @@ func newServer(opt *options, client *marketdata.Client) *server {
 	if client != nil && client.Controls == nil {
 		client.Controls = marketdata.NewControls(60, time.Minute, 10)
 	}
+	if client != nil && (opt.serveAPI || opt.serveMCP) {
+		// One shared client serves all surfaces. Its diagnostic messages contain
+		// requested identifiers, so remote-enabled servers report aggregate costs
+		// instead; substantive data qualifications remain in operation warnings.
+		client.Logf = func(string, ...any) {}
+	}
 	s := &server{
 		opt:        opt,
 		client:     client,
