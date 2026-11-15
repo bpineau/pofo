@@ -3,7 +3,6 @@ package marketdata
 import (
 	"fmt"
 	"math"
-	"slices"
 	"time"
 )
 
@@ -160,6 +159,8 @@ const (
 // The last observed rate remains in force; a tail beyond its observation
 // is recorded in Warnings. Currency is copied from rates; when absent the
 // caller must supply the denomination before mixing with another currency.
+// Reconstruction and estimate qualifications, including implicit data
+// warnings, are retained from rates.
 func CashIndex(rates *Series, dates []time.Time, basis DayCount) (*Series, error) {
 	if err := validLevels(rates, false); err != nil {
 		return nil, err
@@ -192,7 +193,8 @@ func CashIndex(rates *Series, dates []time.Time, basis DayCount) (*Series, error
 	}
 	out.Currency = rates.Currency
 	out.Source = rates.Source
-	out.Warnings = slices.Clone(rates.Warnings)
+	out.inheritProvenance(rates)
+	out.Warnings = rates.DataWarnings()
 	ratePos := 0
 	for i := 1; i < out.Len(); i++ {
 		growth := 1.0
