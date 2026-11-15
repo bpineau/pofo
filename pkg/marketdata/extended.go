@@ -100,6 +100,10 @@ type FetchOptions struct {
 // like Fetch plus the window and currency handling, so it is safe to route
 // every asset of a portfolio through this single entry point.
 func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions) (*Series, error) {
+	return c.coalesced(ctx, id, opt)
+}
+
+func (c *Client) fetchExtended(ctx context.Context, id string, opt FetchOptions) (*Series, error) {
 	base, wantSim := SplitSim(id)
 	if opt.NoSim {
 		wantSim = false

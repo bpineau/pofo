@@ -144,11 +144,15 @@ func MergeDividends(dst []Dividend, events ...Dividend) []Dividend {
 
 // Series is the price history of one asset, sorted by ascending date.
 type Series struct {
-	Symbol   string  // the identifier it was fetched or loaded under (canonical)
-	Name     string  // display name, from the source or the catalog; may be empty
-	Currency string  // ISO code of Points (major unit); "" for rates and indices without one
-	Source   string  // "yahoo", "stooq", "ft", "morningstar", "simdata", "refdata"...
-	Points   []Point // strictly ascending dates, one per session
+	// Cache provenance is internal: it prevents strict cache-only callers from
+	// inheriting the relaxed Offline or failed-refresh fallback through memoization.
+	cacheFetchedAt time.Time
+	cacheRelaxed   bool
+	Symbol         string  // the identifier it was fetched or loaded under (canonical)
+	Name           string  // display name, from the source or the catalog; may be empty
+	Currency       string  // ISO code of Points (major unit); "" for rates and indices without one
+	Source         string  // "yahoo", "stooq", "ft", "morningstar", "simdata", "refdata"...
+	Points         []Point // strictly ascending dates, one per session
 	// Cadence is the explicit periods per year of a sampled return path.
 	// Zero infers it from dates. Panel.Series preserves its measured cadence.
 	Cadence float64

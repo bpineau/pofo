@@ -236,3 +236,17 @@ from the proxy's moves, and its daily series runs on past its last published
 value. The estimate is flagged (`IntradaySeries.Estimate`,
 `Series.EstimatedFrom`, `Quote.Source == "nowcast"`), never cached, and
 `Series.WithoutEstimates` strips it.
+
+## Shared request controls
+
+Library clients opt into outbound admission and fetch coalescing by assigning
+`client.Controls = marketdata.NewControls(60, time.Minute, 10)` before use.
+The quota counts actual HTTP requests, including redirects, retries, Yahoo
+authentication and auxiliary sources. Concurrent identical fetches share work;
+one cancelled caller does not cancel remaining waiters. Unknown identifiers
+are cached for five minutes (at most 1024 failures), temporary outages are not.
+
+`marketdata.WithCacheOnly(ctx)` forbids network work throughout a request and
+its dependencies, while retaining normal freshness and coverage requirements.
+It refuses stale disk and memo fallbacks. This differs from `Client.Offline`,
+which deliberately accepts cached data of any age. Bundled data remains usable.

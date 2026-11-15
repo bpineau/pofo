@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"cmp"
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -54,8 +55,13 @@ func (c *Client) cachePath(symbol string) string {
 // reads it, an outdated date being better than no data during an outage. An
 // Offline client takes a file of any age: what it holds is all there is.
 func (c *Client) loadCache(symbol string, from time.Time) (*Series, bool) {
-	s, cf, ok := c.loadCacheEntry(symbol, from)
-	if !ok || (!c.Offline && time.Since(cf.FetchedAt) > c.MaxAge) {
+	return c.loadCacheContext(context.Background(), symbol, from)
+}
+
+func (c *Client) loadCacheContext(ctx context.Context, symbol string, from time.Time) (*Series, bool) {
+	offline := c.Offline && !cacheOnly(ctx)
+	s, cf, ok := c.loadCacheEntryMode(symbol, from, offline)
+	if !ok || (!offline && time.Since(cf.FetchedAt) > c.MaxAge) {
 		return nil, false
 	}
 	if misdated(s, cf.Version) {
@@ -104,6 +110,10 @@ func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.T
 // would be deeper, except by an Offline client, which has no refetch to wait
 // for and serves the shorter history.
 func (c *Client) loadCacheEntry(symbol string, from time.Time) (*Series, cacheFile, bool) {
+	return c.loadCacheEntryMode(symbol, from, c.Offline)
+}
+
+func (c *Client) loadCacheEntryMode(symbol string, from time.Time, offline bool) (*Series, cacheFile, bool) {
 	if c.CacheDir == "" {
 		return nil, cacheFile{}, false
 	}
@@ -116,10 +126,10 @@ func (c *Client) loadCacheEntry(symbol string, from time.Time) (*Series, cacheFi
 		return nil, cacheFile{}, false
 	}
 	reqFrom, err := time.ParseInLocation("2006-01-02", cf.RequestedFrom, time.UTC)
-	if err != nil || (reqFrom.After(from) && !c.Offline) {
+	if err != nil || (reqFrom.After(from) && !offline) {
 		return nil, cacheFile{}, false
 	}
-	s := &Series{Symbol: cf.Symbol, Name: cf.Name, Currency: cf.Currency, Source: cf.Source, Warnings: cf.Warnings}
+	s := &Series{Symbol: cf.Symbol, Name: cf.Name, Currency: cf.Currency, Source: cf.Source, Warnings: cf.Warnings, cacheFetchedAt: cf.FetchedAt, cacheRelaxed: offline && reqFrom.After(from)}
 	s.Warnings = s.DataWarnings()
 	for i, d := range cf.Dates {
 		t, err := time.ParseInLocation("2006-01-02", d, time.UTC)
@@ -159,6 +169,8 @@ func (c *Client) saveCache(s *Series, from time.Time) {
 // saveCacheAs persists a downloaded series under an explicit cache identity
 // (the view key: "VOO", "VOO~raw", or the original ISIN for fund sources).
 func (c *Client) saveCacheAs(cacheID string, s *Series, from time.Time) {
+	s.cacheFetchedAt = time.Now()
+	s.cacheRelaxed = false
 	cf := cacheFile{
 		Symbol:        s.Symbol,
 		Name:          s.Name,

@@ -23,6 +23,9 @@ const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleW
 // Client downloads price histories with an on-disk cache.
 // The zero value is not usable; use NewClient.
 type Client struct {
+	// Controls optionally coalesces fetches and limits outgoing requests. Set
+	// before concurrent use. Nil preserves the library's unrestricted behavior.
+	Controls *Controls
 	HTTP     *http.Client  // every request goes through it (timeouts included)
 	CacheDir string        // on-disk quote cache; "" disables caching
 	MaxAge   time.Duration // how long a cached download stays fresh
@@ -236,7 +239,7 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, spec fetc
 	// Offline, every source reports the same refusal, and the per-source
 	// summary of a search would only repeat it: say it once. A currency
 	// refusal stays itself, the instrument having been found.
-	if err != nil && c.Offline && !errors.Is(err, ErrWrongCurrency) {
+	if err != nil && (c.Offline || cacheOnly(ctx)) && !errors.Is(err, ErrWrongCurrency) {
 		return nil, fmt.Errorf("%s: %w", canonical, ErrOffline)
 	}
 	return s, err
@@ -865,7 +868,7 @@ func (c *Client) History(ctx context.Context, symbol string, from time.Time) (*S
 func (c *Client) historyView(ctx context.Context, symbol string, from time.Time, raw bool) (*Series, error) {
 	symbol = strings.ToUpper(strings.TrimSpace(symbol))
 	key := viewKey(symbol, raw) + "|" + from.Format("2006-01-02")
-	if s, ok := c.memoized(key); ok {
+	if s, ok := c.memoizedContext(ctx, key); ok {
 		return s, nil
 	}
 	s, err := c.history(ctx, symbol, from, raw)
@@ -895,7 +898,7 @@ func viewKey(id string, raw bool) string {
 
 func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw bool) (*Series, error) {
 	cacheID := viewKey(symbol, raw)
-	if s, ok := c.loadCache(cacheID, from); ok {
+	if s, ok := c.loadCacheContext(ctx, cacheID, from); ok {
 		return s, nil
 	}
 	if c.Offline {
@@ -933,7 +936,16 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 // the instrument (the source prefix, the "~raw" view), and the snapshot must
 // be found by the instrument alone.
 func (c *Client) staleFallback(ctx context.Context, cacheID, embedID string, from time.Time, cause error) (*Series, error) {
+	if cacheOnly(ctx) {
+		if emb, ok := embeddedHistory(embedID); ok {
+			return emb, nil
+		}
+		return nil, ErrOffline
+	}
 	s, fetchedAt, ok := c.loadCacheAnyAge(cacheID, from)
+	if ok {
+		s.cacheRelaxed = true
+	}
 	if !ok {
 		if emb, embOK := embeddedHistory(embedID); embOK {
 			warning := fmt.Sprintf("data fallback: using the embedded %s snapshot (ends %s)",
@@ -983,10 +995,10 @@ func (c *Client) historyMS(ctx context.Context, id string, res resolution, from 
 func (c *Client) cachedHistory(ctx context.Context, source, id string, from time.Time, raw bool, fetch func() (*Series, error)) (*Series, error) {
 	cacheID := sourceCacheID(source, id, raw)
 	key := cacheID + "|" + from.Format("2006-01-02")
-	if s, ok := c.memoized(key); ok {
+	if s, ok := c.memoizedContext(ctx, key); ok {
 		return s, nil
 	}
-	if s, ok := c.loadCache(cacheID, from); ok {
+	if s, ok := c.loadCacheContext(ctx, cacheID, from); ok {
 		c.memoize(key, s)
 		return s, nil
 	}
@@ -1028,10 +1040,10 @@ func (c *Client) embeddedHistory(ctx context.Context, source, id string, from ti
 	}
 	cacheID := sourceCacheID(source, id, false)
 	key := cacheID + "|" + from.Format("2006-01-02")
-	if s, ok := c.memoized(key); ok {
+	if s, ok := c.memoizedContext(ctx, key); ok {
 		return s, nil
 	}
-	if s, ok := c.loadCache(cacheID, from); ok {
+	if s, ok := c.loadCacheContext(ctx, cacheID, from); ok {
 		c.memoize(key, s)
 		return s, nil
 	}
@@ -1049,7 +1061,7 @@ type memoEntry struct {
 	at     time.Time
 }
 
-func (c *Client) memoized(key string) (*Series, bool) {
+func (c *Client) memoizedContext(ctx context.Context, key string) (*Series, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	e, ok := c.memo[key]
@@ -1058,6 +1070,9 @@ func (c *Client) memoized(key string) (*Series, bool) {
 	}
 	if c.MemoTTL > 0 && time.Since(e.at) > c.MemoTTL {
 		delete(c.memo, key)
+		return nil, false
+	}
+	if cacheOnly(ctx) && (e.series.cacheRelaxed || !e.series.cacheFetchedAt.IsZero() && time.Since(e.series.cacheFetchedAt) > c.MaxAge) {
 		return nil, false
 	}
 	return e.series, true
@@ -1087,7 +1102,7 @@ func (c *Client) post(ctx context.Context, rawURL, contentType string, payload [
 // while a transport error, a rate limit, a 5xx or any other status is the
 // source not answering and stays unmarked. See errAbsent.
 func (c *Client) do(ctx context.Context, method, rawURL, contentType string, payload []byte, headers map[string]string) ([]byte, error) {
-	if c.Offline {
+	if c.Offline || cacheOnly(ctx) {
 		return nil, ErrOffline
 	}
 	var lastErr error
@@ -1120,7 +1135,7 @@ func (c *Client) do(ctx context.Context, method, rawURL, contentType string, pay
 		for k, v := range headers {
 			req.Header.Set(k, v)
 		}
-		resp, err := c.HTTP.Do(req)
+		resp, err := c.requestHTTP(c.HTTP, req)
 		if err != nil {
 			lastErr = err
 			continue
