@@ -145,7 +145,9 @@ fmt.Printf("in sample CAGR %.2f %%, out of sample CAGR %.2f %%\n", result.InSamp
 
 Use `Evaluate(returns, weights, periodsPerYear)` to measure an existing
 long-only allocation without fitting. Measurements assume rebalancing every
-period, with no fees or flows. A zero-variance Sharpe is reported as zero.
+period, with no fees or flows. A zero-variance Sharpe is undefined: NaN in
+Go, JSON null in both solver and evaluation results, including nested
+`FitEvaluation` and `FrontierPoint` values.
 
 `Solve` and `SolveCWARP` reject a nonzero `Spec.Train`. After applying a
 parsed `train:` window, clear that field on the solver copy. This makes a

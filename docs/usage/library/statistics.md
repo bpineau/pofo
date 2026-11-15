@@ -1,5 +1,11 @@
 # Statistics
 
+Undefined ratios remain NaN in Go and null in structured JSON results.
+In particular, a constant return series has no Pearson correlation, and
+an identical benchmark has zero tracking error but an undefined information
+ratio. Zero correlation means measured absence of linear association, not
+missing variation. Correlation matrices retain NaN in the affected entries.
+
 `pkg/metrics` computes risk and return statistics on plain slices of dates
 and values, so it works on any series, including one you built yourself.
 `Series.Stats` is the shortcut from a loaded series, and `analyze.Asset`

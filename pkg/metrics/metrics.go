@@ -204,8 +204,15 @@ func slope(xs, ys []float64) float64 {
 // Mean returns the arithmetic mean of xs.
 func Mean(xs []float64) float64 {
 	sum := 0.0
+	constant := len(xs) > 0
 	for _, x := range xs {
 		sum += x
+		constant = constant && x == xs[0]
+	}
+	// Preserve exact constants: summing a repeated decimal can round its
+	// mean away from every observation and manufacture nonzero variance.
+	if constant {
+		return xs[0]
 	}
 	return sum / float64(len(xs))
 }

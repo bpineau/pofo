@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"slices"
 	"sync"
 	"time"
@@ -245,6 +246,11 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 		ps.Correlation, err = metrics.CorrelationMatrix(panel.R)
 		if err != nil {
 			return nil, fmt.Errorf("analyze: correlation: %w", err)
+		}
+		for i, row := range ps.Correlation {
+			if math.IsNaN(row[i]) {
+				warnings = append(warnings, fmt.Sprintf("%s: undefined correlation (constant or insufficient shared returns)", p.Assets[i].ID))
+			}
 		}
 	}
 

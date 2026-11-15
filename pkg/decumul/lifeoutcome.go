@@ -1,6 +1,11 @@
 package decumul
 
-import "github.com/bpineau/pofo/pkg/metrics"
+import (
+	"encoding/json"
+	"math"
+
+	"github.com/bpineau/pofo/pkg/metrics"
+)
 
 // LifeOutcome bundles the statistics only a drawn lifetime can produce: what
 // share of households actually experienced running out of money, how long they
@@ -44,9 +49,11 @@ type LifeOutcome struct {
 	IncomeMean float64
 }
 
-// LifeOutcome computes the bundle.
+// LifeOutcome computes the bundle. An empty ensemble has NaN in every field;
+// IncomeMean is NaN when no spending year was lived. JSON uses null for NaN.
 func (e Ensemble) LifeOutcome() LifeOutcome {
-	var o LifeOutcome
+	nan := math.NaN()
+	o := LifeOutcome{nan, nan, nan, nan, nan, nan, nan, nan, nan, nan}
 	n := len(e.Paths)
 	if n == 0 {
 		return o
@@ -96,6 +103,15 @@ func (e Ensemble) LifeOutcome() LifeOutcome {
 		o.IncomeMean = income / float64(years)
 	}
 	return o
+}
+
+// MarshalJSON preserves undefined lifetime statistics as null.
+func (o LifeOutcome) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		RuinAlive, OutlivedPlan, MedianLifeYears, BrokeYearsMean, BrokeYearsP95 jsonNumber
+		EstateP5, EstateP50, EstateP90, EstateZero, IncomeMean                  jsonNumber
+	}{jsonNumber(o.RuinAlive), jsonNumber(o.OutlivedPlan), jsonNumber(o.MedianLifeYears), jsonNumber(o.BrokeYearsMean), jsonNumber(o.BrokeYearsP95),
+		jsonNumber(o.EstateP5), jsonNumber(o.EstateP50), jsonNumber(o.EstateP90), jsonNumber(o.EstateZero), jsonNumber(o.IncomeMean)})
 }
 
 // Estates returns each path's real wealth at the household's end, in path

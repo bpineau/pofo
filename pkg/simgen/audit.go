@@ -48,8 +48,8 @@ type Junction struct {
 // to the asset's own volatility, so a cash-like proxy is not condemned for a
 // meaningless daily correlation.
 //
-// It marshals to JSON under its Go field names with no NaN: a figure that
-// could not be measured is zero (MonthlyCorr with Months under twelve, every
+// It marshals to JSON under its Go field names with undefined ratios as null.
+// An unmeasured block is zero (MonthlyCorr with Months under twelve, every
 // statistic when Err is set), a date never set is omitted, and the curves
 // kept for charting (Engine, Real, Others) stay out.
 type AuditResult struct {
@@ -458,6 +458,8 @@ func grade(a AuditResult) (level, path Verdict, score float64) {
 		rel = a.RelativeTE()
 	}
 	switch {
+	case math.IsNaN(corr):
+		path = VerdictUnknown
 	case corr < 0.75 && rel > 0.6:
 		path = VerdictBad
 	case corr < 0.90 || rel > 0.4:

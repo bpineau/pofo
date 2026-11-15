@@ -272,7 +272,7 @@ type Result struct {
 	Weights    []float64 // one per asset, in input order, summing to 1
 	Return     float64   // expected annualized return
 	Volatility float64   // expected annualized volatility
-	Sharpe     float64   // expected annualized Sharpe ratio (risk-free 0)
+	Sharpe     float64   // expected annualized Sharpe ratio at Spec.RiskFree; NaN at zero volatility
 
 	// Achieved values of the path-dependent objectives, set by the solver
 	// that targets them (zero otherwise).
@@ -584,6 +584,7 @@ func Solve(returns [][]float64, periodsPerYear float64, spec Spec) (Result, erro
 		res.Feasible = true // no limit to violate
 	}
 	if err == nil {
+		res.Sharpe = math.NaN()
 		if res.Volatility > 0 {
 			res.Sharpe = (res.Return - spec.RiskFree) / res.Volatility
 		}
@@ -759,11 +760,7 @@ func meanCov(returns [][]float64, periodsPerYear float64) (mu []float64, cov [][
 	t := len(returns[0])
 	mean := make([]float64, n)
 	for i, r := range returns {
-		s := 0.0
-		for _, x := range r {
-			s += x
-		}
-		mean[i] = s / float64(t)
+		mean[i] = metrics.Mean(r)
 	}
 	cov = make([][]float64, n)
 	for i := range cov {
@@ -1117,7 +1114,7 @@ func projectCappedSimplex(v []float64, maxW float64) []float64 {
 // it is the posterior mean, so they are the EXPECTED figures the views imply,
 // which is the point of that objective.
 func stats(w, mu []float64, cov [][]float64) Result {
-	r := Result{Weights: w, Return: dot(mu, w)}
+	r := Result{Weights: w, Return: dot(mu, w), Sharpe: math.NaN()}
 	if v := quad(cov, w); v > 0 {
 		r.Volatility = math.Sqrt(v)
 		r.Sharpe = r.Return / r.Volatility

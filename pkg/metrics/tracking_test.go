@@ -100,13 +100,13 @@ func TestTrack(t *testing.T) {
 		t.Errorf("Beta %v, Regress %v (%v)", tr.Beta, reg.Betas, err)
 	}
 
-	// A constant reference: co-movement figures only, no NaN.
+	// A constant reference has no regression slope or correlation.
 	flat, err := Track(a, []float64{0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001}, 12)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if flat.Beta != 0 || flat.Alpha != 0 || flat.VolRatio != 0 || flat.Corr != 0 || !(flat.TrackingError > 0) {
-		t.Errorf("constant b = %+v, want zero beta, alpha, ratio and correlation, a tracking error", flat)
+	if !math.IsNaN(flat.Beta) || !math.IsNaN(flat.Alpha) || !math.IsNaN(flat.VolRatio) || !math.IsNaN(flat.Corr) || !(flat.TrackingError > 0) {
+		t.Errorf("constant b = %+v, want undefined beta, alpha, ratio and correlation, a tracking error", flat)
 	}
 	if (Tracking{}).DifferenceSE() != 0 {
 		t.Error("an empty Tracking has a standard error")

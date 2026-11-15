@@ -25,7 +25,7 @@ type Performance struct {
 // returns at periodsPerYear. The weights must be finite nonnegative fractions
 // summing to 1, in the panel's asset order. As with Solve, at least two
 // observations are required. The allocation is rebalanced every period, with
-// no fees or flows. Undefined Sharpe (zero variance) is reported as zero.
+// no fees or flows. Undefined Sharpe (zero variance) is NaN, or null in JSON.
 func Evaluate(returns [][]float64, weights []float64, periodsPerYear float64) (Performance, error) {
 	return EvaluateWithRiskFree(returns, weights, periodsPerYear, 0)
 }
@@ -45,15 +45,9 @@ func EvaluateWithRiskFree(returns [][]float64, weights []float64, periodsPerYear
 	}
 	buf := make([]float64, len(returns[0]))
 	blend(returns, weights, buf)
-	p := Performance{CAGR: compound(buf, periodsPerYear), Volatility: metrics.Volatility(buf, periodsPerYear), MaxDrawdown: pathMaxDrawdown(buf)}
+	p := Performance{CAGR: compound(buf, periodsPerYear), Volatility: metrics.Volatility(buf, periodsPerYear), MaxDrawdown: pathMaxDrawdown(buf), Sharpe: metrics.Sharpe(buf, riskFree, periodsPerYear)}
 	if !finite(p.CAGR) || !finite(p.Volatility) || !finite(p.MaxDrawdown) {
 		return Performance{}, fmt.Errorf("allocation path statistics overflow")
-	}
-	if p.Volatility > 0 {
-		for _, r := range buf {
-			p.Sharpe += r / float64(len(buf)) * periodsPerYear / p.Volatility
-		}
-		p.Sharpe -= riskFree / p.Volatility
 	}
 	return p, nil
 }

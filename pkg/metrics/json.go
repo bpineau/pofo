@@ -31,6 +31,15 @@ func (r Relative) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct{ Beta, Alpha, InfoRatio, UpCapture, DownCapture jsonNumber }{jsonNumber(r.Beta), jsonNumber(r.Alpha), jsonNumber(r.InfoRatio), jsonNumber(r.UpCapture), jsonNumber(r.DownCapture)})
 }
 
+// MarshalJSON preserves undefined tracking statistics as null.
+func (t Tracking) MarshalJSON() ([]byte, error) {
+	type plain Tracking
+	return json.Marshal(struct {
+		plain
+		Corr, VolA, VolB, VolRatio, TrackingError, Difference, Beta, Alpha jsonNumber
+	}{plain(t), jsonNumber(t.Corr), jsonNumber(t.VolA), jsonNumber(t.VolB), jsonNumber(t.VolRatio), jsonNumber(t.TrackingError), jsonNumber(t.Difference), jsonNumber(t.Beta), jsonNumber(t.Alpha)})
+}
+
 // MarshalJSON represents undefined or infinite coefficient statistics as null.
 func (e Estimate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct{ Value, SE, T jsonNumber }{jsonNumber(e.Value), jsonNumber(e.SE), jsonNumber(e.T)})
