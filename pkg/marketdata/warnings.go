@@ -33,10 +33,14 @@ func (s *Series) DataWarnings() []string {
 		}
 	}
 	if s.FullySimulated {
-		out = appendWarning(out, "entire history is reconstructed, not real quotes")
+		out = appendWarning(out, reconstructedWarning)
 	}
 	return out
 }
+
+// reconstructedWarning is the qualification DataWarnings derives from
+// FullySimulated.
+const reconstructedWarning = "entire history is reconstructed, not real quotes"
 
 func appendWarning(dst []string, warning string) []string {
 	if !slices.Contains(dst, warning) {
