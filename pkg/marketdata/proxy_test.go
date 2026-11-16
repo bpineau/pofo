@@ -150,3 +150,22 @@ func TestExtendBackRefusals(t *testing.T) {
 		})
 	}
 }
+
+// A wholly reconstructed donor must not label the spliced series as wholly
+// reconstructed: SimulatedBefore already bounds the donated segment, and the
+// asset's own quotes follow it. The donor's other qualifications survive.
+func TestExtendBackFullySimulatedDonor(t *testing.T) {
+	asset := &Series{Symbol: "IWDA", Points: []Point{{d(2010, 9, 9), 100}, {d(2010, 9, 10), 101}}}
+	proxy := &Series{Symbol: "IWDASIM", FullySimulated: true, Warnings: []string{reconstructedWarning, "donor caveat"},
+		Points: []Point{{d(2000, 1, 3), 40}, {d(2010, 9, 9), 50}}}
+	if !ExtendBack(asset, proxy) {
+		t.Fatal("the series should have been extended")
+	}
+	if asset.FullySimulated || !asset.SimulatedBefore.Equal(d(2010, 9, 9)) {
+		t.Fatalf("provenance: fully=%v before=%v", asset.FullySimulated, asset.SimulatedBefore)
+	}
+	got := strings.Join(asset.DataWarnings(), "; ")
+	if strings.Contains(got, reconstructedWarning) || !strings.Contains(got, "proxy IWDASIM: donor caveat") {
+		t.Fatalf("warnings: %s", got)
+	}
+}

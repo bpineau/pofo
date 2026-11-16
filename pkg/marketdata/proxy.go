@@ -73,7 +73,9 @@ func ProxySymbol(symbol string) (string, bool) {
 // the asset's currency (a sub-unit such as GBp and its currency agree):
 // FetchExtended converts it first.
 // The donated segment retains its definition junctions (including the
-// anchor date) and data warnings; metadata belonging only to the unused
+// anchor date) and data warnings, except a wholly reconstructed proxy's
+// whole-history qualification: SimulatedBefore bounds the donated segment,
+// and the asset's own quotes follow it. Metadata belonging only to the unused
 // proxy tail is not copied. The proxy is never modified.
 func ExtendBack(s, proxy *Series) bool {
 	if len(s.Points) == 0 || len(proxy.Points) == 0 || !s.SimulatedBefore.IsZero() || s.FullySimulated {
@@ -109,6 +111,9 @@ func ExtendBack(s, proxy *Series) bool {
 	s.Junctions = slices.CompactFunc(s.Junctions, time.Time.Equal)
 	s.Warnings = s.DataWarnings()
 	for _, w := range proxy.DataWarnings() {
+		if w == reconstructedWarning {
+			continue
+		}
 		s.Warnings = appendWarning(s.Warnings, "proxy "+proxy.Symbol+": "+w)
 	}
 	s.SimulatedBefore = anchor.Date
