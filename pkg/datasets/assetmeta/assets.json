@@ -10751,6 +10751,192 @@
     }
   },
   {
+    "id": "IE000GZJ7UA4",
+    "isin": "IE000GZJ7UA4",
+    "aliases": [
+      "MAET",
+      "MAET-USD",
+      "MAET.L"
+    ],
+    "name": "Man Active Trend Enhanced UCITS ETF I H USD Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "yahoo",
+    "symbol": "MAET.L",
+    "currency": "USD",
+    "fees": 0.97,
+    "asset_class": "multi-asset",
+    "underlying": "Approximately 100% developed-market equity plus 100% systematic trend following",
+    "benchmark_index": "active (MSCI World equity reference)",
+    "strategy": "futures-overlay",
+    "geography": {
+      "Australia": 2,
+      "Canada": 3,
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other developed": 3,
+      "Other eurozone": 3,
+      "Switzerland": 2,
+      "UK": 3,
+      "US": 73
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 11,
+      "Information Technology": 32,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
+    "distribution": "accumulating",
+    "leverage": 2,
+    "notes": "Country and sector weights approximate the equity sleeve using its benchmark. The class and fund base currency are both USD. Look-through equity currency hedges are unquantified.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.man.com/products/man-active-trend-enhanced-ucits-etf-i-h-usd",
+      "https://www.man.com/documents/download/1d637-56fd1-87cae-44b39/Man_Active_Trend_Enhanced_UCITS_ETF_I_H_USD_Key_Information_Document_Fran%C3%A7ais_%28France%29_20-10-2026.pdf",
+      "https://www.ishares.com/ch/professionals/en/products/251882/ishares-msci-world-ucits-etf-acc-fund"
+    ],
+    "as_of": "2026-09",
+    "since": "2026-10-22",
+    "exposures": {
+      "equity": 1,
+      "managed-futures": 1
+    },
+    "currency_exposure": {
+      "Dynamic": 100,
+      "Unknown": 100
+    }
+  },
+  {
+    "id": "IE000BS31R00",
+    "isin": "IE000BS31R00",
+    "aliases": [
+      "MAET-EUR",
+      "MAET.DE"
+    ],
+    "name": "Man Active Trend Enhanced UCITS ETF I H EUR Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "yahoo",
+    "symbol": "MAET.DE",
+    "currency": "EUR",
+    "fees": 0.95,
+    "asset_class": "multi-asset",
+    "underlying": "Approximately 100% developed-market equity plus 100% systematic trend following",
+    "benchmark_index": "active (MSCI World equity reference)",
+    "strategy": "futures-overlay",
+    "geography": {
+      "Australia": 2,
+      "Canada": 3,
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other developed": 3,
+      "Other eurozone": 3,
+      "Switzerland": 2,
+      "UK": 3,
+      "US": 73
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 11,
+      "Information Technology": 32,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
+    "distribution": "accumulating",
+    "leverage": 2,
+    "notes": "Country and sector weights approximate the equity sleeve using its benchmark. The share class hedges the USD fund NAV into EUR. Its KID estimates ongoing charges of 0.95%; the I H class TER cap is 0.97%. Look-through equity currency hedges are unquantified.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.man.com/products/man-active-trend-enhanced-ucits-etf-i-h-eur",
+      "https://www.man.com/documents/download/f581b-c5a1a-0113a-b5add/Man_Active_Trend_Enhanced_UCITS_ETF_I_H_EUR_Key_Information_Document_Fran%C3%A7ais_%28France%29_20-10-2026.pdf",
+      "https://www.ishares.com/ch/professionals/en/products/251882/ishares-msci-world-ucits-etf-acc-fund"
+    ],
+    "as_of": "2026-09",
+    "since": "2026-10-22",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "exposures": {
+      "equity": 1,
+      "managed-futures": 1
+    },
+    "currency_exposure": {
+      "Dynamic": 100,
+      "Unknown": 100
+    }
+  },
+  {
+    "id": "MATE",
+    "isin": "US56164V3033",
+    "aliases": [
+      "MATE"
+    ],
+    "name": "Man Active Trend Enhanced ETF",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "MATE",
+    "currency": "USD",
+    "fees": 0.97,
+    "asset_class": "multi-asset",
+    "underlying": "Approximately 100% US large-cap equity plus 100% systematic trend following",
+    "benchmark_index": "active (S&P 500 equity reference)",
+    "strategy": "futures-overlay",
+    "geography": {
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
+    },
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
+      "Energy": 3,
+      "Financials": 12,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
+    "distribution": "distributing",
+    "leverage": 2,
+    "notes": "Country and sector weights approximate the equity sleeve using its benchmark. The trend sleeve takes long and short positions across markets.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.man.com/documents/download/149eb-62f60-5567f-a0682/Man_Active_Trend_Enhanced_ETF_Factsheet_English_%28United_States%29_27-02-2026.pdf",
+      "https://www.sec.gov/Archives/edgar/data/2065379/000119312525317204/d93472d497k.htm",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
+    ],
+    "as_of": "2026-08",
+    "since": "2025-12-16",
+    "exposures": {
+      "equity": 1,
+      "managed-futures": 1
+    },
+    "currency_exposure": {
+      "Dynamic": 100,
+      "USD": 100
+    }
+  },
+  {
     "id": "LI0115208543",
     "isin": "LI0115208543",
     "aliases": [

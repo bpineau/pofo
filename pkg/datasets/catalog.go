@@ -34,7 +34,8 @@ const (
 // years (for a stacked fund, the effective duration of its bond exposure per
 // unit of notional); Exposures maps asset_class → notional weight (may sum
 // past 1 for stacked funds); CurrencyExposure maps a fiat currency (ISO 4217,
-// plus "None" for real assets and "Dynamic" for futures books) to a percent
+// plus "None" for real assets, "Dynamic" for futures books and "Unknown"
+// for an unidentified net currency exposure) to a percent
 // of capital, and any shortfall below 100 counts as "None". AsOf dates the
 // breakdowns (YYYY-MM, the month of the factsheet or holdings file they were
 // read from); empty on a record not refreshed since the field was introduced,

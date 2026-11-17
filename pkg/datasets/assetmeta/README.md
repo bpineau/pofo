@@ -45,7 +45,7 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `geography` | approximate region weights (percent), `{ "Global developed": 100 }`, or `null` when not meaningful (gold, broad managed futures, money market) |
 | `sectors` | approximate equity sector weights (percent), or `null` for non-equity; for a stacked fund, describes the equity leg |
 | `currency` | the quote line's currency: what `symbol`/`xid` actually serves (ISO code, plus `GBp` for a London pence line). Not the denomination, not the exposure; see "What `currency` means" |
-| `currency_exposure` | optional look-through fiat exposure: currency (ISO code, plus `None` for real assets and `Dynamic` for futures books) → percent of capital; any shortfall below 100 counts as `None`. Set it only where the automatic derivation (`suggest.CurrencySplit`: hedging, asset class, geography, then quote currency) is wrong: funds denominated differently than their holdings' countries (corporate/aggregate bonds, EM hard-currency debt), mixed-region equity residuals worth resolving |
+| `currency_exposure` | optional look-through fiat exposure: currency or [exposure bucket](#currency-exposure) → percent of capital; any shortfall below 100 counts as `None`. Set it only where the automatic derivation (`suggest.CurrencySplit`: hedging, asset class, geography, then quote currency) is wrong: funds denominated differently than their holdings' countries (corporate/aggregate bonds, EM hard-currency debt), mixed-region equity residuals worth resolving |
 | `distribution` | `accumulating`, `distributing`, `n/a` |
 | `leverage` | `1.0` normal; `2.0` for 2x daily; embedded notional for capital-efficient funds, which is the SUM of `exposures` when that field is set (`1.5` for a 90/60 Efficient Core structure, `2.0` for a 100/100 return-stacked one) |
 | `duration` | effective duration in years (fixed income); for a stacked fund, the duration of its bond exposure per unit of notional (e.g. `7.0` for a 90/60 fund's intermediate futures ladder) |
@@ -184,8 +184,10 @@ Yahoo starting 648 days after its 2007 first NAV), and all seventeen are true.
 
 ### Currency exposure
 
-Keys are ISO 4217 codes, plus `None` (no fiat: real assets) and `Dynamic`
-(futures book). No `Other`: resolve every residual to real currencies, or let
+Keys are ISO 4217 codes, plus `None` (no fiat: real assets), `Dynamic`
+(futures book) and `Unknown` (a sleeve whose net FX exposure is undocumented,
+for example when only the share-class hedge is disclosed).
+No `Other`: resolve every residual to real currencies, or let
 the below-100 shortfall count as `None`. Sums above 100 are intended for
 levered funds (a 2x USD fund is `{"USD": 200}`); a stacked fund with a
 managed-futures leg carries `Dynamic` for that leg's notional.
