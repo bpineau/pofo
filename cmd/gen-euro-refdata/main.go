@@ -4,9 +4,9 @@
 // (network); the pofo binary embeds the CSVs and never fetches OECD or the ECB.
 //
 // The OECD series are read from the OECD's own SDMX API (refgen.OECD, the three
-// of them in one download), the ECB ones from DBnomics (free, key-less), which
-// keeps the ECB current. The OECD used to come through DBnomics too, until the
-// mirror's OECD provider stopped being indexed at 2026-06-16 and left every
+// of them in one download). The ECB yield curves come from DBnomics and the
+// monthly Euribor average directly from the ECB. The OECD used to come through
+// DBnomics too, until its OECD provider stopped being indexed at 2026-06-16 and left every
 // OECD-fed file here stopped at 2026-05 while the OECD already served 2026-08.
 // The OECD series come from the CURRENT short-term-statistics dataflow
 // (DSD_STES@DF_FINMARK) rather than the legacy MEI dataset, which stopped
@@ -106,6 +106,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -114,7 +116,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/bpineau/pofo/cmd/internal/refgen"
@@ -179,12 +183,11 @@ const euroLongMaturity = 24.0
 const euroLongIntercept = 0.571
 const euroLongSlope = 0.9615
 
-// farFuture is the open end passed to accrue when a money-market series is not
-// trimmed: every observation is kept, up to the last one published.
-var farFuture = time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
+const euriborKey = "FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA"
+const euriborURL = "https://data-api.ecb.europa.eu/service/data/FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA?format=csvdata&detail=dataonly"
 
 func main() {
-	base := flag.String("base", defaultBase, "DBnomics API base URL (the ECB series)")
+	base := flag.String("base", defaultBase, "DBnomics API base URL (ECB yield curves)")
 	oecdBase := flag.String("oecd", refgen.OECDBase, "OECD SDMX API base URL")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
 	dry := flag.Bool("dry", false, "print coverage and checks without writing")
@@ -237,16 +240,22 @@ func main() {
 	report("EMU-EUR", equity)
 
 	// German 3-month money-market accrual, monthly (~1960), for the pre-euro
-	// cash tail. Trimmed at 1995 so it only ever feeds the splice under
-	// EURCASH-EUR (which starts 1994).
+	// cash tail. Its last settlement is the November 1994 close.
 	shortRate := oecd[deShortKey]
-	cash := atAccrualEnd(accrue(shortRate, date(1995, 1), germanMoneyMarket))
+	cash := atAccrualEnd(accrue(shortRate, date(1994, 12), germanMoneyMarket))
 	report("DECASH-EUR", cash)
 
 	// Euro-area 3-month cash accrual, monthly (1994-01), from the ECB's own
 	// EURIBOR history. Not trimmed: this is the live end of the cash leg.
-	euriborRate := fetch(*base, "ECB/FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA")
-	eurCash := atAccrualEnd(accrue(euriborRate, farFuture, simpleAct360))
+	raw, err := refgen.Get(euriborURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	euriborRate, err := parseEuribor(raw)
+	if err != nil {
+		log.Fatalf("ECB Euribor: %v", err)
+	}
+	eurCash := atAccrualEnd(accrue(euriborRate, time.Now().UTC(), simpleAct360))
 	report("EURCASH-EUR", eurCash)
 
 	if *check {
@@ -270,7 +279,7 @@ func main() {
 	write(*dir, "EUROGOV-LONG-DAILY", "Long euro-area government bond total return (25+ segment, EUR, daily)",
 		"ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.", govLongDaily.Points)
 	write(*dir, "EURCASH-EUR", "Euro area 3-month cash total-return index (base 100, monthly)",
-		"ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) rolled monthly at the convention it is quoted in (simple, act/360, per EMMI's Benchmark Determination Methodology for Euribor); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd), like every other monthly series here, so a composite reading this leg beside a bond leg sees one point a month. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.", eurCash)
+		"ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) rolled monthly at the convention it is quoted in (simple, act/360, per EMMI's Benchmark Determination Methodology for Euribor); ECB Data API. Each row is dated the month-END it closes (atAccrualEnd), like every other monthly series here, so a composite reading this leg beside a bond leg sees one point a month. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.", eurCash)
 	writeHeader(*dir, refgen.Header{ID: "DECASH-EUR", Name: "German 3-month money-market accrual (EUR/DM, monthly)",
 		Source: "OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); read from the OECD's own SDMX API. Each row is dated the month-END it closes (atAccrualEnd). Pre-euro cash tail spliced under EURCASH-EUR at 1994.",
 		Ends:   cash[len(cash)-1].Date, EndsWhy: "trimmed where EURCASH-EUR, which starts 1994, takes the cash leg over"}, cash)
@@ -280,6 +289,36 @@ func main() {
 type obs struct {
 	date time.Time
 	val  float64
+}
+
+// parseEuribor reads a single monthly average per month. A missing month
+// would silently lose its interest payment from every hedged return.
+func parseEuribor(raw []byte) ([]obs, error) {
+	rows, err := csv.NewReader(bytes.NewReader(raw)).ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) < 2 {
+		return nil, fmt.Errorf("empty monthly series")
+	}
+	key, month, value := slices.Index(rows[0], "KEY"), slices.Index(rows[0], "TIME_PERIOD"), slices.Index(rows[0], "OBS_VALUE")
+	if key < 0 || month < 0 || value < 0 {
+		return nil, fmt.Errorf("missing KEY, TIME_PERIOD or OBS_VALUE")
+	}
+	want := date(1994, 1)
+	var rates []obs
+	for _, row := range rows[1:] {
+		if row[key] != euriborKey || row[month] != want.Format("2006-01") {
+			return nil, fmt.Errorf("expected %s at %s, got %s at %s", euriborKey, want.Format("2006-01"), row[key], row[month])
+		}
+		v, err := strconv.ParseFloat(row[value], 64)
+		if err != nil || math.IsNaN(v) || math.IsInf(v, 0) {
+			return nil, fmt.Errorf("invalid Euribor rate %q at %s", row[value], row[month])
+		}
+		rates = append(rates, obs{date: want, val: v})
+		want = want.AddDate(0, 1, 0)
+	}
+	return rates, nil
 }
 
 // fetchOECD reads the OECD series named by keys from DSD_STES@DF_FINMARK in one
@@ -420,8 +459,8 @@ func atMonthEnd(pts []marketdata.Point) []marketdata.Point {
 // atAccrualEnd re-dates a money-market accrual onto the month-end each of its
 // levels actually belongs to, which is the day BEFORE the date accrue gives it.
 //
-// accrue steps from the rate observation of month M-1, dated the first of M-1,
-// to the one of month M: the level it writes at "M-01" is the cash a holder had
+// accrue steps from the first day of month M-1 to the first day of month M:
+// the level it writes at "M-01" is the cash a holder had
 // once month M-1 had been earned in full, i.e. the close of M-1. Subtracting one
 // day names that month instead of the next one, and nothing else moves: the day
 // counts, the conventions and every interest payment are computed from the
@@ -531,19 +570,20 @@ func grossUp(price []obs, annualDiv float64) []marketdata.Point {
 }
 
 // accrue compounds a short-rate series (annualized percent) into a
-// money-market level (base 100), pro rata temporis, up to (but excluding) end.
-// Each step earns the rate quoted at its START, held to the next observation,
-// under the convention that rate is quoted in.
+// money-market level (base 100). Each monthly average pays interest over
+// its own calendar month once that month has closed, even when it is the
+// last published quote. end is the latest allowed settlement instant.
 func accrue(rate []obs, end time.Time, conv convention) []marketdata.Point {
 	out := make([]marketdata.Point, 0, len(rate))
 	val := 100.0
 	out = append(out, marketdata.Point{Date: rate[0].date, Close: val})
-	for i := 1; i < len(rate); i++ {
-		if !rate[i].date.Before(end) {
+	for _, r := range rate {
+		next := r.date.AddDate(0, 1, 0)
+		if next.After(end) {
 			break
 		}
-		val *= conv(rate[i-1].val, rate[i-1].date, rate[i].date)
-		out = append(out, marketdata.Point{Date: rate[i].date, Close: val})
+		val *= conv(r.val, r.date, next)
+		out = append(out, marketdata.Point{Date: next, Close: val})
 	}
 	return out
 }
@@ -769,9 +809,8 @@ func runChecks(dir string, gov, govSynth, govDaily, govLong, govLongSynth, govLo
 		{"EMU-EUR", equity, 92 * 24 * time.Hour},
 		{"EUROGOV-DAILY", govDaily.Points, 92 * 24 * time.Hour},
 		{"EUROGOV-LONG-DAILY", govLongDaily.Points, 92 * 24 * time.Hour},
-		// The ECB publishes the monthly EURIBOR average within weeks; half a
-		// year of silence means the series moved or died, as FRED's did.
-		{"EURCASH-EUR", eurCash, 182 * 24 * time.Hour},
+		// Allow two weeks beyond a full month for the ECB's next publication.
+		{"EURCASH-EUR", eurCash, 45 * 24 * time.Hour},
 	} {
 		last := f.pts[len(f.pts)-1].Date
 		log.Printf("check %s freshness: last %s (%.0f days old)", f.id, last.Format("2006-01-02"), now.Sub(last).Hours()/24)
@@ -956,6 +995,9 @@ func runChecks(dir string, gov, govSynth, govDaily, govLong, govLongSynth, govLo
 	if prev, err := readRefdata(dir, "EURCASH-EUR"); err != nil {
 		log.Printf("check: no shipped EURCASH-EUR to compare against (%v)", err)
 	} else {
+		if last := eurCash[len(eurCash)-1].Date; last.Before(prev.Last().Date) {
+			fail("EURCASH-EUR stops at %s, before the shipped %s", last.Format(time.DateOnly), prev.Last().Date.Format(time.DateOnly))
+		}
 		worst, at, months := driftAgainst(eurCash, prev)
 		requoted, reqAt, _ := driftAgainst(eurCash, restated(prev, eurCashDayCountUplift))
 		log.Printf("check EURCASH-EUR vs the shipped file: %d common months, worst rebased deviation %.1e%s (%.1e%s once the shipped file is itself restated act/360)",

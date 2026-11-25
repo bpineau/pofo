@@ -236,6 +236,10 @@ IS one twelfth of the rate a month, which the generator computes exactly.
 - **What the series is.** `FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA` is the ECB's
   monthly history of the 3-month Euribor fixing, the same rate the repository
   already reads live as `^EURIBOR3M`. Euribor is administered by EMMI.
+  The generator reads the monthly average directly from the ECB Data API.
+  Each completed month earns its own published rate for its calendar days.
+  A subsequent quote is unnecessary. The generator checks that the months
+  are consecutive since January 1994 and rejects a cash tail over 45 days old.
 - **What that convention is.** EMMI's own *Benchmark Determination Methodology
   for Euribor* (D0016F-2019, in force 2024-12-05), paragraph 43: "The published
   Euribor rates follow euro money market conventions, that is, spot settlement
