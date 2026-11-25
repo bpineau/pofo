@@ -2,7 +2,7 @@
 # id: LU1459801780
 # name: UBS Core BBG TIPS 1-10 (EUR-hedged): US TIPS hedged to EUR
 # method: 0.60×TIP + 0.40×STIP (real US TIPS ETFs, 2010-12->, risk-matched to the fund) financed at USD cash ^IRX and earning EUR cash (EURCASH-EUR) on the whole capital = EUR-hedged TIPS; 0.76×VIPSX on the same identity before STIP exists (2000->); real 42C0 grafted from 2016
-# validation: corr=0.374 (weekly 0.864) beta=0.34 TE=5.2%/yr CAGR sim 0.90% vs real 0.57% (overlap 2485 d from 2016-09-30 to 2026-11-24) vs LU1459801780
+# validation: corr=0.374 (weekly 0.865) beta=0.34 TE=5.2%/yr CAGR sim 0.94% vs real 0.57% (overlap 2485 d from 2016-09-30 to 2026-11-24) vs LU1459801780
 # generated: 2026-11-25
 # simulated-before: 2016-09-30
 date,close

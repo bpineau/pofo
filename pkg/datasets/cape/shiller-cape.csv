@@ -1,10 +1,7 @@
 # Shiller CAPE (PE10): real S&P 500 price / 10-year average real earnings.
-# Source: datahub mirror of Robert Shiller's dataset (https://raw.githubusercontent.com/datasets/s-and-p-500/main/data/data.csv);
-# months through 2026-10 after the mirror's last computed PE10 come from multpl.com's monthly
-# Shiller-PE table (day-of-month price, so ~1-3% off the mirror's monthly-average
-# convention: fine for a valuation gauge, do not use for return computations).
-# 2026-11: Robert Shiller's ie_data.xls (https://shillerdata.com/), Data sheet,
-# CAPE column, November 2026 update (provisional within the month).
+# Source: datahub mirror of Robert Shiller's dataset (https://raw.githubusercontent.com/datasets/s-and-p-500/main/data/data.csv).
+# 2023-10-01..2026-11-01: Shiller ie_data.xls, Data sheet, ordinary CAPE (https://shillerdata.com/)
+# Latest month is provisional.
 # 1/CAPE approximates the next decade's real return. Regenerate: make cape
 date,cape
 1881-01-01,18.47
@@ -1720,41 +1717,41 @@ date,cape
 2023-07-01,30.89
 2023-08-01,30.47
 2023-09-01,30.81
-2023-10-01,28.70
+2023-10-01,28.77
 2023-11-01,30.01
 2023-12-01,31.45
-2024-01-01,31.97
+2024-01-01,32.05
 2024-02-01,33.04
-2024-03-01,33.76
-2024-04-01,33.03
-2024-05-01,33.78
+2024-03-01,33.75
+2024-04-01,33.14
+2024-05-01,33.77
 2024-06-01,34.81
-2024-07-01,35.48
-2024-08-01,35.08
-2024-09-01,35.70
+2024-07-01,35.44
+2024-08-01,34.92
+2024-09-01,35.66
 2024-10-01,36.59
-2024-11-01,37.36
-2024-12-01,37.72
-2025-01-01,37.14
+2024-11-01,37.35
+2024-12-01,37.71
+2025-01-01,37.13
 2025-02-01,37.19
-2025-03-01,34.79
-2025-04-01,32.63
+2025-03-01,34.78
+2025-04-01,32.62
 2025-05-01,35.08
-2025-06-01,36.12
-2025-07-01,37.48
+2025-06-01,36.11
+2025-07-01,37.47
 2025-08-01,37.85
-2025-09-01,38.59
-2025-10-01,39.31
-2025-11-01,39.16
+2025-09-01,38.58
+2025-10-01,39.21
+2025-11-01,39.15
 2025-12-01,39.59
-2026-01-01,39.65
-2026-02-01,39.02
-2026-03-01,37.04
-2026-04-01,38.15
-2026-05-01,40.11
-2026-06-01,40.16
-2026-07-01,40.02
-2026-08-01,41.00
-2026-09-01,40.42
-2026-10-01,40.36
+2026-01-01,39.66
+2026-02-01,39.05
+2026-03-01,37.09
+2026-04-01,38.23
+2026-05-01,40.25
+2026-06-01,40.35
+2026-07-01,40.26
+2026-08-01,41.09
+2026-09-01,40.27
+2026-10-01,40.12
 2026-11-01,39.37
