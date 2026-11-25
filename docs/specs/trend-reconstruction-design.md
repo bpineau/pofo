@@ -2178,16 +2178,17 @@ match stays.
   uplift, or it would be corrected twice.
 - A share class's headline management charge is NOT necessarily inside its
   NAV, and for the AQR EUR classes that difference is the whole story. What
-  is levied inside each NAV (FT ongoing charge, confirmed to a basis point by
-  the audited Swiss Total Net Expense Ratio at 30/09/2025) is RAEF 0.23 %,
+  is levied inside each NAV (FT ongoing charge, which the Swiss Total Net Expense Ratio
+  matches within three basis points) is RAEF 0.21 %,
   B EUR 0.73 %, IAET 0.78 % before its performance fee, IAE1FT 1.26 %; yet
   RAEF and IAE1FT both list 1.00 % of management. RAEF therefore looks like it
   beats every sibling by roughly their fee difference, and it does not: its
   measured 1.31 pt/yr lead over IAET is explained to 1.25 by inside-NAV
   charges alone. Two consequences for the recipes. Converting one EUR class
   into another is a difference of published ongoing charges and nothing else,
-  which is what `aqrIAE1FTRecipe` does (RAEF whole, charged 1.05 %/yr on the October 2026 fees;
-  measured 0.995 against a predicted 1.03 on their 59-day overlap). And a
+  which is what `aqrIAE1FTRecipe` does (RAEF whole, charged 1.05 %/yr;
+  measured 0.995 on their 59-day overlap, when the fees then published
+  predicted 1.03). And a
   performance fee, which cannot be removed from a NAV after the fact, need not
   be removed when the target pays the same one: `aqrIAETRecipe` donates the
   B EUR class precisely because it shares IAET's 10 % over EUR STR, leaving

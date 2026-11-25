@@ -66,16 +66,17 @@ sole discretion.
 3. List price against what actually reaches the NAV
 ---------------------------------------------------
 
-  class    prospectus list        FT ongoing (2026-08)   Swiss TNER (30/09/2025)
-  RAEF     1.29% (1.00+0.24+0.05)   0.23%      0.24% before perf fee, no perf fee
+  class    prospectus list        FT ongoing   Swiss TNER (30/09/2025)
+  RAEF     1.29% (1.00+0.24+0.05)   0.21%      0.24% before perf fee, no perf fee
   B        0.79% (0.60+0.18+0.01)   0.73%      0.74% + 1.96% perf fee = 2.70%
   IAET     0.84% (0.60+0.23+0.01)   0.78%      0.78% + 0.71% perf fee = 1.49%
   IAE1FT   1.26% (1.00+0.25+0.01)   1.26%      not yet reported (launched 2026-05)
   A        0.79%                    0.79%      0.73% + 0.48% perf fee = 1.21%
 
-The October 2026 FT charges are 0.21% for RAEF and 0.81% for RAE.
-The Swiss annex to the annual report at 31 March 2026 shows 0.22%
-for RAEF and 0.83% before performance fees for RAE.
+FT ongoing charges are those of August 2026, except RAEF (October 2026).
+RAE, the retail performance-fee class, is at 0.81% on FT. The Swiss annex
+at 31 March 2026 shows 0.22% for RAEF and 0.83% before performance fees
+for RAE.
 
 IAE1FT matches its list to the basis point. RAEF does not, by a full point.
 
@@ -105,7 +106,7 @@ Consequences:
 
 An earlier version of this catalog pinned RAEF at 1.31% (its list) and
 described it as beating every cheaper sibling. Both were wrong: the pin is
-0.23% and the "outperformance" is the waiver.
+0.21% and the "outperformance" is the waiver.
 
 
 4. Performance fee mechanics (identical for every class that pays one)
@@ -165,7 +166,7 @@ Validated:
   - The catalog pins 0.78 (IAET) and 1.26 (IAE1FT) are correct.
 
 Corrected:
-  - RAEF's pin, 1.31 to 0.23, and its notes.
+  - RAEF's pin, 1.31 to 0.21, and its notes.
   - The claim that RAEF beats its siblings on merit.
   - The open question left in an earlier pass ("waived or billed outside?") is
     settled: waived, never billed outside.
