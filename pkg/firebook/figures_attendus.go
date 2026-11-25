@@ -244,7 +244,7 @@ var morningstarSWR = []float64{3.3, 3.8, 4.0, 3.7, 3.9}
 // which is the data cutoff every edition uses ("Data as of Sept. 30").
 // Frozen from datasets.CAPE(), rows 2021-09-01 to 2025-09-01;
 // figures_attendus_test.go reads them back from the bundled series.
-var morningstarCAPE = []float64{37.62, 28.23, 30.81, 35.70, 38.59}
+var morningstarCAPE = []float64{37.62, 28.23, 30.81, 35.66, 38.58}
 
 // morningstarWhy annotates each step. The first four reasons are Morningstar's
 // own "temperature check" wording (2021: "bond yields were ultralow, and equity

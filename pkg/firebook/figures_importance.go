@@ -61,10 +61,10 @@ var impWeights = []float64{0.60, 0.25, 0.075, 0.075}
 // The measured profile: the share of the outcome each retirement year accounts
 // for, in percent, year 1 first. Frozen, and recomputed by the guard test.
 var impShares = [impYears]float64{
-	9.97, 9.11, 8.30, 8.83, 5.72, 6.55, 5.38, 5.22, 5.56, 4.35, 3.94,
-	3.74, 3.09, 3.28, 2.51, 1.86, 2.79, 2.28, 1.34, 0.99, 0.98, 0.96,
-	0.47, 0.49, 0.45, 0.51, 0.44, 0.13, 0.11, 0.08, 0.12, 0.14, 0.18,
-	0.01, 0.02, 0.00, 0.02, 0.01, 0.05, 0.02,
+	9.98, 9.17, 8.31, 8.84, 5.70, 6.55, 5.36, 5.20, 5.55, 4.33, 3.91,
+	3.75, 3.11, 3.26, 2.52, 1.87, 2.79, 2.31, 1.35, 0.98, 0.97, 0.96,
+	0.47, 0.49, 0.45, 0.51, 0.45, 0.12, 0.11, 0.09, 0.13, 0.13, 0.18,
+	0.01, 0.02, 0.00, 0.02, 0.01, 0.04, 0.02,
 }
 
 // impWealthDecade is the same first-decade share computed on the log of

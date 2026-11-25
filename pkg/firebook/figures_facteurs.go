@@ -30,7 +30,7 @@ const (
 const scvGapStart = 1973*12 + 6
 
 // scvGapPoints is that gap in percentage points a year, one value per month-end
-// window from July 1973 to August 2026 (638 windows), each dated by the month that
+// window from July 1973 to September 2026 (639 windows), each dated by the month that
 // CLOSES its window.
 //
 // The small-value leg is NET of the cost the factor does not pay: an academic
@@ -49,7 +49,7 @@ const scvGapStart = 1973*12 + 6
 // snapshot level of the same month (marketdata.NewClient("").Fetch, the deflator
 // pkg/replay already uses); then for every month i >= 120 subtract
 // (sp500[i]/sp500[i-120])^(1/10) from (scv[i]/scv[i-120])^(1/10) and read the
-// result in points. figures_facteurs_test.go recomputes all 638 values from
+// result in points. figures_facteurs_test.go recomputes all 639 values from
 // pkg/datasets and fails if the figure and the record disagree.
 var scvGapPoints = []float64{
 	4.16, 3.98, 4.57, 4.71, 3.96, 3.86, 5.19, 5.09, 4.98, 5.20, 4.67, 4.64,
@@ -105,11 +105,11 @@ var scvGapPoints = []float64{
 	-4.85, -5.17, -5.51, -5.85, -5.91, -4.84, -5.56, -5.92, -5.94, -5.79, -5.65, -6.44,
 	-4.86, -5.39, -5.09, -5.36, -4.47, -5.32, -5.20, -5.36, -5.70, -5.91, -6.00, -6.35,
 	-5.54, -5.18, -5.26, -5.38, -5.37, -4.77, -4.05, -3.88, -3.52, -4.15, -4.37, -3.89,
-	-4.12, -4.75,
+	-4.12, -4.75, -5.41,
 }
 
 // The four windows the plate names, and the two full-period real CAGRs its
-// footnote quotes (1963-07 to 2026-08, in % a year). All of them are argmax /
+// footnote quotes (1963-07 to 2026-09, in % a year). All of them are argmax /
 // argmin readings of scvGapPoints, not recollections; the guard test checks that
 // each one is still the extreme of its era.
 const (
@@ -118,9 +118,9 @@ const (
 	scvDipMonth    = 1999*12 + 2  // the 1990s trough, 1989-03 to 1999-03: -5.19 pt
 	scvTroughMonth = 2020*12 + 3  // deepest window, 2010-04 to 2020-04: -7.96 pt
 
-	scvFullCAGR   = 9.75 // small-cap value net of its cost, real, % a year
-	spFullCAGR    = 6.68 // S&P 500, real, % a year
-	scvShareAbove = 62.4 // share of the 638 windows above zero, in %
+	scvFullCAGR   = 9.64 // small-cap value net of its cost, real, % a year
+	spFullCAGR    = 6.65 // S&P 500, real, % a year
+	scvShareAbove = 62.3 // share of the 639 windows above zero, in %
 
 	// What the broad market itself did over the two winning windows, in % a
 	// year real: this is what makes the plate's claim checkable rather than
@@ -263,7 +263,7 @@ func figScvEcart10Ans() string {
 	last := scvGapPoints[len(scvGapPoints)-1]
 	b.WriteString(dot(x1, y(last), figBad))
 	b.WriteString(dashLine(x1, y(last)-7, x1, 234, figBad, 1, "2 2"))
-	b.WriteString(mTxt(x1-2, 228, 10, figBad, "end", "600", "août 2026 : "+scvGapLabel(last)))
+	b.WriteString(mTxt(x1-2, 228, 10, figBad, "end", "600", "septembre 2026 : "+scvGapLabel(last)))
 
 	for i, s := range []string{
 		fmt.Sprintf("Fenêtres de 120 mois, chacune datée du mois qui la ferme. Aux deux sommets, le S&amp;P 500 réel ne fait que +%s puis −%s %%/an.",

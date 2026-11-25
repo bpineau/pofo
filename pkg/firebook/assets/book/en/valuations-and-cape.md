@@ -1,5 +1,5 @@
 # Valuations, the CAPE, and what they say about your withdrawal rate
-<!-- source: valorisations-et-cape @ 8b16b2676459 -->
+<!-- source: valorisations-et-cape @ 2771e94f527d -->
 
 After sequence risk, here is the most important empirical fact in the field. It fits in one sentence. The worst retirement start dates in history, 1929, 1966, 2000, Japan in 1990, all share one feature. It is not bad luck. It is that the market was historically expensive on the day they left. The valuation level on the day of your first withdrawal is the best known predictor of the withdrawal rate that vintage can carry.
 
@@ -41,12 +41,12 @@ A raw level never reads alone. Put it back against its century of history, and a
 
 The mechanism is not mystical. It is cash-flow arithmetic. Owning the stock market means owning a claim on future corporate earnings. A shareholder's long-run return breaks into three pieces. First, what companies pay out. Second, the real growth of their earnings per share (historically 1.5 to 2% a year in the United States). Third, the change in valuation between purchase and sale, the expansion or contraction of the multiple. The first two are linked, since earnings that are not paid out fund future growth. That is why the earnings yield (roughly 1/CAPE) serves as a shortcut for their sum, as long as reinvested earnings return roughly what they cost. Over one year the third term swamps everything and the CAPE predicts nothing. Over ten to fifteen years it weighs less, and the return moves toward that shortcut, which you know on the day you buy. A CAPE of 33 is an earnings yield of 3%. The starting point of your future real return is already low, whatever happens to the rest.
 
-Empirically, the relationship is among the most robust in finance, and also more modest than what you usually read. Over the 1,245 monthly US start dates from January 1913 to September 2016, the starting CAPE explains 29% of the variance of real returns over the following ten years (regressing on 1/CAPE; 31% regressing on the log of the CAPE). At fifteen years it rises to 35%, and to 40% in logs. The number depends heavily on the window: about 45% for start dates before 1950, 24% for those after. Going back to 1881 on Shiller's series does not help, it hurts (28% at ten years).
+Empirically, the relationship is among the most robust in finance, and also more modest than what you usually read. Over the 1,246 monthly US start dates from January 1913 to October 2016, the starting CAPE explains 28% of the variance of real returns over the following ten years (regressing on 1/CAPE; 31% regressing on the log of the CAPE). At fifteen years it rises to 35%, and to 40% in logs. The number depends heavily on the window: about 45% for start dates before 1950, 24% for those after. Shiller's longer series, going back to 1881, gives a similar result (28% at ten years).
 
 Keep the ballpark: a third of the variance at ten years, a bit more at fifteen. That is both enormous, since nothing else does better, and far too little for timing, since at any given CAPE the range of ten-year outcomes stays wide. The honest phrasing fits on one line. The CAPE shifts the center of the distribution of future returns without narrowing it much. That is exactly the information a planner needs, and exactly the information a trader can do nothing with.
 
 ::: figure cape-dix-ans
-Each dot is a start month between January 1913 and September 2016: its CAPE on the horizontal axis, the annualized real return of the S&P 500 (total return, deflated by US CPI) over the following ten years on the vertical axis. The curve is the least-squares fit of the return on 1/CAPE, R² = 0.29; the three columns show the range of outcomes at a given CAPE.
+Each dot is a start month between January 1913 and October 2016: its CAPE on the horizontal axis, the annualized real return of the S&P 500 (total return, deflated by US CPI) over the following ten years on the vertical axis. The curve is the least-squares fit of the return on 1/CAPE, R² = 0.28; the three columns show the range of outcomes at a given CAPE.
 :::
 
 Three things the CAPE does not do, worth fixing in your head before we go further:
