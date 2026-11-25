@@ -19,7 +19,7 @@ func ExampleCatalog() {
 				a.Name, a.Fees, a.UCITS, a.Geography["US"], a.AsOf)
 		}
 	}
-	// Output: iShares Core MSCI World UCITS ETF USD (Acc): TER 0.20%, UCITS=true, US=73% (breakdowns as of 2026-09)
+	// Output: iShares Core MSCI World UCITS ETF USD (Acc): TER 0.20%, UCITS=true, US=73% (breakdowns as of 2026-11)
 }
 
 // Simdata exposes the embedded simulated histories as a read-only file system:

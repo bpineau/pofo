@@ -137,7 +137,7 @@ backcast.
 | DBMF | 0.85 % | fund page, 2026 |
 | DBi UCITS classes | 0.75 % | fund pages, 2026 |
 | KMLM | 0.90 % | fund page, 2026 |
-| Simplify CTA | 0.75 % | fund page, 2026 |
+| Simplify CTA | 0.86 % | net expense ratio, November 2026 summary prospectus |
 | AQR UCITS class A | 0.79 % + 1.58 % | 0.60 % management + 0.18 % expense cap + 0.01 % subscription tax (prospectus supplement), plus a 10 % performance fee over the T-bill hurdle worth 1.58 points of average class NAV in the year to 31 March 2026 (audited accounts) |
 | the two index donors | 2.00 % | ESTIMATED, the only entry that is. See below |
 
@@ -2186,7 +2186,7 @@ match stays.
   measured 1.31 pt/yr lead over IAET is explained to 1.25 by inside-NAV
   charges alone. Two consequences for the recipes. Converting one EUR class
   into another is a difference of published ongoing charges and nothing else,
-  which is what `aqrIAE1FTRecipe` does (RAEF whole, charged 1.03 %/yr;
+  which is what `aqrIAE1FTRecipe` does (RAEF whole, charged 1.05 %/yr on the October 2026 fees;
   measured 0.995 against a predicted 1.03 on their 59-day overlap). And a
   performance fee, which cannot be removed from a NAV after the fact, need not
   be removed when the target pays the same one: `aqrIAETRecipe` donates the

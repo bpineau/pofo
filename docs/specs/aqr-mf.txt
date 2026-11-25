@@ -66,12 +66,16 @@ sole discretion.
 3. List price against what actually reaches the NAV
 ---------------------------------------------------
 
-  class    prospectus list        FT ongoing   audited Swiss TNER (30/09/2025)
+  class    prospectus list        FT ongoing (2026-08)   Swiss TNER (30/09/2025)
   RAEF     1.29% (1.00+0.24+0.05)   0.23%      0.24% before perf fee, no perf fee
   B        0.79% (0.60+0.18+0.01)   0.73%      0.74% + 1.96% perf fee = 2.70%
   IAET     0.84% (0.60+0.23+0.01)   0.78%      0.78% + 0.71% perf fee = 1.49%
   IAE1FT   1.26% (1.00+0.25+0.01)   1.26%      not yet reported (launched 2026-05)
   A        0.79%                    0.79%      0.73% + 0.48% perf fee = 1.21%
+
+The October 2026 FT charges are 0.21% for RAEF and 0.81% for RAE.
+The Swiss annex to the annual report at 31 March 2026 shows 0.22%
+for RAEF and 0.83% before performance fees for RAE.
 
 IAE1FT matches its list to the basis point. RAEF does not, by a full point.
 
@@ -91,7 +95,7 @@ prospectus's own definition, substantially a class for the manager's own
 senior management.
 
 Consequences:
-  - a RAEF holder pays what the NAV shows, about 0.23%/yr, NOT 1.23%;
+  - a RAEF holder pays what the NAV shows, 0.21%/yr on the October 2026 FT schedule;
   - the waiver is at AQR's sole discretion and revocable without shareholder
     approval, so RAEF's cost can go to 1.29%/yr at any time;
   - the prospectus also allows per-holder rebates negotiated privately and
@@ -156,7 +160,7 @@ Validated:
     independently at 0.096 pts/yr over their 672 common days, correlation
     0.9991.
   - IAE1FT is flat with no performance fee, so RAEF (also flat) is the right
-    donor; the 1.03%/yr conversion is 1.26 minus 0.23. Measured at 0.995
+    donor; the current 1.05%/yr conversion is 1.26 minus 0.21. Measured at 0.995
     pts/yr over their 59 common days, correlation 1.0000.
   - The catalog pins 0.78 (IAET) and 1.26 (IAE1FT) are correct.
 

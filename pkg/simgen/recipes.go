@@ -3045,7 +3045,7 @@ var (
 //	               it is a donor to the UCITS classes and a target itself
 //	UCITS  0.75 %  the DBi UCITS share classes LU2951555585 and DBMFE
 //	KMLM   0.90 %  KraneShares Mount Lucas Managed Futures Index Strategy ETF
-//	CTA    0.75 %  Simplify Managed Futures Strategy ETF
+//	CTA    0.86 %  Simplify Managed Futures Strategy ETF, after waiver (November 2026 prospectus)
 //	AQR A  0.79 %  AQR Managed Futures UCITS class A base cost: 0.60 %
 //	               management + 0.18 % expense cap + 0.01 % subscription tax
 //	               (prospectus supplement); see trendPerfFee for the rest
@@ -3086,7 +3086,7 @@ var trendFeeLoad = map[string]float64{
 	"DBMFE":        0.0075,
 	"MFEH":         0.0075,
 	"KMLM":         0.0090,
-	"CTA":          0.0075,
+	"CTA":          0.0086,
 	"LU1103257975": 0.0079,
 	campbellB:      0.0148,
 }
@@ -3673,13 +3673,13 @@ func aqrHedgedRecon(f Fetcher, from time.Time, donorAdj float64, donorName strin
 // Ongoing charges of the AQR Managed Futures UCITS EUR classes: the part of
 // each class's price list that is levied INSIDE its net asset value, as a
 // fraction per year. Sources agree to a basis point: the Financial Times
-// tearsheet of each class, and the audited Total Net Expense Ratio the Swiss
+// tearsheet of each class, and the Total Net Expense Ratio the Swiss
 // annex of the report publishes per class before any performance fee (RAEF
-// 0.24 %, IAET 0.78 % as at 30 September 2025).
+// 0.22 %, IAET 0.77 % as at 31 March 2026).
 //
 // These are what separates the classes' NAVs, and NOT the headline management
 // charge: RAEF's prospectus list is 1.29 % (1.00 management, 0.24 expense cap,
-// 0.05 taxe d'abonnement), yet only 0.23 % ever reaches its NAV, because the
+// 0.05 taxe d'abonnement), while the October 2026 ongoing charge is 0.21 %, because the
 // prospectus lets the manager waive the management fee at its sole discretion
 // and for that class it does. Its published record is therefore that of a share
 // class carrying a quarter point of costs, and any comparison of these classes
@@ -3687,13 +3687,13 @@ func aqrHedgedRecon(f Fetcher, from time.Time, donorAdj float64, donorName strin
 //
 // The waiver is revocable, which makes aqrRAEFOngoing the least durable number
 // in this file: reinstating the fee would take RAEF to 1.29 %/yr and would move
-// the IAE1FT conversion below from 1.03 to nearly zero. Re-read the FT ongoing
-// charge and the audited Swiss TNER before trusting it after a refresh. The
+// the IAE1FT conversion below from 1.05 to nearly zero. Re-read the FT ongoing
+// charge and the published Swiss TNER before trusting it after a refresh. The
 // other three are prospectus arithmetic and do not drift: IAE1FT is exactly
 // 1.00 + 0.25 + 0.01, and IAET's cap sits 0.05 above B EUR's, which is the
 // whole of the alignment aqrIAETRecipe applies. See docs/specs/aqr-mf.txt.
 const (
-	aqrRAEFOngoing   = 0.0023 // LU1662501532, flat, no performance fee
+	aqrRAEFOngoing   = 0.0021 // LU1662501532, flat, no performance fee
 	aqrBEUROngoing   = 0.0073 // LU1103258197, plus a 10 % performance fee
 	aqrIAETOngoing   = 0.0078 // LU1662498721, plus a 10 % performance fee
 	aqrIAE1FTOngoing = 0.0126 // LU2622190622, flat, no performance fee
@@ -3796,8 +3796,8 @@ func trimBefore(s *marketdata.Series, d time.Time) *marketdata.Series {
 // Its donor is RAEF (LU1662501532), the other flat-fee EUR class, taken whole:
 // the real quotes from 2021-04 and, behind them, the reconstruction RAEF's own
 // recipe assembles. Same portfolio, same absence of a performance fee, so the
-// conversion is one constant: 1.03 %/yr, the difference between the two
-// published ongoing charges (1.26 against 0.23). Inheriting RAEF's series also
+// conversion is one constant: 1.05 %/yr, the difference between the two
+// published ongoing charges (1.26 against 0.21). Inheriting RAEF's series also
 // inherits the one judgement call in it, the constant that corrects its own B
 // EUR donor, which is the right outcome: two flat-fee classes of one fund
 // should not disagree about their shared past.
@@ -3805,7 +3805,7 @@ func trimBefore(s *marketdata.Series, d time.Time) *marketdata.Series {
 // Measurement agrees and was taken before the recipe was written: over the 59
 // common days the two classes both quote (2026-05-11 to 2026-08-07) their daily
 // returns correlate at 1.0000 and IAE1FT trails RAEF by 0.995 points a year,
-// against the 1.03 the price lists predict.
+// against the 1.03 the fees then published predicted.
 //
 // The economics are worth stating because they are not what the two headline
 // numbers suggest: this class and RAEF carry the same 1.00 % management charge,
@@ -3816,7 +3816,7 @@ func aqrIAE1FTRecipe() Recipe {
 		ID:   "LU2622190622",
 		Name: "AQR Managed Futures UCITS (IAE1FT EUR): the flat-fee sister class, charged in the NAV",
 		Method: "the flat-fee RAEF class (LU1662501532) whole, its real quotes from 2021-04 over its own reconstruction (real B EUR 2015-03, then AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03 hedged to EUR, where the file starts), " +
-			"charged 1.03 %/yr for the difference between the two published ongoing charges (1.26 against 0.23), the two classes being flat-fee and otherwise identical; real LU2622190622 grafted from its 2026-05 inception",
+			"charged 1.05 %/yr for the difference between the two published ongoing charges (1.26 against 0.21), the two classes being flat-fee and otherwise identical; real LU2622190622 grafted from its 2026-05 inception",
 		Build:           aqrIAE1FTBuild,
 		Donors:          append([]string{"LU1662501532", "LU1103258197"}, aqrmfDonors...),
 		ValidateAgainst: "LU2622190622",
@@ -3909,9 +3909,9 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "the published net pure-trend composite, the index closest to the fund's own volatility, spliced behind it from 2000-01, levered 1.63x to the fund's risk and lifted +2.50%/yr to put its constituents' 2%/yr management load, levered with it, on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, 1.14x, +2.37%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
+		Method:          "the published net pure-trend composite, the index closest to the fund's own volatility, spliced behind it from 2000-01, scaled to the fund's risk, with the levered constituents' fee load replaced by CTA's 0.86% net expense ratio, then real NAVs of Man AHL Diversified (1996-03) on the same basis, the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
 		Donors:          ctaDonors,
-		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", ctaDonors), mfConfig(0.16, 0.0075)),
+		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", ctaDonors), mfConfig(0.16, feeLoad("CTA"))),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}

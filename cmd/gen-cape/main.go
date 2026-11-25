@@ -54,7 +54,7 @@ func main() {
 	if *recent != "" {
 		added, err := appendRecent(&rows, *recent)
 		if err != nil {
-			log.Printf("recent months (multpl): %v; keeping the mirror's coverage", err)
+			log.Printf("recent months (multpl): %v; only the mirror is available", err)
 		} else {
 			log.Printf("appended %d recent months from multpl", added)
 		}
@@ -189,6 +189,19 @@ func parse(raw []byte) ([]point, error) {
 }
 
 func write(path, url string, rows []point) error {
+	// The mirror has ended in 2023 since it stopped computing earnings. A
+	// failed or stale supplement must never overwrite months already shipped.
+	existing, err := os.ReadFile(path)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	latest := rows[len(rows)-1].date
+	for line := range strings.Lines(string(existing)) {
+		date, _, ok := strings.Cut(line, ",")
+		if ok && len(date) == len(time.DateOnly) && date[4] == '-' && date > latest {
+			return fmt.Errorf("refusing to end CAPE at %s: %s already contains %s", latest, path, date)
+		}
+	}
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Shiller CAPE (PE10): real S&P 500 price / 10-year average real earnings.\n")
 	fmt.Fprintf(&b, "# Source: datahub mirror of Robert Shiller's dataset (%s);\n", url)

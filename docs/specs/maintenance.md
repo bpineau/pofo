@@ -106,6 +106,14 @@ staleness sweep stays quiet, and `xauusdBuild` fails rather than serve the fix
 alone when the live quote cannot be read. No key-less mirror of the
 daily PM fix since 1968 was found; the godoc of `cmd/gen-gold-refdata` lists
 what was tried, and its `-src` takes a browser download as a local path.
+Two other sources changed during the November 2026 refresh. The SG dashboard
+CSV returned HTTP 404 and the [publisher](https://wholesale.banking.societegenerale.com/en/prime-services-indices/)
+now directs full daily data requests to SG Markets. The two SG references
+therefore end at their last cross-checked close, 2026-09-30. For CAPE, when
+multpl was unavailable, the November observation (39.37) came from the
+ordinary CAPE column in the Data sheet of [Shiller's workbook](https://shillerdata.com/).
+The generator rejects a download whose final month predates a shipped month.
+
 The shared plumbing (FRED, OECD and Ken French
 readers, the history-reproduction (`SameHistory`, `CompareSteps`), cadence and
 flat-run checks, the header writer) is `cmd/internal/refgen`. A

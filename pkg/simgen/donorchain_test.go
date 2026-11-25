@@ -37,9 +37,9 @@ func TestFeeAligned(t *testing.T) {
 
 	// Levered, the donor carries its load times the leverage: the pure-trend
 	// index (2 %/yr of constituents' fees) levered 1.6 times to Simplify CTA's
-	// risk carries 3.2 %/yr, of which the fund owes its own 0.75.
-	if u := feeAligned("CTA", []string{pureTrendIndex})[0].Uplift(1.6); math.Abs(u-(1.6*0.0200-0.0075)) > 1e-12 {
-		t.Errorf("pure-trend index into CTA at 1.6x = %v, want %v", u, 1.6*0.0200-0.0075)
+	// risk carries 3.2 %/yr, of which the fund owes its own 0.86.
+	if u := feeAligned("CTA", []string{pureTrendIndex})[0].Uplift(1.6); math.Abs(u-(1.6*0.0200-0.0086)) > 1e-12 {
+		t.Errorf("pure-trend index into CTA at 1.6x = %v, want %v", u, 1.6*0.0200-0.0086)
 	}
 }
 
