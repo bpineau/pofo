@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"slices"
 	"strings"
 	"time"
 )
@@ -169,38 +168,6 @@ func (c *Client) fetchFT(ctx context.Context, id string, res resolution, from ti
 		}
 		s.Points = append(s.Points, Point{Date: day, Close: *cl})
 	}
-	restoreFTCatBondQuote(s)
 	normalizeUnits(s) // FT spells the London pence line "GBX"
 	return s, nil
-}
-
-// FT dropped one October 2017 NAV from each of these two EUR classes in
-// November 2026. Both quotes were in its earlier feed. IFM's NAV export for
-// LI0049587301 confirms 1186.49 and Morningstar F00000NMKO confirms 12.566
-// (its three-decimal rounding of FT's 12.5657). Only fill the original gap
-// on its original price scale. A later provider revision takes precedence.
-func restoreFTCatBondQuote(s *Series) {
-	if s.Currency != "EUR" {
-		return
-	}
-	var day, nextDay int
-	var previous, close, next float64
-	switch s.Symbol {
-	case "IE00B3Q8M574":
-		day, nextDay, previous, close, next = 9, 16, 12.5132, 12.5657, 12.6723
-	case "LI0049587301":
-		day, nextDay, previous, close, next = 13, 31, 1181.13, 1186.49, 1185.29
-	default:
-		return
-	}
-	before := time.Date(2017, 9, 29, 0, 0, 0, 0, time.UTC)
-	after := time.Date(2017, 10, nextDay, 0, 0, 0, 0, time.UTC)
-	for i, p := range s.Points {
-		if i > 0 && p.Date.Equal(after) && p.Close == next &&
-			s.Points[i-1].Date.Equal(before) && s.Points[i-1].Close == previous {
-			missing := Point{Date: time.Date(2017, 10, day, 0, 0, 0, 0, time.UTC), Close: close}
-			s.Points = slices.Insert(s.Points, i, missing)
-			return
-		}
-	}
 }

@@ -173,7 +173,7 @@ func main() {
 	report("JGB-JPY", jgb.Points)
 
 	jpRate := oecd[jpCallKey]
-	jpCash := atAccrualEnd(accrue(jpRate))
+	jpCash := atAccrualEnd(accrue(jpRate, time.Now().UTC()))
 	report("JPCASH-JPY", jpCash)
 
 	// British 10-year, monthly (1960-01→), and the sterling interbank accrual.
@@ -183,7 +183,7 @@ func main() {
 	report("GILT-GBP", gilt.Points)
 
 	gbRate := oecd[gbShortKey]
-	gbCash := atAccrualEnd(accrue(gbRate))
+	gbCash := atAccrualEnd(accrue(gbRate, time.Now().UTC()))
 	report("GBCASH-GBP", gbCash)
 
 	if *check {
@@ -446,7 +446,9 @@ func longestStep(pts []marketdata.Point) (float64, time.Time) {
 // accrue compounds a short-rate series (annualized percent) into a
 // money-market level (base 100), pro rata temporis. Each step accrues at the
 // rate that PREVAILED over it, i.e. the previous observation's level, so the
-// index never earns a rate before it was published.
+// index never earns a rate before it was published. The last observation, a
+// month average like the others, also pays over its own calendar month once
+// that month has closed by end, instead of waiting for the next publication.
 //
 // A cash accrual has no smoothing defect to repair, unlike the bond
 // reconstructions above: the OECD's month-average rate is exactly what a
@@ -455,14 +457,20 @@ func longestStep(pts []marketdata.Point) (float64, time.Time) {
 // 6, so there is nothing for a half-month of phase to damage. What they do get
 // is the bundle's month-end LABEL, from atAccrualEnd, so that a composite
 // reading a cash leg beside a bond leg sees one point a month and not two.
-func accrue(rate []obs) []marketdata.Point {
-	out := make([]marketdata.Point, 0, len(rate))
+func accrue(rate []obs, end time.Time) []marketdata.Point {
+	out := make([]marketdata.Point, 0, len(rate)+1)
 	val := 100.0
 	out = append(out, marketdata.Point{Date: rate[0].date, Close: val})
+	step := func(r obs, to time.Time) {
+		yrs := to.Sub(r.date).Hours() / 24 / 365.25
+		val *= math.Pow(1+r.val/100, yrs)
+		out = append(out, marketdata.Point{Date: to, Close: val})
+	}
 	for i := 1; i < len(rate); i++ {
-		yrs := rate[i].date.Sub(rate[i-1].date).Hours() / 24 / 365.25
-		val *= math.Pow(1+rate[i-1].val/100, yrs)
-		out = append(out, marketdata.Point{Date: rate[i].date, Close: val})
+		step(rate[i-1], rate[i].date)
+	}
+	if last := rate[len(rate)-1]; !last.date.AddDate(0, 1, 0).After(end) {
+		step(last, last.date.AddDate(0, 1, 0))
 	}
 	return out
 }

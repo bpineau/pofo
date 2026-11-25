@@ -111,11 +111,11 @@ CSV returned HTTP 404 and the [publisher](https://wholesale.banking.societegener
 now directs full daily data requests to SG Markets. The two SG references
 therefore end at their last cross-checked close, 2026-09-30.
 
-`make cape` appends multpl's monthly Shiller PE observations after the
-mirror's last computed PE10. When multpl fails or ends before the current
-month, the generator follows the `ie_data.xls` link on
-[Shiller's data page](https://shillerdata.com/) and reads the ordinary CAPE
-column in its Data sheet. Each supplement must cover the mirror's last 12
+`make cape` appends, after the mirror's last computed PE10, the ordinary CAPE
+column of the Data sheet of the `ie_data.xls` workbook linked from
+[Shiller's data page](https://shillerdata.com/), the mirror's own monthly-average
+convention. multpl's monthly Shiller PE table (a day-of-month price) only
+fills the months the workbook does not have yet, or all of them when it fails. Each supplement must cover the mirror's last 12
 observations with a mean absolute relative difference of at most 2%.
 New observations must form a continuous monthly sequence. The generator
 records each source's date range in the CSV and refuses to remove a shipped

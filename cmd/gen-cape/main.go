@@ -4,9 +4,10 @@
 // runs at data-generation time only (network); the pofo binary embeds the CSV.
 //
 // The datahub mirror stopped computing PE10 in 2023 (its earnings columns are
-// blank ever since). Recent months come from multpl.com's monthly Shiller PE
-// table, with the original Shiller workbook as a fallback. The mirror keeps
-// precedence over both where they overlap.
+// blank ever since). Recent months come from Shiller's own workbook, which
+// keeps the mirror's monthly-average convention; multpl.com's monthly Shiller PE
+// table (a day-of-month price) only fills months the workbook does not have yet.
+// The mirror keeps precedence over both where they overlap.
 //
 // CAPE (cyclically-adjusted price/earnings, PE10) is the real price divided by
 // the 10-year average of real earnings. Its inverse is a first-order estimate of
@@ -56,13 +57,13 @@ func main() {
 	var sources []string
 	if *recent != "" {
 		current := time.Now().UTC().Format("2006-01") + "-01"
-		rows, sources, err = supplement(rows, current, func() ([]point, error) {
+		rows, sources, err = supplement(rows, current, fetchShiller, func() ([]point, error) {
 			raw, err := download(*recent)
 			if err != nil {
 				return nil, err
 			}
 			return parseMultpl(raw)
-		}, fetchShiller)
+		})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -104,18 +105,19 @@ func download(url string) ([]byte, error) {
 	return io.ReadAll(resp.Body)
 }
 
-// supplement keeps multpl through its last usable month and consults Shiller
-// when multpl fails or stops before the current month. A valid but lagging
-// publication can still extend the shipped series.
-func supplement(mirror []point, current string, multpl, shiller func() ([]point, error)) ([]point, []string, error) {
+// supplement extends the mirror from Shiller's workbook first, so a run does not
+// switch price conventions depending on which site answered, and consults multpl
+// only for the months the workbook lacks (it updates mid-month) or when it
+// fails. A valid but lagging publication can still extend the shipped series.
+func supplement(mirror []point, current string, shiller, multpl func() ([]point, error)) ([]point, []string, error) {
 	rows := mirror
 	var sources []string
 	for _, s := range []struct {
 		name  string
 		fetch func() ([]point, error)
 	}{
-		{"multpl.com monthly Shiller PE (day-of-month price)", multpl},
 		{"Shiller ie_data.xls, Data sheet, ordinary CAPE (https://shillerdata.com/)", shiller},
+		{"multpl.com monthly Shiller PE (day-of-month price)", multpl},
 	} {
 		last := rows[len(rows)-1].date
 		if last >= current {

@@ -16,9 +16,10 @@ Datahub mirror of Robert Shiller's dataset (the `PE10` column of the
 `s-and-p-500` dataset), the same source as the bundled SP500 history:
 <https://raw.githubusercontent.com/datasets/s-and-p-500/main/data/data.csv>.
 The mirror's last computed PE10 is September 2023. Later observations come
-from multpl.com's monthly Shiller PE table. When it is unavailable or lags
-the current month, the generator fills the remaining months from the ordinary
-CAPE column in the Data sheet of [Shiller's workbook](https://shillerdata.com/).
+from the ordinary CAPE column in the Data sheet of
+[Shiller's workbook](https://shillerdata.com/). When it is unavailable or lags
+the current month, the generator fills the remaining months from multpl.com's
+monthly Shiller PE table.
 The CSV header records the date range contributed by each supplement.
 Multpl uses a day-of-month price, while Shiller uses a monthly average.
 The current month's reading is provisional.

@@ -54,19 +54,19 @@ func TestSupplement(t *testing.T) {
 	mirror := series[:12:12]
 	for _, tc := range []struct {
 		name     string
+		workbook func() ([]point, error)
 		multpl   func() ([]point, error)
-		original func() ([]point, error)
 		wantErr  bool
 	}{
-		{"multpl unavailable", fail, get(series), false},
-		{"multpl stale", get(series[:15]), get(series), false},
-		{"multpl current", get(series), func() ([]point, error) { t.Fatal("unnecessary workbook fetch"); return nil, nil }, false},
+		{"workbook unavailable", fail, get(series), false},
+		{"workbook stale", get(series[:15]), get(series), false},
+		{"workbook current", get(series), func() ([]point, error) { t.Fatal("unnecessary multpl fetch"); return nil, nil }, false},
 		{"both unavailable", fail, fail, true},
 		{"incomplete tail", fail, get(append(slices.Clone(series[:13]), series[14:]...)), true},
 		{"missing overlap", fail, get(series[12:]), true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			got, _, err := supplement(mirror, series[15].date, tc.multpl, tc.original)
+			got, _, err := supplement(mirror, series[15].date, tc.workbook, tc.multpl)
 			if (err != nil) != tc.wantErr || !tc.wantErr && !slices.Equal(got, series) {
 				t.Fatalf("got %v, %v", got, err)
 			}
@@ -79,11 +79,12 @@ func TestSupplement(t *testing.T) {
 	if _, _, err := supplement(mirror, series[15].date, fail, get(wrong)); err == nil {
 		t.Fatal("accepted supplement 8% above mirror")
 	}
+	// The workbook's months win over multpl's, which only adds the newer one.
 	primary := slices.Clone(series[:15])
 	primary[14].cape = 26
 	got, sources, err := supplement(mirror, series[15].date, get(primary), get(series))
 	if err != nil || got[14] != primary[14] || got[15] != series[15] || len(sources) != 2 {
-		t.Fatalf("stale multpl and newer workbook: %v, %v, %v", got, sources, err)
+		t.Fatalf("stale workbook and current multpl: %v, %v, %v", got, sources, err)
 	}
 }
 
