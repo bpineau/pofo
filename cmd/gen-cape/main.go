@@ -4,10 +4,9 @@
 // runs at data-generation time only (network); the pofo binary embeds the CSV.
 //
 // The datahub mirror stopped computing PE10 in 2023 (its earnings columns are
-// blank ever since), so the recent months are completed from multpl.com's
-// monthly Shiller PE table, which tracks Shiller's own updates. The deep
-// history keeps the mirror's values; multpl only appends months after the
-// mirror's last real PE10.
+// blank ever since). Recent months come from multpl.com's monthly Shiller PE
+// table, with the original Shiller workbook as a fallback. The mirror keeps
+// precedence over both where they overlap.
 //
 // CAPE (cyclically-adjusted price/earnings, PE10) is the real price divided by
 // the 10-year average of real earnings. Its inverse is a first-order estimate of
@@ -22,8 +21,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -34,11 +35,12 @@ import (
 const (
 	defaultURL = "https://raw.githubusercontent.com/datasets/s-and-p-500/main/data/data.csv"
 	recentURL  = "https://www.multpl.com/shiller-pe/table/by-month"
+	shillerURL = "https://shillerdata.com/"
 )
 
 func main() {
 	url := flag.String("url", defaultURL, "datahub s-and-p-500 CSV URL")
-	recent := flag.String("recent", recentURL, "multpl monthly Shiller-PE table URL for the months the mirror lacks (empty = skip)")
+	recent := flag.String("recent", recentURL, "multpl monthly Shiller-PE table URL (empty = skip both recent sources)")
 	out := flag.String("o", "pkg/datasets/cape/shiller-cape.csv", "output CSV path")
 	dry := flag.Bool("dry", false, "print coverage without writing")
 	flag.Parse()
@@ -51,12 +53,24 @@ func main() {
 	if err != nil {
 		log.Fatalf("parse: %v", err)
 	}
+	var sources []string
 	if *recent != "" {
-		added, err := appendRecent(&rows, *recent)
+		current := time.Now().UTC().Format("2006-01") + "-01"
+		rows, sources, err = supplement(rows, current, func() ([]point, error) {
+			raw, err := download(*recent)
+			if err != nil {
+				return nil, err
+			}
+			return parseMultpl(raw)
+		}, fetchShiller)
 		if err != nil {
-			log.Printf("recent months (multpl): %v; only the mirror is available", err)
-		} else {
-			log.Printf("appended %d recent months from multpl", added)
+			log.Fatal(err)
+		}
+		for _, source := range sources {
+			log.Print(source)
+		}
+		if latest := rows[len(rows)-1].date; latest < current {
+			log.Printf("latest available CAPE is %s; current month is %s", latest, current)
 		}
 	}
 	last := rows[len(rows)-1]
@@ -65,7 +79,7 @@ func main() {
 	if *dry {
 		return
 	}
-	if err := write(*out, *url, rows); err != nil {
+	if err := write(*out, *url, rows, sources); err != nil {
 		log.Fatalf("write: %v", err)
 	}
 	log.Printf("wrote %s", *out)
@@ -90,27 +104,83 @@ func download(url string) ([]byte, error) {
 	return io.ReadAll(resp.Body)
 }
 
-// appendRecent fills the months after the mirror's last PE10 from multpl's
-// monthly table, appending in place. multpl's newest row is a mid-month
-// current reading; it is kept as that month's value, matching how the FIRE
-// explorer reads the last row as "today's valuation".
-func appendRecent(rows *[]point, url string) (added int, err error) {
-	raw, err := download(url)
-	if err != nil {
-		return 0, err
-	}
-	recent, err := parseMultpl(raw)
-	if err != nil {
-		return 0, err
-	}
-	lastDate := (*rows)[len(*rows)-1].date
-	for _, p := range recent {
-		if p.date > lastDate {
-			*rows = append(*rows, p)
-			added++
+// supplement keeps multpl through its last usable month and consults Shiller
+// when multpl fails or stops before the current month. A valid but lagging
+// publication can still extend the shipped series.
+func supplement(mirror []point, current string, multpl, shiller func() ([]point, error)) ([]point, []string, error) {
+	rows := mirror
+	var sources []string
+	for _, s := range []struct {
+		name  string
+		fetch func() ([]point, error)
+	}{
+		{"multpl.com monthly Shiller PE (day-of-month price)", multpl},
+		{"Shiller ie_data.xls, Data sheet, ordinary CAPE (https://shillerdata.com/)", shiller},
+	} {
+		last := rows[len(rows)-1].date
+		if last >= current {
+			break
+		}
+		tail, err := recentTail(s.fetch, mirror, last, current)
+		if err != nil {
+			log.Printf("%s: %v", s.name, err)
+			continue
+		}
+		if len(tail) > 0 {
+			rows = append(rows, tail...)
+			sources = append(sources, fmt.Sprintf("%s..%s: %s", tail[0].date, tail[len(tail)-1].date, s.name))
 		}
 	}
-	return added, nil
+	if len(rows) == len(mirror) && mirror[len(mirror)-1].date < current {
+		return nil, nil, fmt.Errorf("neither recent source extended the mirror beyond %s", mirror[len(mirror)-1].date)
+	}
+	return rows, sources, nil
+}
+
+func recentTail(fetch func() ([]point, error), mirror []point, last, current string) ([]point, error) {
+	data, err := fetch()
+	if err != nil {
+		return nil, err
+	}
+	if err := checkOverlap(mirror, data); err != nil {
+		return nil, err
+	}
+	i := sort.Search(len(data), func(i int) bool { return data[i].date > last })
+	tail := data[i:]
+	month, err := time.Parse(time.DateOnly, last)
+	if err != nil {
+		return nil, err
+	}
+	for _, p := range tail {
+		month = month.AddDate(0, 1, 0)
+		if p.date != month.Format(time.DateOnly) || p.date > current {
+			return nil, fmt.Errorf("unexpected month %s (expected %s, current %s)", p.date, month.Format(time.DateOnly), current)
+		}
+	}
+	return tail, nil
+}
+
+// The sources use different within-month prices, and the mirror's last
+// observation can be provisional. Compare a full year's mean absolute
+// relative difference to detect a different valuation series.
+func checkOverlap(mirror, recent []point) error {
+	const months = 12
+	if len(mirror) < months {
+		return fmt.Errorf("need %d mirror months to check overlap", months)
+	}
+	year := mirror[len(mirror)-months:]
+	start := sort.Search(len(recent), func(i int) bool { return recent[i].date >= year[0].date })
+	var gap float64
+	for i, m := range year {
+		if start+i >= len(recent) || recent[start+i].date != m.date {
+			return fmt.Errorf("missing overlap at %s", m.date)
+		}
+		gap += math.Abs(recent[start+i].cape/m.cape - 1)
+	}
+	if gap/months > 0.02 {
+		return fmt.Errorf("CAPE differs from the mirror by %.2f%% on average over %d months", 100*gap/months, months)
+	}
+	return nil
 }
 
 // multplRow matches one data row of multpl's table: a "Mon d, yyyy" date cell
@@ -172,11 +242,11 @@ func parse(raw []byte) ([]point, error) {
 	var out []point
 	for _, ln := range lines[1:] {
 		f := strings.Split(strings.TrimSpace(ln), ",")
-		if len(f) <= pi || f[di] == "" {
+		if len(f) <= max(pi, di) || f[di] == "" {
 			continue
 		}
 		v, err := strconv.ParseFloat(f[pi], 64)
-		if err != nil || v <= 0 {
+		if err != nil || !(v > 0) || math.IsInf(v, 0) {
 			continue
 		}
 		out = append(out, point{date: f[di], cape: v})
@@ -188,32 +258,52 @@ func parse(raw []byte) ([]point, error) {
 	return out, nil
 }
 
-func write(path, url string, rows []point) error {
+func write(path, url string, rows []point, sources []string) error {
 	// The mirror has ended in 2023 since it stopped computing earnings. A
 	// failed or stale supplement must never overwrite months already shipped.
 	existing, err := os.ReadFile(path)
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
-	latest := rows[len(rows)-1].date
+	dates := make(map[string]bool, len(rows))
+	for _, p := range rows {
+		dates[p.date] = true
+	}
 	for line := range strings.Lines(string(existing)) {
 		date, _, ok := strings.Cut(line, ",")
-		if ok && len(date) == len(time.DateOnly) && date[4] == '-' && date > latest {
-			return fmt.Errorf("refusing to end CAPE at %s: %s already contains %s", latest, path, date)
+		if ok && len(date) == len(time.DateOnly) && date[4] == '-' && !dates[date] {
+			return fmt.Errorf("refusing to lose CAPE for %s already in %s", date, path)
 		}
 	}
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Shiller CAPE (PE10): real S&P 500 price / 10-year average real earnings.\n")
-	fmt.Fprintf(&b, "# Source: datahub mirror of Robert Shiller's dataset (%s);\n", url)
-	fmt.Fprintf(&b, "# months after the mirror's last computed PE10 come from multpl.com's monthly\n")
-	fmt.Fprintf(&b, "# Shiller-PE table (day-of-month price, so ~1-3%% off the mirror's monthly-average\n")
-	fmt.Fprintf(&b, "# convention: fine for a valuation gauge, do not use for return computations).\n")
+	fmt.Fprintf(&b, "# Source: datahub mirror of Robert Shiller's dataset (%s).\n", url)
+	for _, source := range sources {
+		fmt.Fprintf(&b, "# %s\n", source)
+	}
+	fmt.Fprintln(&b, "# Latest month is provisional.")
 	fmt.Fprintf(&b, "# 1/CAPE approximates the next decade's real return. Regenerate: make cape\n")
 	fmt.Fprintf(&b, "date,cape\n")
 	for _, p := range rows {
 		fmt.Fprintf(&b, "%s,%.2f\n", p.date, p.cape)
 	}
-	return os.WriteFile(path, []byte(b.String()), 0o644)
+	temp, err := os.CreateTemp(filepath.Dir(path), ".shiller-cape-*")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(temp.Name())
+	if err := temp.Chmod(0o644); err != nil {
+		temp.Close()
+		return err
+	}
+	if _, err := temp.WriteString(b.String()); err != nil {
+		temp.Close()
+		return err
+	}
+	if err := temp.Close(); err != nil {
+		return err
+	}
+	return os.Rename(temp.Name(), path)
 }
 
 func logPercentile(rows []point, v float64) {

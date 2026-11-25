@@ -1,4 +1,4 @@
-// Package xls reads the legacy Excel workbooks that two data sources of this
+// Package xls reads the legacy Excel workbooks that data sources of this
 // repository still serve: an OLE2 compound file (magic D0 CF 11 E0) whose
 // "Workbook" stream is a BIFF8 record stream.
 //
@@ -10,8 +10,8 @@
 // what a data feed asks for.
 //
 // The usual call is Sheet, which walks the container and returns the values of
-// the first worksheet; Streams and Cells are the two layers underneath, exposed
-// for a caller that needs another stream or another sheet. A date arrives as a
+// the first worksheet. NamedSheet selects a worksheet by its tab name.
+// Streams and Cells also expose the container and BIFF layers. A date arrives as a
 // serial number rather than as a date, so SerialDate turns it back into one.
 //
 // The package lives under cmd/internal because it is a generator's tool: the

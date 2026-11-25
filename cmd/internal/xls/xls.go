@@ -187,15 +187,17 @@ func utf16Name(b []byte) string {
 // BIFF8 record ids. A record is a 2-byte id, a 2-byte length and that many
 // bytes of body; a record too long for 8224 bytes spills into CONTINUE records.
 const (
-	recFormula   = 0x0006
-	recContinue  = 0x003C
-	recMULRK     = 0x00BD
-	recSST       = 0x00FC
-	recLABELSST  = 0x00FD
-	recNUMBER    = 0x0203
-	recRK        = 0x027E
-	recBOF       = 0x0809
-	substreamWKS = 0x0010 // a BOF that opens a worksheet, not the globals
+	recFormula    = 0x0006
+	recEOF        = 0x000A
+	recBoundSheet = 0x0085
+	recContinue   = 0x003C
+	recMULRK      = 0x00BD
+	recSST        = 0x00FC
+	recLABELSST   = 0x00FD
+	recNUMBER     = 0x0203
+	recRK         = 0x027E
+	recBOF        = 0x0809
+	substreamWKS  = 0x0010 // a BOF that opens a worksheet, not the globals
 )
 
 // Cell is one value of the sheet, either a number or a string: Text carries
@@ -208,6 +210,7 @@ type Cell struct {
 }
 
 type record struct {
+	pos  int
 	id   uint16
 	body []byte
 }
@@ -215,6 +218,12 @@ type record struct {
 // Sheet is the whole read in one call: the OLE2 container is opened, its
 // workbook stream located, and the values of the first worksheet returned.
 func Sheet(data []byte) ([]Cell, error) {
+	return NamedSheet(data, "")
+}
+
+// NamedSheet returns the values of the named worksheet of a BIFF8 workbook.
+// An empty name selects the first worksheet. A missing named worksheet is an error.
+func NamedSheet(data []byte, name string) ([]Cell, error) {
 	streams, err := Streams(data)
 	if err != nil {
 		return nil, err
@@ -226,7 +235,7 @@ func Sheet(data []byte) ([]Cell, error) {
 	if !ok {
 		return nil, fmt.Errorf("no workbook stream (found %d others)", len(streams))
 	}
-	return Cells(wb), nil
+	return worksheet(wb, name)
 }
 
 // SerialDate turns an Excel serial number into the date it stands for, at
@@ -241,29 +250,47 @@ func SerialDate(serial float64) time.Time {
 // Cells returns the values of the workbook's FIRST worksheet, in the order
 // the file stores them. Cells the sheet leaves empty are simply absent.
 func Cells(wb []byte) []Cell {
+	cells, _ := worksheet(wb, "")
+	return cells
+}
+
+func worksheet(wb []byte, name string) ([]Cell, error) {
 	var recs []record
+	offset := -1
 	for pos := 0; pos+4 <= len(wb); {
 		id := binary.LittleEndian.Uint16(wb[pos:])
 		n := int(binary.LittleEndian.Uint16(wb[pos+2:]))
 		if pos+4+n > len(wb) {
 			break // truncated tail: keep what parsed
 		}
-		recs = append(recs, record{id, wb[pos+4 : pos+4+n]})
+		body := wb[pos+4 : pos+4+n]
+		recs = append(recs, record{pos, id, body})
+		if name != "" && id == recBoundSheet && len(body) >= 8 {
+			length := int(body[6])
+			wide := body[7]&1 != 0
+			if wide {
+				length *= 2
+			}
+			if length <= len(body)-8 && decodeChars(body[8:8+length], wide) == name {
+				offset = int(binary.LittleEndian.Uint32(body))
+			}
+		}
 		pos += 4 + n
 	}
 	sst := sharedStrings(recs)
 
-	sheet := -1
+	inSheet := false
 	var out []Cell
 	for _, r := range recs {
 		if r.id == recBOF {
-			if len(r.body) >= 4 && binary.LittleEndian.Uint16(r.body[2:]) == substreamWKS {
-				sheet++
-			}
+			inSheet = len(r.body) >= 4 && binary.LittleEndian.Uint16(r.body[2:]) == substreamWKS && (name == "" || r.pos == offset)
 			continue
 		}
-		if sheet != 0 {
+		if !inSheet {
 			continue
+		}
+		if r.id == recEOF {
+			return out, nil
 		}
 		switch {
 		case r.id == recLABELSST && len(r.body) >= 10:
@@ -293,7 +320,10 @@ func Cells(wb []byte) []Cell {
 			out = append(out, Cell{Row: row, Col: col, Num: math.Float64frombits(binary.LittleEndian.Uint64(r.body[6:]))})
 		}
 	}
-	return out
+	if name != "" && !inSheet {
+		return nil, fmt.Errorf("worksheet %q not found", name)
+	}
+	return out, nil
 }
 
 // rkValue decodes the packed RK number: the top 30 bits are either a 30-bit

@@ -106,13 +106,20 @@ staleness sweep stays quiet, and `xauusdBuild` fails rather than serve the fix
 alone when the live quote cannot be read. No key-less mirror of the
 daily PM fix since 1968 was found; the godoc of `cmd/gen-gold-refdata` lists
 what was tried, and its `-src` takes a browser download as a local path.
-Two other sources changed during the November 2026 refresh. The SG dashboard
+The SG dashboard
 CSV returned HTTP 404 and the [publisher](https://wholesale.banking.societegenerale.com/en/prime-services-indices/)
 now directs full daily data requests to SG Markets. The two SG references
-therefore end at their last cross-checked close, 2026-09-30. For CAPE, when
-multpl was unavailable, the November observation (39.37) came from the
-ordinary CAPE column in the Data sheet of [Shiller's workbook](https://shillerdata.com/).
-The generator rejects a download whose final month predates a shipped month.
+therefore end at their last cross-checked close, 2026-09-30.
+
+`make cape` appends multpl's monthly Shiller PE observations after the
+mirror's last computed PE10. When multpl fails or ends before the current
+month, the generator follows the `ie_data.xls` link on
+[Shiller's data page](https://shillerdata.com/) and reads the ordinary CAPE
+column in its Data sheet. Each supplement must cover the mirror's last 12
+observations with a mean absolute relative difference of at most 2%.
+New observations must form a continuous monthly sequence. The generator
+records each source's date range in the CSV and refuses to remove a shipped
+month.
 
 The shared plumbing (FRED, OECD and Ken French
 readers, the history-reproduction (`SameHistory`, `CompareSteps`), cadence and

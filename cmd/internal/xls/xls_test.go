@@ -39,6 +39,17 @@ func TestSheetReadsEveryCellRecord(t *testing.T) {
 	}
 }
 
+func TestNamedSheet(t *testing.T) {
+	wb := craftedWorkbook(t)
+	cells, err := NamedSheet(wb, "Data")
+	if err != nil || len(cells) != 1 || cells[0].Num != 42 {
+		t.Fatalf("Data worksheet = %v, %v", cells, err)
+	}
+	if _, err := NamedSheet(wb, "Missing"); err == nil {
+		t.Fatal("accepted absent worksheet")
+	}
+}
+
 // The small stream lives in the mini stream, the big one in a regular sector
 // chain: the two paths of the container layer.
 func TestStreams(t *testing.T) {
@@ -128,6 +139,8 @@ func craftedWorkbook(t *testing.T) []byte {
 	sst = append(sst, 0) // flags: compressed, no rich text, no phonetics
 	sst = append(sst, []byte(header)...)
 	rec(recSST, sst)
+	bound := len(wb) + 4
+	rec(0x0085, append([]byte{0, 0, 0, 0, 0, 0, 4, 0}, "Data"...))
 
 	// The worksheet substream.
 	rec(recBOF, bof(substreamWKS))
@@ -137,6 +150,10 @@ func craftedWorkbook(t *testing.T) []byte {
 	rec(recRK, cellHead(3, 1, rk(0.05)))
 	rec(recRK, cellHead(3, 2, rk(-0.07)))
 	rec(0x000A, nil) // EOF
+	binary.LittleEndian.PutUint32(wb[bound:], uint32(len(wb)))
+	rec(recBOF, bof(substreamWKS))
+	rec(recNUMBER, cellHead(0, 0, f64(42)))
+	rec(0x000A, nil)
 
 	// Padding, so the stream needs the regular sector chain rather than the
 	// mini stream: exactly what the real files do.
