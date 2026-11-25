@@ -2,7 +2,7 @@
 # id: TREASURY-LONG-USD
 # name: US long-term Treasury total return (20-year par bond on the long constant-maturity yield, month-end)
 # source: month-end samples of the bundled TREASURY-LONG-YIELD run through simgen.TreasuryTR (20-year par bond, 0.10%/yr). GAP-FREE from 1953-04: H.15 suspended the 20-year constant maturity between 1987-01 and 1993-09 and the 30-year point publishes straight through, so the long yield this is priced off has no hole and neither does this series. The BOND is 20-year throughout (the maturity of the published long-term government bond record, and the neighbourhood of what VUSTX holds); the CURVE POINT it is discounted at is the long one, i.e. the 30-year par yield from 1977-02 and the 20-year point mapped onto it before, which differs from the published 20-year point by +0.2125 -0.0362*y20 (about +0.07 pt at a 4%/yr yield, -0.22 pt at 12%) and whose moves are 0.964 as large. Month-end, one point per calendar month; the pre-1962 head is a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then. January 1973 is compounded in two pieces around the 1973-01-04 definitional break of the 20-year point, so it carries the real moves on each side of it and not the break itself. Proxy behind VUSTX.
-# generated: 2026-10-25
+# generated: 2026-11-25
 date,close
 1953-04-30,100.000000
 1953-05-31,98.898127
@@ -886,4 +886,5 @@ date,close
 2026-07-31,5010.680420
 2026-08-31,5044.865483
 2026-09-30,4834.314589
-2026-10-22,5055.863353
+2026-10-30,5049.546670
+2026-11-09,5087.507287

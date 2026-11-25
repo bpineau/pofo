@@ -2,8 +2,8 @@
 # id: ERESMONDEM-NAV
 # name: ERES Xtrackers Actions Monde M (FCPE, PEE/PER) (official daily NAV, EUR)
 # method: official NAV history from the airfund.io delivery API (share code 990000135629, widget 41481ca4-919c-46c0-9ca1-41a880ff4e8e), as published by the management company; offline fallback of the live source and real segment of the ERESMONDEM recipe
-# validation: 656 NAVs, 2024-03-05 → 2026-10-21, checked against the catalog inception and a 45% per-NAV move bound
-# generated: 2026-10-24
+# validation: 678 NAVs, 2024-03-05 → 2026-11-23, checked against the catalog inception and a 45% per-NAV move bound
+# generated: 2026-11-25
 date,close
 2024-03-05,50.000000
 2024-03-06,49.990000
@@ -661,3 +661,25 @@ date,close
 2026-10-19,73.290000
 2026-10-20,73.240000
 2026-10-21,73.840000
+2026-10-22,73.150000
+2026-10-23,72.800000
+2026-10-26,73.370000
+2026-10-27,73.980000
+2026-10-28,74.160000
+2026-10-29,73.990000
+2026-10-30,72.890000
+2026-11-02,72.390000
+2026-11-03,72.500000
+2026-11-04,73.310000
+2026-11-05,70.950000
+2026-11-06,71.160000
+2026-11-09,72.440000
+2026-11-10,72.520000
+2026-11-12,73.660000
+2026-11-13,73.650000
+2026-11-16,72.600000
+2026-11-17,71.750000
+2026-11-18,71.640000
+2026-11-19,70.330000
+2026-11-20,67.990000
+2026-11-23,71.020000

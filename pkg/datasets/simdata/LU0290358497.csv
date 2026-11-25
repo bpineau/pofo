@@ -3,7 +3,7 @@
 # name: Xtrackers EUR Overnight Rate Swap: EUR overnight cash
 # method: euro overnight rate compounded ACT/360 (ESTR from 2019-10, EONIA 1999-01 before it) less 0.10%/yr TER, extended by the 3-month EURCASH-EUR money-market index before the euro (1994->) and by the German money-market accrual DECASH-EUR before that (~1960); real XEON grafted from 2007
 # validation: corr=0.248 (weekly 0.931) beta=0.09 TE=0.3%/yr CAGR sim 0.76% vs real 0.77% (overlap 4905 d from 2007-06-28 to 2026-10-29) vs LU0290358497
-# generated: 2026-11-15
+# generated: 2026-11-25
 # simulated-before: 2007-06-28
 date,close
 1959-12-31,9.209226
@@ -8810,3 +8810,11 @@ date,close
 2026-11-11,150.739000
 2026-11-12,150.776000
 2026-11-13,150.793000
+2026-11-16,150.799000
+2026-11-17,150.805000
+2026-11-18,150.813000
+2026-11-19,150.855000
+2026-11-20,150.850000
+2026-11-23,150.874000
+2026-11-24,150.879000
+2026-11-25,150.884000

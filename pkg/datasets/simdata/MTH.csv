@@ -2,10 +2,10 @@
 # id: MTH
 # name: Amundi Euro Govt Bond 25+Y: observed long euro-gov donor
 # method: observed DBXG EUR accumulating closes from 2007-08 (iBoxx Eurozone 25+, donor costs retained, sparse through 2009), behind them EUROGOV-LONG-EUR (~1970, ECB 25y daily shape from 2004) less 0.07%/yr; different index and country weights; real MTH grafted from 2018-09
-# validation: corr=0.974 (weekly 0.994) beta=0.95 TE=3.7%/yr CAGR sim -4.40% vs real -4.57% (overlap 2076 d from 2018-09-11 to 2026-11-13) vs MTH
-# generated: 2026-11-15
+# validation: corr=0.974 (weekly 0.994) beta=0.95 TE=3.7%/yr CAGR sim -4.15% vs real -4.33% (overlap 2084 d from 2018-09-11 to 2026-11-25) vs MTH
+# generated: 2026-11-25
 # simulated-before: 2018-09-11
-# warnings: ["proxy MTH: Before its own quotes, MTH uses DBXG with a different index and country mix, retaining the donor's costs; DBXG quotes are sparse in 2007-2009.","proxy MTH: entire history is reconstructed, not real quotes"]
+# warnings: ["proxy MTH: Before its own quotes, MTH uses DBXG with a different index and country mix, retaining the donor's costs; DBXG quotes are sparse in 2007-2009."]
 date,close
 1970-01-31,1.162564
 1970-02-28,1.152902
@@ -5591,3 +5591,11 @@ date,close
 2026-11-11,69.910000
 2026-11-12,69.660000
 2026-11-13,68.930000
+2026-11-16,68.770000
+2026-11-17,68.970000
+2026-11-18,69.010000
+2026-11-19,68.490000
+2026-11-20,69.450000
+2026-11-23,70.170000
+2026-11-24,70.070000
+2026-11-25,70.220000

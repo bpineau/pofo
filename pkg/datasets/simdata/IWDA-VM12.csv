@@ -3,7 +3,7 @@
 # name: iShares Core MSCI World in EUR, volatility-managed, 12 % target (strategy)
 # method: IWDA in EUR (real from 2009, MSCI World reconstruction before, EURUSD spot, daily from 1972) held at m = 12% / realized vol of the last 63 sessions, bounded to [0.5, 1], refreshed at month ends and held in between, the rest in XEON (real from 2007, euro overnight chain less 0.10%/yr before); Moreira-Muir (JF 2017)
 # validation: not validated (no real series)
-# generated: 2026-11-15
+# generated: 2026-11-25
 date,close
 1972-03-31,100.000000
 1972-04-03,100.343573
@@ -14203,4 +14203,12 @@ date,close
 2026-11-10,6649.080920
 2026-11-11,6776.770434
 2026-11-12,6815.605886
-2026-11-13,6741.914680
+2026-11-13,6758.503918
+2026-11-16,6733.012035
+2026-11-17,6595.019453
+2026-11-18,6572.652555
+2026-11-19,6560.812002
+2026-11-20,6358.765284
+2026-11-23,6550.901121
+2026-11-24,6441.442396
+2026-11-25,6342.140921
