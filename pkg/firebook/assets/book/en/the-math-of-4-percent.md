@@ -32,7 +32,7 @@ Start with $100 and withdraw $10 at the end of each year. If the market falls 20
 Bengen compared people who retired in different years in the United States. They experienced different thirty-year returns and faced high inflation at different stages of retirement. The roughly 1.8-point gap between our theoretical payout and the historical withdrawal rate reflects those differences. To isolate the effect of order alone, keep the same real returns and rearrange them, as in the $100 example.
 
 ::: figure cascade-4pct
-The first two steps assume a constant return. The last connects that calculation to the US historical result. The bar labelled “sequence” also reflects the level of returns during difficult periods.
+The first two steps assume a constant return. The last connects that calculation to the US historical result. The bar labelled "sequence" also reflects the level of returns during difficult periods.
 :::
 
 ::: exemple The whole cascade, back of the envelope
@@ -65,7 +65,7 @@ The studies listed below answer different questions. Early Retirement Now compar
 
 ## Going further
 
-- William Bengen, [“Determining Withdrawal Rates Using Historical Data”](https://www.financialplanningassociation.org/article/journal/MAR04-determining-withdrawal-rates-using-historical-data) (1994). The charts show how long portfolios lasted by starting year and initial withdrawal rate.
+- William Bengen, ["Determining Withdrawal Rates Using Historical Data"](https://www.financialplanningassociation.org/article/journal/MAR04-determining-withdrawal-rates-using-historical-data) (1994). The charts show how long portfolios lasted by starting year and initial withdrawal rate.
 - Early Retirement Now, the SWR series (the parts on the CAPE and on the horizon in particular): the cascade recomputed on modern data ([[the-ern-series]]).
 - Blanchett, Kowara & Chen, "Optimal Withdrawal Strategy for Retirement Income Portfolios" (2012) and Morningstar's State of Retirement Income reports: the amortization bonus in rates by age.
 - In this book: [[arithmetic-vs-geometric-returns]] (tier 1 in detail), [[amortization-based-withdrawal]] (tier 2 turned into a strategy), [[sequence-of-returns]] (tier 3), [[the-4-percent-rule]] (the rule told as a story) and [[the-trinity-study]] (the rule measured).
