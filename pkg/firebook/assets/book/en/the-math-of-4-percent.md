@@ -1,23 +1,23 @@
 # Why 4%? The mathematical anatomy of the rule
-<!-- source: les-maths-du-4-pourcent @ 7c839850d2ac -->
+<!-- source: les-maths-du-4-pourcent @ c33b6e0e6db9 -->
 
-[[the-4-percent-rule]] tells the story of where the rule came from, and [[the-trinity-study]] how it was established. This chapter answers the question almost nobody asks: why that number? Why not 6%, when US stocks have returned 6 to 7% real on average? Why not 2%, since anything can happen? The 4% is no magic constant that fell out of a backtest. It is the **residue of a three-tier calculation**, and every tier has a name, a sign and a ballpark size. Once you see the cascade, the rule stops being a dogma to believe or debunk. It becomes a result whose workings you understand, and whose direction you can predict the day an assumption changes.
+[[the-4-percent-rule]] traces the rule's origins and [[the-trinity-study]] explains how it was tested. But why 4% if US stocks earned more? Start with a portfolio that earns exactly 4% after inflation every year. How much can you withdraw if you want to preserve the capital? What if you have thirty years to spend it?
 
-This is probably the most teachable chapter in the book: three tiers, one addition, two subtractions, nothing beyond a calculator. When you are done, you will be able to rebuild the number in your head, say exactly what would push it up or down, and understand why it has held up so well across a century that included 1929, 1966 and 2000.
+Arithmetic answers the first two questions. For the third step, where returns vary from year to year, we turn to the historical record.
 
 ::: cle The idea in one sentence
-The safe withdrawal rate is the portfolio's real geometric return, **plus** a bonus because you are allowed to spend the capital itself (the horizon ends), **minus** a penalty because returns arrive out of order and you sell into the down years (sequence risk). On a historical 60/40 over 30 years: 4 + 1.8 − 1.8, or about 4%. The whole mystery of the rule sits in one fact. The bonus and the penalty, two large opposing forces, cancel almost exactly.
+With a **constant** 4% real return, you can withdraw 4% of the starting portfolio at the end of every year indefinitely, or about 5.8% a year for thirty years. In Bengen's US study, a withdrawal starting around 4% and then adjusted for inflation survived the difficult thirty-year periods. The gap from 5.8% reflects both the returns those retirees earned and the order in which they earned them.
 :::
 
 ## Tier 1: the perpetuity, or real return as the natural ceiling
 
-Start with the simplest world there is: a portfolio with a constant, known return, and an immortal retiree who never wants to touch the principal. The answer fits on one line. The sustainable withdrawal is exactly the portfolio's **real** return. Real, because the withdrawal has to keep pace with inflation ([[inflation-and-withdrawal-rates]]). Any reasoning done in nominal terms is an optical illusion that costs 2 to 3 points.
+Start with $100,000 earning exactly 4% a year after inflation. At the end of year one it holds $104,000 in today's purchasing power. Withdraw $4,000 and the original $100,000 remains. You can do the same thing next year ([[inflation-and-withdrawal-rates]]).
 
-That leaves the return itself to pin down. A global 60/40 has historically delivered about 4.6% real, as an **arithmetic** mean. But capital does not compound at the arithmetic mean. It compounds at the **geometric** one, cut down by volatility drag, roughly half the variance ([[arithmetic-vs-geometric-returns]]). Call it **4% real geometric** for a historical 60/40. First marker planted. A cautious immortal with a classic portfolio can take about 4%. That number is still a return, not yet a withdrawal rate. Its numerical match with the final rule is a coincidence, and a confusing one, because the next two tiers are about to cancel each other almost perfectly.
+Why use 4% here? It is a rough historical real geometric return for a portfolio of 60% stocks and 40% bonds. The **geometric** mean is the constant rate that would have produced the same ending balance with dividends reinvested and no withdrawals. The **arithmetic** mean of the annual returns is generally higher ([[arithmetic-vs-geometric-returns]]). Once you start withdrawing money, two portfolios with the same geometric return can finish with quite different balances.
 
-## Tier 2: the amortization bonus, or the right to die
+## Tier 2: spending down the capital over thirty years
 
-Nobody is immortal. Over a 30-year horizon you are allowed to eat the capital itself, not just its fruit. Lending gives the exact formula, a mortgage payment run backwards: at 4% real over 30 years, the withdrawal that lands exactly on zero on the last day is about 5.8% a year. The right to finish at zero is therefore worth +1.8 points. That is the **amortization bonus**, and it is the entire logic of the ABW and VPW methods, which recompute it every year ([[amortization-based-withdrawal]], [[vpw]]).
+With thirty years to fund, you can spend some of the capital. At a constant 4% real return, $100,000 funds thirty end-of-year withdrawals of about $5,783 in today's money. After the last one the balance is zero. Spending down the capital adds about 1.8 percentage points to the initial withdrawal rate. This is the **amortization bonus** that ABW and VPW recalculate as the remaining horizon shortens ([[amortization-based-withdrawal]], [[vpw]]).
 
 The bonus also explains why the horizon matters so much ([[horizon-and-life-expectancy]]). Stretch it to 50 years and the same formula gives 4.7%: the bonus melts to +0.7. Stretch it to infinity and it disappears. Very early retirement does not lose rate to some mystery. It simply loses the right to amortize fast.
 
@@ -25,18 +25,18 @@ The bonus also explains why the horizon matters so much ([[horizon-and-life-expe
 The withdrawal that pure amortization arithmetic funds at 4% real, by the number of years to cover. The curve falls fast, then flattens onto its asymptote, the return alone. The first twenty years carry most of the bonus, while stretching from a 50-year horizon to eternity costs only seven tenths of a point. Very early retirement does pay for its horizon, but far less than people think.
 :::
 
-## Tier 3: the sequence penalty, or what disorder costs
+## Tier 3: when the bad years come first
 
-Tier 2 assumed a constant return. Real returns arrive in a jumble. A fixed withdrawal turns that jumble into a lopsided risk, because selling into a decline destroys capital that will never see the rebound ([[sequence-of-returns]]). Once you are withdrawing, the ending result no longer depends on the geometric mean alone. It depends on the order too, and the first years count several times more than the last ones. The rule is meant to survive the worst orders on record (1929, 1966), not the average one, so the worst disorder has to be paid for up front.
+Start with $100 and withdraw $10 at the end of each year. If the market falls 20% then rises 25%, you have $70 left after the first withdrawal and $77.50 after the second. Reverse those returns and you have $115, then $82. With no withdrawals both orders would have taken you back to $100. With withdrawals, an early loss leaves less money to benefit from the recovery ([[sequence-of-returns]]).
 
-How much does it cost? That is Bengen's central finding. Across US history the worst start year could carry only about 4%, while the amortization math at the average return promised 5.8%. The historical sequence penalty is therefore worth about −1.8 points. ([[arithmetic-vs-geometric-returns]] budgets 1 to 1.5 points for the same phenomenon; it measures from the bare geometric return, without going through amortization, which is why the two figures differ.) The penalty is not a universal constant. It grows with the portfolio's volatility: an all-stock plan has both a higher average return and a heavier penalty, which is what produces the allocation plateau ([[stock-bond-allocation]]). And it shrinks with anything that cushions the down years. Diversification and rebalancing force you to buy low during a crash ([[why-diversification-works]]). Flexibility helps too, since cutting 10% in a red year buys back part of the penalty ([[flexibility-in-practice]]).
+Bengen compared people who retired in different years in the United States. They experienced different thirty-year returns and faced high inflation at different stages of retirement. The roughly 1.8-point gap between our theoretical payout and the historical withdrawal rate reflects those differences. To isolate the effect of order alone, keep the same real returns and rearrange them, as in the $100 example.
 
 ::: figure cascade-4pct
-The 4% cascade: about 4% of real geometric return, plus the amortization bonus, minus the sequence penalty. The two forces cancel almost exactly, and that is the whole "mystery" of the rule.
+The first two steps assume a constant return. The last connects that calculation to the US historical result. The bar labelled “sequence” also reflects the level of returns during difficult periods.
 :::
 
 ::: exemple The whole cascade, back of the envelope
-Historical 60/40, 30 years, a fixed indexed withdrawal. Real arithmetic return about 4.6%; take out volatility drag and you get about 4% geometric (tier 1); add the 30-year amortization bonus and you get about 5.8% (tier 2); take out the penalty for the worst order on record and you land on about 4.0% (tier 3). There is the rule, rebuilt. Now make it breathe. A 50-year horizon: the bonus melts, the penalty eases a little, about 3.4% (the −1.8 of tier 3 is calibrated on thirty years). A world sample instead of the US case alone ([[anarkulova-cederburg]]): 0.5 to 1 point off. A high CAPE on the day you start ([[valuations-and-cape]]): a point shaved off tier 1. Fees of 0.5%: 0.5 off, almost one for one. A flexible rule with a floor: 0.3 to 0.5 back on. Every argument about "the real number" is an argument about a single tier, and it gets settled tier by tier, not by slogans.
+In this example we go from a 4% real return to a 5.8% payout over thirty years at a constant return, then to roughly 4% in the historical test. The next figure illustrates the scale of changes when we vary one assumption at a time. A fifty-year horizon gives about 3.4% here. A global sample ([[anarkulova-cederburg]]) lowers the rate by 0.5 to 1 point. A high starting valuation ([[valuations-and-cape]]) trims a point from the assumed return in this scenario. Fees of 0.5% lower the illustrated payout rate by close to half a point. A flexible rule with a spending floor adds 0.3 to 0.5 point, in exchange for possible spending cuts. If your plan differs in several respects, rerun it with all those assumptions together.
 :::
 
 ::: figure clavier-leviers
@@ -45,27 +45,27 @@ Each assumption moved on its own, starting from the cascade's reference plan: hi
 
 ## Why it holds up (and what would break it)
 
-The real surprise is not the rule's value, it is its stability. It held through two world wars, a depression, a stagflation and two twenty-first-century crashes. Three mechanisms explain that, all of them already familiar. The first is the **tiers offsetting each other**. Stretches of weak returns leave cheap valuations behind them, and cheap valuations mean better returns next. The cascade refuels itself along the way, the mechanical version of mean reversion. The second is **rebalancing**, which turns every crash into a forced purchase at a discount and chips away at the sequence penalty exactly when it bites. The third is the **hidden margin**. The rule is calibrated on the worst case in the record, so in six vintages out of ten it ends with more capital, in real terms, than it started with ([[reading-a-fan-chart]]). The median subsidizes the tail.
+A rate chosen to survive the most difficult US starting date often leaves considerable wealth to households that retired in better years ([[reading-a-fan-chart]]). Why keep that margin? When you retire, you do not know which group you will join. Another household's ending wealth cannot cover your expenses if your own retirement gets off to a poor start.
 
-Which makes the list of things that would break it short and specific. A regime **outside the sample** for your own country: a retiree in Tokyo in 1990, or one in Buenos Aires, lived through worse than the worst American case ([[international-diversification]], [[simulator-traps]]). **Frictions** you never budgeted for: the cascade is computed gross, and fees and taxes come straight off tier 1, almost one for one ([[building-it-with-us-etfs]], [[us-taxes-in-the-withdrawal-phase]]). **Rigid indexation** over a very long horizon, the combination with the least slack in it. And **quitting halfway**, statistically the number one killer, against which the cascade can do nothing ([[the-psychology-of-spending]]).
+Three checks bring the historical result closer to your situation. Use returns from the markets you actually invest in ([[international-diversification]]). Deduct annual portfolio fees and apply taxes to the cash flows they affect ([[building-it-with-us-etfs]], [[us-taxes-in-the-withdrawal-phase]]). Then check how long the withdrawals must last and which expenses you could actually cut if markets disappoint ([[flexibility-in-practice]]).
 
 ::: science What modern reconstructions confirm
-The cascade is more than a teaching device, even if it remains a reading after the fact: the sequence penalty, obtained by difference, is not an ingredient you carry unchanged from one plan to another. Each of its stages still has a measured counterpart in the research. ERN's reconstructions (the SWR series, [[the-ern-series]]) find the sequence penalty in how the rate depends on the starting CAPE and on the allocation. Blanchett, Pfau and Morningstar find the amortization bonus in rates that rise with age: published safe rates climb about 0.3 to 0.5 points every time the horizon shortens by five years. And Anarkulova and Cederburg put a number on the sample term by swapping US history for the world basket (0.5 to 1 point off, depending on the criterion). When this book suggests starting around 3 to 3.5% for a long FIRE rather than the canonical 4%, that is not a mood. It is the same cascade, with every tier reset to its forward-looking value ([[expected-returns]]).
+The studies listed below answer different questions. Early Retirement Now compares withdrawals by starting valuation and asset allocation ([[the-ern-series]]). Blanchett and his coauthors examine how spending can adjust over retirement. Anarkulova and Cederburg broaden the sample of markets. Before comparing two published rates, check the horizon, the markets included and the definition of failure.
 :::
 
 ## The essentials
 
-- The 4% rebuilds in three tiers: about 4% of real geometric return on a 60/40 (after volatility drag), +1.8 points of amortization bonus over 30 years, −1.8 points of penalty for the worst order of returns on record. The near-perfect cancellation of bonus and penalty is the rule's "miracle".
-- Every tier has its own levers. The horizon works on the bonus (at 50 years, only +0.7). Volatility and flexibility work on the penalty. Valuations, fees and the sample work on the return tier, and fees almost one for one.
-- Its historical robustness comes from mean reversion (bad decades set up the good ones), from rebalancing (forced buying at the bottom) and from the worst-case margin (the median ends richer than it started).
-- What breaks the cascade is known: a regime outside your country's sample, frictions never budgeted for, rigid indexation over a very long horizon, and quitting along the way.
-- Being able to redo this arithmetic in your head beats every debate: when someone announces that 4% is dead, or that 5% works fine, ask which tier they moved, and by how much.
+- At a constant 4% real return, thirty annual end-of-year withdrawals can each amount to about 5.8% of initial capital in constant purchasing power.
+- The historical rate of roughly 4% comes from replaying retirements. Comparing that outcome with a constant-return payout cannot isolate sequence risk.
+- To see the effect of order by itself, rearrange the same returns while keeping withdrawal amounts and dates fixed.
+- Spending indexed for fifty years, recurring fees or investments in different markets each call for a fresh calculation.
+- When reading another published rate, look for the horizon, the markets studied and whether the retiree could cut spending along the way.
 
 ---
 
 ## Going further
 
-- William Bengen, "Determining Withdrawal Rates Using Historical Data" (1994): the original paper, where the cascade is implicit in the tables.
+- William Bengen, [“Determining Withdrawal Rates Using Historical Data”](https://www.financialplanningassociation.org/article/journal/MAR04-determining-withdrawal-rates-using-historical-data) (1994). The charts show how long portfolios lasted by starting year and initial withdrawal rate.
 - Early Retirement Now, the SWR series (the parts on the CAPE and on the horizon in particular): the cascade recomputed on modern data ([[the-ern-series]]).
 - Blanchett, Kowara & Chen, "Optimal Withdrawal Strategy for Retirement Income Portfolios" (2012) and Morningstar's State of Retirement Income reports: the amortization bonus in rates by age.
 - In this book: [[arithmetic-vs-geometric-returns]] (tier 1 in detail), [[amortization-based-withdrawal]] (tier 2 turned into a strategy), [[sequence-of-returns]] (tier 3), [[the-4-percent-rule]] (the rule told as a story) and [[the-trinity-study]] (the rule measured).

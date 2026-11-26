@@ -115,10 +115,10 @@ func TestPreavisQuotesTheDashboardThresholds(t *testing.T) {
 			t.Errorf("the dashboard article no longer sets %q", want)
 		}
 	}
-	// And the corrected claim, which this plate is the evidence for.
+	// The replay supports the dates of this one example.
 	for _, want := range []string{
-		"la ruine prévient 10 à 20 ans à l'avance",
-		"C'est un processus de 10 à 20 ans",
+		"le taux courant passe au rouge en 1974",
+		"Il reste vingt ans avant l'épuisement en 1994.",
 	} {
 		if !strings.Contains(art, want) {
 			t.Errorf("the dashboard article no longer says %q", want)
@@ -127,8 +127,8 @@ func TestPreavisQuotesTheDashboardThresholds(t *testing.T) {
 	host := bookArticle(t, "ruine-et-probabilites")
 	for _, want := range []string{
 		"::: figure preavis-1966",
-		"et vingt ans sur le pire millésime américain connu",
-		"Le rouge du millésime 1966 se confirme en 1974-1975 ; le capital ne s'épuise qu'en 1994.",
+		"Le voyant passe au rouge en 1974",
+		"Il reste rouge en 1975. Le portefeuille s'épuise en 1994.",
 	} {
 		if !strings.Contains(host, want) {
 			t.Errorf("the host article no longer says %q", want)

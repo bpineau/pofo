@@ -1,16 +1,16 @@
 # When to worry, and when to let it ride
-<!-- source: quand-s-inquieter @ 5ed91c5e41b1 -->
+<!-- source: quand-s-inquieter @ 819df5418114 -->
 
 Between two annual reviews, a retiree lives with one nagging question. "With the market doing this, right now, should I be doing something?" This book's answer is almost always no. But that no needs **instruments** behind it to hold up. Doing nothing with no instruments is just holding your breath. Doing nothing while watching your warning lights is flying the plan ([[the-psychology-of-spending]]: numbers are what put bounds on fear).
 
-This chapter builds the dashboard you fly between reviews. One warning light does most of the work: the current withdrawal rate, on a green-amber-red scale calibrated to your own plan. Next comes the list of everything that is **not** a signal, because sorting noise from signal is half the job. Then the early warnings that are real. They exist, they are slow, and their slowness is what saves you: ruin gives 10 to 20 years of notice ([[failure-probability]]). That delay, seen in historical failures, is not guaranteed: a sudden crash or a large unexpected expense can shorten it. Last, the ladder of graded responses. Worrying usefully means knowing in advance what you will do at each step, from doing nothing on purpose to redesigning the plan from scratch. It applies to the flying the same sorting that ERN's Part 47 applies to the assumptions of a plan ("When to Worry, When to Wing It", [[the-ern-series]]).
+Between reviews, start with the current withdrawal rate. This chapter offers green, amber and red thresholds to calibrate to your own plan and a response for each threshold. It distinguishes what can wait until the next review from an event that changes the budget immediately ([[failure-probability]], [[the-ern-series]]).
 
 ::: cle The principle behind the dashboard
 You steer by **ratios**, never by balances. A balance scares you or elates you without telling you anything, because it only means something next to your spending and your horizon. The **current withdrawal rate** says the essentials in one number: what the portfolio has to pay out this year (spending minus pensions and other income), divided by its value today. It tells you where the plan stands, whatever moved it, the market, your spending or inflation. Anyone can work it out in their head ([[couples-and-family]]: it is the number the reverse quiz turns on), and its thresholds can be calibrated to you. That is the main warning light. Everything else is a supplement.
 :::
 
 ::: figure wr-signal
-The current withdrawal rate, spending divided by the portfolio, drifts slowly across three zones. While it stays green, you do nothing. In amber, gentle moves and a closer watch. On a confirmed red, meaning two readings spaced apart that both clear the threshold (the hysteresis that filters false alarms), the written cut takes effect, and it is lifted once the rate falls back under. Real signals are slow: there is time to work through the steps in order.
+The current rate divides the annual spending left to fund after pensions and other income by the portfolio balance. Here an amber reading triggers closer monitoring. If two readings spaced apart exceed the red threshold, the household makes its planned cut. An unexpected expense that permanently changes the budget calls for an immediate recalculation.
 :::
 
 ## The main warning light: the current rate and its scale
@@ -27,9 +27,9 @@ The current withdrawal rate, spending divided by the portfolio, drifts slowly ac
 
 Half of flying a plan is filtering, and this list earns its place in the plan itself (the never-dos block, [[building-your-plan]]). Headlines are not a signal. Apocalyptic front pages are an audience product, not plan information, and no forty-year decision gets made on a twenty-four-hour news cycle. Neither is the year's performance. One year, even at −20%, is noise the plan already simulated. The question is never "did the market fall?" but "did my warning light change color?". Predictions count for no more, including the strategist who "sees" the crash or the rebound coming, because market timing was settled earlier in this book ([[simulator-traps]], [[valuations-and-cape]]). Other people's portfolios are not a signal either, not the neighbor in crypto, not the cousin in rental property, because your plan answers a spec that no dinner-party story shares ([[the-psychology-of-spending]]). And the bumps of ordinary life, the expensive month or the spendy quarter, do not count: spending is judged on a rolling annual average, not on a statement. Information hygiene follows the same logic. You look at the portfolio at the quarterly check, monthly in amber. Financial news is consumed like sugar: sparingly, and never on the evening of a decline.
 
-## The real signals: slow, cumulative, and thank goodness
+## Recognizing persistent deterioration
 
-A plan that is genuinely going wrong does not look like a crash. It looks like a drift. The historical paths that failed all share one profile ([[failure-probability]]). Year after year of a current rate that is high and still climbing, with the squeeze settling in: spending climbs with inflation while the portfolio stalls ([[fixed-inflation-adjusted-withdrawal]]). Amber that never goes back to green, then red that stays. It takes 10 to 20 years, it is visible at every review, and there is time to run three steps of response before anything turns irreversible.
+A portfolio that must supply the same inflation-adjusted sum every year can show stress well before it runs out ([[fixed-inflation-adjusted-withdrawal]]). In the 1966 US example in [[failure-probability]], the current rate turns red in 1974. Twenty years remain before the portfolio runs out in 1994. That is the time available in this particular scenario. A crash or a loss of income can push the rate over the same threshold much closer to depletion.
 
 The other signals are slow too. Real spending can settle structurally above the plan. Three reviews running and it is no longer a gap, it is the new normal, and the plan has to absorb it or treat it. Personal inflation can diverge from the index for years ([[tracking-inflation]], where health costs run away). Then there are the life events, health, family, divorce, the shocks that really hit a plan ([[couples-and-family]]). Those justify an immediate off-cycle review. The calendar protects you from the market's moods, not from the facts of your life.
 
@@ -60,7 +60,7 @@ The tally of the crossing, the years spent inside a hostile market, as written i
 
 - You steer by ratios, not balances. The current withdrawal rate is the warning light you fly between reviews: simple, doable in your head, folding market, spending and inflation into one number, on a green-amber-red scale calibrated to your plan, with hysteresis and confirmation before any red.
 - Sorting noise from signal is half the job. Headlines, the year's performance, predictions and the neighbors' portfolios are never signals. Spending is judged on an annual average, and information hygiene gets written into the plan.
-- The real signals are slow and cumulative: amber that never returns to green, spending structurally above plan, personal inflation drifting away from the index. Ruin gives 10 to 20 years of notice, and that slowness is your margin. Life events, on the other hand, trigger an immediate review.
+- A persistently high withdrawal rate, sustained overspending or a lasting rise in your own cost of living warrants a review. A life event that changes income or expenses warrants one immediately.
 - The five-step playbook (nothing, then the painless moves, then the written cut plus the buffer, then income, then the redesign) is climbed in order and climbed back down in reverse. Having it in writing defuses anxiety better than any number.
 - Flying a plan well looks like boredom: years of step 0, a color checked now and then, a list followed. "We never had to be brave" is the verdict on a well-designed plan.
 

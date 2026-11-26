@@ -120,11 +120,11 @@ func TestBruitsAgreesWithItsArticle(t *testing.T) {
 	art := bookArticle(t, "ruine-et-probabilites")
 	for _, want := range []string{
 		"::: figure trois-bruits",
-		"**Le bruit d'échantillonnage** est la moindre.",
-		"**La sensibilité aux paramètres** est bien pire.",
-		"**Le choix du modèle domine tout**",
-		"lisez la ruine en ordinal, pas en cardinal",
-		"Les décimales sont du bruit ; les écarts entre scénarios et entre modèles sont du signal.",
+		"**Le bruit d'échantillonnage.**",
+		"**La sensibilité aux paramètres.**",
+		"**Le choix du modèle.**",
+		"les deux points d'incertitude que laisse le tirage",
+		"les trente-cinq que laisse le choix du modèle",
 	} {
 		if !strings.Contains(art, want) {
 			t.Errorf("the article no longer says %q", want)

@@ -1,12 +1,12 @@
 # Failure probability: reading it, choosing it, and not letting it run you
-<!-- source: ruine-et-probabilites @ 1a3dc8f60875 -->
+<!-- source: ruine-et-probabilites @ 31cbc065d010 -->
 
-Every retirement simulator boils its verdict down to a single number: the failure probability, or its mirror image, the success rate. It is the most watched number in the field, and the most misread. People treat it like a weather forecast ("5% risk, that's fine"), compare it across tools that are not measuring the same thing, ask it for a precision it does not have, and forget that it describes a world in which nobody ever reacts.
+A simulation reports a 95% success rate. In the other 5%, did the household miss its last withdrawal by a few dollars, or did it face fifteen years of essential bills it could not pay? The percentage alone cannot tell you.
 
-This page teaches you to read that number the way a professional does: what it measures exactly, how to pick a threshold you can live with, why 2% and 8% are often indistinguishable, and how simulated ruin differs from the real thing.
+To interpret it, start with two questions. What event does the tool count as a failure? What does your plan do when conditions deteriorate?
 
 ::: cle The definition, no shortcuts
-The failure probability of a plan is the fraction of simulated futures (or of replayed historical windows) in which the portfolio hits zero **before** the end of the horizon, under a withdrawal rule applied mechanically, with no human reaction at all. It is a property of the **pair** plan plus model, never of the plan alone: change the model and the number changes, sometimes by a factor of three, without your plan moving an inch ([[historical-vs-parametric]]).
+In pofo a path fails in the first year the portfolio cannot deliver the withdrawal the spending rule calls for after household income is taken into account. The failure rate is the share of paths that encounter at least one such year within the chosen horizon. It depends on both the **plan** and the **model** that produces the scenarios ([[historical-vs-parametric]]).
 :::
 
 ## What the number measures, and what it does not
@@ -15,53 +15,53 @@ Take the definition apart, phrase by phrase. Each phrase hides a trap.
 
 **"The fraction of simulated futures."** The number is a frequency inside a population of scenarios that a model made up. The model changes everything. Draw the years independently and you understate the clusters of bad ones ([[sequence-of-returns]]). Replay American history and you inherit its optimism ([[the-trinity-study]], [[simulator-traps]]). Replay the world sample and you take in countries and eras that may be harsher than any future you plausibly face ([[anarkulova-cederburg]]). None of them is "the true one". That is why serious simulators show a plan under several models at once. Their figures do not form a confidence interval: each asks a different question, and some do not even look at your portfolio. Read them one by one, never just one.
 
-**"The portfolio hits zero."** Simulated ruin is binary and terminal. It does not tell failure at 71 apart from failure at 94, and it scores a plan that touches zero in its final month as a failure while a plan that ends with $15,000 in hand is a success. Two plans at 5% can hide very different lives: one fails early and hard, the other runs out of breath at the very end with Social Security underneath it. So look at two more things. **When** the failures happen, and how much wealth is left at the median at the end of the horizon ([[reading-a-fan-chart]]).
+**“A withdrawal cannot be funded.”** Suppose the final year calls for a $15,000 withdrawal and exactly $15,000 remains. The household pays every bill and ends at zero: the plan succeeds. Even with another year to live and an empty portfolio, a pension could cover the whole budget. If it leaves a $1,000 shortfall, that is the year pofo counts as a failure. Next ask **when** the shortfall occurs and how much spending goes unfunded ([[reading-a-fan-chart]]).
 
-**"With no human reaction at all."** The least realistic assumption, and the most useful. Unrealistic: nobody keeps drawing $40,000 indexed while the portfolio slides from $1M to $150k; they would have cut their spending years earlier ([[when-to-worry]]). Useful: precisely because the simulated rule is blind, the number measures the plan's **intrinsic** robustness, with no credit taken for a flexibility you have yet to show. A flexible plan gets simulated with its own flexible rule ([[floor-and-ceiling]], [[morningstar-guardrails]]). Failure then drops, and what you have to look at is the standard of living delivered. Flexibility does not remove the pain, it moves it into years of smaller spending.
+**“Under the stated rule.”** With fixed withdrawals, the calculation keeps paying the inflation-adjusted amount after a downturn. If your plan is to cut travel before touching essentials, simulate a rule that does that ([[floor-and-ceiling]], [[morningstar-guardrails]]). It may lower the failure rate at the price of several years with fewer vacations. Look at the amount of spending delivered and the duration of the cuts to see what that flexibility cost.
 
-**And what it blithely ignores**: your mortality (ruin at 97 concerns very few people, which is why it pays to read the number alongside mortality tables, [[horizon-and-life-expectancy]]), the real lumpiness of spending, the fine print of taxes, and every safety net that sits outside the model (family, a house, a return to work).
+**How long the money must last.** With a fixed forty-year horizon, every household must fund forty years. With simulated lifespans, a shortfall only counts while the household is still alive ([[horizon-and-life-expectancy]]). In either case, check which income, extraordinary expenses and fallback resources the calculation includes.
 
 ## Choosing your threshold: there is no universal right answer
 
 How much failure should you accept: 1%, 5%, 10%? The question looks technical. It is personal, and it turns on three things.
 
-**How good your safety nets are.** Simulated ruin assumes you have nowhere to turn. Someone in their forties who is employable, owns a home, has a pension coming and a family that would help can rationally accept 10 to 15% **simulated** failure, because **real** ruin (ending your life destitute with nothing to fall back on) is far rarer than the number suggests. Someone at 60 with no meaningful pension, no property and no way back to work should read the number almost literally, and aim low.
+**Your fallback resources.** A pension already entered in the model reduces the withdrawals you need. Counting it again as a fallback overstates your margin. For a resource still outside the model, such as returning to work, consider at what age it would still be available and how much income it could provide.
 
 **What a year of margin costs.** Going from 5% failure to 2% typically takes 10 to 20% more capital, which is two to four more years of work. Going from 5% to 10% hands them back. The threshold is the price of a trade between two risks ([[one-more-year]]): put a number on what each point of failure costs you, or gives you back, in working years, and the discussion stops being abstract. The general frame for trades like this one (utility, certainty equivalent, regret) is laid out in [[deciding-under-uncertainty]].
 
 **How your plan fails.** Look at when the failing scenarios fail. An 8% built out of late failures (after 85, with a pension covering the floor) is more comfortable than a 4% built out of collapses at 70.
 
 ::: astuce What practitioners actually do
-Serious financial planners, Michael Kitces first among them, have converged on a working range of 10 to 20% simulated failure for plans that come with safety nets and an adjustment rule, and they keep repeating that a 100% success rate is not a healthy goal. It often means you worked years too long and will die at your wealthiest. Morningstar calibrates its recommendations to 90% success, meaning 10% failure, over 30 years ([[morningstar-guardrails]]). A solver that sizes a plan (target capital, exit date, sustainable withdrawal) needs an acceptable failure rate as an input. Set it yourself. 10% is a reasonable starting point: lower it when your safety nets are thin, raise it when they are solid and your withdrawal rule knows how to adjust.
+A solver that calculates a savings target or retirement date needs a failure threshold. Morningstar, for example, uses 90% success over thirty years in its baseline scenario ([[morningstar-guardrails]]). To choose your own threshold, open a few paths that fail. What budget could you live on in those paths, and for how many years? Which bills would you still be unable to pay?
 :::
 
-## False precision: 2% and 8% are often the same number
+## Where does the uncertainty in the percentage come from?
 
 The simulator prints "4.7%" and the mind files away a jeweler's precision. There is none, for three reasons that stack.
 
-**Sampling noise** is the smallest of them. With the 2,000 paths simulators commonly draw, a true 5% prints anywhere between 4 and 6% depending on the draw. Annoying, but bounded.
+**Sampling noise.** With 2,000 independent paths and a failure probability of 5% in the model, roughly 95 runs out of 100 give a failure rate between 4% and 6%. Seeing zero failures in a finite sample does not establish that the model's risk is zero. This uncertainty calculation does not directly apply to overlapping historical windows.
 
-**Parameter sensitivity** is far worse. Shave 0.5 point off the expected real return, a refinement nobody can actually estimate ([[expected-returns]]), and failure can double. The thickness of the tails (the degrees of freedom of the Student-t, [[fat-tails]]) moves it again. Your parameters are uncertain, so your failure probability is at least as uncertain.
+**Sensitivity to assumptions.** Keep the simulation method and lower the expected real return by half a percentage point ([[expected-returns]]). The withdrawals now put more pressure on the portfolio. Repeat the exercise with more frequent extreme losses ([[fat-tails]]). These comparisons show which assumptions matter most to your plan.
 
-**The choice of model dominates everything else.** The same plan can print 2% on historical windows, 5% on the central model, 9% under sequence stress and 14% on the broad sample. None of them is wrong; they answer different questions ("what if the future looks like the history of my own holdings, or like a prudently calibrated i.i.d. world, or like that same world with sticky bears, or what if I had been a domestic 60/40 saver in one of the 16 developed countries of the past century"). That last one does not look at your portfolio: it is a crash test, not a measure of your risk.
+**Choice of model.** Historical windows replay observed years. A parametric model draws returns under explicit assumptions. A stress test across countries may use a standard domestic portfolio different from yours. A result of 2% in the first test and 14% in the last describes two different experiments. The range from 2% to 14% therefore has no interpretation as a confidence interval.
 
 ::: figure trois-bruits
 The three noises put on one scale, for a single reference plan: the figure on screen, the two points of uncertainty the draw leaves, the three and a half the parameters leave, and the thirty-five the choice of model leaves. The bar you stare at while believing you are reading a probability is the shortest of the three, by a wide margin.
 :::
 
 
-One rule follows: **read failure probability as a ranking, not as a measurement**. It compares beautifully (plan A is more robust than plan B; this lever cuts risk more than that one; even the pessimistic model stays acceptable) and measures poorly ("my real risk is 4.7%"). The decimals are noise. The gaps between scenarios, and between models, are signal.
+Compare plans **on the same scenarios** first. If their ranking changes when you change the expected return or the model, your preference depends on that assumption. If the ranking holds, you have a reason to take it seriously. A difference between 2% and 8% can be quite clear within a given model even if real-world risk remains uncertain.
 
 ::: exemple A decision framed properly
-The plan: $1.2M, $42,000 a year, a 45-year horizon, a pension of $12,000 a year from 66. Read model by model: 1% on historical windows, 4% central, 7% under sequence stress, 11% on the broad sample. The call: the central case and the stress sit under 10%; the broad sample is above 10%, but its failures land after 80, with the pension already in payment, and a spending floor of $34,000 is livable. The pension covers only $12,000 of it: the other $22,000 still comes from the portfolio, hence the written rule. Verdict: the plan is acceptable, provided the rule is written down. If the current withdrawal rate goes above 5% (portfolio below about $840k before the pension, about $600k after, once the portfolio only has to fund $30,000), spending drops to the floor until the rate is back under 4.5%. The same analysis with early failures, or with a floor nobody could live on, would have ended somewhere else: one more year, or 10% less spending.
+A household plans to spend $42,000 a year and will receive a $12,000 pension starting at 66. Before the pension, the portfolio must supply $42,000 a year. Afterward it must supply $30,000. If the household can trim its budget to $34,000, it will still need $22,000 from the portfolio after the pension starts. Simulate the rule that triggers the cut and count the years spent at $34,000 in the difficult paths. The household can then decide whether the lower failure rate is worth the reduction in living standards.
 :::
 
 ## Real ruin looks nothing like simulated ruin
 
-One last correction, and the one that does the most for your sleep. In the simulator, ruin is a cliff: the balance crosses zero on a Tuesday and everything stops. In life, a retirement plan fails slowly, and **visibly**: the portfolio drifts off its planned path, the current withdrawal rate climbs year after year, the warning lights turn amber long before the drop. The historical paths that failed agree on the timing: between the moment a doomed plan becomes statistically recognizable and the day the money actually runs out, often a decade goes by, and twenty years on the worst US vintage on record. It is not a guarantee: a sudden crash can shorten the delay. The 1966 vintage confirms its red light in 1974-75; the money does not run out until 1994. That is an enormous amount of notice for anyone who has written down thresholds for action ([[when-to-worry]], [[the-annual-review]]).
+A failure percentage leaves out the timing. The chart below restores it for a household retiring in 1966. As wealth falls, the planned withdrawal takes a larger share of the balance. That ratio gives the household a signal it can monitor at its annual review. Sometimes there is time to act. A sudden market loss or a large unexpected expense can shorten the warning period ([[when-to-worry]], [[the-annual-review]]).
 
 ::: figure preavis-1966
-The 1966 vintage, the worst American history has produced, under a fixed 4% inflation-indexed withdrawal. On top, the capital drifting off its path and then running dry. Below, the same plan as the dashboard sees it ([[when-to-worry]]): amber as early as 1967, never green again from 1970, red in 1974 and confirmed in 1975. The account is not empty until 1994. On the day the light turns red there is still $673k in the account and twenty annual reviews left to act: that is what a real failure looks like.
+Retirement starts in 1966 with pofo's US 60/40 portfolio and a 4% initial withdrawal, then inflation adjustments. Above, remaining wealth. Below, the annual withdrawal as a percentage of the balance. The warning turns red in 1974 with $673,000 of the initial million still invested. It stays red in 1975. The portfolio runs out in 1994. Those dates reflect this particular path and the chosen thresholds ([[when-to-worry]]).
 :::
 
 That is the real reason failure probability, read properly, is an instrument of **design** and not a source of dread. It is there to compare plans and to size margins before you leave. Once you have left, it gives way to piloting: a few simple indicators, written thresholds, prepared answers. A plan at 8% failure with an attentive pilot can be safer than a plan at 3% with a sleeping one.
@@ -69,10 +69,10 @@ That is the real reason failure probability, read properly, is an instrument of 
 ## The essentials
 
 - Failure probability is a property of the pair plan plus model: read several models, each for the question it asks, never one model on its own.
-- The number assumes zero human reaction. It measures the plan's intrinsic robustness, not your fate.
-- Pick your threshold from the safety nets you really have and from the price of margin in working years; 10 to 20% simulated is where practitioners work when the nets and an adjustment rule exist, and 100% success is an anti-goal.
-- Read it as a ranking: the gaps compare, the decimals lie. 2% and 8% are often indistinguishable once parameter uncertainty is counted.
-- Real ruin is slow and visible years ahead. What protects you after you leave is not a lower number, it is a written piloting routine ([[when-to-worry]]).
+- The calculation follows the decisions specified by the rule, including any spending cuts you built into it.
+- To choose a threshold, consider the size and duration of the shortfalls, your available fallback resources and the cost of a larger margin.
+- Distinguish variation caused by the draw from variation caused by the assumptions. Running more simulations reduces the former.
+- During retirement, written thresholds can help you respond to a persistent rise in the current withdrawal rate ([[when-to-worry]]).
 
 ---
 
