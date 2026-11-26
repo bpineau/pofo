@@ -24,8 +24,8 @@ func TestAmortRateMatchesTheArticle(t *testing.T) {
 	// bonus of +1,8, and 4,7 % over fifty for a bonus of +0,7.
 	art := bookArticle(t, "les-maths-du-4-pourcent")
 	for _, want := range []string{
-		"trente retraits de fin d'année d'environ 5 783 € en euros constants",
-		"ajoute environ 1,8 point au retrait initial",
+		"à 4 % réels sur 30 ans, le retrait qui épuise exactement le capital au dernier jour est d'environ 5,8 % par an",
+		"Le droit de finir à zéro vaut donc +1,8 point",
 		"À 50 ans d'horizon, le même calcul donne 4,7 % et le bonus fond à +0,7",
 		"À l'infini, il disparaît",
 		"::: figure amortissement-horizon",
@@ -39,7 +39,7 @@ func TestAmortRateMatchesTheArticle(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, want := range []string{
-		"thirty end-of-year withdrawals of about $5,783 in today's money",
+		"at 4% real over 30 years, the withdrawal that lands exactly on zero on the last day is about 5.8% a year",
 		"Stretch it to 50 years and the same formula gives 4.7%: the bonus melts to +0.7",
 		"::: figure amortissement-horizon",
 	} {

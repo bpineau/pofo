@@ -2,14 +2,14 @@
 
 Entre deux revues annuelles, le rentier vit avec une question de fond. « Et là, maintenant, avec ce marché, est-ce que je devrais faire quelque chose ? » La réponse de ce livre est presque toujours « non ». Mais ce « non » a besoin d'être **outillé** pour être tenable. Ne rien faire sans instruments, c'est de l'anxiété en apnée. Ne rien faire avec des voyants, c'est du pilotage ([[psychologie-du-retrait]], la peur se borne avec des chiffres).
 
-Entre deux revues, surveillez d'abord le taux de retrait courant. Ce chapitre propose des seuils vert, orange et rouge à calibrer pour votre plan, puis les gestes qui correspondent à chaque seuil. Il distingue ce qui peut attendre la prochaine revue d'un événement qui oblige à refaire le budget immédiatement ([[ruine-et-probabilites]], [[serie-ern]]).
+Ce chapitre construit le tableau de bord de l'intra-année. Un voyant central d'abord, le taux de retrait courant, gradué en une échelle verte-orange-rouge calibrée sur votre plan. La liste ensuite de ce qui n'est **pas** un signal, car trier le bruit du signal fait la moitié du travail. Puis les vrais signaux d'alarme précoces. Ils existent, ils sont lents, et c'est leur lenteur qui sauve, car la ruine prévient 10 à 20 ans à l'avance ([[ruine-et-probabilites]]). Ce délai, constaté sur les échecs historiques, n'est pas garanti : un krach brutal ou une grosse dépense imprévue peut le raccourcir. Enfin l'échelle de réponses graduées. S'inquiéter utilement, c'est savoir d'avance ce qu'on fera à chaque palier, du rien assumé au replan complet. C'est, transposé au pilotage, le tri que le volet 47 d'ERN opère sur les hypothèses d'un plan (« When to Worry, When to Wing It », [[serie-ern]]).
 
 ::: cle Le principe du tableau de bord
 On pilote des **ratios**, jamais des soldes. Un solde de portefeuille effraie ou euphorise sans rien dire, car il n'a de sens que rapporté aux dépenses et à l'horizon. Le **taux de retrait courant**, lui, dit l'essentiel en un chiffre : ce que le portefeuille doit verser dans l'année (dépenses moins pensions et autres revenus), divisé par sa valeur du moment. Il indique où en est le plan, quelle que soit la cause, marché, dépenses ou inflation. N'importe qui le calcule de tête ([[couple-et-famille]], le voyant du quiz inversé), et ses seuils se calibrent. C'est le voyant central. Le reste n'est qu'un complément.
 :::
 
 ::: figure wr-signal
-Le taux courant rapporte au portefeuille la dépense annuelle qui reste à financer après les pensions et autres revenus. Ici, un passage en orange déclenche une surveillance plus rapprochée. Si le taux dépasse le seuil rouge à deux relevés espacés, le ménage applique la coupe prévue. Une dépense imprévue qui change durablement le budget justifie de reprendre le calcul tout de suite.
+Le taux de retrait courant, soit les dépenses annuelles restant à financer après pensions et autres revenus, divisées par la valeur du portefeuille, dérive lentement à travers trois zones. Tant qu'il reste vert, on ne fait rien. En orange, gestes doux et surveillance rapprochée. En rouge confirmé, c'est-à-dire deux points espacés qui passent le seuil (l'hystérésis anti-fausse-alerte), la coupe écrite s'applique, puis se lève au retour sous le seuil. Les vrais signaux sont lents : on a le temps de dérouler les paliers dans l'ordre.
 :::
 
 ## Le voyant central : le taux courant et son échelle
@@ -26,7 +26,7 @@ Le taux courant rapporte au portefeuille la dépense annuelle qui reste à finan
 
 La moitié du pilotage est un travail de filtrage, et cette liste mérite sa place au plan (le bloc des interdits, [[construire-son-plan]]). Les gros titres n'en sont pas un : les unes catastrophistes sont un produit d'audience, pas une information de plan, et aucune décision de 40 ans ne se prend sur un cycle de 24 heures. La performance de l'année non plus. Une année, même à −20 %, n'est que du bruit déjà simulé. La question n'est jamais « le marché a-t-il baissé ? », mais « mon voyant a-t-il changé de couleur ? ». Les prédictions ne comptent pas davantage, ce stratège qui « voit » le krach ou le rebond, car le chapitre des simulateurs a réglé le sort du timing ([[pieges-des-simulateurs]], [[valorisations-et-cape]]). Le portefeuille des autres n'est pas un signal non plus, ni le voisin en crypto ni le cousin en SCPI, car votre plan suit un cahier des charges qu'aucun récit de dîner ne partage ([[psychologie-du-retrait]]). Les à-coups de la vie courante enfin, le mois cher ou le trimestre dépensier, ne comptent pas : les dépenses se jugent en moyenne mobile annuelle, pas au relevé. L'hygiène d'information suit la même logique. Le portefeuille se regarde au point trimestriel, mensuel en orange. Les nouvelles financières se consomment comme le sucre, peu, et jamais le soir d'une baisse.
 
-## Reconnaître une dérive persistante
+## Les vrais signaux : lents, cumulatifs, et c'est tant mieux
 
 Un portefeuille qui doit verser chaque année le même montant indexé peut se fragiliser longtemps avant d'être vide ([[retrait-fixe-bengen]]). Dans le scénario américain de 1966 du chapitre [[ruine-et-probabilites]], le taux courant passe au rouge en 1974. Il reste vingt ans avant l'épuisement en 1994. Ce délai mesure le temps disponible dans ce scénario précis. Un krach ou une perte de revenus peuvent faire franchir le même seuil beaucoup plus tard dans la vie du portefeuille.
 
@@ -59,7 +59,7 @@ Bilan de la traversée, consigné au journal : deux ans et demi, deux paliers, z
 
 - On pilote des ratios, pas des soldes : le taux de retrait courant est le voyant de l'intra-année, simple, calculable de tête, agrégeant marché, dépenses et inflation, gradué en une échelle verte-orange-rouge calibrée sur votre plan, avec hystérésis et confirmation avant tout rouge.
 - Le tri bruit/signal fait la moitié du travail. Gros titres, performance annuelle, prédictions et portefeuilles des voisins ne sont jamais des signaux. Les dépenses se jugent en moyenne annuelle, et l'hygiène d'information s'écrit au plan.
-- Un taux de retrait qui reste élevé, un budget durablement dépassé ou une inflation personnelle persistante méritent une révision du plan. Un événement de vie qui modifie les revenus ou les dépenses en justifie une immédiatement.
+- Les vrais signaux sont lents et cumulatifs : l'orange qui ne repasse pas au vert, les dépenses structurellement au-dessus, l'inflation personnelle divergente. Les événements de vie, eux, déclenchent une revue immédiate.
 - Le playbook à cinq paliers (rien → gestes indolores → coupe écrite + buffer → revenus → replan) se déroule dans l'ordre et se remonte dans l'ordre inverse. Son existence écrite désamorce l'anxiété mieux que tout chiffre.
 - Le succès du pilotage ressemble à de l'ennui : des années de palier 0, des couleurs consultées, une liste suivie. « On n'a pas eu à être courageux » est le bilan d'un plan bien conçu.
 
@@ -68,5 +68,5 @@ Bilan de la traversée, consigné au journal : deux ans et demi, deux paliers, z
 ## Pour aller plus loin
 
 - Early Retirement Now, volet 37 (traverser un marché baissier en retraite) et volet 38 (« When Can We Stop Worrying about Sequence Risk? », dont la réponse est qu'on ne cesse jamais tout à fait, et que le risque se réévalue chaque année à partir du capital, de l'horizon et des revenus qui restent) : les fondations du playbook ([[serie-ern]]).
-- Le taux courant se calcule de tête (dépenses / portefeuille) ; la re-simulation des seuils, elle, appartient à la revue annuelle ([[revue-annuelle]], [[guardrails-morningstar]]).
+- Le taux courant se calcule de tête (retrait annuel à financer / valeur du portefeuille) ; la re-simulation des seuils, elle, appartient à la revue annuelle ([[revue-annuelle]], [[guardrails-morningstar]]).
 - Dans ce livre : [[marche-baissier-en-retraite]] (la traversée détaillée), [[flexibilite-realite]] (les paliers 1-2), [[retour-au-travail]] (le palier 3), [[ruine-et-probabilites]] (pourquoi la ruine prévient).

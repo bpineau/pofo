@@ -1,5 +1,5 @@
 # Defensive assets: the map and the roles
-<!-- source: actifs-defensifs @ 4b57f888ad80 -->
+<!-- source: actifs-defensifs @ 814689c73d31 -->
 
 Everything in the portfolio that is not the equity engine has one job: defense. But defense against **what**?
 
@@ -21,7 +21,7 @@ What each candidate returned, in real dollars, through four crises of different 
 
 ## The candidates, regime by regime
 
-**Cash (money market funds, T-bills, stable value).** Regimes served: all of them, weakly. It never rises and almost never falls in nominal terms. It is the zero of the scale. Its real job is not defensive performance but the **liquidity** of your withdrawals, and the option that comes with it: the ability to buy everything else at the bottom. Its own enemy is inflation. The 1970s and 2022 both cut it down in real terms, interest paid or not. Carry cost: the gap to the portfolio's return, roughly 2 to 4 real points a year. Verdict: essential as a buffer, the cash buffer of 18 to 36 months ([[cash-buffer]]), ruinous as a permanent mattress beyond that. Inside a workplace plan, a stable value fund is the upgraded version of the same idea, a smoothed bond yield with the principal protected by an insurance wrapper. It makes a good buffer and a good short sleeve.
+**Cash (money market funds, T-bills, stable value).** Regimes served: all of them, weakly. Interest can increase the nominal balance. It is the zero of the scale. Its real job is not defensive performance but the **liquidity** of your withdrawals, and the option that comes with it: the ability to buy everything else at the bottom. Its own enemy is inflation. The 1970s and 2022 both cut it down in real terms, interest paid or not. Carry cost: the gap to the portfolio's return, roughly 2 to 4 real points a year. Verdict: essential as a buffer, the cash buffer of 18 to 36 months ([[cash-buffer]]), ruinous as a permanent mattress beyond that. Inside a workplace plan, a stable value fund is the upgraded version of the same idea, a smoothed bond yield with the principal protected by an insurance wrapper. It makes a good buffer and a good short sleeve.
 
 **Short and intermediate nominal government bonds (1 to 7 years).** Regimes served: the disinflationary recession and, more modestly, the growth crash. Neutral elsewhere. They lose in inflation, but not by much, because short duration caps the damage (−5 to −10% in 2022, against −30% for long bonds). This is the **generalist** defender: never heroic, rarely catastrophic, liquid, with almost no carry cost while real rates are positive. Verdict: the bedrock of the defensive sleeve ([[bonds-in-retirement]]).
 
@@ -33,13 +33,13 @@ What each candidate returned, in real dollars, through four crises of different 
 
 **Managed futures (trend following).** Regimes served: **long** regimes, up or down. The strategy buys what is rising and sells what is falling, across every asset class. It wins in anything that **lasts**, and above all in the great slow destructions (2008, +21% for pure trend; 2022, +27%, its best year since 2000, while **everything** else was losing). Killer regime: trendless markets and V-shaped reversals, like the too-fast crash of 2020. It is one of the few defensive assets whose **long-run** expectation is clearly positive (an estimated 2 to 4% real gross, to be marked down for fees), along with bonds whose real yield is positive too. The price you pay: complexity, real fees, and mediocre years in a row. Verdict: the most valuable defensive block for the modern inflationary regimes, in a dose of 5 to 15% for anyone willing to own a managed product ([[managed-futures]]).
 
-**The others, faster.** Broad **commodities** offer a genuine inflation hedge. They charge for it in chronic negative carry (the roll, taken apart in [[global-macro]]) and in brutal volatility. For an individual they are dominated by gold plus trend.
+**The others, faster.** Broad **commodities** offer a genuine inflation hedge. They charge for it in brutal volatility, while the roll can help or hurt depending on the futures curve ([[global-macro]]). For an individual they are dominated by gold plus trend.
 
 **Direct real estate** is a real asset in the literal sense, but illiquid, concentrated and expensive to run. It is supplementary income, not a portfolio defense ([[real-estate-in-retirement]]). Listed property (REITs) correlates with stocks in a crash (−60% in 2008-2009): diversifying in normal times, not defensive in a crisis.
 
 **Safe-haven currencies** (USD, CHF, JPY) really do cushion crashes, the dollar rising when everything else falls. Whether that helps you depends on where you live. If your home currency is not the dollar, an unhedged world equity fund already carries a dollar position, with no hedging cost but no guarantee either (US stocks down 40% while the dollar gains 20% leave you down 28%; with the dollar down 20%, down 52%): one good reason not to hedge the currency of your stocks ([[international-diversification]]). If your home currency is the dollar, the cushion is already under you, and buying the others adds little.
 
-**Option strategies** (puts, tail hedging) offer the only true crash convexity. But their premium eats the expectation (−2 to −5% a year, carried for years on end). They belong to disciplined institutions. For an individual they can mostly be replicated with duration plus gold plus trend. The full case, toxic vehicles included, is in [[long-volatility]].
+**Option strategies** (puts, tail hedging) offer the only true crash convexity. But their premium eats the expectation (−2 to −5% a year, carried for years on end). A put on the securities you hold sets a minimum sale price at expiry for the quantity covered. Long bonds, gold and trend following may cushion a fall, but no contract fixes their value on that date. The full case, toxic vehicles included, is in [[long-volatility]].
 
 Finally, **global macro** and multi-premia funds share trend's promise, winning in hostile regimes, without its replicable index or its transparency. Their fair trial is in [[global-macro]].
 

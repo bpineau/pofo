@@ -1,13 +1,13 @@
 # Lire un fan chart et des percentiles sans se tromper
 
-Vous voulez savoir ce qu'il vous restera à 75 ans. Sur le graphique en éventail, repérez cet âge sur l'axe horizontal, puis lisez les montants à la verticale. La bande sombre contient la moitié centrale des soldes simulés à cet âge. Le trait du milieu indique le solde médian.
+Le graphique le plus dense de toute la planification de retraite est le cône de richesse, le « fan chart » : des milliers de trajectoires simulées résumées en bandes de percentiles qui s'évasent avec le temps, quelques chemins d'exemple, une ligne de zéro. C'est aussi le graphique le plus mal lu. On y voit des promesses là où il y a des fréquences, des scénarios là où il y a des quantiles ponctuels, et de l'incertitude du monde là où il y a parfois surtout l'incertitude du modèle.
 
-Pour savoir comment un ménage en est arrivé là, changez de lecture et suivez une seule des trajectoires fines. Elle peut être au-dessus de la médiane à 65 ans et sous la bande sombre à 75 ans.
+Or ce graphique est au cœur de tous les simulateurs FIRE sérieux (pofo, FICalc, cFIREsim, Portfolio Visualizer), et les mêmes conventions se retrouvent partout : la Banque d'Angleterre, qui a popularisé le format pour ses prévisions d'inflation, les projections climatiques du GIEC, toute la statistique prévisionnelle. Cette page apprend à le lire en professionnel, un vrai cône sous les yeux. Au programme : son anatomie exacte, pourquoi il a la forme qu'il a (chaque trait de sa géométrie est un fait de probabilité), les cinq erreurs de lecture classiques et leur correction, enfin les autres éventails qui complètent le cône de richesse.
 
-La première lecture compare des ménages à une date. La seconde suit une retraite dans le temps.
+Après cette page, un cône se lira comme une phrase.
 
-::: cle Une bande à 90 %
-Les bornes de la bande sont recalculées à chaque date. Un ménage peut la quitter une année et y rentrer l'année suivante. Pour savoir combien de ménages y restent pendant toute leur retraite, il faudrait suivre chaque trajectoire du début à la fin.
+::: cle Le renversement de lecture
+Un fan chart ne montre pas des futurs. Il montre, pour chaque date, la **distribution** des états possibles à cette date. La bande à 90 % de l'année 20 dit « à l'année 20, 90 % des trajectoires simulées sont dans cette tranche ». Elle ne dit rien sur la façon dont une trajectoire donnée y est arrivée, ni où elle ira ensuite. Le cône est une pile de coupes transversales, pas un faisceau de chemins ; les vrais chemins, eux, traversent les bandes en zigzag toute leur vie. Toutes les erreurs de lecture découlent de la confusion entre ces deux objets.
 :::
 
 ## Anatomie d'un cône
@@ -20,32 +20,32 @@ Prenons le cône ci-dessus, élément par élément.
 
 **Les bandes emboîtées.** Du plus foncé au plus clair, elles couvrent des intervalles de percentiles croissants autour de la médiane : ici la moitié centrale des futurs (25-75) et la quasi-totalité (5-95). À chaque date, on a trié les milliers de richesses simulées et tracé les quantiles ; la bande n'est donc pas un « scénario prudent » ou « optimiste », c'est une statistique d'ensemble, recalculée indépendamment à chaque pas de temps.
 
-**La ligne médiane.** À chaque date, la médiane partage les soldes en deux moitiés. Les ménages changent de rang d'une année sur l'autre ; rien n'oblige une retraite individuelle à suivre la ligne. La moyenne répond à une autre question. Quelques soldes très élevés peuvent la tirer bien au-dessus de ce que détient le ménage du milieu.
+**La ligne médiane.** C'est le 50e percentile : à chaque date, la moitié des futurs sont au-dessus, la moitié en dessous. Deux subtilités. D'abord, la médiane n'est pas une trajectoire, car aucun futur ne la longe ; y rester exigerait un miracle de régularité. Ensuite, elle n'est pas non plus la moyenne. Les distributions de richesse composée sont très asymétriques, bornées à zéro en bas et illimitées en haut, si bien que la moyenne est tirée vers le haut par les scénarios opulents. Quand un vendeur dit « en moyenne, vous finirez avec 4 M€ », il cite souvent la moyenne parce qu'elle flatte ; la médiane, elle, donne la bonne intuition de « ce qui vous arrivera plausiblement ».
 
 **Les chemins d'exemple.** Les deux trajectoires fines de la figure (verte et rouge) sont des futurs individuels, tracés pour une seule raison : montrer qu'un chemin réel traverse les bandes au lieu d'en longer une. La verte prospère en zigzaguant ; la rouge part dans le peloton (elle passe même au-dessus de la médiane les premières années) puis s'effondre jusqu'à la ruine.
 
 Certains graphiques montrent huit trajectoires choisies en classant tous les ménages par patrimoine final. On prend le premier, le dernier et six rangs régulièrement espacés entre eux. Même si un seul ménage sur mille finit à zéro, il peut donc y avoir une ligne rouge parmi les huit. Pour connaître la fréquence des échecs, divisez leur nombre par le nombre total de simulations. Les lignes d'exemple servent à voir *comment* un échec s'est produit.
 
-**La ligne de zéro et l'échelle.** À zéro, le portefeuille est vide. Pour savoir si le ménage peut encore payer ses dépenses, regardez aussi sa pension et le montant du prochain retrait ([[ruine-et-probabilites]]). L'axe peut être plafonné, par exemple à dix fois le capital initial. Quelques ménages très riches sortent alors du cadre, mais on distingue mieux ceux qui manquent de réserves.
+**La ligne de zéro et l'écrêtage du haut.** À zéro, le portefeuille est vide. Il y a échec si un retrait prévu reste à financer ([[ruine-et-probabilites]]). L'axe vertical, lui, gagne à être écrêté, par exemple à dix fois le capital initial. Sans cela, les scénarios composés à 30-40 ans, qui peuvent atteindre 20-50 fois la mise, écraseraient visuellement la zone du zéro, celle qui motive pourtant tout l'exercice. C'est un choix de représentation assumé : on sacrifie le spectacle de la queue haute pour garder lisible la queue basse, celle qui décide.
 
 ## Pourquoi le cône a cette forme
 
-Trois éléments méritent une lecture séparée : la largeur des bandes, le niveau du ménage médian et la distance des soldes les plus faibles au zéro.
+Chaque trait géométrique du cône est un théorème déguisé ; les connaître, c'est savoir diagnostiquer un plan d'un regard.
 
-**Pourquoi il s'évase.** Sans retraits, si les rendements logarithmiques annuels sont indépendants et de même variance, l'écart-type du rendement logarithmique cumulé croît comme la racine carrée du temps (√t). Avec des retraits, la courbe représente aussi l'effet des ventes de titres sur le capital restant. Sa largeur seule ne permet donc pas de déterminer si les mauvaises années ont tendance à se suivre ([[monte-carlo-forces-faiblesses]]).
+**Il s'évase.** Pour des rendements sans mémoire, la dispersion des rendements cumulés, comptés en logarithme, croît comme la racine du temps (√t). En euros, la composition étire le cône bien plus vite par le haut, et les retraits creusent son bas, car un début raté creuse un écart que les prélèvements fixes amplifient ensuite. Ne cherchez donc pas dans sa seule largeur une mémoire des marchés : c'est son bas qui parle. Les vrais marchés, eux, avec leur léger retour des valorisations vers leur moyenne, s'évasent un peu moins à très long terme. C'est l'une des raisons pour lesquelles les modèles i.i.d. sur-dispersent légèrement l'horizon lointain ([[monte-carlo-forces-faiblesses]]).
 
 **Quand la médiane monte.** Dans la figure, le solde du ménage médian augmente alors que certains ménages épuisent leur portefeuille. Les deux résultats sont compatibles. À l'inverse, un plan peut prévoir de consommer une partie du capital avant le début d'une pension. Sa médiane peut alors baisser pendant que les dépenses prévues restent couvertes ([[horizon-et-esperance-de-vie]]).
 
 **Le bas du cône plonge d'abord, ou pas.** C'est le trait le plus utile à lire, et il vaut d'être vu sur deux plans côte à côte.
 
 ::: figure fan-two-plans
-Les deux plans couvrent le même horizon. À gauche, le ménage dispose d'une réserve de liquidités, de dépenses ajustables et de revenus précoces. À droite, il dispose de moins de marge. Comparez leur 5e percentile au bout de dix ans.
+Deux plans, même horizon. À gauche, un plan **défendu** (buffer, flexibilité, revenus précoces) : le 5e percentile s'enfonce lentement et reste positif. À droite, un plan **tendu** sans marges : le 5e percentile pique vers zéro dès la première décennie. La pente du bas du cône sur ces dix premières années donne une bonne idée de votre exposition au risque de séquence.
 :::
 
-Dans les premières années, le 5e percentile se rapproche plus vite de zéro à droite. Pour en comprendre la raison, ouvrez une trajectoire qui a mal commencé et regardez quels retraits ont suivi la baisse. Si vous voulez mesurer l'effet du matelas de liquidités, refaites la comparaison en ne modifiant que ce matelas. Les deux plans de la figure diffèrent aussi par les revenus et la flexibilité ([[sequence-des-rendements]]).
+Regardez le 5e percentile des dix premières années (la ligne colorée du bas sur chaque cône). C'est la fenêtre fragile rendue visible ([[sequence-des-rendements]]). Un plan bien défendu montre un bas de cône qui s'enfonce lentement puis se redresse ; un plan à retrait tendu sans marges montre un 5e percentile qui pique vers zéro dès les années 5-10. Deux cônes de largeur comparable peuvent ainsi cacher des expositions opposées : tout est dans la **pente du bas au début**.
 
 ::: science Percentiles ponctuels et trajectoires : la « percentile path fallacy »
-Le ménage au 5e percentile en année 10 peut être différent de celui qui occupait ce rang en année 5. Pour répondre à « que sont devenus les ménages du bas de la distribution à cinq ans ? », prenez tous ceux qui se trouvaient sous le 10e percentile à cet âge du plan. Suivez ces mêmes trajectoires jusqu'au bout et comptez combien ont épuisé leur portefeuille. Le cône seul ne fournit pas cette probabilité conditionnelle ([[quand-s-inquieter]]).
+L'erreur conceptuelle la plus profonde du fan chart mérite son encart, et la figure d'anatomie la montre. Le « 5e percentile » tracé n'est **pas** un scénario. C'est la couture de milliers de scénarios différents, chacun n'occupant ce rang qu'un moment. Une vraie trajectoire du pire décile visite d'ordinaire la bande médiane certaines années. Et, à l'inverse, la trajectoire qui finit ruinée a souvent passé ses premières années dans la moitié haute, exactement comme le chemin rouge de la figure d'anatomie (deux belles années avant le plongeon, c'est le millésime 2000, [[etude-trinity]]). Conséquence pratique : on ne peut pas lire sur le cône « si je suis sous le 10e percentile en année 5, je finirai ruiné ». Le cône ne contient pas les probabilités conditionnelles le long des chemins. Cette question (« où en suis-je, et que dois-je en conclure ? ») est légitime et cruciale, mais elle exige un autre outil : le suivi par seuils de taux de retrait courant ([[quand-s-inquieter]]), pas la contemplation du cône.
 :::
 
 ## Les cinq erreurs de lecture, et leur correction
@@ -71,27 +71,27 @@ Rien ne vaut un cône vivant, calculé sur votre propre plan. Un quart d'heure s
 Le même parcours se fait ailleurs, dans tout outil qui trace une distribution de trajectoires (TPAW Planner et Portfolio Visualizer en bandes de percentiles, cFIREsim et FICalc en faisceau de millésimes historiques). Il faut seulement relancer le calcul modèle par modèle, puis garder les cônes côte à côte sous les yeux.
 :::
 
-## Quelles dépenses, quel héritage et quels échecs ?
+## Au-delà de la richesse : les autres éventails
 
-L'éventail de patrimoine laisse trois questions ouvertes. Chacune demande une lecture différente des trajectoires.
+Le format « distribution par date » sert trois autres lectures dans les simulateurs qui les proposent, chacune répondant à une question que le cône de richesse ne traite pas.
 
-**L'éventail des dépenses servies.** Avec une règle flexible (guardrails, VPW, ABW, [[panorama-strategies-retrait]]), tracez aussi ce que le ménage peut effectivement dépenser chaque année. Si le 10e percentile est inférieur de 35 % au budget pendant douze dates successives, vous savez que le bas de la distribution reste très bas. Pour connaître la durée des coupes subies par *un même ménage*, comptez les années consécutives sous son plancher dans chaque trajectoire ([[flexibilite-realite]]).
+**L'éventail des dépenses servies.** Dès que votre plan a une règle flexible (guardrails, VPW, ABW, [[panorama-strategies-retrait]]), la richesse ne suffit plus : la question devient « que vais-je vivre ? ». Un éventail du niveau de vie année par année montre son propre bas de cône : le train de vie du mauvais quart des futurs, pendant combien d'années, financé par quoi (portefeuille, pension, buffer). C'est la vue qui départage les règles de retrait : une règle qui « réussit toujours » avec un 10e percentile de dépenses à −35 % pendant douze ans n'a pas éliminé le risque, elle l'a déplacé de la faillite vers la vie ([[flexibilite-realite]]).
 
-**Le patrimoine final.** Un histogramme des soldes à l'horizon choisi permet de lire la fréquence des patrimoines faibles ou élevés. Si l'horizon est fixé à 90 ans, il s'agit du capital à 90 ans. Pour estimer un héritage au décès, il faut également tenir compte de l'âge auquel le décès survient ([[horizon-et-esperance-de-vie]], [[depenses-en-retraite]]).
+**La distribution des héritages.** La coupe finale du cône de richesse, présentée en histogramme : combien reste-t-il au bout, dans tous les futurs ? La lecture type d'un plan sain choque toujours un peu. La masse est loin au-dessus du capital initial, car on meurt le plus souvent riche ([[une-annee-de-plus]], [[depenses-en-retraite]]), avec une petite barre à zéro pour les portefeuilles vides.
 
-**Les formes d'échec.** Parmi les ménages qui ont épuisé leur portefeuille, certains ont perdu la moitié de leur capital dès les premières années. D'autres ont vu leur solde s'éroder lentement ou ont épuisé un capital qui avait d'abord augmenté. Ces profils suggèrent où regarder. Pour comprendre un cas, confrontez les rendements, les dépenses et les revenus extérieurs année par année ([[glidepaths]], [[rentes-et-annuites]]).
+**Les causes d'échec.** Parmi les seuls futurs ruinés, la forme de la trajectoire dit le mode de défaillance : krach précoce (richesse divisée par deux dans les dix premières années, la catastrophe de séquence), érosion lente (le portefeuille n'a jamais décollé, la décennie perdue), ou longévité (le plan a prospéré, culminé, et la retraite lui a survécu). Trois modes, trois parades différentes ([[glidepaths]] et buffer pour le premier, actifs de régime pour le deuxième, rentes pour le troisième [[rentes-et-annuites]]). C'est la vue qui transforme « 6 % de ruine » en diagnostic actionnable.
 
-::: exemple Combien de temps faudra-t-il vivre avec moins ?
-Un ménage prévoit 55 000 € par an pendant 48 ans et accepte de réduire cette dépense si les marchés baissent. Son éventail de dépenses montre un 25e percentile inférieur de 12 % au budget de confort pendant six années successives. Pour savoir si la règle lui convient, il reste deux questions concrètes. Les dépenses au niveau réduit couvrent-elles son plancher ([[combien-il-vous-faut]]) ? Et dans les trajectoires concernées, combien d'années d'affilée dure la coupe ? La première réponse se lit sur le budget du ménage. La seconde exige de suivre les mêmes trajectoires d'une année sur l'autre.
+::: exemple Une lecture complète, en quatre regards
+Plan : 1,6 M€, 55 000 €/an avec guardrails, 48 ans d'horizon. Regard 1, les cônes des différents modèles côte à côte : formes semblables, mais le bas du cône du modèle mondial (broad-sample) s'enfonce nettement plus vite. Le choix du modèle pèse donc plus que le hasard, avec une réserve : le broad-sample ne simule pas ce portefeuille, mais un 60/40 domestique. Regard 2, le bas du cône central sur 10 ans : pente douce. Le chemin rouge permet de suivre les retraits après la première baisse. Regard 3, l'éventail des dépenses : le 25e percentile reste 6 ans à −12 % du confort. Ce n'est pas forcément le même ménage chaque année : la durée vécue d'une coupe se lit trajectoire par trajectoire, en ouvrant quelques futurs du bas. C'est le prix réel des guardrails, jugé acceptable contre le plancher établi ([[combien-il-vous-faut]]). Regard 4, les causes : les échecs résiduels sont aux trois quarts des « érosions lentes ». La parade à tester en premier n'est donc pas plus de cash, mais des briques anti-décennie-perdue ([[portefeuilles-tous-temps]]). Quatre regards, quatre décisions instruites. Voilà ce qu'un fan chart bien lu livre en deux minutes.
 :::
 
 ## L'essentiel à retenir
 
 - Un fan chart est une pile de distributions par date, pas un faisceau de futurs : les bandes sont des quantiles ponctuels, les vraies trajectoires les traversent en zigzag ; la médiane n'est ni une trajectoire ni la moyenne.
-- Une médiane qui monte peut coexister avec des échecs. Comparez les dépenses financées et le capital restant aux objectifs du plan.
+- La géométrie parle : un bas de cône qui plonge = des retraits qui creusent l'écart, pente du bas de cône des 10 premières années = votre exposition à la séquence (voir les deux plans comparés).
 - Des chemins choisis par rang final permettent d'examiner des réussites et des échecs. La fréquence de la ruine se calcule sur l'ensemble des simulations.
 - Les cinq erreurs : médiane-promesse, percentile-scénario, oubli du conditionnement au modèle (lisez d'abord l'écart entre cônes), illusion d'échelle, pixels pris pour des probabilités.
-- Ouvrez les autres graphiques selon la question qui vous préoccupe. Quelles dépenses ont été servies ? Quel capital reste-t-il au décès ? Qu'est-il arrivé aux ménages qui ont manqué d'argent ?
+- Les autres éventails complètent : dépenses servies (le vrai juge des règles flexibles), héritages (la ruine vue de l'autre bout), causes d'échec (le diagnostic qui choisit la parade).
 
 ---
 

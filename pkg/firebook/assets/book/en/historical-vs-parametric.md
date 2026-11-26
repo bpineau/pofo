@@ -1,23 +1,23 @@
 # Historical windows, bootstrap, parametric: the three families of models
-<!-- source: historique-vs-parametrique @ 065b184b5ffe -->
+<!-- source: historique-vs-parametrique @ fd268cce0749 -->
 
-How would your plan have held up through the inflation of the 1970s? A historical replay can show you what the returns of the time would have done to your savings. To find out what happens when several bad stretches come back to back, you need a way to change their order. Choose the model to match the question ([[monte-carlo-strengths-and-limits]]).
+A retirement simulator runs plans through generated futures ([[monte-carlo-strengths-and-limits]]). Everything turns on where those futures come from. There are only three broad answers, three families of models. You can replay history as it happened (historical windows). You can resample it, shuffled (the bootstrap). Or you can generate synthetic returns from a handful of parameters (parametric models).
 
-We'll compare three ways to build a history of returns. Keep spending, pension income and the length of retirement the same across all three so that the differences are easier to trace.
+Each family really answers a different question. Each has its virtues and its blind spots. And when their verdicts disagree about the same plan, that is not a glitch: it is the most valuable information you will get. This page takes all three in turn. For each one, the exact mechanics, the implementation choices that matter, the strengths and the traps. At the end comes the combined reading, which says what to believe for which question.
 
 ::: cle Three families, three questions
-A replay follows the dates in their original order. A bootstrap joins stretches drawn from the data. A parametric model draws returns from a distribution whose properties you specify. All three can miss the same risk.
+Historical windows: "how would my plan have done if I had retired on each date in the past?" Bootstrap: "and in **plausible** histories, made of the same ingredients as the past but put together differently?" Parametric: "and in a world whose mean, volatility and tails I set myself?" None of them answers "what is going to happen?"; together they **bracket** that unanswerable question. Which is why serious simulators show several families side by side instead of one verdict.
 :::
 
 ## Family 1: historical windows (replay, cohorts)
 
 **The mechanics.** This is Bengen's founding method ([[the-trinity-study]]). Take the real return series of your portfolio, or of an index. Then run the plan from every possible start date: the window from January 1975 to December 2019, then February 1975 to January 2020, and so on. Each window is a "vintage", a cohort. The failure rate is the fraction of vintages that ran out of money.
 
-**Choosing start dates.** With 45 years of monthly returns and a 45-year retirement, there is one complete window. One more month of data gives you a second start date. The two households would have lived through almost exactly the same markets. Starting in every month, as ERN does ([[the-ern-series]]), shows the effect of timing. With only 20 years of data, a 45-year plan has no complete historical replay.
+**The implementation choices that matter.** The sampling step, first. Starting once a month rather than once a year lets you compare nearby start dates, even though their windows overlap; that is the standard practice, and ERN's ([[the-ern-series]]). Then honesty about the horizon. When the history is shorter than the plan (20 years of data for a 45-year retirement), no complete window exists and the failure rate simply cannot be computed. A serious tool says so and refuses to answer, instead of quietly extrapolating. Last, the directed variant. Rather than running every start date, you replay the worst ones: the United States in 1929, 1966 and 2000, Japan in 1990. Real vintages picked for the ordeal, and the most vivid version of the family ([[the-trinity-study]]).
 
-**What you learn.** Starting in 1966 preserves the order of stock returns and inflation as they occurred. The market prices are historical. The household's sales, spending and remaining balance are what your rules would have produced.
+**The strengths.** Fidelity to the sequences actually observed. The correlations between assets, the clusters of crises, the crash-inflation-recovery chains: it is all in there, because nothing is modeled and everything is quoted. This is the only model whose every path really occurred. Hence a teaching power nothing else matches (watching your plan cross 1966 says more than a thousand probabilities) and an excellent detector of fragility against real regimes.
 
-**What you miss.** A century contains only three non-overlapping 30-year periods. The same crash turns up in many monthly windows, seen each time from a different starting date. The failure rate describes those starts in that market. A particularly prosperous sample can flatter a plan, and a particularly difficult sample can make it look worse.
+**The traps.** There are three, and they are serious. First, the tiny sample. A hundred years of data hold only three or four independent long retirements. The windows overlap massively: the same crash can show up in hundreds of monthly windows. So the "failure rate" carries enormous error bars, which its display never shows. Second, the ceiling of what happened. The worst of the past is treated as the worst there is, when nothing guarantees the worst is behind us. Third, the bias of the available window. Your funds' history usually covers the recent decades, which have been kind. If your history covers a favorable period, the replay will reflect that.
 
 ## Family 2: the bootstrap (block resampling)
 
@@ -31,9 +31,9 @@ The final draw selects months 5 and 6 a second time. Stock and bond returns stay
 
 **One engine, two questions.** Everything depends on the panel you reshuffle. Applied to your own funds' history at your current weights, the bootstrap builds thousands of variants of what your holdings actually lived. Applied to a long multi-country panel, it changes nature. That is the spirit of the Anarkulova-Cederburg method (38 countries in their study): resample the developed world's century, here on the academic Jorda-Schularick-Taylor panel (16 countries, 1870 to 2020), drawing each block inside a single country and making it long (ten years on average), so the great disasters (1929, the 1970s, Japan) largely survive in the paths, on a domestic 60/40 portfolio in line with the literature ([[anarkulova-cederburg]]). Same mathematical family, two different questions: "my funds, reshuffled" against "the developed century, reshuffled".
 
-**What you learn.** Changing the order of blocks can bring together losses that originally occurred decades apart. You can see what a different sequence of familiar returns would do to your plan.
+**The strengths.** The best trade-off between fidelity and variety. You keep the correlations and the short memory of the real thing, through the blocks, and you get thousands of distinct paths, through the reshuffling. The broad sample adds depth on top, with regimes your funds' history has never seen. This is the family modern research prefers for long-horizon risk, and it is Anarkulova-Cederburg's.
 
-**What you miss.** Ten thousand simulated retirements from a twenty-year record still rest on twenty years of observations. Short blocks break up long trends more often. Long blocks preserve more of those trends but allow fewer combinations. If the record has no sustained inflation shock, drawing from it more often cannot tell you how your funds would have behaved through one ([[valuations-and-cape]]).
+**The traps.** Historical continuity breaks where two blocks meet. A seven-year decline can come from one long block or from several bad blocks in a row. Mean reversion in valuations, spread over decades ([[valuations-and-cape]]), disappears too. The ingredients, next, are still those of the available past: the bootstrap reshuffles, it invents nothing. Applied to your funds' history alone, it inherits family 1's window bias, since variety in the draws does not fix poverty in the ingredients. Finally, block length is a real parameter. Too short and you kill the clusters; too long and you fall back into replay and its thin sample. The 24-month average applied to your funds is a common choice, long enough to hold a typical recession, short enough to diversify; the broad sample, which targets long disasters, draws blocks of ten years on average.
 
 ## Family 3: the parametric models (Student-t, and regimes)
 
@@ -41,7 +41,7 @@ The final draw selects months 5 and 6 a second time. Stock and bond returns stay
 
 The second defect, the missing memory, gives rise to the sub-family of regime models, parametric but sequenced. A Markov chain alternates a "normal" state and a "bear" state, with transition probabilities that make those bear markets persistent: entering one is rare, staying in it is likely, and bad years arrive in clusters of about three years. That is the principle behind a sequence stress. Built properly, it keeps the same long-run mean as the central model: the stress measures the risk of order, not a hidden pessimism about the level. Its extreme variant is the lost decade: a Japan-1990 bear market, long and deep, deliberately left uncompensated, with the mean pulled down. That one is a tail scenario to survive, not an expectation.
 
-**What you can test.** Suppose the portfolio's worst month on record was a 12% loss. A monthly bootstrap can draw that loss twice in a row. A parametric model can also produce an 18% loss in a single month if its distribution allows it. To see which assumption matters to your plan, change one at a time. Try a lower expected return ([[expected-returns]], [[valuations-and-cape]]), or keep the same average and cluster the bad years ([[sequence-of-returns]]).
+**The strengths.** Transparency and control, first: three explicit numbers, no black box. You can plug in forward-looking expectations ([[expected-returns]]) or the CAPE anchor ([[valuations-and-cape]]), and test "what if σ rose by two points". Generality, next: parametric models explore monthly returns that have never been observed, while the bootstrap creates new sequences of observed months. And isolating causes, last: the central/stress pair, with the same mean but its bad years bunched together (and a little deeper), shows what an unlucky sequence costs in your plan ([[sequence-of-returns]]). No other family makes that experiment so easy.
 
 **The traps.** They mirror the strengths. Everything rests on three numbers nobody knows, and the input sensitivity described in [[monte-carlo-strengths-and-limits]] is at its worst here. The structure you pick, i.i.d. or a two-state Markov chain, is still a caricature of the real thing: no mean reversion in valuations, no stochastic correlation between assets (the portfolio is aggregated before the draw), and inflation left implicit (everything is in real terms). A parametric model is a laboratory instrument: perfect for controlled experiments, never to be confused with the world.
 
@@ -59,21 +59,21 @@ Knowing which is which changes how you use any tool, because a verdict only mean
 | Rich, Broke or Dead | 1 (US cycles since 1871) | Free. Crosses every cycle with mortality tables: the most vivid "rich, broke or dead" picture of the genre. |
 | TPAW Planner | 1 and 2 (historical sequences, and historical draws recentered on today's expectations, 1/CAPE and real rates) | Free. The reference implementation of amortization (ABW), and the only one on the list that anchors its expectations to valuations by default. |
 
-Before comparing two tools, write down the country, period and asset mix each uses. Replaying a US portfolio since 1871 and resampling your own funds since launch changes several assumptions at once. Also check whether the tool uses the observed returns directly or shifts them to match a chosen expected return. That detail explains why changing a return assumption leaves some results untouched and moves others.
+Three remarks for using this table. First, identify the family before you read the verdict. A pure family-1 tool on American data shows how the plan would have fared through US history. Second, remember that in pofo μ, σ and df drive family 3 only; the data models ignore them, and a setting that "does nothing" is not a bug. Third, you can rebuild the multi-model evidence by hand well enough: the same plan entered into two tools from different families is a dashboard on its own. Note in passing that every replay tool named here works on American history; the multi-country century remains, to this day, the rare commodity of the inventory.
 
 ## Reading the three families together
 
 That leaves the real question: what do you do when the families disagree, which is the normal state of affairs? Here is the grid, disagreement by disagreement.
 
-**History looks better than the central model.** Compare the average return in the sample with the return assumed by the model. The gap might reflect an unusually good period, a conservative assumption or a difference in the risks represented. Change one assumption at a time and rerun the same plan.
+**Historical and bootstrap optimistic, the central case harsher.** The most common case: your funds lived through a good window, and blending toward the prior pulls the central case down. The reading: check whether the return over that period exceeds the central model's assumption. Believe the central case, size the plan on it, and keep the historical models as the "the world keeps going as I have known it" scenario.
 
 **The central case acceptable, the sequence stress clearly worse.** Your plan is exposed to the order of returns: a high initial withdrawal, little flexibility, no early income. This is not a problem of expected level but of structure. The defenses are the ones in the anti-sequence table ([[sequence-of-returns]]): flexibility in writing, a cash buffer, a glide path, income in the first years.
 
-**Only the international model shows frequent failures.** It applies your spending and pension to a domestic 60/40 portfolio across different countries and periods. Examine the difficult episodes. To test what diversifying your own assets would achieve, return to a model that uses your portfolio weights ([[anarkulova-cederburg]], [[all-weather-portfolios]]).
+**Everything fine except the broad sample.** Your plan holds in the world of your assumptions, but your cash flows, applied to the domestic 60/40 of the developed century, do not get through. The broad sample does not look at your portfolio: it cannot tell you what your portfolio lacks, it tells you which regimes threaten the plan. Look at where its paths fail. It is almost always in the blocks of persistent inflation and in the countries falling behind. Then test, in the models that use your weights, what international diversification and regime assets change ([[anarkulova-cederburg]], [[all-weather-portfolios]]), before adding capital.
 
-**The plan survives even a lost decade.** Check how much the household could spend along the way. If essential spending held up, try a concrete change, such as retiring a year earlier. Surviving a single stress test does not establish that you are saving too much ([[one-more-year]], [[spending-in-retirement]]).
+**Even the lost decade passes.** Your plan is probably oversized. Still check that this crash test was severe enough, since its depth grows with the model's volatility. The question is no longer ruin but opportunity cost: years of work too many, capital that will die intact ([[one-more-year]], [[spending-in-retirement]]).
 
-Keep each result alongside the question it can answer. A failure rate computed on your funds and one computed on a domestic 60/40 portfolio can both be informative while measuring different risks.
+The summary rule, given before but at its most useful here: **plan on the central case, test the order with the stress, run the broad sample and the lost decade as crash tests, and keep the historical models as a reference for the periods observed.**
 
 ::: exemple A useful disagreement
 You have 15 years of prices for your funds and expect a 40-year retirement. The historical-window entry should be blank. A bootstrap can assemble 40 years from those 15, but every block comes from the same short record. To test the plan's sensitivity, keep your portfolio and lower the expected return in the parametric model. Check when essential spending first falls short. Compare that date with the central case to see what your assumption changed.
@@ -83,9 +83,9 @@ You have 15 years of prices for your funds and expect a 40-year retirement. The 
 
 - Three families: replay (windows and cohorts), reshuffle (block bootstrap, including the broad sample over the 16-country century), generate (parametric Student-t, and its regime variants for memory).
 - Each one answers a different question, and their traps are complementary: a tiny sample and the ceiling of what happened (1), memory truncated at the block and ingredients taken from the past (2), sensitivity to the inputs and a caricature of structure (3).
-- A pure replay uses the returns from the dates you choose. Models that shift historical returns to a chosen mean combine resampling with a forward-looking assumption.
-- A gap between models gives you an assumption to investigate. Differences in returns, holdings or sample periods can produce the same symptom.
-- For each difficult scenario, check how long the household could pay its essential bills and what funded them.
+- In pofo, μ, σ and df drive the parametric family only; the data models ignore them. Always know which family you are looking at.
+- The disagreements between families are the real result: window bias, exposure to order, regime vulnerability, oversizing. Every pattern of disagreement has its diagnosis and its fix.
+- The decision summary: size on the central case, test the order with the stress, run the broad sample and the lost decade as crash tests, keep the historical models as a reference for the periods observed.
 
 ---
 

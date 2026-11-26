@@ -1,14 +1,14 @@
 # Reading a fan chart without fooling yourself
-<!-- source: lire-un-fan-chart @ 2144bbcd17c0 -->
+<!-- source: lire-un-fan-chart @ ddddedc5bcc2 -->
 
-How much might you have left at age 75? Find 75 on the horizontal axis of the fan chart and read the amounts above it. The dark band contains the middle half of the simulated balances at that age. The line down the middle marks the median.
+The densest chart in all of retirement planning is the wealth fan, the fan chart: thousands of simulated paths boiled down to percentile bands that widen with time, a few example paths, a zero line. It is also the most misread chart in the business. People see promises where there are frequencies, scenarios where there are point-in-time quantiles, and the uncertainty of the world where what dominates is sometimes the uncertainty of the model.
 
-To see how one household got there, switch your attention to a single thin line. It might sit above the median at 65 and below the dark band at 75.
+That chart sits at the heart of every serious FIRE simulator (FICalc, cFIREsim, Portfolio Visualizer), and the same conventions turn up far beyond retirement planning: the Bank of England, which popularized the format for its inflation forecasts, the IPCC's climate projections, forecasting statistics as a whole. This article teaches you to read one like a professional, with a real fan in front of you: its exact anatomy, why it has the shape it has (every feature of its geometry is a probability fact in disguise), the five classic reading mistakes and their fixes, and the other fans that round out the wealth fan.
 
-The first reading compares households at one date. The second follows one retirement through time.
+After this page, a fan reads like a sentence.
 
-::: cle What a 90% band means
-The band has new boundaries at every date. A household can leave it one year and return the next. To find out how many households stay inside throughout retirement, you would need to follow each path from start to finish.
+::: cle The reversal to make
+A fan chart does not show futures. For each date, it shows the **distribution** of the states possible on that date. The 90% band in year 20 says "in year 20, 90% of the simulated paths land in this slice". It says nothing about how any one path got there, and nothing about where it goes next. The fan is a stack of cross-sections, not a bundle of paths; real paths zigzag across the bands their whole lives. Every reading mistake comes from confusing those two objects.
 :::
 
 ## Anatomy of a fan
@@ -21,32 +21,32 @@ Take the fan above, piece by piece.
 
 **The nested bands.** From darkest to lightest, they cover widening percentile intervals around the median: here the middle half of the futures (25-75) and nearly all of them (5-95). At each date, the thousands of simulated wealth levels are sorted and the quantiles plotted. So a band is not a "cautious" scenario or an "optimistic" one: it is a statistic of the whole population, recomputed from scratch at every time step.
 
-**The median line.** At any date, the median divides the balances into two halves. Households change rank from year to year, so there is no reason for any one retirement to follow the line. The mean answers a different question. A few very large balances can pull it far above what the household in the middle holds.
+**The median line.** This is the 50th percentile: at each date, half the futures sit above it and half below. Two subtleties. First, the median is not a path. No future runs along it, and staying on it would take a miracle of regularity. Second, it is not the average either. Compounded wealth distributions are badly skewed, bounded at zero below and unbounded above, so the average gets dragged up by the opulent scenarios. When a salesman says "on average you will end up with $4M", he is usually quoting the mean because the mean flatters. The median is the one that tells you what will plausibly happen to you.
 
 **The example paths.** The two thin lines in the figure, green and red, are individual futures, drawn for one reason only: to show that a real path crosses the bands instead of running along one. The green one zigzags its way to prosperity. The red one starts in the pack, spends its first few years above the median even, then collapses into ruin.
 
 Some charts select eight paths by sorting all households by their final balance. They show the first, the last and six evenly spaced ranks in between. Even if just one household in a thousand runs out, one of the eight lines can be red. To find the failure rate, divide the number of failures by the total number of simulations. The sample lines show *how* a failure unfolded.
 
-**Zero and the scale.** At zero, the portfolio is empty. To see whether the household can still cover its bills, look at its pension income and the size of the next withdrawal ([[failure-probability]]). A chart may cap the axis at, say, ten times the starting capital. A few very wealthy households then fall outside the frame, while households running low on reserves are easier to see.
+**The zero line and the clipped top.** At zero the portfolio is empty. The plan fails if a scheduled withdrawal goes unpaid ([[failure-probability]]). The vertical axis, on the other hand, is better clipped, at ten times the starting capital for instance. Without that, the scenarios compounding for 30 or 40 years, which can reach 20 to 50 times the original stake, would visually flatten the zone around zero, the one that motivates the whole exercise. It is a deliberate choice: give up the spectacle of the upper tail to keep the lower tail legible, the tail that decides.
 
 ## Why the fan has the shape it has
 
-Read three features separately: how wide the bands are, where the middle household stands and how close the lowest balances are to zero.
+Every geometric feature of the fan is a theorem in disguise. Know them and you can diagnose a plan at a glance.
 
-**Why it widens.** Without withdrawals, if annual log returns are independent and have the same variance, the standard deviation of cumulative log returns grows with the square root of time (√t). With withdrawals, the chart also reflects the effect of selling assets on the remaining balance. Its width alone cannot tell you whether bad years tend to cluster ([[monte-carlo-strengths-and-limits]]).
+**It widens.** For memoryless returns, the spread of cumulative returns, counted in logarithms, grows as the square root of time (√t). In dollars, compounding stretches the fan much faster at the top, and withdrawals dig out its bottom, because a bad start opens a gap that fixed draws then amplify. So do not look for market memory in its width alone: the bottom is what speaks. Real markets, with their mild pull of valuations back toward the mean, widen a little less at very long horizons. That is one reason i.i.d. models slightly over-disperse the distant future ([[monte-carlo-strengths-and-limits]]).
 
 **A rising median.** In the figure, the middle household's balance grows even as some households run out. Both outcomes can occur in the same model. Conversely, a household may plan to spend down capital until a pension starts. Its median balance can fall while its planned spending remains fully funded ([[horizon-and-life-expectancy]]).
 
 **The bottom of the fan dives first, or it does not.** This is the most useful feature to read, and it is worth seeing on two plans side by side.
 
 ::: figure fan-two-plans
-Both plans cover the same horizon. On the left, the household has a cash reserve, spending it can adjust and income that starts early. On the right, it has less room to manoeuvre. Compare the two fifth percentiles after ten years.
+Two plans, same horizon. On the left, a **defended** plan (buffer, flexibility, early income): the 5th percentile sinks slowly and stays positive. On the right, a **stretched** plan with no margins: the 5th percentile dives toward zero inside the first decade. The slope of the bottom of the fan over those first ten years gives a good idea of your exposure to sequence risk.
 :::
 
-In the first few years the 5th percentile moves closer to zero faster on the right. To see why, open a path that started badly and look at the withdrawals after the loss. To measure the effect of the cash reserve, repeat the comparison with only the reserve changed. The two plans in the figure also differ in income and spending flexibility ([[sequence-of-returns]]).
+Look at the 5th percentile over the first ten years, the colored line at the bottom of each fan. That is the fragile window made visible ([[sequence-of-returns]]). A well-defended plan shows a fan bottom that sinks slowly and then recovers; a plan with a stretched withdrawal rate and no margins shows a 5th percentile diving toward zero by years 5 to 10. Two fans of comparable width can hide opposite exposures: everything is in the **slope of the bottom, early on**.
 
 ::: science Point-in-time percentiles against paths: the percentile path fallacy
-The household at the 5th percentile in year ten may be a different household from the one at that rank in year five. To find out what happened to the households in trouble early on, select all paths below the 10th percentile in year five. Follow those same paths to the end and count how many ran out. The fan alone does not give you that conditional probability ([[when-to-worry]]).
+The deepest conceptual error of the fan chart deserves its own box, and the anatomy figure shows it. The "5th percentile" line is **not** a scenario. It is a seam stitched from thousands of different scenarios, each holding that rank for a moment. A genuine worst-decile path usually visits the middle band in some years. The other way around, the path that ends ruined has often spent its early years in the upper half, exactly like the red path in the anatomy figure (two good years before the plunge: that is the 2000 vintage, [[the-trinity-study]]). The practical consequence: you cannot read "if I am below the 10th percentile in year 5, I will end up ruined" off the fan. The fan carries no conditional probabilities along paths. That question, where do I stand and what should I conclude, is legitimate and crucial, but it takes another tool: watching thresholds on your current withdrawal rate ([[when-to-worry]]), not staring at the fan.
 :::
 
 ## The five reading mistakes, and their fixes
@@ -72,27 +72,27 @@ Nothing beats a live fan computed on your own plan. Fifteen minutes is enough. I
 The same walkthrough works anywhere else, in any tool that plots a distribution of paths (TPAW Planner and Portfolio Visualizer in percentile bands, cFIREsim and FICalc as a bundle of historical vintages). You only have to rerun the calculation model by model, then keep the fans side by side in front of you.
 :::
 
-## What did households spend, leave behind or fail to fund?
+## Beyond wealth: the other fans
 
-The wealth fan leaves three questions open. Each calls for a different way of looking at the paths.
+In the simulators that offer them, the same distribution-by-date format supports three other readings, and each answers a question the wealth fan leaves alone.
 
-**The spending fan.** With a flexible rule (guardrails, VPW, ABW, [[withdrawal-strategies-overview]]), also plot what the household could actually spend each year. If the 10th percentile is 35% below budget for twelve dates in a row, the bottom of the distribution stays low. To find the length of cuts *one household* experienced, count consecutive years below its spending floor along each individual path ([[flexibility-in-practice]]).
+**The fan of delivered spending.** The moment your plan runs a flexible rule (guardrails, VPW, ABW, [[withdrawal-strategies-overview]]), wealth is no longer enough: the question becomes what you will actually live on. A fan of the standard of living year by year has a bottom of its own: the standard of living in the bad quarter of futures, for how many years, paid for by what (portfolio, pension or buffer). This is the view that separates withdrawal rules. A rule that "never fails" while its 10th percentile of spending sits 35% below plan for twelve years has not removed the risk. It has moved it out of bankruptcy and into daily life ([[flexibility-in-practice]]).
 
 **Final wealth.** A histogram of the closing balances shows how often wealth ended up high or low. If the simulation stops at age 90, those are balances at age 90. Estimating the inheritance at death also requires accounting for the age at death ([[horizon-and-life-expectancy]], [[spending-in-retirement]]).
 
-**Patterns of failure.** Among households that ran out, some lost half their capital early on. Others saw it erode slowly, or exhausted a portfolio that had first grown. These patterns tell you where to look. To understand a particular failure, compare returns, withdrawals and outside income year by year ([[glidepaths]], [[annuities-and-safety-first]]).
+**The causes of failure.** Among the ruined futures alone, the shape of the path tells you the failure mode: an early crash (wealth halved in the first ten years, the sequence disaster), a slow grind (the portfolio never took off, the lost decade), or longevity (the plan prospered, peaked, and the retirement outlived it). Three modes, three different defenses: a glide path and a buffer for the first ([[glidepaths]]), regime assets for the second, annuities for the third ([[annuities-and-safety-first]]). This is the view that turns "6% failure" into an actionable diagnosis.
 
-::: exemple How long would you have to live on less?
-A household budgets $55,000 a year for 48 years and agrees to cut back if markets fall. The 25th percentile of spending falls 12% below that budget for six consecutive years. Two questions matter to the household. Would spending at that level cover its essentials ([[how-much-you-need]])? And on the paths that suffered cuts, how many years in a row did they last? The household budget answers the first question. The second takes a year-by-year look at those paths.
+::: exemple A full reading, in four looks
+The plan: $1.6M, $55,000 a year with guardrails, a 48-year horizon. Look 1, the fans of the different models side by side: similar shapes, but the bottom of the broad-sample fan sinks noticeably faster. So the choice of model weighs more than luck, with one caveat: the broad sample does not simulate this portfolio, but a domestic 60/40. Look 2, the bottom of the central fan over ten years: a gentle slope. The red path shows what happened to withdrawals after the first decline. Look 3, the fan of delivered spending: the 25th percentile stays six years 12% below the comfort level. It is not necessarily the same household each year: how long a cut is actually lived shows path by path, by opening a few futures from the bottom. That is the real price of the guardrails, and it is judged acceptable against the floor already set ([[how-much-you-need]]). Look 4, the causes: three quarters of the remaining failures are slow grinds. The defense to test first is therefore not more cash, but building blocks against a lost decade ([[all-weather-portfolios]]). Four looks, four informed decisions. That is what a well-read fan chart delivers in two minutes.
 :::
 
 ## The essentials
 
 - A fan chart is a stack of distributions by date, not a bundle of futures: the bands are point-in-time quantiles and real paths zigzag across them; the median is neither a path nor the average.
-- A rising median can coexist with failures. Compare funded spending and the remaining balance with the plan's goals.
+- The geometry talks: a plunging fan bottom means withdrawals widening the gap, the slope of the fan bottom over the first ten years gives your sequence exposure (see the two plans compared).
 - Paths selected by final rank let you examine both successes and failures. Calculate the failure rate across all simulations.
 - The five mistakes: median as a promise, percentile as a scenario, forgetting the model the fan is conditional on (read the gap between fans first), the illusion of scale, and pixels mistaken for probabilities.
-- Choose the next chart to match your question. How much spending did the plan deliver? How much wealth remained at death? What happened to households that fell short?
+- The other fans complete the picture: delivered spending (the real judge of flexible rules), bequests (ruin seen from the other end), causes of failure (the diagnosis that picks the defense).
 
 ---
 

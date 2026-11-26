@@ -1,8 +1,8 @@
 # La probabilité de ruine : la lire, la choisir, ne pas la subir
 
-Une simulation affiche « 95 % de succès ». Les 5 % restants correspondent-ils à un retrait manqué de quelques euros la dernière année, ou à quinze années de dépenses essentielles sans financement ? Le pourcentage seul ne le dit pas.
+Tous les simulateurs de retraite résument leur verdict en un chiffre : la probabilité de ruine (ou son complément, le « taux de succès »). C'est le chiffre le plus regardé du sujet, et le plus mal compris. On le lit comme une météo (« 5 % de risque, ça va »), on le compare entre outils qui ne mesurent pas la même chose, on lui demande une précision qu'il n'a pas, et on oublie qu'il ne tient compte que des réactions prévues par la règle.
 
-Pour l'interpréter, commencez par deux questions. Quel événement l'outil appelle-t-il un échec ? Quelles décisions votre plan prend-il quand la situation se dégrade ?
+Cette page apprend à lire ce chiffre en professionnel : ce qu'il mesure exactement, comment choisir son seuil acceptable, pourquoi le même plan peut afficher 2 % ou 8 % selon les hypothèses, et ce que la ruine simulée a de très différent d'une ruine réelle.
 
 ::: cle La définition, sans raccourci
 Dans pofo, une trajectoire échoue la première année où le portefeuille ne peut pas verser le retrait que demande la règle, après prise en compte des revenus du foyer. Le taux d'échec est la part des trajectoires qui connaissent au moins une telle année pendant l'horizon retenu. Il dépend donc de votre **plan** et du **modèle** qui produit les scénarios ([[historique-vs-parametrique]]).
@@ -18,7 +18,7 @@ Décomposons la définition, terme à terme, parce que chaque terme cache un pi�
 
 **« Selon la règle prévue ».** Avec des retraits fixes, le calcul maintient le montant indexé même après une baisse. Si vous avez prévu de réduire les voyages avant de toucher aux dépenses indispensables, simulez une règle qui le fasse ([[plancher-plafond]], [[guardrails-morningstar]]). Elle peut diminuer le taux d'échec au prix de plusieurs années de vacances en moins. Le montant des dépenses servies et la durée des baisses vous disent ce que cette souplesse a coûté.
 
-**La durée couverte.** Avec un horizon fixe de quarante ans, chaque ménage doit couvrir les quarante années. Avec une durée de vie simulée, un manque ne compte que si le ménage est encore en vie ([[horizon-et-esperance-de-vie]]). Dans les deux cas, vérifiez quels revenus, dépenses exceptionnelles et recours le calcul inclut.
+**Et ce qu'il ignore superbement** : votre mortalité si l'horizon est fixe (une « ruine » à 97 ans concerne peu de monde, d'où l'intérêt de croiser la ruine avec les tables de mortalité, [[horizon-et-esperance-de-vie]]), les à-coups de dépenses réels, la fiscalité fine, et tous les filets hors modèle (famille, patrimoine immobilier, retour au travail).
 
 ## Choisir son seuil : pourquoi il n'y a pas de bonne réponse universelle
 
@@ -34,25 +34,25 @@ Quelle ruine accepter : 1 %, 5 %, 10 % ? La question semble technique ; elle est
 Un solveur qui calcule un capital cible ou une date de départ a besoin d'un seuil d'échec acceptable. Morningstar retient par exemple 90 % de succès sur trente ans dans son scénario de référence ([[guardrails-morningstar]]). Pour choisir votre propre seuil, ouvrez quelques trajectoires qui échouent. Quel budget pourriez-vous y tenir ? Combien d'années ? Quelles dépenses resteriez-vous incapable de financer ?
 :::
 
-## D'où vient l'incertitude autour du pourcentage ?
+## La précision illusoire : pourquoi le même plan peut afficher 2 % ou 8 %
 
 Le simulateur affiche « 4,7 % » et l'esprit enregistre une précision d'orfèvre. Elle n'existe pas, pour trois raisons cumulées.
 
 **Le bruit d'échantillonnage.** Avec 2 000 trajectoires indépendantes et une probabilité de 5 % dans le modèle, environ 95 tirages sur 100 donnent une fréquence entre 4 et 6 %. Obtenir zéro échec sur un tirage fini ne prouve pas que le risque du modèle est nul. Ce calcul d'incertitude ne s'applique pas directement aux fenêtres historiques qui se chevauchent.
 
-**La sensibilité aux paramètres.** Gardez la même méthode de simulation, mais baissez de 0,5 point le rendement réel attendu ([[rendements-attendus]]). Les retraits pèsent alors plus lourd sur le portefeuille. Refaites le même exercice en augmentant la fréquence des pertes extrêmes ([[queues-epaisses]]). Ces écarts vous indiquent quelles hypothèses méritent le plus d'attention dans votre plan.
+**La sensibilité aux paramètres** est bien pire. Baisser le rendement réel espéré de 0,5 point (une finesse que personne ne sait estimer, [[rendements-attendus]]) peut doubler la ruine. L'épaisseur des queues (les degrés de liberté de la loi de Student, [[queues-epaisses]]) la déplace encore. Vos paramètres sont incertains, donc votre ruine l'est au moins autant.
 
-**Le choix du modèle.** Les fenêtres historiques rejouent des années observées. Un modèle paramétrique tire des rendements selon des hypothèses explicites. Un test sur plusieurs pays peut, lui, observer un portefeuille domestique standard différent du vôtre. Un résultat de 2 % dans le premier et de 14 % dans le dernier décrit deux expériences différentes. L'intervalle de 2 à 14 % n'a donc pas d'interprétation comme intervalle de confiance.
+**Le choix du modèle domine tout** : le même plan peut afficher 2 % en fenêtres historiques, 5 % en paramétrique central, 9 % en stress de séquence et 14 % en échantillon mondial. Aucun n'est faux ; ils répondent à des questions différentes (« et si le futur ressemble à l'histoire de mes fonds / à un monde i.i.d. calibré prudemment / au même monde avec des sticky bears / et si j'avais été un épargnant en 60/40 domestique dans l'un des 16 pays développés du siècle »). Le dernier ne regarde pas votre portefeuille : c'est un crash-test, pas une mesure de votre risque.
 
 ::: figure trois-bruits
 Les trois bruits mis à la même échelle, sur un seul plan de référence : le chiffre affiché, les deux points d'incertitude que laisse le tirage, les trois et demi que laissent les paramètres, et les trente-cinq que laisse le choix du modèle. La barre que l'on regarde en croyant lire une probabilité est la plus courte des trois, et de loin.
 :::
 
 
-Comparez d'abord les plans avec **les mêmes scénarios**. Si le classement change lorsque vous modifiez le rendement attendu ou le modèle, votre préférence dépend de cette hypothèse. S'il se maintient, vous avez une raison de le prendre au sérieux. Une différence entre 2 % et 8 % peut être bien réelle dans un modèle donné, même quand on connaît mal le risque dans la vie réelle.
+La conséquence pratique tient en une règle : **lisez la ruine en ordinal, pas en cardinal**. Elle compare admirablement (le plan A est plus robuste que le plan B ; ce levier réduit le risque plus que celui-là ; ce modèle pessimiste reste acceptable) et mesure médiocrement (« mon risque réel est 4,7 % »). Les décimales sont du bruit ; les écarts entre scénarios et entre modèles sont du signal.
 
 ::: exemple Une décision bien posée
-Un ménage prévoit 42 000 € de dépenses annuelles et touchera une pension de 12 000 € à 66 ans. Avant la pension, le portefeuille doit fournir 42 000 € par an. Après, 30 000 €. Si le budget peut descendre à 34 000 €, il restera encore 22 000 € par an à financer après la pension. Simulez la règle qui déclenche cette baisse et relevez le nombre d'années passées à 34 000 € dans les mauvais scénarios. Le ménage peut alors juger si le gain sur le risque d'échec justifie la baisse de train de vie.
+Plan : 1,2 M€, 42 000 €/an, 45 ans, pension 12 000 €/an à 66 ans. Lecture modèle par modèle : fenêtres historiques 1 %, central 4 %, stress de séquence 7 %, échantillon mondial 11 %. Décision : le central et le stress sont sous 10 %, l'échantillon mondial au-dessus de 10 % mais ses échecs surviennent après 80 ans, pension acquise ; plancher de dépenses à 34 000 € tenable. La pension n'en couvre que 12 000 € : les 22 000 € restants viennent encore du portefeuille, d'où la règle écrite. Verdict : plan acceptable, avec une règle écrite. Si le taux de retrait courant dépasse 5 % (portefeuille sous ~840 k€ avant la pension, ~600 k€ après, quand le besoin du portefeuille tombe à 30 000 €), on baisse au plancher jusqu'à retour sous 4,5 %. La même analyse avec des échecs précoces ou un plancher intenable aurait conclu : un an de plus, ou 10 % de dépenses en moins.
 :::
 
 ## La ruine réelle ne ressemble pas à la ruine simulée
@@ -69,9 +69,9 @@ C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un i
 
 - La ruine est une propriété du couple plan + modèle : lisez plusieurs modèles, chacun pour la question qu'il pose, jamais un seul.
 - Le calcul suit les décisions prévues par la règle, y compris les baisses de dépenses que vous lui avez données.
-- Pour choisir un seuil, examinez le montant et la durée des dépenses non couvertes, les recours réellement disponibles et le coût d'une marge supplémentaire.
-- Distinguez la variation due au tirage de celle qui vient des hypothèses. Augmenter le nombre de simulations réduit la première.
-- En cours de retraite, des seuils d'action écrits aident à réagir à une hausse durable du taux de retrait courant ([[quand-s-inquieter]]).
+- Choisissez votre seuil selon vos filets réels et le prix de la marge en années de travail.
+- Lisez en ordinal : les écarts comparent, les décimales mentent ; comparez deux plans avec les mêmes hypothèses.
+- Une dégradation peut être visible des années à l'avance : la parade d'après-départ n'est pas un chiffre plus bas, c'est un pilotage écrit ([[quand-s-inquieter]]).
 
 ---
 

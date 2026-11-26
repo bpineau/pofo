@@ -121,8 +121,8 @@ func TestBruitsAgreesWithItsArticle(t *testing.T) {
 	for _, want := range []string{
 		"::: figure trois-bruits",
 		"**Le bruit d'échantillonnage.**",
-		"**La sensibilité aux paramètres.**",
-		"**Le choix du modèle.**",
+		"**La sensibilité aux paramètres**",
+		"**Le choix du modèle domine tout**",
 		"les deux points d'incertitude que laisse le tirage",
 		"les trente-cinq que laisse le choix du modèle",
 	} {
