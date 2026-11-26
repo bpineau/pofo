@@ -14,6 +14,18 @@ package firebook
 // The dictionary grows with the translation campaign: an entry is needed only
 // once an English article uses the plate.
 var figureDict = map[string]string{
+	// bootstrap-blocs
+	"bootstrap-blocs|SIMULATION DES RENDEMENTS":                                                         "SIMULATING RETURNS",
+	"bootstrap-blocs|Comment assembler six mois de rendements":                                          "How to build a six-month return path",
+	"bootstrap-blocs|Exemple fictif. Chaque colonne réunit les deux rendements observés le même mois.":  "Illustrative data. Each column holds the two returns observed in the same month.",
+	"bootstrap-blocs|Les huit mois disponibles":                                                         "Eight months of observations",
+	"bootstrap-blocs|Mois d'origine":                                                                    "Source month",
+	"bootstrap-blocs|Actions (%)":                                                                       "Stocks (%)",
+	"bootstrap-blocs|Obligations (%)":                                                                   "Bonds (%)",
+	"bootstrap-blocs|Rejeu historique · une fenêtre de six mois":                                        "Historical replay · one six-month window",
+	"bootstrap-blocs|Bootstrap · trois blocs de deux mois":                                              "Bootstrap · three two-month blocks",
+	"bootstrap-blocs|Les mois 5 et 6 reviennent ensemble. Au raccord, le mois 2 peut suivre le mois 6.": "Months 5 and 6 recur as a pair. At a block boundary, month 2 can follow month 6.",
+
 	// primes-echelle
 	"PRIMES DE RISQUE": "RISK PREMIA",
 	"Ce que chaque risque paie au-dessus du cash":                      "What each risk pays above cash",

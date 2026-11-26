@@ -24,6 +24,10 @@ Le rejeu parcourt les dates dans leur ordre historique. Le bootstrap assemble de
 
 Dans le bootstrap stationnaire de Politis et Romano, la longueur des blocs varie. Avec une moyenne de 24 mois, il y a chaque mois une chance sur 24 de repartir d'une date aléatoire. Une crise de trois ans peut donc être reprise en entier, coupée en deux ou absente d'une trajectoire.
 
+::: figure bootstrap-blocs
+Le dernier tirage reprend les mois 5 et 6 pour la deuxième fois. À chaque passage, les actions et les obligations gardent leurs rendements respectifs. Chaque bloc dure ici deux mois.
+:::
+
 **Un même moteur, deux questions.** Tout dépend du panel que l'on remélange. Appliqué à l'historique de vos propres fonds, sous vos poids courants, le bootstrap fabrique des milliers de variantes de ce que vos lignes ont réellement vécu. Appliqué à un panel long et multi-pays, il change de nature. C'est l'esprit de la méthode d'Anarkulova-Cederburg (38 pays dans leur étude) : rééchantillonner le siècle des pays développés, ici sur le panel académique Jorda-Schularick-Taylor (16 pays, 1870-2020), en tirant chaque bloc dans un même pays et en le faisant long (dix ans en moyenne), pour que les grands désastres (1929, les années 1970, le Japon) survivent en bonne partie dans les trajectoires, sur un portefeuille 60/40 domestique conforme à la littérature ([[anarkulova-cederburg]]). Même famille mathématique, deux questions différentes : « mes fonds, remélangés » contre « le siècle développé, remélangé ».
 
 **Ce qu'on apprend.** En changeant l'ordre des blocs, on peut observer des pertes qui se suivent alors qu'elles étaient séparées de plusieurs décennies. C'est une façon d'éprouver un plan face à d'autres enchaînements de rendements déjà connus.

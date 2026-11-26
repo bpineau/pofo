@@ -1,5 +1,5 @@
 # Historical windows, bootstrap, parametric: the three families of models
-<!-- source: historique-vs-parametrique @ 38a466828ac9 -->
+<!-- source: historique-vs-parametrique @ 8a0256fe95c9 -->
 
 How would your plan have held up through the inflation of the 1970s? A historical replay can show you what the returns of the time would have done to your savings. To find out what happens when several bad stretches come back to back, you need a way to change their order. Choose the model to match the question ([[monte-carlo-strengths-and-limits]]).
 
@@ -24,6 +24,10 @@ A replay follows the dates in their original order. A bootstrap joins stretches 
 **How it works.** Pick a month from the record and copy that month's returns for all the assets together. Continue with the following months, then start again at a randomly chosen date. The same block can turn up more than once. A block might preserve a stock market slump and its recovery, along with what bonds did over those same months. Where two blocks join, the historical sequence breaks.
 
 In Politis and Romano's stationary bootstrap the length of each block varies. With a mean of 24 months, each month brings a one-in-24 chance of restarting at a random date. A three-year crisis can appear in full, be cut short or be missing altogether from a path.
+
+::: figure bootstrap-blocs
+The final draw selects months 5 and 6 a second time. Stock and bond returns stay paired each time the months appear. The blocks in this example are all two months long.
+:::
 
 **One engine, two questions.** Everything depends on the panel you reshuffle. Applied to your own funds' history at your current weights, the bootstrap builds thousands of variants of what your holdings actually lived. Applied to a long multi-country panel, it changes nature. That is the spirit of the Anarkulova-Cederburg method (38 countries in their study): resample the developed world's century, here on the academic Jorda-Schularick-Taylor panel (16 countries, 1870 to 2020), drawing each block inside a single country and making it long (ten years on average), so the great disasters (1929, the 1970s, Japan) largely survive in the paths, on a domestic 60/40 portfolio in line with the literature ([[anarkulova-cederburg]]). Same mathematical family, two different questions: "my funds, reshuffled" against "the developed century, reshuffled".
 
