@@ -1,12 +1,13 @@
 package web
 
 import (
+	"math"
+	"strings"
+
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/replay"
 	"github.com/bpineau/pofo/pkg/scenario"
-	"math"
-	"strings"
 )
 
 // PolicyFrontierResult is the decumulation trade-off chart: each withdrawal

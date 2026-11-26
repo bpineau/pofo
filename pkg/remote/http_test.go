@@ -3,12 +3,13 @@ package remote
 import (
 	"context"
 	"encoding/json"
-	"github.com/bpineau/pofo/pkg/analyze"
-	"github.com/bpineau/pofo/pkg/marketdata"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/bpineau/pofo/pkg/analyze"
+	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
 func callHTTP(h http.Handler, path, body string) *httptest.ResponseRecorder {

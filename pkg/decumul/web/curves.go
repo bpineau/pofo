@@ -2,11 +2,12 @@ package web
 
 import (
 	"fmt"
+	"math"
+	"strings"
+
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/scenario"
-	"math"
-	"strings"
 )
 
 // CurvesResult carries the two planning curves: the safe withdrawal rate as

@@ -1,9 +1,10 @@
 package analyze
 
 import (
+	"slices"
+
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
-	"slices"
 )
 
 // AdjustedStudy describes a transformed curve on the nominal study's calendar.

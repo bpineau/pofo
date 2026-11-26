@@ -3,7 +3,6 @@ package firebook
 import (
 	"bytes"
 	"encoding/xml"
-	"github.com/bpineau/pofo/pkg/bookmd"
 	"html"
 	"io"
 	"net/http"
@@ -12,6 +11,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/bookmd"
 )
 
 func get(t *testing.T, srv *httptest.Server, path string) (int, string) {
